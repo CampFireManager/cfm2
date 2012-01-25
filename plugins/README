@@ -1,0 +1,5 @@
+This is where plugins are supposed to live.
+
+Create your plugins as classes, add functions with the relevant hook points
+(see the hook directory), and then register the plugins you want to use by 
+adding links to them in /config/plugins.php
