@@ -10,18 +10,8 @@
  */
 class plugin_hello_world
 {
-    function hook_render_every_page()
+    function hook_cronTick()
     {
         echo "Hello World!";
-    }
-
-    function hook_login()
-    {
-        echo "Well hello there!";
-    }
-
-    function hook_logout()
-    {
-        echo "Sorry to see you go now!";
     }
 }
