@@ -82,12 +82,7 @@ class object_generic
                 $db = Database::getConnection(true);
                 $query = $db->prepare($full_sql);
                 $query->execute($values);
-                // This section of code, thanks to code example here:
-                // http://www.lornajane.net/posts/2011/handling-sql-errors-in-pdo
-                if ($query->errorCode() != 0) {
-                    throw new Exception("SQL Error: " . print_r(array('sql'=>$full_sql, 'values'=>$values, 'error'=>$query->errorInfo()), true), 1);
-                }
-                hook_update::trigger();
+                hook::triggerHook('updateRecord', $this);
                 return true;
             } catch(Exception $e) {
                 error_log("Error writing: " . $e->getMessage());
@@ -106,7 +101,7 @@ class object_generic
         $this->arrChanges = array();
         $keys = '';
         $key_place = '';
-        foreach ($this->arrDBItems as $field_name=>$dummy) {
+        foreach ($this->arrDBItems as $field_name => $dummy) {
             if ($keys != '') {
                 $keys .= ', ';
                 $key_place .= ', ';
@@ -120,23 +115,88 @@ class object_generic
             $db = Database::getConnection(true);
             $query = $db->prepare($full_sql);
             $query->execute($values);
-            // This section of code, thanks to code example here:
-            // http://www.lornajane.net/posts/2011/handling-sql-errors-in-pdo
-            if ($query->errorCode() != 0) {
-                throw new Exception("SQL Error: " . print_r(array('sql'=>$full_sql, 'values'=>$values, 'error'=>$query->errorInfo()), true), 1);
-            }
             if ($this->strDBKeyCol != '') {
                 $key = $this->strDBKeyCol;
                 $this->$key = $db->lastInsertId();
             }
-            hook_create::trigger();
+            hook::triggerHook('createRecord', $this);
             return true;
-        } catch(Exception $e) {
+        } catch (PDOException $e) {
             error_log("Error creating: " . $e->getMessage());
             return false;
         }
     }
 
+    /**
+     * Delete a row from the relevant table
+     * 
+     * @return boolean Whether there was an error deleting the row
+     */
+    function delete()
+    {
+        $sql = "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?";
+        try {
+            $db = Database::getConnection(true);
+            $query = $db->prepare($sql);
+            $key = $this->strDBKeyCol;
+            $query->execute(array($this->$key));
+            hook::triggerHook('deleteRecord', $this);
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error deleting: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * This is used to first initialize the tables of the database.
+     * 
+     * @return boolean State of table creation
+     */
+    function initialize()
+    {
+        $unique_key = '';
+        $sql = "CREATE TABLE IF NOT EXISTS `{$this->strDBTable}` (";
+        $sql .= "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT, ";
+        foreach ($this->arrDBItems as $field_name => $settings) {
+            if ($settings['type'] == 'text') {
+                $sql .= "`{$field_name}` text NOT NULL";
+            } elseif ($settings['type'] == 'enum') {
+                $options = '';
+                foreach ($settings['options'] as $option) {
+                    if ($options != '') {
+                        $options .= ',';
+                    }
+                    $options .= $option;
+                }
+                $sql .= "`{$field_name}` enum({$options}) NOT NULL";
+            } else {
+                $sql .= "`{$field_name}` {$settings['type']}({$settings['length']}) NOT NULL, ";
+            }
+            if (isset($settings['unique'])) {
+                if ($unique_key != '') {
+                    $unique_key .= ',';
+                }
+                $unique_key .= "`{$field_name}`";
+            }
+        }
+        if ($this->strDBKeyCol != '') {
+            $sql .= " PRIMARY KEY (`{$this->strDBKeyCol}`)";
+        }
+        if ($unique_key != '') {
+            $sql .= " UNIQUE KEY `unique_key` ({$unique_key})";
+        }
+        $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
+        try {
+            $db = Database::getConnection(true);
+            $db->exec($sql);
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error initializing table: " . $e->getMessage());
+            return false;
+        }
+    }
+    
     /**
      * Return an array of the collected or created data.
      *
