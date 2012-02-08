@@ -161,16 +161,17 @@ class base_response
     }
 
     /**
-     * Provide a downloadable file
+     * Provide a downloadable file and exit the script
      *
-     * @param string  $file      File to send
-     * @param boolean $is_resume Can we supply headers to make this file resumable?
+     * @param string  $file       File to send
+     * @param boolean $is_resume  Can we supply headers to make this file resumable?
+     * @param string  $media_type The Internet Media Type for this media. If unset, force the download in browsers.
      *
      * @return void
      *
      * @link http://www.php.net/manual/en/function.fread.php#84115
      */
-    function dl_file_resumable($file, $is_resume=TRUE)
+    function sendResumableFile($file, $is_resume = TRUE, $media_type = 'application/force-download')
     {
         //First, see if the file exists
         if (!is_file($file)) {
@@ -187,37 +188,15 @@ class base_response
         preg_replace('/\./', '%2e', $fileinfo['basename'], substr_count($fileinfo['basename'], '.') - 1) :
         $fileinfo['basename'];
 
-        $file_extension = strtolower($fileinfo['extension']);
-
-        //This will set the Content-Type to the appropriate setting for the file
-        switch($file_extension) {
-            case 'exe':
-                $ctype='application/octet-stream';
-                break;
-            case 'zip':
-                $ctype='application/zip';
-                break;
-            case 'mp3':
-                $ctype='audio/mpeg';
-                break;
-            case 'mpg':
-                $ctype='video/mpeg';
-                break;
-            case 'avi':
-                $ctype='video/x-msvideo';
-                break;
-            default:
-                $ctype='application/force-download';
-        }
-
         //check if http_range is sent by browser (or download manager)
         if ($is_resume && isset($_SERVER['HTTP_RANGE'])) {
             list($size_unit, $range_orig) = explode('=', $_SERVER['HTTP_RANGE'], 2);
 
             if ($size_unit == 'bytes') {
-                //multiple ranges could be specified at the same time, but for simplicity only serve the first range
-                //http://tools.ietf.org/id/draft-ietf-http-range-retrieval-00.txt
-                list($range, $extra_ranges) = explode(',', $range_orig, 2);
+                // According to the spec, you could request several ranges here.
+                // For simplicity, just send the first one.
+                $ranges = explode(',', $range_orig);
+                $range = $ranges[0];
             } else {
                 $range = '';
             }
@@ -254,7 +233,7 @@ class base_response
             header('Content-Range: bytes '.$seek_start.'-'.$seek_end.'/'.$size);
         }
 
-        header('Content-Type: ' . $ctype);
+        header('Content-Type: ' . $media_type);
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Content-Length: '.($seek_end - $seek_start + 1));
 
@@ -279,7 +258,8 @@ class base_response
     /**
      * Return UTF8 encoded array
      *
-     * @param array $array Incoming array
+     * @param array|object|string|integer|float|boolean|null $array Ideally an 
+     * array of data to process, but failing that, return the data as a member of an array.
      *
      * @return array UTF8 encoded array
      *
@@ -287,23 +267,23 @@ class base_response
      */
     function utf8element($array = null)
     {
-        if ($array == null) {
-            $array = array();
-        }
         $newArray = array();
         if (is_object($array)) {
+            // Force objects to be recast as an array
             $array = (array) $array;
-        }
-        if ($array == null) {
-            return null;
+        } elseif (is_array($array)) {
+            // It's an array already, we don't need to mangle it.
+        } else {
+            // Individual items should be recast to be the only item in an array
+            $array = array($array);
         }
         foreach ($array as $key=>$val) {
-            if (is_array($val)) {
+            if (is_array($val) || is_object($val)) {
                 $newArray[utf8_encode($key)] = self::utf8element($val);
-            } elseif (is_object($val)) {
-                $newArray[utf8_encode($key)] = self::utf8element((array) $val);
-            } elseif ($val == false) {
+            } elseif ($val === false) {
                 $newArray[utf8_encode($key)] = '0';
+            } elseif ($val == null) {
+                $newArray[utf8_encode($key)] = '';
             } else {
                 $newArray[utf8_encode($key)] = utf8_encode($val);
             }
@@ -324,13 +304,91 @@ class base_response
     }
 
     /**
+     * Return utf8 encoded HTML
+     *
+     * @param Array|object $array Incoming data
+     *
+     * @return string UTF8 encoded HTML tables
+     */
+    function utf8html($array = array())
+    {
+        return self::html_encode(self::utf8element($array));
+    }
+
+    /**
+     * Similar to the json_encode function, this returns nested HTML tables instead of nested JSON data
+     * 
+     * @param array $array Data to encode
+     * 
+     * @return string HTML nested tables of the array of data
+     */
+    function html_encode($array = array())
+    {
+        $return = '<table>';
+        foreach ($array as $key => $item) {
+            $return .= '<tr><th>' . $key . '</th><td>';
+            if (is_array($item)) {
+                $return .= self::html_encode($item);
+            } else {
+                $return .= $item;
+            }
+            $return .= '</td></tr>';
+        }
+        $return .= '</table>';
+        return $return;
+    }
+
+    /**
+     * Return utf8 encoded XML with an optional root element name
+     *
+     * @param Array|object $array Incoming data
+     * @param string       $root  The root element name - default to "row"
+     *
+     * @return string UTF8 encoded XML string
+     */
+    function utf8xml($array = array(), $root = 'row')
+    {
+        return self::xml_encode(array($root => self::utf8element($array)));
+    }
+    
+    /**
+     * Similar to the json_encode function, this returns nested XML stanzas.
+     * It doesn't have the concept of parameters. Also, replaces a forward slash with "[slash]"
+     * 
+     * @param array   $array Data to encode
+     * @param integer $depth The number of spaces to indent each nested stanza by
+     * 
+     * @return string XML formatted data
+     */
+    function xml_encode($array = array(), $depth = 0)
+    {
+        $return = '';
+        foreach ($array as $key => $item) {
+            $key = str_replace('/', '[slash]', $key);
+            $key = str_replace('<', '[lt]', $key);
+            $key = str_replace('>', '[gt]', $key);
+            $key = str_replace('&', '[amp]', $key);
+            $key = str_replace('"', '[dquote]', $key);
+            $key = str_replace("'", '[squote]', $key);
+            $return .= str_repeat(' ', $depth) . '<' . $key . ">";
+            if (is_array($item)) {
+                $return .= "\r\n" . self::xml_encode($item, $depth + 4) . str_repeat(' ', $depth);
+            } else {
+                $return .= $item;
+            }
+            $return .= '</' . $key . ">\r\n";
+        }
+        return $return;
+    }
+    
+    /**
     * Do a redirection to the $new_page (relative to the base URI of the site)
     *
     * @param string $new_page New page to refer to
     *
     * @return void
     */
-    function redirect($new_page = '')
+    function redirectTo($new_page = '')
     {
         $arrRequestDetails = base_request::getRequest();
         if (substr($new_page, 0, 1) != '/') {
@@ -343,5 +401,4 @@ class base_response
         header("Location: $redirect_url");
         exit(0);
     }
-
 }
