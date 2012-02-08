@@ -44,12 +44,14 @@ class base_database
                 }
                 if ($RequireWrite == true) {
                     $self->rw_db = new PDO($RW_DSN['string'], $RW_DSN['user'], $RW_DSN['pass'], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+                    $self->rw_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     return $self->rw_db;
                 } else {
                     $self->ro_db = new PDO($RO_DSN['string'], $RO_DSN['user'], $RO_DSN['pass'], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+                    $self->ro_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     return $self->ro_db;
                 }
-            } catch (Exception $e) {
+            } catch (PDOException $e) {
                 echo "Error connecting: " . $e->getMessage();
                 die();
             }
