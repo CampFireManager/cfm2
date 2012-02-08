@@ -24,7 +24,7 @@ class hook_generic
             if (is_array($parameters)) {
                 $handler->hook[$object] = $parameters;
             } elseif (null != $parameters) {
-                error_log("Tried to add a hook of " . get_class($object)) . " using function name $function but with parameters which were not an array. Got " . print_r($parameters, true));
+                error_log("Tried to add a hook of " . get_class($object) . " using function name $function but with parameters which were not an array. Got " . print_r($parameters, true));
             }
             $handler->hook[$object]['function'] = $function;
         } else {

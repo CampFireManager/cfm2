@@ -5,7 +5,7 @@ class base_database
     protected static $handler = null;
     protected $arrConfigGlobal = null;
     protected $arrConfigLocal = null;
-    protected $arrConfig = null
+    protected $arrConfig = null;
 
     /**
      * This function creates or returns an instance of this class.
@@ -124,9 +124,9 @@ class base_database
                 }
                 foreach ($handler->arrConfigLocal as $key => $value) {
                     if (isset($handler->arrConfig[$key])) {
-                        $handler->arrConfig[$key] = array('isLocal' => true, 'isOverriden' => true, 'value' = $value);
+                        $handler->arrConfig[$key] = array('isLocal' => true, 'isOverriden' => true, 'value' => $value);
                     } else {
-                        $handler->arrConfig[$key] = array('isLocal' => true, 'isOverriden' => false, 'value' = $value);
+                        $handler->arrConfig[$key] = array('isLocal' => true, 'isOverriden' => false, 'value' => $value);
                     }
                 }
             } catch(Exception $e) {
