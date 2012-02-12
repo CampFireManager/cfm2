@@ -1,6 +1,6 @@
 <?php
 
-class object_room extends object_generic
+class object_room extends base_genericobject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -9,6 +9,7 @@ class object_room extends object_generic
     );
     protected $strDBTable = "room";
     protected $strDBKeyCol = "intRoomID";
+    protected $mustBeAdminToModify = true;
     // Local Object Requirements
     protected $intRoomID = null;
     protected $strRoomName = null;

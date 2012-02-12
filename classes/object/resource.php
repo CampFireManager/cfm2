@@ -1,6 +1,6 @@
 <?php
 
-class object_resource extends object_generic
+class object_resource extends base_genericobject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -9,6 +9,7 @@ class object_resource extends object_generic
     );
     protected $strDBTable = "resource";
     protected $strDBKeyCol = "intResourceID";
+    protected $mustBeAdminToModify = true;
     // Local Object Requirements
     protected $intResourceID = null;
     protected $strResourceName = null;
