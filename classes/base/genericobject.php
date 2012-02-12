@@ -1,13 +1,60 @@
 <?php
-class object_generic
+class base_genericobject
 {
+    // Generic Object Requirements
     protected $arrDBItems = array();
     protected $strDBTable = "";
     protected $strDBKeyCol = "";
     protected $arrChanges = array();
     protected $booleanFull = false;
     protected $old = array();
+    protected $mustBeAdminToModify = false;
 
+    /**
+     * This function is designed to create a new object and return a pointer to it to the broker or function.
+     * This permits one to overide the usual __construct function by handing it a boolean value to disable 
+     * certain functions, or to provide the class with a set of sane defaults.
+     * 
+     * Call this object with $object = objecttype::startNew();
+     * 
+     * @return object
+     */
+    function startNew()
+    {
+        return new self();
+    }
+    
+    /**
+     * Get the object for the ID associated with a particular row
+     *
+     * @param integer $intID The Object ID to search for
+     *
+     * @return object UserObject for intUserID
+     */
+    function brokerByID($intID = 0)
+    {
+        $objCache = base_cache::getHandler();
+        $this_class = self::startNew();
+        if (0 + $intID > 0) {
+            if (isset($objCache->arrCache[get_class($this_class)]['id'][$intID])) {
+                return $objCache->arrCache[get_class($this_class)]['id'][$intID];
+            }
+            try {
+                $db = base_database::getConnection();
+                $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
+                $query = $db->prepare($sql);
+                $query->execute(array($intID));
+                $result = $query->fetchObject(get_class($this_class));
+                $objCache->arrCache[get_class($this_class)]['id'][$intID] = $result;
+                return $result;
+            } catch(Exception $e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Set booleanFull to this value - expands the existing object to include it's
      * component parts if true.
@@ -31,6 +78,23 @@ class object_generic
         return $this->full;
     }
 
+    function set_key($keyname = '', $value = '')
+    {
+        if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
+            if ($value != '' && $this->$keyname != $value) {
+                $this->$keyname = $set;
+                $this->arrChanges[$keyname] = true;
+            }
+        }
+    }
+    
+    function get_key($keyname = '')
+    {
+        if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
+            return $this->$keyname;
+        }
+    }
+    
     /**
      * Ensure that all database items are backed up before processing
      *
@@ -79,7 +143,7 @@ class object_generic
             }
             $full_sql = "UPDATE {$this->strDBTable} SET $sql WHERE $where";
             try {
-                $db = Database::getConnection(true);
+                $db = base_database::getConnection(true);
                 $query = $db->prepare($full_sql);
                 $query->execute($values);
                 hook::triggerHook('updateRecord', $this);
@@ -96,7 +160,7 @@ class object_generic
      *
      * @return boolean status of the create operation
      */
-    protected function create()
+    function create()
     {
         $this->arrChanges = array();
         $keys = '';
@@ -112,7 +176,7 @@ class object_generic
         }
         $full_sql = "INSERT INTO {$this->strDBTable} ($keys) VALUES ($key_place)";
         try {
-            $db = Database::getConnection(true);
+            $db = base_database::getConnection(true);
             $query = $db->prepare($full_sql);
             $query->execute($values);
             if ($this->strDBKeyCol != '') {
@@ -136,7 +200,7 @@ class object_generic
     {
         $sql = "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?";
         try {
-            $db = Database::getConnection(true);
+            $db = base_database::getConnection(true);
             $query = $db->prepare($sql);
             $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
@@ -170,8 +234,10 @@ class object_generic
                     $options .= $option;
                 }
                 $sql .= "`{$field_name}` enum({$options}) NOT NULL";
-            } else {
+            } elseif (isset($settings['length'])) {
                 $sql .= "`{$field_name}` {$settings['type']}({$settings['length']}) NOT NULL, ";
+            } else {
+                $sql .= "`{$field_name}` {$settings['type']} NOT NULL, ";
             }
             if (isset($settings['unique'])) {
                 if ($unique_key != '') {
@@ -188,7 +254,7 @@ class object_generic
         }
         $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
         try {
-            $db = Database::getConnection(true);
+            $db = base_database::getConnection(true);
             $db->exec($sql);
             return true;
         } catch (PDOException $e) {
