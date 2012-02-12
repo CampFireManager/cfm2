@@ -4,10 +4,17 @@ require_once(dirname(__FILE__) . '/classes/autoloader.php');
 
 $arrRequest = base_request::getRequest();
 
+var_dump(object_user::brokerCurrent());
+
+$api = false;
+$html = false;
+
 foreach ($arrRequest['pathItems'] as $pathItem) {
     if ($pathItem == 'api') {
-        base_hook::triggerHook('apiRender', $arrRequest);
+        $api = true;
     } else {
-        base_hook::triggerHook('httpRender', $arrRequest);
+        $html = true;
     }
+
 }
+
