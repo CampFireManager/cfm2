@@ -1,0 +1,6 @@
+The sources.txt file lists the external libraries used by the project, and where to find them.
+The libraries.json file will list what version we should be using.
+
+The file structure of this directory is as follows:
+
+/path/to/cfm2/ExternalLibraries/LIBRARYNAME/V.E.R/{files and directories associated with this library}
