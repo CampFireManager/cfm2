@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE ruleset [
+  <!ELEMENT ruleset (description?)>
+  <!ELEMENT description (#PCDATA)>
+  	<!ATTLIST ruleset name CDATA "default">
+]>
+<ruleset name="CFM2">
+ <description>Coding standard for CampFireManager version 2.</description>
+</ruleset>
