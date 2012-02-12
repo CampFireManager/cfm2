@@ -1,6 +1,6 @@
 <?php
 
-class Object_Resource extends Base_Genericobject
+class Object_Resource extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(

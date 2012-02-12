@@ -1,6 +1,6 @@
 <?php
 
-class Object_Talk extends Base_Genericobject
+class Object_Talk extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(

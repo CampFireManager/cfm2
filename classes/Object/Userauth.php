@@ -1,6 +1,6 @@
 <?php
 
-class Object_Userauth extends Base_Genericobject
+class Object_Userauth extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -36,9 +36,9 @@ class Object_Userauth extends Base_Genericobject
     {
         if ($this->enumAuthType != null) {
             if ($this->enumAuthType == 'openid' || $this->enumAuthType == 'codeonly') {
-                $set = sha1(base_config::getConfigGlobal('salt') . $password);
+                $set = sha1(base_config::getConfigSecure('salt') . $password);
             } elseif ($this->enumAuthType == 'basicauth') {
-                $set = $request['username'] . ':' . sha1(base_config::getConfigGlobal('salt') . $request['password']);
+                $set = $request['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['password']);
             }
             if ($set != '' && $this->strAuthValue != $set) {
                 $this->strAuthValue = $set;
@@ -75,10 +75,10 @@ class Object_Userauth extends Base_Genericobject
             }
         } elseif (isset($_SESSION['OPENID_AUTH']) AND $_SESSION['OPENID_AUTH'] != false) {
             $key = 'openid';
-            $value = sha1(base_config::getConfigGlobal('salt') . $request['OPENID_AUTH']);
+            $value = sha1(base_config::getConfigSecure('salt') . $request['OPENID_AUTH']);
         } elseif (isset($request['username']) && $request['username'] != null && isset($request['password']) && $request['password'] != null) {
             $key = 'basicauth';
-            $value = $request['username'] . ':' . sha1(base_config::getConfigGlobal('salt') . $request['password']);
+            $value = $request['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['password']);
         }
         if (isset($key)) {
             try {
@@ -118,17 +118,20 @@ class Object_Userauth extends Base_Genericobject
             unset($_SESSION['intUserAuthID']);
         }
         if (isset($_SESSION['OPENID_AUTH'])) {
-            $key = 'openid';
-            $value = sha1(base_config::getConfigGlobal('salt') . $request['OPENID_AUTH']);
+            $this_class->set_enumAuthType('openid');
+            $this_class->set_strAuthValue(sha1(base_config::getConfigSecure('salt') . $request['OPENID_AUTH']));
         } elseif (
             isset($request['requestUrlParameters']['username']) 
             && $request['requestUrlParameters']['username'] != null 
             && isset($request['requestUrlParameters']['password']) 
             && $request['requestUrlParameters']['password'] != null
         ) {
-            $key = 'basicauth';
-            $value = $request['requestUrlParameters']['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['requestUrlParameters']['password']);
+            $this_class->set_enumAuthType('basicauth');
+            $this_class->set_strAuthValue($request['requestUrlParameters']['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['requestUrlParameters']['password']));
+        } else {
+            return false;
         }
-
+        $this_class->create();
+        return $this_class;
     }
 }

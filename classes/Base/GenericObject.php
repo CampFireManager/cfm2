@@ -1,5 +1,5 @@
 <?php
-class Base_Genericobject
+class Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array();

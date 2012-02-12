@@ -1,6 +1,6 @@
 <?php
 
-class Object_DefaultSlotType extends Base_Genericobject
+class Object_DefaultSlotType extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(

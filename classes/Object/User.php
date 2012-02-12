@@ -1,6 +1,6 @@
 <?php
 
-class Object_User extends Base_Genericobject
+class Object_User extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -69,6 +69,14 @@ class Object_User extends Base_Genericobject
         if (! $isReal) {
             return $this_class;
         }
+        $objUserAuth = Object_Userauth::startNew();
+        if (false !== $objUserAuth) {
+            $this_class->set_key('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
+            $this_class->create();
+            $objUserAuth->set_key('intUserID', $this_class->get_key('intUserID'));
+            $objUserAuth->write();
+        }
+        return $this_class;
         
     }
 }
