@@ -1,6 +1,6 @@
 <?php
 
-class base_session
+class Base_Session
 {
     /**
     * Overide the standard session_start() call, with our preferred longer cookie timer.

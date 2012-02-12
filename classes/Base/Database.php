@@ -1,6 +1,6 @@
 <?php
 
-class base_database
+class Base_Database
 {
     protected static $handler = null;
     protected $rw_db = null;

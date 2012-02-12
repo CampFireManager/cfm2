@@ -1,6 +1,6 @@
 <?php
 
-class base_cache
+class Base_Cache
 {
     // Broker Requirements
     public $arrCache = array();

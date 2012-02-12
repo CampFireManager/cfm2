@@ -1,5 +1,5 @@
 <?php
-class base_genericobject
+class Base_Genericobject
 {
     // Generic Object Requirements
     protected $arrDBItems = array();
@@ -17,9 +17,11 @@ class base_genericobject
      * 
      * Call this object with $object = objecttype::startNew();
      * 
+     * @param boolean $dummy Not actually used here, but is used in re-creations of this class. Here incase of copy/paste errors.
+     * 
      * @return object
      */
-    function startNew()
+    function startNew($dummy = false)
     {
         return new self();
     }
@@ -116,6 +118,13 @@ class base_genericobject
      */
     function write()
     {
+        if ($this->mustBeAdminToModify
+            && ((base_user::brokerCurrent() != false 
+            && base_user::brokerCurrent()->get_key('isAdmin') == false) 
+            || base_user::brokerCurrent() == false)
+        ) {
+            return false;
+        }
         if (count($this->arrChanges) > 0) {
             $sql = '';
             $where = '';
@@ -162,6 +171,13 @@ class base_genericobject
      */
     function create()
     {
+        if ($this->mustBeAdminToModify
+            && ((base_user::brokerCurrent() != false 
+            && base_user::brokerCurrent()->get_key('isAdmin') == false) 
+            || base_user::brokerCurrent() == false)
+        ) {
+            return false;
+        }
         $this->arrChanges = array();
         $keys = '';
         $key_place = '';
@@ -198,6 +214,13 @@ class base_genericobject
      */
     function delete()
     {
+        if ($this->mustBeAdminToModify
+            && ((base_user::brokerCurrent() != false 
+            && base_user::brokerCurrent()->get_key('isAdmin') == false) 
+            || base_user::brokerCurrent() == false)
+        ) {
+            return false;
+        }
         $sql = "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?";
         try {
             $db = base_database::getConnection(true);
@@ -223,8 +246,17 @@ class base_genericobject
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->strDBTable}` (";
         $sql .= "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT, ";
         foreach ($this->arrDBItems as $field_name => $settings) {
+            if (isset($settings['null'])) {
+                if ($settings['null']) {
+                    $isNull = "NULL";
+                } else {
+                    $isNull = "NOT NULL";
+                }
+            } else {
+                $isNull = "NULL";
+            }
             if ($settings['type'] == 'text') {
-                $sql .= "`{$field_name}` text NOT NULL";
+                $sql .= "`{$field_name}` text $isNull, ";
             } elseif ($settings['type'] == 'enum') {
                 $options = '';
                 foreach ($settings['options'] as $option) {
@@ -233,11 +265,11 @@ class base_genericobject
                     }
                     $options .= $option;
                 }
-                $sql .= "`{$field_name}` enum({$options}) NOT NULL";
+                $sql .= "`{$field_name}` enum({$options}) $isNull, ";
             } elseif (isset($settings['length'])) {
-                $sql .= "`{$field_name}` {$settings['type']}({$settings['length']}) NOT NULL, ";
+                $sql .= "`{$field_name}` {$settings['type']}({$settings['length']})  $isNull, ";
             } else {
-                $sql .= "`{$field_name}` {$settings['type']} NOT NULL, ";
+                $sql .= "`{$field_name}` {$settings['type']} $isNull, ";
             }
             if (isset($settings['unique'])) {
                 if ($unique_key != '') {
@@ -290,16 +322,16 @@ class base_genericobject
     function asBoolean($check)
     {
         switch((string) $check) {
-            case 'no':
-            case '0':
-            case 'false':
-                return false;
-            case '1':
-            case 'yes':
-            case 'true':
-                return true;
-            default:
-                return false;
+        case 'no':
+        case '0':
+        case 'false':
+            return false;
+        case '1':
+        case 'yes':
+        case 'true':
+            return true;
+        default:
+            return false;
         }
     }
 

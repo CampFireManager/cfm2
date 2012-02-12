@@ -1,6 +1,6 @@
 <?php
 
-class base_hook
+class Base_Hook
 {
     protected static $self = null;
     protected $arrHooks = array();
@@ -25,7 +25,7 @@ class base_hook
 
     protected function __construct()
     {
-        require_once(dirname(__FILE__) . '/../../config/plugin.php');
+        include_once dirname(__FILE__) . '/../../config/plugin.php';
     }
 
     public function addTrigger($strTrigger = null)

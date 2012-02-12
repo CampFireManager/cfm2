@@ -1,6 +1,6 @@
 <?php
 
-class object_user extends base_genericobject
+class Object_User extends Base_Genericobject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -28,12 +28,11 @@ class object_user extends base_genericobject
     function brokerCurrent()
     {
         $objCache = base_cache::getHandler();
-        $this_class = self::startNew();
-        if (
-            isset($objCache->arrCache[get_class($this_class)]['current'])
+        $this_class = self::startNew(false);
+        if (true === isset($objCache->arrCache[get_class($this_class)]['current'])
             && $objCache->arrCache[get_class($this_class)]['current'] != null
             && $objCache->arrCache[get_class($this_class)]['current'] != false
-            ) {
+        ) {
             return $objCache->arrCache[get_class($this_class)]['current'];
         }
         $user = object_userauth::brokerCurrent();
@@ -55,5 +54,21 @@ class object_user extends base_genericobject
             error_log("SQL Error: " . $e->getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Create a new User object
+     * 
+     * @param boolean $isReal Perform Creation Actions (default true)
+     *
+     * @return object
+     */
+    function startNew($isReal = true)
+    {
+        $this_class = new self();
+        if (! $isReal) {
+            return $this_class;
+        }
+        
     }
 }

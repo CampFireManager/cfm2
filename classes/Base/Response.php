@@ -1,6 +1,6 @@
 <?php
 
-class base_response
+class Base_Response
 {
     protected static $http_status_codes = Array(
     100 => 'Continue',
@@ -86,23 +86,23 @@ class base_response
             // Let's make an appropriate response.
             $message = '';
             switch($status) {
-                case 204:
-                    // This means "No content", so it would be rather foolish to send content now.
-                    break;
-                case 401:
-                    header('WWW-Authenticate: Basic realm="Authentication Required"');
-                    $message = 'You must be authorized to view this page.';
-                    break;
-                case 404:
-                    list($uri, $data) = self::getPath();
-                    $message = 'The requested URL ' . $uri . ' was not found.';
-                    break;
-                case 500:
-                    $message = 'The server encountered an error processing your request.';
-                    break;
-                case 501:
-                    $message = 'The requested method is not implemented.';
-                    break;
+            case 204:
+                // This means "No content", so it would be rather foolish to send content now.
+                break;
+            case 401:
+                header('WWW-Authenticate: Basic realm="Authentication Required"');
+                $message = 'You must be authorized to view this page.';
+                break;
+            case 404:
+                list($uri, $data) = self::getPath();
+                $message = 'The requested URL ' . $uri . ' was not found.';
+                break;
+            case 500:
+                $message = 'The server encountered an error processing your request.';
+                break;
+            case 501:
+                $message = 'The requested method is not implemented.';
+                break;
             }
 
             // Again, don't send any text if the response is to send no further content

@@ -1,6 +1,6 @@
 <?php
 
-class object_slot extends base_genericobject
+class Object_Slot extends Base_Genericobject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -8,7 +8,7 @@ class object_slot extends base_genericobject
         'timeStart' => array('type' => 'time'),
         'dateEnd' => array('type' => 'date'),
         'timeEnd' => array('type' => 'time'),
-        'intDefaultSlotTypeID' => array('type' => 'int', 'length' => 11),
+        'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11),
         'isAvailable' => array('type' => 'tinyint', 'length' => 1)
     );
     protected $strDBTable = "slot";
@@ -20,6 +20,6 @@ class object_slot extends base_genericobject
     protected $timeStart = null;
     protected $dateEnd = null;
     protected $timeEnd = null;
-    protected $defaultSlotTypeID = null;
+    protected $intDefaultSlotTypeID = null;
     protected $isAvailable = true;
 }

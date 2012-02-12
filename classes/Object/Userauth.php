@@ -1,6 +1,6 @@
 <?php
 
-class object_userauth extends base_genericobject
+class Object_Userauth extends Base_Genericobject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -50,12 +50,11 @@ class object_userauth extends base_genericobject
     function brokerCurrent()
     {
         $objCache = base_cache::getHandler();
-        $this_class = self::startNew();
-        if (
-            isset($objCache->arrCache[get_class($this_class)]['current'])
+        $this_class = self::startNew(false);
+        if (isset($objCache->arrCache[get_class($this_class)]['current'])
             && $objCache->arrCache[get_class($this_class)]['current'] != null
             && $objCache->arrCache[get_class($this_class)]['current'] != false
-            ) {
+        ) {
             return $objCache->arrCache[get_class($this_class)]['current'];
         }
         base_session::start();
@@ -98,5 +97,38 @@ class object_userauth extends base_genericobject
         } else {
             return false;
         }
+    }
+
+    /**
+     * Create a new User object
+     * 
+     * @param boolean $isReal Perform Creation Actions (default true)
+     *
+     * @return object
+     */
+    function startNew($isReal = true)
+    {
+        $this_class = new self();
+        if (! $isReal) {
+            return $this_class;
+        }
+        base_session::start();
+        $request = base_request::getRequest();
+        if (isset($_SESSION['intUserAuthID'])) {
+            unset($_SESSION['intUserAuthID']);
+        }
+        if (isset($_SESSION['OPENID_AUTH'])) {
+            $key = 'openid';
+            $value = sha1(base_config::getConfigGlobal('salt') . $request['OPENID_AUTH']);
+        } elseif (
+            isset($request['requestUrlParameters']['username']) 
+            && $request['requestUrlParameters']['username'] != null 
+            && isset($request['requestUrlParameters']['password']) 
+            && $request['requestUrlParameters']['password'] != null
+        ) {
+            $key = 'basicauth';
+            $value = $request['requestUrlParameters']['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['requestUrlParameters']['password']);
+        }
+
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-class base_request
+class Base_Request
 {
     protected static $handler = null;
     protected $arrRequestData = null;
@@ -78,22 +78,30 @@ class base_request
             }
             $url .= $_SERVER['REQUEST_URI'];
             switch(strtolower($_SERVER['REQUEST_METHOD'])) {
-                case 'get':
-                    $data = $_GET;
-                    break;
-                case 'post':
-                    $data = $_POST;
-                    if (isset($_FILES) and is_array($_FILES)) {
-                        $data['_FILES'] = $_FILES;
-                    }
-                    break;
-                case 'put':
-                    parse_str(file_get_contents('php://input'), $_PUT);
-                    $data = $_PUT;
-                    break;
-                case 'delete':
-                case 'head':
-                    $data = $_REQUEST;
+            case 'head':
+                // Typically a request to see if this has changed since the last time
+                $handler->arrRequestData['method'] = 'head';
+                $data = $_REQUEST;
+                break;
+            case 'get':
+                $data = $_GET;
+                break;
+            case 'post':
+                $handler->arrRequestData['method'] = 'post';
+                $data = $_POST;
+                if (isset($_FILES) and is_array($_FILES)) {
+                    $data['_FILES'] = $_FILES;
+                }
+                break;
+            case 'put':
+                $handler->arrRequestData['method'] = 'put';
+                parse_str(file_get_contents('php://input'), $_PUT);
+                $data = $_PUT;
+                break;
+            case 'delete':
+                $handler->arrRequestData['method'] = 'delete';
+                $data = $_REQUEST;
+                break;
             }
         }
 
@@ -111,7 +119,12 @@ class base_request
             $handler->arrRequestData['requestUrlExcludingParameters'] = $url;
         }
 
-        // Store any of the parameters we aquired before
+        // Store any of the parameters we aquired before. Add an "if-modified-since" parameter too.
+
+        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+            // Taken from http://www.justsoftwaresolutions.co.uk/webdesign/provide-last-modified-headers-and-handle-if-modified-since-in-php.html
+            $data['If-Modified-Since'] = preg_replace('/;.*$/','',$_SERVER["HTTP_IF_MODIFIED_SINCE"]);
+        }
 
         $handler->arrRequestData['requestUrlParameters'] = $data;
 
