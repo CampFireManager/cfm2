@@ -4,7 +4,7 @@ $generator = microtime(true);
 
 require_once dirname(__FILE__) . '/classes/autoloader.php';
 
-$arrRequest = base_request::getRequest();
+$arrRequest = Base_Request::getRequest();
 
 // What type of request is this
 $rest = false;
@@ -19,6 +19,7 @@ foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) 
 }
 
 $lastObject = null;
+$useObject = array();
 
 foreach ($arrRequest['pathItems'] as $pathItem) {
     if ($pathItem == 'resources') {
@@ -33,4 +34,4 @@ foreach ($arrRequest['pathItems'] as $pathItem) {
     }
 }
 
-var_dump(array('User' => object_user::brokerCurrent(), 'Objects' => $useObject, 'generator' => round(microtime(true) - $generator, 3) . ' seconds'));
+var_dump(array('RESTful' => $rest, 'User' => Object_User::brokerCurrent(), 'Objects' => $useObject, 'generator' => round(microtime(true) - $generator, 3) . ' seconds'));

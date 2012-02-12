@@ -35,14 +35,14 @@ class Base_GenericObject
      */
     function brokerByID($intID = 0)
     {
-        $objCache = base_cache::getHandler();
+        $objCache = Base_Cache::getHandler();
         $this_class = self::startNew();
         if (0 + $intID > 0) {
             if (isset($objCache->arrCache[get_class($this_class)]['id'][$intID])) {
                 return $objCache->arrCache[get_class($this_class)]['id'][$intID];
             }
             try {
-                $db = base_database::getConnection();
+                $db = Base_Database::getConnection();
                 $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
                 $query = $db->prepare($sql);
                 $query->execute(array($intID));
@@ -119,9 +119,9 @@ class Base_GenericObject
     function write()
     {
         if ($this->mustBeAdminToModify
-            && ((base_user::brokerCurrent() != false 
-            && base_user::brokerCurrent()->get_key('isAdmin') == false) 
-            || base_user::brokerCurrent() == false)
+            && ((Object_User::brokerCurrent() != false 
+            && Object_User::brokerCurrent()->get_key('isAdmin') == false) 
+            || Object_User::brokerCurrent() == false)
         ) {
             return false;
         }
@@ -152,7 +152,7 @@ class Base_GenericObject
             }
             $full_sql = "UPDATE {$this->strDBTable} SET $sql WHERE $where";
             try {
-                $db = base_database::getConnection(true);
+                $db = Base_Database::getConnection(true);
                 $query = $db->prepare($full_sql);
                 $query->execute($values);
                 hook::triggerHook('updateRecord', $this);
@@ -172,9 +172,9 @@ class Base_GenericObject
     function create()
     {
         if ($this->mustBeAdminToModify
-            && ((base_user::brokerCurrent() != false 
-            && base_user::brokerCurrent()->get_key('isAdmin') == false) 
-            || base_user::brokerCurrent() == false)
+            && ((Object_User::brokerCurrent() != false 
+            && Object_User::brokerCurrent()->get_key('isAdmin') == false) 
+            || Object_User::brokerCurrent() == false)
         ) {
             return false;
         }
@@ -192,7 +192,7 @@ class Base_GenericObject
         }
         $full_sql = "INSERT INTO {$this->strDBTable} ($keys) VALUES ($key_place)";
         try {
-            $db = base_database::getConnection(true);
+            $db = Base_Database::getConnection(true);
             $query = $db->prepare($full_sql);
             $query->execute($values);
             if ($this->strDBKeyCol != '') {
@@ -215,15 +215,15 @@ class Base_GenericObject
     function delete()
     {
         if ($this->mustBeAdminToModify
-            && ((base_user::brokerCurrent() != false 
-            && base_user::brokerCurrent()->get_key('isAdmin') == false) 
-            || base_user::brokerCurrent() == false)
+            && ((Object_User::brokerCurrent() != false 
+            && Object_User::brokerCurrent()->get_key('isAdmin') == false) 
+            || Object_User::brokerCurrent() == false)
         ) {
             return false;
         }
         $sql = "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?";
         try {
-            $db = base_database::getConnection(true);
+            $db = Base_Database::getConnection(true);
             $query = $db->prepare($sql);
             $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
@@ -286,7 +286,7 @@ class Base_GenericObject
         }
         $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
         try {
-            $db = base_database::getConnection(true);
+            $db = Base_Database::getConnection(true);
             $db->exec($sql);
             return true;
         } catch (PDOException $e) {

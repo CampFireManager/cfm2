@@ -27,7 +27,7 @@ class Object_User extends Base_GenericObject
      */
     function brokerCurrent()
     {
-        $objCache = base_cache::getHandler();
+        $objCache = Base_Cache::getHandler();
         $this_class = self::startNew(false);
         if (true === isset($objCache->arrCache[get_class($this_class)]['current'])
             && $objCache->arrCache[get_class($this_class)]['current'] != null
@@ -35,14 +35,14 @@ class Object_User extends Base_GenericObject
         ) {
             return $objCache->arrCache[get_class($this_class)]['current'];
         }
-        $user = object_userauth::brokerCurrent();
+        $user = Object_Userauth::brokerCurrent();
         if ($user !== false) {
             $intUserID = $user->get_key('intUserID');
         } else {
             return false;
         }
         try {
-            $db = base_database::getConnection();
+            $db = Base_Database::getConnection();
             $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
             $query = $db->prepare($sql);
             $query->execute(array($intUserID));

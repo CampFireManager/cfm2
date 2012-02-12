@@ -15,10 +15,10 @@ class Base_Config
             CREATE TABLE IF NOT EXISTS `secureconfig` (`key` varchar(255) NOT NULL, `value` text NOT NULL, PRIMARY KEY (`key`)) ENGINE=MyISAM DEFAULT CHARSET=utf8;
         ";
         try {
-            $db = base_database::getConnection();
+            $db = Base_Database::getConnection();
             $db->exec($sql);
         } catch (PDOException $e) {
-            error_log('Initialize base_config failed: ' . $e->getMessage());
+            error_log('Initialize Base_Config failed: ' . $e->getMessage());
             die("An error occurred creating the configuration tables");
         }
         
@@ -150,7 +150,7 @@ class Base_Config
 
             $handler->arrConfigLocal = $APPCONFIG;
 
-            $db = base_database::getConnection();
+            $db = Base_Database::getConnection();
             try {
                 // This is just for things like API keys, password salts etc.
                 // If we have, at a later point, a function to export the database
@@ -198,7 +198,7 @@ class Base_Config
         if (null == $key) {
             return false;
         }
-        $db = base_database::getConnection();
+        $db = Base_Database::getConnection();
         try {
             $sql = "SELECT value FROM config WHERE key = ? LIMIT 0, 1";
             $query = $db->prepare($sql);

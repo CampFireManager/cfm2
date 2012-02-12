@@ -36,9 +36,9 @@ class Object_Userauth extends Base_GenericObject
     {
         if ($this->enumAuthType != null) {
             if ($this->enumAuthType == 'openid' || $this->enumAuthType == 'codeonly') {
-                $set = sha1(base_config::getConfigSecure('salt') . $password);
+                $set = sha1(Base_Config::getConfigSecure('salt') . $password);
             } elseif ($this->enumAuthType == 'basicauth') {
-                $set = $request['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['password']);
+                $set = $request['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $request['password']);
             }
             if ($set != '' && $this->strAuthValue != $set) {
                 $this->strAuthValue = $set;
@@ -49,7 +49,7 @@ class Object_Userauth extends Base_GenericObject
 
     function brokerCurrent()
     {
-        $objCache = base_cache::getHandler();
+        $objCache = Base_Cache::getHandler();
         $this_class = self::startNew(false);
         if (isset($objCache->arrCache[get_class($this_class)]['current'])
             && $objCache->arrCache[get_class($this_class)]['current'] != null
@@ -57,11 +57,11 @@ class Object_Userauth extends Base_GenericObject
         ) {
             return $objCache->arrCache[get_class($this_class)]['current'];
         }
-        base_session::start();
-        $request = base_request::getRequest();
+        Base_Session::start();
+        $request = Base_Request::getRequest();
         if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
             try {
-                $db = base_database::getConnection();
+                $db = Base_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE intUserAuthID = ? LIMIT 1";
                 $query = $db->prepare($sql);
                 $query->execute(array($_SESSION['intUserAuthID']));
@@ -75,14 +75,14 @@ class Object_Userauth extends Base_GenericObject
             }
         } elseif (isset($_SESSION['OPENID_AUTH']) AND $_SESSION['OPENID_AUTH'] != false) {
             $key = 'openid';
-            $value = sha1(base_config::getConfigSecure('salt') . $request['OPENID_AUTH']);
+            $value = sha1(Base_Config::getConfigSecure('salt') . $request['OPENID_AUTH']);
         } elseif (isset($request['username']) && $request['username'] != null && isset($request['password']) && $request['password'] != null) {
             $key = 'basicauth';
-            $value = $request['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['password']);
+            $value = $request['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $request['password']);
         }
         if (isset($key)) {
             try {
-                $db = base_database::getConnection();
+                $db = Base_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE $key = ? LIMIT 1";
                 $query = $db->prepare($sql);
                 $query->execute(array($value));
@@ -112,14 +112,14 @@ class Object_Userauth extends Base_GenericObject
         if (! $isReal) {
             return $this_class;
         }
-        base_session::start();
-        $request = base_request::getRequest();
+        Base_Session::start();
+        $request = Base_Request::getRequest();
         if (isset($_SESSION['intUserAuthID'])) {
             unset($_SESSION['intUserAuthID']);
         }
         if (isset($_SESSION['OPENID_AUTH'])) {
             $this_class->set_enumAuthType('openid');
-            $this_class->set_strAuthValue(sha1(base_config::getConfigSecure('salt') . $request['OPENID_AUTH']));
+            $this_class->set_strAuthValue(sha1(Base_Config::getConfigSecure('salt') . $request['OPENID_AUTH']));
         } elseif (
             isset($request['requestUrlParameters']['username']) 
             && $request['requestUrlParameters']['username'] != null 
@@ -127,7 +127,7 @@ class Object_Userauth extends Base_GenericObject
             && $request['requestUrlParameters']['password'] != null
         ) {
             $this_class->set_enumAuthType('basicauth');
-            $this_class->set_strAuthValue($request['requestUrlParameters']['username'] . ':' . sha1(base_config::getConfigSecure('salt') . $request['requestUrlParameters']['password']));
+            $this_class->set_strAuthValue($request['requestUrlParameters']['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $request['requestUrlParameters']['password']));
         } else {
             return false;
         }

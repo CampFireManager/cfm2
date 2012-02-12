@@ -53,7 +53,7 @@ class Base_Response
     */
     function requireAuth()
     {
-        $arrRequestDetails = base_request::getRequest();
+        $arrRequestDetails = Base_Request::getRequest();
         if ($arrRequestDetails['username'] == null) {
             self::sendHttpResponse(401);
         }
@@ -390,7 +390,7 @@ class Base_Response
     */
     function redirectTo($new_page = '')
     {
-        $arrRequestDetails = base_request::getRequest();
+        $arrRequestDetails = Base_Request::getRequest();
         if (substr($new_page, 0, 1) != '/') {
             $new_page = '/' . $new_page;
         }
