@@ -47,8 +47,12 @@ class Base_GenericObject
                 $query = $db->prepare($sql);
                 $query->execute(array($intID));
                 $result = $query->fetchObject(get_class($this_class));
-                $objCache->arrCache[get_class($this_class)]['id'][$intID] = $result;
-                return $result;
+                if ($result == false) {
+                    return false;
+                } else {
+                    $objCache->arrCache[get_class($this_class)]['id'][$intID] = $result;
+                    return $result;
+                }
             } catch(Exception $e) {
                 return false;
             }
@@ -56,6 +60,75 @@ class Base_GenericObject
             return false;
         }
     }
+
+    /**
+     * Get all objects by a particular search field
+     *
+     * @return array The array of objects matching this search
+     */
+    function brokerByColumnSearch($column = null, $value = null)
+    {
+        if ($column == null) {
+            return false;
+        }
+        $objCache = Base_Cache::getHandler();
+        $this_class = self::startNew();
+        $process = false;
+        foreach($this_class->arrDBItems as $db_item => $dummy) {
+            if ($db_item == $column) {
+                $process = true;
+            }
+        }
+        if ($process == false) {
+            return false;
+        }
+        $arrResult = array();
+        try {
+            $db = Base_Database::getConnection();
+            $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ?";
+            $query = $db->prepare($sql);
+            $query->execute(array($value));
+            $result = $query->fetchObject(get_class($this_class));
+            while ($result != false) {
+                $arrResult[] = $result;
+                $objCache->arrCache[get_class($this_class)]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
+                $result = $query->fetchObject(get_class($this_class));
+            }
+            return $arrResult;
+        } catch(PDOException $e) {
+            error_log('Error running SQL Query: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get all objects by a particular search field
+     *
+     * @return array The array of objects matching this search
+     */
+    function brokerAll()
+    {
+        $objCache = Base_Cache::getHandler();
+        $this_class = self::startNew();
+        $arrResult = array();
+        try {
+            $db = Base_Database::getConnection();
+            $sql = "SELECT * FROM {$this_class->strDBTable}";
+            $query = $db->prepare($sql);
+            $query->execute();
+            $result = $query->fetchObject(get_class($this_class));
+            while ($result != false) {
+                $arrResult[] = $result;
+                $objCache->arrCache[get_class($this_class)]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
+                $result = $query->fetchObject(get_class($this_class));
+            }
+            return $arrResult;
+        } catch(PDOException $e) {
+            error_log('Error running SQL Query: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     
     /**
      * Set booleanFull to this value - expands the existing object to include it's
@@ -65,7 +138,7 @@ class Base_GenericObject
      *
      * @return void
      */
-    function set_full($full)
+    function setFull($full)
     {
         $this->booleanFull = $this->asBoolean($full);
     }
@@ -75,12 +148,12 @@ class Base_GenericObject
      *
      * @return boolean
      */
-    function get_full()
+    function getFull()
     {
         return $this->full;
     }
 
-    function set_key($keyname = '', $value = '')
+    function setKey($keyname = '', $value = '')
     {
         if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
             if ($value != '' && $this->$keyname != $value) {
@@ -90,7 +163,7 @@ class Base_GenericObject
         }
     }
     
-    function get_key($keyname = '')
+    function getKey($keyname = '')
     {
         if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
             return $this->$keyname;
@@ -120,7 +193,7 @@ class Base_GenericObject
     {
         if ($this->mustBeAdminToModify
             && ((Object_User::brokerCurrent() != false 
-            && Object_User::brokerCurrent()->get_key('isAdmin') == false) 
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
         ) {
             return false;
@@ -173,7 +246,7 @@ class Base_GenericObject
     {
         if ($this->mustBeAdminToModify
             && ((Object_User::brokerCurrent() != false 
-            && Object_User::brokerCurrent()->get_key('isAdmin') == false) 
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
         ) {
             return false;
@@ -216,7 +289,7 @@ class Base_GenericObject
     {
         if ($this->mustBeAdminToModify
             && ((Object_User::brokerCurrent() != false 
-            && Object_User::brokerCurrent()->get_key('isAdmin') == false) 
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
         ) {
             return false;
@@ -306,7 +379,7 @@ class Base_GenericObject
             $key = $this->strDBKeyCol;
             $return[$key] = $this->$key;
         }
-        foreach ($this->arrDBItems as $key=>$dummy) {
+        foreach ($this->arrDBItems as $key => $dummy) {
             $return[$key] = $this->$key;
         }
         return $return;
@@ -493,7 +566,7 @@ class Base_GenericObject
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
-        $arrJson = $this->deobjectify_array($arrJson);
+        $arrJson = $this->deobjectifyArray($arrJson);
         return $arrJson;
     }
 
@@ -504,11 +577,11 @@ class Base_GenericObject
      *
      * @return array Processed array
      */
-    function deobjectify_array($process)
+    function deobjectifyArray($process)
     {
         foreach ((array) $process as $key => $value) {
             if (is_object($value)) {
-                $return[$key] = deobjectify_array($value);
+                $return[$key] = deobjectifyArray($value);
             } else {
                 $return[$key] = $value;
             }

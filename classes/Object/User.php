@@ -37,7 +37,7 @@ class Object_User extends Base_GenericObject
         }
         $user = Object_Userauth::brokerCurrent();
         if ($user !== false) {
-            $intUserID = $user->get_key('intUserID');
+            $intUserID = $user->getKey('intUserID');
         } else {
             return false;
         }
@@ -71,9 +71,9 @@ class Object_User extends Base_GenericObject
         }
         $objUserAuth = Object_Userauth::startNew();
         if (false !== $objUserAuth) {
-            $this_class->set_key('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
+            $this_class->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
             $this_class->create();
-            $objUserAuth->set_key('intUserID', $this_class->get_key('intUserID'));
+            $objUserAuth->setKey('intUserID', $this_class->getKey('intUserID'));
             $objUserAuth->write();
         }
         return $this_class;

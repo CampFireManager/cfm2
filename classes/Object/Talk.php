@@ -9,6 +9,7 @@ class Object_Talk extends Base_GenericObject
         'intUserID' => array('type' => 'int', 'length' => 11),
         'intRoomID' => array('type' => 'int', 'length' => 11),
         'intSlotID' => array('type' => 'int', 'length' => 11),
+        'intTrackID' => array('type' => 'int', 'length' => 11),
         'intLength' => array('type' => 'tinyint', 'length' => 1),
         'jsonLinks' => array('type' => 'text'),
         'isRoomLocked' => array('type' => 'tinyint', 'length' => 1),
@@ -25,6 +26,7 @@ class Object_Talk extends Base_GenericObject
     protected $intUserID = null;
     protected $intRoomID = null;
     protected $intSlotID = null;
+    protected $intTrackID = null;
     protected $intLength = null;
     protected $jsonLinks = null;
     protected $isRoomLocked = false;
