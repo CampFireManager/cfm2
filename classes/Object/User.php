@@ -28,12 +28,13 @@ class Object_User extends Base_GenericObject
     function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
-        $this_class = self::startNew(false);
-        if (true === isset($objCache->arrCache[get_class($this_class)]['current'])
-            && $objCache->arrCache[get_class($this_class)]['current'] != null
-            && $objCache->arrCache[get_class($this_class)]['current'] != false
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name();
+        if (true === isset($objCache->arrCache[$this_class_name]['current'])
+            && $objCache->arrCache[$this_class_name]['current'] != null
+            && $objCache->arrCache[$this_class_name]['current'] != false
         ) {
-            return $objCache->arrCache[get_class($this_class)]['current'];
+            return $objCache->arrCache[$this_class_name]['current'];
         }
         $user = Object_Userauth::brokerCurrent();
         if ($user !== false) {
@@ -46,9 +47,9 @@ class Object_User extends Base_GenericObject
             $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
             $query = $db->prepare($sql);
             $query->execute(array($intUserID));
-            $result = $query->fetchObject(get_class($this_class));
-            $objCache->arrCache[get_class($this_class)]['id'][$intUserID] = $result;
-            $objCache->arrCache[get_class($this_class)]['current'] = $result;
+            $result = $query->fetchObject($this_class_name);
+            $objCache->arrCache[$this_class_name]['id'][$intUserID] = $result;
+            $objCache->arrCache[$this_class_name]['current'] = $result;
             return $result;
         } catch(PDOException $e) {
             error_log("SQL Error: " . $e->getMessage());
@@ -59,24 +60,49 @@ class Object_User extends Base_GenericObject
     /**
      * Create a new User object
      * 
-     * @param boolean $isReal Perform Creation Actions (default true)
+     * @param boolean $isReal Perform Creation Actions (default false)
      *
      * @return object
      */
-    function startNew($isReal = true)
-    {
-        $this_class = new self();
+    function __construct($isReal = false) {
+        parent::__construct($isReal);
         if (! $isReal) {
-            return $this_class;
+            return $this;
         }
-        $objUserAuth = Object_Userauth::startNew();
+        $objUserAuth = new Object_Userauth();
         if (false !== $objUserAuth) {
-            $this_class->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
-            $this_class->create();
-            $objUserAuth->setKey('intUserID', $this_class->getKey('intUserID'));
+            $this->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
+            $this->create();
+            $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
             $objUserAuth->write();
         }
-        return $this_class;
-        
+        return $this;
+    }
+    
+    function logout()
+    {
+        Base_Session::start();
+        $arrRequestData = Base_Request::getRequest();
+        if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
+            unset($_SESSION['intUserAuthID']);
+        }
+        if (isset($_SESSION['OPENID_AUTH']) && $_SESSION['OPENID_AUTH'] != '') {
+            unset($_SESSION['OPENID_AUTH']);
+        }
+        if (isset($arrRequestData['username'])) {
+            Base_Response::sendHttpResponse(401);
+        }
+    }
+    
+    function getSelf()
+    {
+        $self = parent::getSelf();
+        if ($this->getFull() == true) {
+            $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
+            foreach ($arrUserAuth as $key => $value) {
+                $self['arrUserAuth'][$key] = $value->getSelf();
+            }
+        }
+        return $self;
     }
 }

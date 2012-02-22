@@ -2,7 +2,7 @@
 
 class Base_Database
 {
-    protected static $handler = null;
+    protected static $db_handler = null;
     protected $rw_db = null;
     protected $ro_db = null;
 
@@ -13,10 +13,10 @@ class Base_Database
      */
     private static function getHandler()
     {
-        if (self::$handler == null) {
-            self::$handler = new self();
+        if (self::$db_handler == null) {
+            self::$db_handler = new self();
         }
-        return self::$handler;
+        return self::$db_handler;
     }
 
     /**

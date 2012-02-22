@@ -55,7 +55,7 @@ class Base_Response
     {
         $arrRequestDetails = Base_Request::getRequest();
         if ($arrRequestDetails['username'] == null) {
-            self::sendHttpResponse(401);
+            static::sendHttpResponse(401);
         }
     }
 
@@ -72,7 +72,7 @@ class Base_Response
     function sendHttpResponse($status = 200, $body = null, $content_type = 'text/html', $extra = '')
     {
         // Send the relevant headers for this type of response
-        header('HTTP/1.1 ' . $status . ' ' . self::$http_status_codes[$status]);
+        header('HTTP/1.1 ' . $status . ' ' . static::$http_status_codes[$status]);
         header('Content-type: ' . $content_type);
 
         // Is there something for us to send
@@ -94,7 +94,7 @@ class Base_Response
                 $message = 'You must be authorized to view this page.';
                 break;
             case 404:
-                list($uri, $data) = self::getPath();
+                list($uri, $data) = static::getPath();
                 $message = 'The requested URL ' . $uri . ' was not found.';
                 break;
             case 500:
@@ -118,10 +118,10 @@ class Base_Response
 ' .                     '<html>
 ' .                     '  <head>
 ' .                     '    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-' .                     '    <title>' . $status . ' ' . self::$http_status_codes[$status] . '</title>
+' .                     '    <title>' . $status . ' ' . static::$http_status_codes[$status] . '</title>
 ' .                     '  </head>
 ' .                     '  <body>
-' .                     '    <h1>' . self::$http_status_codes[$status] . '</h1>
+' .                     '    <h1>' . static::$http_status_codes[$status] . '</h1>
 ' .                     '    ' . $message_content . '
 ' .                     '  </body>
 ' .                     '</html>';
@@ -153,8 +153,8 @@ class Base_Response
      */
     function returnHttpResponseString($status = 200)
     {
-        if (isset(self::$http_status_codes[$status])) {
-            return self::$http_status_codes[$status];
+        if (isset(static::$http_status_codes[$status])) {
+            return static::$http_status_codes[$status];
         } else {
             return false;
         }
@@ -175,7 +175,7 @@ class Base_Response
     {
         //First, see if the file exists
         if (!is_file($file)) {
-            self::sendHttpResponse(404);
+            static::sendHttpResponse(404);
         }
 
         //Gather relevent info about file
@@ -279,7 +279,7 @@ class Base_Response
         }
         foreach ($array as $key=>$val) {
             if (is_array($val) || is_object($val)) {
-                $newArray[utf8_encode($key)] = self::utf8element($val);
+                $newArray[utf8_encode($key)] = static::utf8element($val);
             } elseif ($val === false) {
                 $newArray[utf8_encode($key)] = '0';
             } elseif ($val == null) {
@@ -300,7 +300,7 @@ class Base_Response
      */
     function utf8json($array = array())
     {
-        return json_encode(self::utf8element($array));
+        return json_encode(static::utf8element($array));
     }
 
     /**
@@ -312,7 +312,7 @@ class Base_Response
      */
     function utf8html($array = array())
     {
-        return self::html_encode(self::utf8element($array));
+        return static::html_encode(static::utf8element($array));
     }
 
     /**
@@ -328,7 +328,7 @@ class Base_Response
         foreach ($array as $key => $item) {
             $return .= '<tr><th>' . $key . '</th><td>';
             if (is_array($item)) {
-                $return .= self::html_encode($item);
+                $return .= static::html_encode($item);
             } else {
                 $return .= $item;
             }
@@ -348,7 +348,7 @@ class Base_Response
      */
     function utf8xml($array = array(), $root = 'row')
     {
-        return self::xml_encode(array($root => self::utf8element($array)));
+        return static::xml_encode(array($root => static::utf8element($array)));
     }
     
     /**
@@ -372,7 +372,7 @@ class Base_Response
             $key = str_replace("'", '[squote]', $key);
             $return .= str_repeat(' ', $depth) . '<' . $key . ">";
             if (is_array($item)) {
-                $return .= "\r\n" . self::xml_encode($item, $depth + 4) . str_repeat(' ', $depth);
+                $return .= "\r\n" . static::xml_encode($item, $depth + 4) . str_repeat(' ', $depth);
             } else {
                 $return .= $item;
             }

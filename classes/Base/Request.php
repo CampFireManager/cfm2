@@ -2,7 +2,7 @@
 
 class Base_Request
 {
-    protected static $handler = null;
+    protected static $request_handler = null;
     protected $arrRequestData = null;
 
     /**
@@ -12,10 +12,10 @@ class Base_Request
      */
     protected static function getHandler()
     {
-        if (self::$handler == null) {
-            self::$handler = new self();
+        if (self::$request_handler == null) {
+            self::$request_handler = new self();
         }
-        return self::$handler;
+        return self::$request_handler;
     }
 
     /**

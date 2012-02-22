@@ -2,7 +2,7 @@
 
 class Base_Config
 {
-    protected static $handler = null;
+    protected static $config_handler = null;
     protected $arrConfigGlobal = null;
     protected $arrConfigSecure = null;
     protected $arrConfigLocal = null;
@@ -31,12 +31,22 @@ class Base_Config
      */
     private static function getHandler()
     {
-        if (self::$handler == null) {
-            self::$handler = new self();
+        if (self::$config_handler == null) {
+            self::$config_handler = new self();
         }
-        return self::$handler;
+        return self::$config_handler;
     }
 
+    public function brokerByID($key = null)
+    {
+        return self::getConfig($key, null, true);
+    }
+    
+    public function brokerAll()
+    {
+        return self::getConfig(null, null, true);
+    }
+    
     /**
      * This gets the value from the configuration table or file as appropriate
      *
@@ -45,7 +55,7 @@ class Base_Config
      *
      * @return string The config value to use
      */
-    public function getConfig($searchKey = null, $defaultValue = null)
+    public function getConfig($searchKey = null, $defaultValue = null, $asArray = false)
     {
         $handler = self::getHandler();
 
@@ -53,12 +63,30 @@ class Base_Config
 
         if (null != $searchKey) {
             if (isset($handler->arrConfig[$searchKey])) {
-                return $handler->arrConfig[$searchKey]['value'];
+                if ($asArray == false) {
+                    return $handler->arrConfig[$searchKey]['value'];
+                } else {
+                    return new Object_Config($searchKey, $handler->arrConfig[$searchKey]['value'], $handler->arrConfig[$searchKey]['isOverriden'], $handler->arrConfig[$searchKey]['isLocal']);
+                }
             } else {
-                return $defaultValue;
+                if ($asArray == false) {
+                    return $defaultValue;
+                } else {
+                    return array(new Object_Config($searchKey, $defaultValue, false, false));
+                }
             }
         } else {
-            return $handler->arrConfig;
+            if ($asArray == false) {
+                return $handler->arrConfig;
+            } else {
+                $array = array();
+                if (is_array($handler->arrConfig) && count($handler->arrConfig) > 0) {
+                    foreach ($handler->arrConfig as $key => $config) {
+                        $array[] = new Object_Config($key, $config['value'], $config['isOverriden'], $config['isLocal']);
+                    }
+                }
+                return $array;
+            }
         }
     }
 
@@ -203,21 +231,11 @@ class Base_Config
             $sql = "SELECT value FROM config WHERE key = ? LIMIT 0, 1";
             $query = $db->prepare($sql);
             $query->execute(array($key));
-            // This section of code, thanks to code example here:
-            // http://www.lornajane.net/posts/2011/handling-sql-errors-in-pdo
-            if ($query->errorCode() != 0) {
-                throw new Exception("SQL Error: " . print_r(array('sql'=>$sql, 'error'=>$query->errorInfo()), true), 1);
-            }
             $finder = $query->fetchAll(PDO::FETCH_ASSOC);
             if ($finder == false) {
                 $sql = "INSERT INTO config (key, value) VALUES (?, ?)";
                 $query = $db->prepare($sql);
                 $query->execute(array($key, $value));
-                // This section of code, thanks to code example here:
-                // http://www.lornajane.net/posts/2011/handling-sql-errors-in-pdo
-                if ($query->errorCode() != 0) {
-                    throw new Exception("SQL Error: " . print_r(array('sql'=>$sql, 'error'=>$query->errorInfo()), true), 1);
-                }
             } else {
                 if (null == $value) {
                     $sql = "DELETE FROM config WHERE key = ?";
@@ -228,16 +246,29 @@ class Base_Config
                     $query = $db->prepare($sql);
                     $query->execute(array($value, $key));
                 }
-                // This section of code, thanks to code example here:
-                // http://www.lornajane.net/posts/2011/handling-sql-errors-in-pdo
-                if ($query->errorCode() != 0) {
-                    throw new Exception("SQL Error: " . print_r(array('sql'=>$sql, 'error'=>$query->errorInfo()), true), 1);
-                }
             }
         } catch(Exception $e) {
             error_log($e);
             return false;
         }
         return true;
+    }
+}
+
+class Object_Config extends Base_GenericObject
+{
+    protected $arrDBItems = array('value' => null);
+    protected $strDBTable = "config";
+    protected $strDBKeyCol = "key";
+    protected $key = null;
+    protected $value = null;
+    protected $isOverriden = null;
+    protected $isLocal = null;
+
+    function __construct($key = null, $value = null, $isOverriden = null, $isLocal = null)
+    {
+        $this->key = $key;
+        $this->value = $value;
+        return $this;
     }
 }

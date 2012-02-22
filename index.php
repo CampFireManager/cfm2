@@ -4,7 +4,7 @@ $generator = microtime(true);
 
 require_once dirname(__FILE__) . '/classes/autoloader.php';
 
-$arrRequest = Base_Request::getRequest();
+$arrRequestData = Base_Request::getRequest();
 
 // What type of request is this
 $rest = false;
@@ -19,19 +19,55 @@ foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) 
 }
 
 $lastObject = null;
-$useObject = array();
+$useObjects = array();
+$arrObjects = array();
+$arrObjectsData = array();
 
-foreach ($arrRequest['pathItems'] as $pathItem) {
-    if ($pathItem == 'resources') {
-        $rest = true;
+if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0) {
+    foreach ($arrRequestData['pathItems'] as $pathItem) {
+        if ($pathItem == 'rest') {
+            $rest = true;
+        }
+        if (isset($object[$pathItem])) {
+            $useObjects[$object[$pathItem]] = null;
+            $lastObject = $pathItem;
+        } elseif ($lastObject != null) {
+            $useObjects[$object[$lastObject]] = $pathItem;
+            $lastObject = null;
+        }
     }
-    if (isset($object[$pathItem])) {
-        $useObject[$object[$pathItem]] = null;
-        $lastObject = $pathItem;
-    } elseif ($lastObject != null) {
-        $useObject[$object[$lastObject]] = $pathItem;
-        $lastObject = null;
+
+    foreach ($useObjects as $object => $item) {
+        if ($item == null) {
+            $arrObjects[$object] = $object::brokerAll();
+        } else {
+            $arrObjects[$object][$item] = $object::brokerByID($item);
+        }
     }
 }
 
-var_dump(array('RESTful' => $rest, 'User' => Object_User::brokerCurrent(), 'Objects' => $useObject, 'generator' => round(microtime(true) - $generator, 3) . ' seconds'));
+
+$useObjects['Object_User'] = 'current';
+$arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
+
+foreach ($arrObjects as $object_group => $data) {
+    foreach ($data as $key => $object) {
+        if ($object !== false && $object !== null) {
+            $object->setFull(true);
+            $arrObjectsData[$object_group][$key] = $object->getSelf();
+        } else {
+            $arrObjectsData[$object_group][$key] = null;
+        }
+    }
+}
+
+var_dump(
+        array(
+            'RESTful' => $rest, 
+            'Objects' => array(
+                'Items' => $useObjects, 
+                'Objects' => $arrObjectsData
+                ), 
+            'generator' => round(microtime(true) - $generator, 3) . ' seconds'
+            )
+        );

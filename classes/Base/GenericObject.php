@@ -9,22 +9,6 @@ class Base_GenericObject
     protected $booleanFull = false;
     protected $old = array();
     protected $mustBeAdminToModify = false;
-
-    /**
-     * This function is designed to create a new object and return a pointer to it to the broker or function.
-     * This permits one to overide the usual __construct function by handing it a boolean value to disable 
-     * certain functions, or to provide the class with a set of sane defaults.
-     * 
-     * Call this object with $object = objecttype::startNew();
-     * 
-     * @param boolean $dummy Not actually used here, but is used in re-creations of this class. Here incase of copy/paste errors.
-     * 
-     * @return object
-     */
-    function startNew($dummy = false)
-    {
-        return new self();
-    }
     
     /**
      * Get the object for the ID associated with a particular row
@@ -33,27 +17,29 @@ class Base_GenericObject
      *
      * @return object UserObject for intUserID
      */
-    function brokerByID($intID = 0)
+    static function brokerByID($intID = 0)
     {
         $objCache = Base_Cache::getHandler();
-        $this_class = self::startNew();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
         if (0 + $intID > 0) {
-            if (isset($objCache->arrCache[get_class($this_class)]['id'][$intID])) {
-                return $objCache->arrCache[get_class($this_class)]['id'][$intID];
+            if (isset($objCache->arrCache[$this_class_name]['id'][$intID])) {
+                return $objCache->arrCache[$this_class_name]['id'][$intID];
             }
             try {
                 $db = Base_Database::getConnection();
                 $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
                 $query = $db->prepare($sql);
                 $query->execute(array($intID));
-                $result = $query->fetchObject(get_class($this_class));
+                $result = $query->fetchObject($this_class_name);
                 if ($result == false) {
                     return false;
                 } else {
-                    $objCache->arrCache[get_class($this_class)]['id'][$intID] = $result;
+                    $objCache->arrCache[$this_class_name]['id'][$intID] = $result;
                     return $result;
                 }
             } catch(Exception $e) {
+                error_log("Error brokering by ID: " . $e->getMessage());
                 return false;
             }
         } else {
@@ -66,13 +52,14 @@ class Base_GenericObject
      *
      * @return array The array of objects matching this search
      */
-    function brokerByColumnSearch($column = null, $value = null)
+    static function brokerByColumnSearch($column = null, $value = null)
     {
         if ($column == null) {
             return false;
         }
         $objCache = Base_Cache::getHandler();
-        $this_class = self::startNew();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
         $process = false;
         foreach($this_class->arrDBItems as $db_item => $dummy) {
             if ($db_item == $column) {
@@ -85,14 +72,17 @@ class Base_GenericObject
         $arrResult = array();
         try {
             $db = Base_Database::getConnection();
-            $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ?";
+            $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ? ORDER BY {$this_class->strDBKeyCol} ASC";
             $query = $db->prepare($sql);
             $query->execute(array($value));
-            $result = $query->fetchObject(get_class($this_class));
+            $result = $query->fetchObject($this_class_name);
+            if ($result == false) {
+                return array();
+            }
             while ($result != false) {
                 $arrResult[] = $result;
-                $objCache->arrCache[get_class($this_class)]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
-                $result = $query->fetchObject(get_class($this_class));
+                $objCache->arrCache[$this_class_name]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
+                $result = $query->fetchObject($this_class_name);
             }
             return $arrResult;
         } catch(PDOException $e) {
@@ -106,21 +96,22 @@ class Base_GenericObject
      *
      * @return array The array of objects matching this search
      */
-    function brokerAll()
+    static function brokerAll()
     {
         $objCache = Base_Cache::getHandler();
-        $this_class = self::startNew();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
         $arrResult = array();
         try {
             $db = Base_Database::getConnection();
-            $sql = "SELECT * FROM {$this_class->strDBTable}";
+            $sql = "SELECT * FROM {$this_class->strDBTable} ORDER BY {$this_class->strDBKeyCol} ASC";
             $query = $db->prepare($sql);
             $query->execute();
-            $result = $query->fetchObject(get_class($this_class));
+            $result = $query->fetchObject($this_class_name);
             while ($result != false) {
                 $arrResult[] = $result;
-                $objCache->arrCache[get_class($this_class)]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
-                $result = $query->fetchObject(get_class($this_class));
+                $objCache->arrCache[$this_class_name]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
+                $result = $query->fetchObject($this_class_name);
             }
             return $arrResult;
         } catch(PDOException $e) {
@@ -150,14 +141,14 @@ class Base_GenericObject
      */
     function getFull()
     {
-        return $this->full;
+        return (boolean) $this->booleanFull;
     }
 
     function setKey($keyname = '', $value = '')
     {
         if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
             if ($value != '' && $this->$keyname != $value) {
-                $this->$keyname = $set;
+                $this->$keyname = $value;
                 $this->arrChanges[$keyname] = true;
             }
         }
@@ -175,12 +166,15 @@ class Base_GenericObject
      *
      * @return void
      */
-    function __construct()
+    function __construct($isReal = false)
     {
         if (isset($this->arrDBItems) and is_array($this->arrDBItems) and count($this->arrDBItems) > 0) {
             foreach ($this->arrDBItems as $item=>$dummy) {
                 $this->old[$item] = $this->$item;
             }
+        }
+        if ($isReal == false) {
+            return $this;
         }
     }
 
@@ -228,7 +222,7 @@ class Base_GenericObject
                 $db = Base_Database::getConnection(true);
                 $query = $db->prepare($full_sql);
                 $query->execute($values);
-                hook::triggerHook('updateRecord', $this);
+                Base_Hook::triggerHook('updateRecord', $this);
                 return true;
             } catch(Exception $e) {
                 error_log("Error writing: " . $e->getMessage());
@@ -272,7 +266,7 @@ class Base_GenericObject
                 $key = $this->strDBKeyCol;
                 $this->$key = $db->lastInsertId();
             }
-            hook::triggerHook('createRecord', $this);
+            Base_Hook::triggerHook('createRecord', $this);
             return true;
         } catch (PDOException $e) {
             error_log("Error creating: " . $e->getMessage());
@@ -300,7 +294,7 @@ class Base_GenericObject
             $query = $db->prepare($sql);
             $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
-            hook::triggerHook('deleteRecord', $this);
+            Base_Hook::triggerHook('deleteRecord', $this);
             return true;
         } catch (PDOException $e) {
             error_log("Error deleting: " . $e->getMessage());
@@ -317,7 +311,9 @@ class Base_GenericObject
     {
         $unique_key = '';
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->strDBTable}` (";
-        $sql .= "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT, ";
+        if ($this->strDBKeyCol != '') {
+            $sql .= "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT";
+        }
         foreach ($this->arrDBItems as $field_name => $settings) {
             if (isset($settings['null'])) {
                 if ($settings['null']) {
@@ -326,23 +322,23 @@ class Base_GenericObject
                     $isNull = "NOT NULL";
                 }
             } else {
-                $isNull = "NULL";
+                $isNull = "DEFAULT NULL";
             }
             if ($settings['type'] == 'text') {
-                $sql .= "`{$field_name}` text $isNull, ";
+                $sql .= ", `{$field_name}` text $isNull";
             } elseif ($settings['type'] == 'enum') {
                 $options = '';
                 foreach ($settings['options'] as $option) {
                     if ($options != '') {
                         $options .= ',';
                     }
-                    $options .= $option;
+                    $options .= "'$option'";
                 }
-                $sql .= "`{$field_name}` enum({$options}) $isNull, ";
+                $sql .= ", `{$field_name}` enum({$options}) $isNull";
             } elseif (isset($settings['length'])) {
-                $sql .= "`{$field_name}` {$settings['type']}({$settings['length']})  $isNull, ";
+                $sql .= ", `{$field_name}` {$settings['type']}({$settings['length']})  $isNull";
             } else {
-                $sql .= "`{$field_name}` {$settings['type']} $isNull, ";
+                $sql .= ", `{$field_name}` {$settings['type']} $isNull";
             }
             if (isset($settings['unique'])) {
                 if ($unique_key != '') {
@@ -352,10 +348,10 @@ class Base_GenericObject
             }
         }
         if ($this->strDBKeyCol != '') {
-            $sql .= " PRIMARY KEY (`{$this->strDBKeyCol}`)";
+            $sql .= ", PRIMARY KEY (`{$this->strDBKeyCol}`)";
         }
         if ($unique_key != '') {
-            $sql .= " UNIQUE KEY `unique_key` ({$unique_key})";
+            $sql .= ", UNIQUE KEY `unique_key` ({$unique_key})";
         }
         $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
         try {
@@ -363,7 +359,7 @@ class Base_GenericObject
             $db->exec($sql);
             return true;
         } catch (PDOException $e) {
-            error_log("Error initializing table: " . $e->getMessage());
+            error_log("Error initializing table: " . $e->getMessage() . '; Tried ' . $sql);
             return false;
         }
     }

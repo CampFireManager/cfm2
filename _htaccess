@@ -1,0 +1,13 @@
+# This is taken from a comment at http://www.gen-x-design.com/archives/create-a-rest-api-with-php/
+# The comment was by mitja at 2009-07-23 05:56a
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteCond %{HTTP:Authorization} ^(.*)
+  RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ index.php [L]
+</IfModule>

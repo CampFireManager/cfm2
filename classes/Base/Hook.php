@@ -2,7 +2,7 @@
 
 class Base_Hook
 {
-    protected static $self = null;
+    protected static $hook_handler = null;
     protected $arrHooks = array();
     protected $arrTriggers = array(
         'cronTick' => true,
@@ -15,12 +15,17 @@ class Base_Hook
         'deleteRecord' => true
     );
 
-    protected function getSelf()
+    /**
+     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
+     *
+     * @return object This class by itself.
+     */
+    public static function getHandler()
     {
-        if (self::$self == null) {
-            self::$self = new self();
+        if (self::$hook_handler == null) {
+            self::$hook_handler = new self();
         }
-        return self::$self;
+        return self::$hook_handler;
     }
 
     protected function __construct()
@@ -39,7 +44,7 @@ class Base_Hook
     public function addHook($strAction = null, $objHook = null)
     {
         if (is_object($objHook)) {
-            $self = self::getSelf();
+            $self = self::getHandler();
             $boolTriggerSet = false;
             foreach ($self->arrTriggers as $strTrigger => $dummyValue) {
                 if (method_exists($objHook, 'hook_' . $strTrigger)) {
@@ -61,15 +66,21 @@ class Base_Hook
         if ($strAction == null) {
             throw new Exception('No hooks triggered', 0);
         } else {
-            $self = self::getSelf();
+            $self = self::getHandler();
+            $activeHook = false;
             foreach ($self->arrTriggers as $strTrigger => $dummyValue) {
-                if ($strAction != $strTrigger) {
-                    throw new Exception('Invalid hook triggered', 1);
+                if ($strAction == $strTrigger) {
+                    $activeHook = true;
                 }
             }
+            if ($activeHook == false) {
+                throw new Exception('Invalid hook triggered', 1);
+            }
             $strHookAction = 'hook_' . $strAction;
-            foreach ($self->arrHooks[$strAction] as $objHook) {
-                $objHook->$strHookAction($parameters);
+            if (isset($self->arrHooks[$strAction]) && count ($self->arrHooks[$strAction]) > 0) {
+                foreach ($self->arrHooks[$strAction] as $objHook) {
+                    $objHook->$strHookAction($parameters);
+                }
             }
         }
     }
