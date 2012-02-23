@@ -10,6 +10,14 @@ class Object_Tag extends Base_GenericObject
     protected $strDBTable = "tag";
     protected $strDBKeyCol = "intTagID";
     protected $mustBeAdminToModify = true;
+    protected $arrDemoData = array(
+        array('intTagID' => 1, 'strTagName' => 'Developers ^ 3', 'intTalkID' => 1),
+        array('intTagID' => 2, 'strTagName' => 'Open Source', 'intTalkID' => 2),
+        array('intTagID' => 3, 'strTagName' => 'Events', 'intTalkID' => 2),
+        array('intTagID' => 4, 'strTagName' => 'Scheduling', 'intTalkID' => 2),
+        array('intTagID' => 5, 'strTagName' => 'Newbie', 'intTalkID' => 3),
+        array('intTagID' => 6, 'strTagName' => 'Explanation', 'intTalkID' => 3)
+    );
     // Local Object Requirements
     protected $intTagID = null;
     protected $strTagName = null;

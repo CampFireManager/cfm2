@@ -8,7 +8,7 @@
  * @author Jon Spriggs <jon@sprig.gs>
  * @license http://www.gnu.org/licenses/agpl.html AGPL Version 3.0 or later
  */
-class plugin_hello_world
+class Plugin_HelloWorld
 {
     function hook_cronTick()
     {

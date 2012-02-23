@@ -12,6 +12,12 @@ class Object_User extends Base_GenericObject
     );
     protected $strDBTable = "user";
     protected $strDBKeyCol = "intUserID";
+    protected $arrDemoData = array(
+        array('intUserID' => 1, 'strUserName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 2, 'strUserName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 3, 'strUserName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 4, 'strUserName' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
+    );
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;

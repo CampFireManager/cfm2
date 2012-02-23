@@ -3,8 +3,8 @@
 class Base_Hook
 {
     protected static $hook_handler = null;
-    protected $arrHooks = array();
-    protected $arrTriggers = array(
+    protected static $arrHooks = array();
+    protected static $arrTriggers = array(
         'cronTick' => true,
         'apiRender' => true,
         'httpRender' => true,
@@ -33,7 +33,7 @@ class Base_Hook
         include_once dirname(__FILE__) . '/../../config/plugin.php';
     }
 
-    public function addTrigger($strTrigger = null)
+    public static function addTrigger($strTrigger = null)
     {
         if ($strTrigger == null) {
             return false;
@@ -41,14 +41,13 @@ class Base_Hook
         $this->arrTriggers[$strTrigger] = true;
     }
     
-    public function addHook($strAction = null, $objHook = null)
+    public static function addHook($objHook = null)
     {
         if (is_object($objHook)) {
-            $self = self::getHandler();
             $boolTriggerSet = false;
-            foreach ($self->arrTriggers as $strTrigger => $dummyValue) {
+            foreach (self::$arrTriggers as $strTrigger => $dummyValue) {
                 if (method_exists($objHook, 'hook_' . $strTrigger)) {
-                    $self->arrHooks[$strTrigger][] = $objHook;
+                    self::$arrHooks[$strTrigger][] = $objHook;
                     $boolTriggerSet = true;
                 }
             }
@@ -60,15 +59,13 @@ class Base_Hook
         }
     }
 
-    public function triggerHook($strAction = null, $parameters = null)
+    public static function triggerHook($strAction = null, $parameters = null)
     {
-        echo "Trigger Hooks - $strAction\r\n";
         if ($strAction == null) {
             throw new Exception('No hooks triggered', 0);
         } else {
-            $self = self::getHandler();
             $activeHook = false;
-            foreach ($self->arrTriggers as $strTrigger => $dummyValue) {
+            foreach (self::$arrTriggers as $strTrigger => $dummyValue) {
                 if ($strAction == $strTrigger) {
                     $activeHook = true;
                 }
@@ -77,8 +74,8 @@ class Base_Hook
                 throw new Exception('Invalid hook triggered', 1);
             }
             $strHookAction = 'hook_' . $strAction;
-            if (isset($self->arrHooks[$strAction]) && count ($self->arrHooks[$strAction]) > 0) {
-                foreach ($self->arrHooks[$strAction] as $objHook) {
+            if (isset(self::$arrHooks[$strAction]) && count (self::$arrHooks[$strAction]) > 0) {
+                foreach (self::$arrHooks[$strAction] as $objHook) {
                     $objHook->$strHookAction($parameters);
                 }
             }

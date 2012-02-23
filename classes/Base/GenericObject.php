@@ -9,6 +9,7 @@ class Base_GenericObject
     protected $booleanFull = false;
     protected $old = array();
     protected $mustBeAdminToModify = false;
+    protected $arrDemoData = null;
     
     /**
      * Get the object for the ID associated with a particular row
@@ -164,7 +165,9 @@ class Base_GenericObject
     /**
      * Ensure that all database items are backed up before processing
      *
-     * @return void
+     * @param boolean $isReal Used to determine whether to process the response further. Not used in this class but may be used in derived classes. Here for safety sake.
+     * 
+     * @return object This class.
      */
     function __construct($isReal = false)
     {
@@ -173,9 +176,7 @@ class Base_GenericObject
                 $this->old[$item] = $this->$item;
             }
         }
-        if ($isReal == false) {
-            return $this;
-        }
+        return $this;
     }
 
     /**
@@ -363,6 +364,28 @@ class Base_GenericObject
             return false;
         }
     }
+
+    /**
+     * This is used to first initialize the tables of the database. It then adds a set of demo data.
+     * 
+     * @return boolean State of table creation
+     */
+    function initializeDemo()
+    {
+        $this->initialize();
+        if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
+            return false;
+        }
+        $className = get_called_class();
+        foreach ($this->arrDemoData as $entry) {
+            $object = new $className(false);
+            foreach ($entry as $key => $value) {
+                $object->setKey($key, $value);
+            }
+            $object->create();
+        }
+    }
+
     
     /**
      * Return an array of the collected or created data.

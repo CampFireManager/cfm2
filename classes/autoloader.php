@@ -24,10 +24,12 @@
 function __autoload($className)
 {
     $arrClass = explode('_', $className);
-    $here = dirname(__FILE__);
-    $class_path = $here;
+    $class_path  = dirname(__FILE__);
     foreach ($arrClass as $class_point) {
         $class_path .= '/' . $class_point;
+    }
+    if ($arrClass[0] == 'Plugin') {
+        $class_path .= '/hook_loader';
     }
     if (is_file($class_path . '.php')) {
         include_once $class_path . '.php';

@@ -21,9 +21,24 @@ class Base_Config
             error_log('Initialize Base_Config failed: ' . $e->getMessage());
             die("An error occurred creating the configuration tables");
         }
-        
     }
 
+    function initializeDemo()
+    {
+        self::initialize();
+        $sql = "
+            INSERT IGNORE INTO `config` (`key`, `value`) VALUES ('eventName', 'A Demo CFM Instance'), ('eventUrl', 'http://cfm2.pagekite.me'), ('hashTag', '#cfm2');
+            INSERT IGNORE INTO `secureconfig` (`key`, `value`) VALUES ('salt', 'salt');
+        ";
+        try {
+            $db = Base_Database::getConnection();
+            $db->exec($sql);
+        } catch (PDOException $e) {
+            error_log('Initialize Base_Config failed: ' . $e->getMessage());
+            die("An error occurred creating the configuration tables");
+        }
+    }
+    
     /**
      * This function creates or returns an instance of this class.
      *
