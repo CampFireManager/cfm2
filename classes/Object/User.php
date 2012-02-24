@@ -12,12 +12,6 @@ class Object_User extends Base_GenericObject
     );
     protected $strDBTable = "user";
     protected $strDBKeyCol = "intUserID";
-    protected $arrDemoData = array(
-        array('intUserID' => 1, 'strUserName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 2, 'strUserName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 3, 'strUserName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 4, 'strUserName' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
-    );
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;
@@ -75,14 +69,18 @@ class Object_User extends Base_GenericObject
         if (! $isReal) {
             return $this;
         }
-        $objUserAuth = new Object_Userauth();
-        if (false !== $objUserAuth) {
-            $this->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
-            $this->create();
-            $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
-            $objUserAuth->write();
+        try {
+            $objUserAuth = new Object_Userauth();
+            if (false !== $objUserAuth) {
+                $this->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
+                $this->create();
+                $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
+                $objUserAuth->write();
+            }
+            return $this;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-        return $this;
     }
     
     function logout()
@@ -111,4 +109,14 @@ class Object_User extends Base_GenericObject
         }
         return $self;
     }
+}
+
+class Object_User_Demo extends Object_User
+{
+    protected $arrDemoData = array(
+        array('intUserID' => 1, 'strUserName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 2, 'strUserName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 3, 'strUserName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 4, 'strUserName' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
+    );
 }

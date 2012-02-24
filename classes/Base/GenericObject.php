@@ -223,6 +223,8 @@ class Base_GenericObject
                 $db = Base_Database::getConnection(true);
                 $query = $db->prepare($full_sql);
                 $query->execute($values);
+                $this->sql = $full_sql;
+                $this->sql_value = $values;
                 Base_Hook::triggerHook('updateRecord', $this);
                 return true;
             } catch(Exception $e) {
@@ -267,6 +269,8 @@ class Base_GenericObject
                 $key = $this->strDBKeyCol;
                 $this->$key = $db->lastInsertId();
             }
+            $this->sql = $full_sql;
+            $this->sql_value = $values;
             Base_Hook::triggerHook('createRecord', $this);
             return true;
         } catch (PDOException $e) {
@@ -295,6 +299,8 @@ class Base_GenericObject
             $query = $db->prepare($sql);
             $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
+            $this->sql = $sql;
+            $this->sql_value = $this->$key;
             Base_Hook::triggerHook('deleteRecord', $this);
             return true;
         } catch (PDOException $e) {

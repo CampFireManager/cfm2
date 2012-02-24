@@ -26,7 +26,9 @@ function __autoload($className)
     $arrClass = explode('_', $className);
     $class_path  = dirname(__FILE__);
     foreach ($arrClass as $class_point) {
-        $class_path .= '/' . $class_point;
+        if ($class_point != 'Demo') {
+            $class_path .= '/' . $class_point;
+        }
     }
     if ($arrClass[0] == 'Plugin') {
         $class_path .= '/hook_loader';

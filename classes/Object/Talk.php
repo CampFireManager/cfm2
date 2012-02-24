@@ -19,11 +19,6 @@ class Object_Talk extends Base_GenericObject
     );
     protected $strDBTable = "talk";
     protected $strDBKeyCol = "intTalkID";
-    protected $arrDemoData = array(
-        array('intTalkID' => 1, 'strTalkTitle' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intTrackID' => null, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isRoomLocked' => 1, 'isSlotLocked' => 1, 'jsonResources' => '[1]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 2, 'strTalkTitle' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRoomID' => 1, 'intSlotID' => 2, 'intTrackID' => 1, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isRoomLocked' => 0, 'isSlotLocked' => 0, 'jsonResources' => '[]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 3, 'strTalkTitle' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRoomID' => 2, 'intSlotID' => 2, 'intTrackID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isRoomLocked' => 0, 'isSlotLocked' => 0, 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]')
-    );
     // Local Object Requirements
     protected $intTalkID = null;
     protected $strTalkTitle = null;
@@ -38,4 +33,13 @@ class Object_Talk extends Base_GenericObject
     protected $isSlotLocked = false;
     protected $jsonResources = null;
     protected $jsonOtherPresenters = null;
+}
+
+class Object_Talk_Demo extends Object_Talk
+{
+    protected $arrDemoData = array(
+        array('intTalkID' => 1, 'strTalkTitle' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intTrackID' => null, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isRoomLocked' => 1, 'isSlotLocked' => 1, 'jsonResources' => '[1]', 'jsonOtherPresenters' => '[]'),
+        array('intTalkID' => 2, 'strTalkTitle' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRoomID' => 1, 'intSlotID' => 2, 'intTrackID' => 1, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isRoomLocked' => 0, 'isSlotLocked' => 0, 'jsonResources' => '[]', 'jsonOtherPresenters' => '[]'),
+        array('intTalkID' => 3, 'strTalkTitle' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRoomID' => 2, 'intSlotID' => 2, 'intTrackID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isRoomLocked' => 0, 'isSlotLocked' => 0, 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]')
+    );
 }

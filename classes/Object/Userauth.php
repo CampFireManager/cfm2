@@ -10,19 +10,12 @@ class Object_Userauth extends Base_GenericObject
     );
     protected $strDBTable = "userauth";
     protected $strDBKeyCol = "intUserAuthID";
-    protected $arrDemoData = array(
-        array('intUserAuthID' => 1, 'intUserID' => 1, 'enumAuthType' => 'onetime', 'strAuthValue' => '4b2ddfb08ff0bd38d94320be391fcdac0f43baad'), // SHA1('salt' . 'abcd2346ACDE');
-        array('intUserAuthID' => 2, 'intUserID' => 2, 'enumAuthType' => 'openid', 'strAuthValue' => 'a6fb734121aa9c075476e5e8aa745cd2934157fb'), // SHA1('salt' . 'http://www.openid.net');
-        array('intUserAuthID' => 3, 'intUserID' => 2, 'enumAuthType' => 'basicauth', 'strAuthValue' => 'cfmadmin:59b3e8d637cf97edbe2384cf59cb7453dfe30789'), // SHA1('salt' . 'password');
-        array('intUserAuthID' => 4, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => '+447777777777:6e32856b3ee3e41d267708a88081c40f1ac06b59'), // SHA1('salt' . 'codeonly');
-        array('intUserAuthID' => 5, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => 'user@gmail.com:1e8a2a0da098b481b7c274d51597751142e42614'), // SHA1('salt' . 'email');
-        array('intUserAuthID' => 6, 'intUserID' => 4, 'enumAuthType' => 'openid', 'strAuthValue' => '990d538923af9542484873551d65a01733abf252') // SHA1('salt' . 'http://www.google.com/accounts/o8/id');
-    );
     // Local Object Requirements
     protected $intUserAuthID = null;
     protected $intUserID = null;
     protected $enumAuthType = null;
     protected $strAuthValue = null;
+    protected $strCleartext = null;
 
     function set_enumAuthType($set = '')
     {
@@ -43,12 +36,13 @@ class Object_Userauth extends Base_GenericObject
     function set_strAuthValue($password = '', $username = '')
     {
         if ($this->enumAuthType != null) {
-            if ($this->enumAuthType == 'openid' || $this->enumAuthType == 'codeonly') {
+            if ($this->enumAuthType == 'openid' || $this->enumAuthType == 'codeonly' || $this->enumAuthType == 'onetime') {
                 $set = sha1(Base_Config::getConfigSecure('salt') . $password);
             } elseif ($this->enumAuthType == 'basicauth') {
                 $set = $username . ':' . sha1(Base_Config::getConfigSecure('salt') . $password);
             }
             if ($set != '' && $this->strAuthValue != $set) {
+                $this->strCleartext = $password;
                 $this->strAuthValue = $set;
                 $this->arrChanges['strAuthValue'] = true;
             }
@@ -169,6 +163,9 @@ class Object_Userauth extends Base_GenericObject
             && isset($arrRequestData['requestUrlParameters']['password']) 
             && $arrRequestData['requestUrlParameters']['password'] != null
         ) {
+            if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', $arrRequestData['requestUrlParameters']['username'] . ':%')) > 0) {
+                throw new Exception("This username already exists, please select another");
+            }
             $this_class->set_enumAuthType('basicauth');
             $this_class->set_strAuthValue(Base_Config::getConfigSecure('salt') . $arrRequestData['requestUrlParameters']['password'], $arrRequestData['requestUrlParameters']['username']);
         } elseif ($codeonly != false) {
@@ -221,4 +218,16 @@ class Object_Userauth extends Base_GenericObject
         }
         return $self;
     }
+}
+
+class Object_Userauth_Demo extends Object_Userauth
+{
+    protected $arrDemoData = array(
+        array('intUserAuthID' => 1, 'intUserID' => 1, 'enumAuthType' => 'onetime', 'strAuthValue' => '4b2ddfb08ff0bd38d94320be391fcdac0f43baad'), // SHA1('salt' . 'abcd2346ACDE');
+        array('intUserAuthID' => 2, 'intUserID' => 2, 'enumAuthType' => 'openid', 'strAuthValue' => 'a6fb734121aa9c075476e5e8aa745cd2934157fb'), // SHA1('salt' . 'http://www.openid.net');
+        array('intUserAuthID' => 3, 'intUserID' => 2, 'enumAuthType' => 'basicauth', 'strAuthValue' => 'cfmadmin:59b3e8d637cf97edbe2384cf59cb7453dfe30789'), // SHA1('salt' . 'password');
+        array('intUserAuthID' => 4, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => '+447777777777:6e32856b3ee3e41d267708a88081c40f1ac06b59'), // SHA1('salt' . 'codeonly');
+        array('intUserAuthID' => 5, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => 'user@gmail.com:1e8a2a0da098b481b7c274d51597751142e42614'), // SHA1('salt' . 'email');
+        array('intUserAuthID' => 6, 'intUserID' => 4, 'enumAuthType' => 'openid', 'strAuthValue' => '990d538923af9542484873551d65a01733abf252') // SHA1('salt' . 'http://www.google.com/accounts/o8/id');
+    );    
 }

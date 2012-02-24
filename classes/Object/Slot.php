@@ -13,6 +13,19 @@ class Object_Slot extends Base_GenericObject
     protected $strDBTable = "slot";
     protected $strDBKeyCol = "intSlotID";
     protected $mustBeAdminToModify = true;
+    // Local Object Requirements
+    protected $intSlotID = null;
+    protected $dateStart = null;
+    protected $timeStart = null;
+    protected $dateEnd = null;
+    protected $timeEnd = null;
+    protected $intDefaultSlotTypeID = null;
+    protected $isAvailable = true;
+}
+
+class Object_Slot_Demo extends Object_Slot
+{
+    protected $mustBeAdminToModify = false;
     protected $arrDemoData = array(
         array('intSlotID' => 1, 'dateStart' => '', 'timeStart' => '09:00', 'dateEnd' => '', 'timeEnd' => '09:45', 'intDefaultSlotTypeID' => 1),
         array('intSlotID' => 2, 'dateStart' => '', 'timeStart' => '10:00', 'dateEnd' => '', 'timeEnd' => '10:45', 'intDefaultSlotTypeID' => null),
@@ -24,12 +37,4 @@ class Object_Slot extends Base_GenericObject
         array('intSlotID' => 8, 'dateStart' => '', 'timeStart' => '16:00', 'dateEnd' => '', 'timeEnd' => '16:45', 'intDefaultSlotTypeID' => null),
         array('intSlotID' => 9, 'dateStart' => '', 'timeStart' => '17:00', 'dateEnd' => '', 'timeEnd' => '17:45', 'intDefaultSlotTypeID' => 3)
     );
-    // Local Object Requirements
-    protected $intSlotID = null;
-    protected $dateStart = null;
-    protected $timeStart = null;
-    protected $dateEnd = null;
-    protected $timeEnd = null;
-    protected $intDefaultSlotTypeID = null;
-    protected $isAvailable = true;
 }

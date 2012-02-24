@@ -9,14 +9,20 @@ class Object_DefaultSlotType extends Base_GenericObject
     );
     protected $strDBTable = "defaultSlotType";
     protected $strDBKeyCol = "intDefaultSlotTypeID";
+    protected $mustBeAdminToModify = true;
+    // Local Object Requirements
+    protected $intDefaultSlotTypeID = null;
+    protected $strDefaultSlotType = null;
+    protected $locksSlot = null;
+}
+
+class Object_DefaultSlotType_Demo extends Object_DefaultSlotType
+{
+    protected $mustBeAdminToModify = false;
     protected $arrDemoData = array(
         array('intDefaultSlotTypeID' => 1, 'strDefaultSlotType' => 'Keynote', 'locksSlot' => 'hardlock'),
         array('intDefaultSlotTypeID' => 2, 'strDefaultSlotType' => 'Lunch', 'locksSlot' => 'softlock'),
         array('intDefaultSlotTypeID' => 3, 'strDefaultSlotType' => 'Closing talk', 'locksSlot' => 'hardlock'),
         array('intDefaultSlotTypeID' => 4, 'strDefaultSlotType' => 'Afternoon Tea', 'locksSlot' => 'none')
     );
-    // Local Object Requirements
-    protected $intDefaultSlotTypeID = null;
-    protected $strDefaultSlotType = null;
-    protected $locksSlot = null;
 }

@@ -9,10 +9,6 @@ class Object_Track extends Base_GenericObject
     protected $strDBTable = "track";
     protected $strDBKeyCol = "intTrackID";
     protected $mustBeAdminToModify = true;
-    protected $arrDemoData = array(
-        array('intTrackID' => 1, 'strTrackName' => 'Coding'),
-        array('intTrackID' => 1, 'strTrackName' => 'Novice')
-    );
     // Local Object Requirements
     protected $intTrackID = null;
     protected $strTrackName = null;
@@ -35,4 +31,13 @@ class Object_Track extends Base_GenericObject
         return $self;
         
     }
+}
+
+class Object_Track_Demo extends Object_Track
+{
+    protected $mustBeAdminToModify = false;
+    protected $arrDemoData = array(
+        array('intTrackID' => 1, 'strTrackName' => 'Coding'),
+        array('intTrackID' => 1, 'strTrackName' => 'Novice')
+    );
 }
