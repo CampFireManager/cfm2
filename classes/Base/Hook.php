@@ -6,14 +6,72 @@ class Base_Hook
     protected $arrHooks = array();
     protected $start = true;
     protected $arrTriggers = array(
+        // Routine Actions
         'cronTick' => true,
+        // Render Types
         'apiRender' => true,
         'httpRender' => true,
-        'userLogin' => true,
-        'deviceLogin' => true,
+        'mediaRender' => true,
+        // Database Actions
         'createRecord' => true,
         'updateRecord' => true,
-        'deleteRecord' => true
+        'deleteRecord' => true,
+        // Site Specific Actions
+        // Users - Actions
+        'registerUser' => true,
+        'arriveUser' => true,
+        'leaveUser' => true,
+        'promoteUser' => true,
+        'addAuthenticationMethod' => true,
+        'removeAuthenticationMethod' => true,
+        // Users - Logging In
+        'userLogin' => true,
+        'deviceLogin' => true,
+        'onetimeLogin' => true,
+        'openidLogin' => true,
+        'userLogout' => true,
+        'openidLogout' => true,
+        // Talks - Owner
+        'lockTalk' => true,
+        'proposeTalk' => true,
+        'createTalk' => true,
+        'removeTalk' => true,
+        'editTalk' => true,
+        'requestResource' => true,
+        'unrequestResource' => true,
+        'addPresenter' => true,
+        'removePresenter' => true,
+        'addLink' => true,
+        'removeLink' => true,
+        // Talks - Administrator/Site Actions
+        'fixTalk' => true,
+        'talkStart' => true,
+        'acceptProposedTalk' => true,
+        'declineProposedTalk' => true,
+        'setTrackForTalk' => true,
+        'removeTrackForTalk' => true,
+        // Talks - Attendees
+        'attendTalk' => true,
+        'leaveTalk' => true,
+        'rateTalk' => true,
+        'tagTalk' => true,
+        'favouriteTalk' => true,
+        'unfavouriteTalk' => true,
+        // Rooms
+        'createRoom' => true,
+        'deleteRoom' => true,
+        'addResourceToRoom' => true,
+        'removeResourceFromRoom' => true,
+        'lockRoom' => true,
+        'unlockRoom' => true,
+        // Resources
+        'createResource' => true,
+        'destroyResource' => true,
+        'paidResource' => true,
+        'refundResource' => true,
+        // Slots
+        'createSlot' => true,
+        'destroySlot' => true
     );
 
     /**
