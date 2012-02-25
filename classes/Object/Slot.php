@@ -21,6 +21,22 @@ class Object_Slot extends Base_GenericObject
     protected $timeEnd = null;
     protected $intDefaultSlotTypeID = null;
     protected $isAvailable = true;
+
+    function getSelf()
+    {
+        $self = parent::getSelf();
+        if ($this->getFull() == true) {
+            if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
+                $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
+                if (is_object($objDefaultSlotType)) {
+                    $self['arrDefaultSlotType'] = $objDefaultSlotType->getSelf();
+                }
+            }
+        }
+        return $self;
+    }
+
+    
 }
 
 class Object_Slot_Demo extends Object_Slot

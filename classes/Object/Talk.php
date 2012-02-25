@@ -33,6 +33,56 @@ class Object_Talk extends Base_GenericObject
     protected $isSlotLocked = false;
     protected $jsonResources = null;
     protected $jsonOtherPresenters = null;
+    
+    function getSelf()
+    {
+        $self = parent::getSelf();
+        if ($this->getFull() == true) {
+            if ($this->intUserID != null && $this->intUserID > 0) {
+                $objUser = Object_User::brokerByID($this->intUserID);
+                if (is_object($objUser)) {
+                    $self['arrUser'] = $objUser->getSelf();
+                }
+            }
+            if ($this->intRoomID != null && $this->intRoomID > 0) {
+                $objRoom = Object_Room::brokerByID($this->intRoomID);
+                if (is_object($objRoom)) {
+                    $objRoom->setFull(true);
+                    $self['arrRoom'] = $objRoom->getSelf();
+                }
+            }
+            if ($this->intSlotID != null && $this->intSlotID > 0) {
+                $objSlot = Object_Slot::brokerByID($this->intSlotID);
+                if (is_object($objSlot)) {
+                    $objSlot->setFull(true);
+                    $self['arrSlot'] = $objSlot->getSelf();
+                }
+            }
+            if ($this->intTrackID != null && $this->intTrackID > 0) {
+                $objTrack = Object_Track::brokerByID($this->intTrackID);
+                if (is_object($objTrack)) {
+                    $self['arrTrack'] = $objTrack->getSelf();
+                }
+            }
+            $self['arrLinks'] = (array) json_decode($this->jsonLinks);
+            $resources = (array) json_decode($this->jsonResources);
+            foreach ($resources as $resource) {
+                $objResource = Object_Resource::brokerByID($resource);
+                if (is_object($objResource)) {
+                    $self['arrResources'][] = $objResource->getSelf();
+                }
+            }
+            $presenters = (array) json_decode($this->jsonOtherPresenters);
+            foreach ($presenters as $presenter) {
+                $objPresenter = Object_User::brokerByID($presenter);
+                if (is_object($objPresenter)) {
+                    $self['arrPresenters'][] = $objPresenter->getSelf();
+                }
+            }
+        }
+        return $self;
+    }
+
 }
 
 class Object_Talk_Demo extends Object_Talk

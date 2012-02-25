@@ -19,6 +19,21 @@ class Object_Room extends Base_GenericObject
     protected $intRoomID = null;
     protected $strRoomName = null;
     protected $jsonResourceList = null;
+    
+    function getSelf()
+    {
+        $self = parent::getSelf();
+        if ($this->getFull() == true) {
+            $resources = (array) json_decode($this->jsonResourceList);
+            foreach ($resources as $resource) {
+                $objResource = Object_Resource::brokerByID($resource);
+                if (is_object($objResource)) {
+                    $self['arrResources'][] = $objResource->getSelf();
+                }
+            }
+        }
+        return $self;
+    }
 }
 
 class Object_Room_Demo extends Object_Room
