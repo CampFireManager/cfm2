@@ -61,7 +61,7 @@ class Object_Userauth extends Base_GenericObject
         ) {
             return $objCache->arrCache[$this_class_name]['current'];
         }
-        Base_Session::start();
+        Base_GeneralFunctions::sessionStart();
         $arrRequestData = Base_Request::getRequest();
         if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
             try {
@@ -149,7 +149,7 @@ class Object_Userauth extends Base_GenericObject
         if (! $isReal) {
             return $this;
         }
-        Base_Session::start();
+        Base_GeneralFunctions::sessionStart();
         $arrRequestData = Base_Request::getRequest();
         if (isset($_SESSION['intUserAuthID'])) {
             unset($_SESSION['intUserAuthID']);

@@ -1,4 +1,27 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class handles all hooks and triggers for the site, including loading
+ * all the hook/plugin objects.
+ *
+ * @category Base
+ * @package  Hook
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Base_Hook
 {
@@ -91,14 +114,27 @@ class Base_Hook
         return Base_Hook::$hook_handler;
     }
 
+    /**
+     * This function adds a new trigger to the comprehensive list above.
+     *
+     * @param string $strTrigger The trigger to add
+     *
+     * @return void
+     */
     public static function addTrigger($strTrigger = null)
     {
-        if ($strTrigger == null) {
-            return false;
+        if ($strTrigger != null) {
+            $this->arrTriggers[$strTrigger] = true;
         }
-        $this->arrTriggers[$strTrigger] = true;
     }
     
+    /**
+     * This function reads a plugin object to look for the triggers which can be tied into the the hook array.
+     *
+     * @param object $objHook An object to process for triggers.
+     * 
+     * @return void
+     */
     public static function addHook($objHook = null)
     {
         $self = Base_Hook::getHandler();
@@ -118,6 +154,15 @@ class Base_Hook
         }
     }
 
+    /**
+     * This is the code which actually does something with the hook triggers we've set
+     * in the funciton above.
+     *
+     * @param string                      $strAction  The name of the trigger to action
+     * @param object|array|integer|string $parameters The resource to pass to the trigger function
+     * 
+     * @return void
+     */
     public static function triggerHook($strAction = null, $parameters = null)
     {
         $self = Base_Hook::getHandler();
@@ -134,7 +179,7 @@ class Base_Hook
                 throw new Exception('Invalid hook triggered', 1);
             }
             $strHookAction = 'hook_' . $strAction;
-            if (isset($self->arrHooks[$strAction]) && count ($self->arrHooks[$strAction]) > 0) {
+            if (isset($self->arrHooks[$strAction]) && count($self->arrHooks[$strAction]) > 0) {
                 foreach ($self->arrHooks[$strAction] as $objHook) {
                     $objHook->$strHookAction($parameters);
                 }
@@ -142,4 +187,3 @@ class Base_Hook
         }
     }
 }
-

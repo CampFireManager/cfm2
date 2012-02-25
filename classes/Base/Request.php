@@ -1,4 +1,27 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class reads everything related to the request that might be useful to the
+ * script, and passes it back as an array.
+ *
+ * @category Base
+ * @package  RequestParser
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Base_Request
 {
@@ -43,6 +66,16 @@ class Base_Request
         'application/vnd.oasis.opendocument.presentation' => array('media' => true, 'rest' => false, 'site' => false)
     );
 
+    /**
+     * This function reads the $arrMediaTypes array above, and returns whether it's a valid site, rest (api) or media type.
+     * 
+     * It is used when making decisions about whether to return data to the user in that format.
+     *
+     * @param string $category  The type of request we believe this media type should work for
+     * @param string $mediaType The media type (replaced, on null with the detected media type)
+     * 
+     * @return boolean The value from the table above.
+     */
     public static function getMediaType($category = 'site', $mediaType = null)
     {
         if ($mediaType == null) {
@@ -51,11 +84,11 @@ class Base_Request
         }
         if (isset(Base_Request::$arrMediaTypes[$mediaType])) {
             switch ($category) {
-                case 'media':
-                case 'rest':
-                case 'site':
-                    return Base_Request::$arrMediaTypes[$mediaType][$category];
-                    break;
+            case 'media':
+            case 'rest':
+            case 'site':
+                return Base_Request::$arrMediaTypes[$mediaType][$category];
+                break;
             }
         }
         return false;
@@ -79,7 +112,6 @@ class Base_Request
      *
      * @return array The compiled data
      */
-
     public function getRequest()
     {
         // If we've parsed the Request Parameters before, just return that data
@@ -473,7 +505,14 @@ class Base_Request
         
         return $handler->arrRequestData;
     }
-    
+
+    /**
+     * This function updates the arrRequestData array with the MIME type to handle, based on the file extension.
+     *
+     * @param string $strAcceptType The MIME type
+     * 
+     * @return void
+     */
     function setAcceptType($strAcceptType = '')
     {
         if (! isset($this->arrRequestData['arrDenyTypes'][$strAcceptType])) {

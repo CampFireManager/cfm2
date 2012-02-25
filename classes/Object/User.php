@@ -85,7 +85,7 @@ class Object_User extends Base_GenericObject
     
     function logout()
     {
-        Base_Session::start();
+        Base_GeneralFunctions::sessionStart();
         $arrRequestData = Base_Request::getRequest();
         if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
             unset($_SESSION['intUserAuthID']);

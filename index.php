@@ -47,6 +47,13 @@ foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) 
     }
 }
 
+foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Collection') as $file) {
+    if ($file->isDir() || $file->isDot()) continue;
+    if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
+        $object[strtolower($file->getBasename('.php'))] = 'Collection_' . $file->getBasename('.php');
+    }
+}
+
 $lastObject = null;
 $useObjects = array();
 $arrObjects = array();
@@ -71,8 +78,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
         }
     }
 } else {
-    $timetable = new Collection_Timetable();
-    $arrObjectsData['Collection_Timetable'] = $timetable->getData();
+    Base_Response::redirectTo('Timetable');
 }
 
 $useObjects['Object_User'] = 'current';
@@ -92,15 +98,15 @@ foreach ($arrObjects as $object_group => $data) {
 if ($rest) {
     switch ($arrRequestData['strPreferredAcceptType']) {
     case 'application/json':
-        Base_Response::sendHttpResponse(200, Base_Response::utf8json($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8json($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
         break;
     case 'text/xml':
-        Base_Response::sendHttpResponse(200, Base_Response::utf8xml($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8xml($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
         break;
     case 'text/html':
-        Base_Response::sendHttpResponse(200, Base_Response::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
         break;
     }
 } else {
-    Base_Response::sendHttpResponse(200, Base_Response::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+    Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
 }

@@ -1,4 +1,27 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class provides all the functions which are needed by code in the site
+ * but which don't fit into more specific classes.
+ *
+ * @category Base
+ * @package  ResponseHandler
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Base_Response
 {
@@ -51,11 +74,11 @@ class Base_Response
     *
     * @return void
     */
-    function requireAuth()
+    public static function requireAuth()
     {
         $arrRequestDetails = Base_Request::getRequest();
         if ($arrRequestDetails['username'] == null) {
-            static::sendHttpResponse(401);
+            Base_Response::sendHttpResponse(401);
         }
     }
 
@@ -69,7 +92,7 @@ class Base_Response
      *
      * @return void
      */
-    function sendHttpResponse($status = 200, $body = null, $content_type = 'text/html', $extra = '')
+    public static function sendHttpResponse($status = 200, $body = null, $content_type = 'text/html', $extra = '')
     {
         // Send the relevant headers for this type of response
         header('HTTP/1.1 ' . $status . ' ' . static::$http_status_codes[$status]);
@@ -139,9 +162,9 @@ class Base_Response
      *
      * @return void
      */
-    function sendHttpResponseNote($status = 200, $extra = '')
+    public static function sendHttpResponseNote($status = 200, $extra = '')
     {
-        sendHttpResponse($status, null, 'text/html', $extra);
+        Base_Response::sendHttpResponse($status, null, 'text/html', $extra);
     }
 
     /**
@@ -151,10 +174,10 @@ class Base_Response
      *
      * @return string|false The string associated to this code, or false if the code doesn't exist.
      */
-    function returnHttpResponseString($status = 200)
+    public static function returnHttpResponseString($status = 200)
     {
-        if (isset(static::$http_status_codes[$status])) {
-            return static::$http_status_codes[$status];
+        if (isset(self::$http_status_codes[$status])) {
+            return self::$http_status_codes[$status];
         } else {
             return false;
         }
@@ -254,135 +277,6 @@ class Base_Response
         fclose($fp);
         exit;
     }
-
-    /**
-     * Return UTF8 encoded array
-     *
-     * @param array|object|string|integer|float|boolean|null $array Ideally an 
-     * array of data to process, but failing that, return the data as a member of an array.
-     *
-     * @return array UTF8 encoded array
-     *
-     * @link http://www.php.net/manual/en/function.json-encode.php#99837
-     */
-    function utf8element($array = null)
-    {
-        $newArray = array();
-        if (is_object($array)) {
-            // Force objects to be recast as an array
-            $array = (array) $array;
-        } elseif (is_array($array)) {
-            // It's an array already, we don't need to mangle it.
-        } else {
-            // Individual items should be recast to be the only item in an array
-            $array = array($array);
-        }
-        foreach ($array as $key=>$val) {
-            if (is_array($val) || is_object($val)) {
-                $newArray[utf8_encode($key)] = static::utf8element($val);
-            } elseif ($val === false) {
-                $newArray[utf8_encode($key)] = 'false';
-            } elseif ($val == null) {
-                $newArray[utf8_encode($key)] = '';
-            } else {
-                $newArray[utf8_encode($key)] = utf8_encode($val);
-            }
-        }
-        return $newArray;
-    }
-
-    /**
-     * Return utf8 encoded JSON
-     *
-     * @param Array|object $array Incoming data
-     *
-     * @return string UTF8 encoded JSON string
-     */
-    function utf8json($array = array())
-    {
-        return json_encode(static::utf8element($array));
-    }
-
-    /**
-     * Return utf8 encoded HTML
-     *
-     * @param Array|object $array Incoming data
-     *
-     * @return string UTF8 encoded HTML tables
-     */
-    function utf8html($array = array())
-    {
-        return static::html_encode(static::utf8element($array));
-    }
-
-    /**
-     * Similar to the json_encode function, this returns nested HTML tables instead of nested JSON data
-     * 
-     * @param array $array Data to encode
-     * 
-     * @return string HTML nested tables of the array of data
-     */
-    function html_encode($array = array())
-    {
-        $return = '<table>';
-        foreach ($array as $key => $item) {
-            $return .= '<tr><th>' . $key . '</th><td>';
-            if (is_array($item)) {
-                $return .= static::html_encode($item);
-            } else {
-                $return .= $item;
-            }
-            $return .= '</td></tr>';
-        }
-        $return .= '</table>';
-        return $return;
-    }
-
-    /**
-     * Return utf8 encoded XML with an optional root element name
-     *
-     * @param Array|object $array Incoming data
-     * @param string       $root  The root element name - default to "row"
-     *
-     * @return string UTF8 encoded XML string
-     */
-    function utf8xml($array = array(), $root = 'row')
-    {
-        return static::xml_encode(array($root => static::utf8element($array)));
-    }
-    
-    /**
-     * Similar to the json_encode function, this returns nested XML stanzas.
-     * It doesn't have the concept of parameters. Also, replaces a forward slash with "[slash]"
-     * 
-     * @param array   $array Data to encode
-     * @param integer $depth The number of spaces to indent each nested stanza by
-     * 
-     * @return string XML formatted data
-     */
-    function xml_encode($array = array(), $depth = 0)
-    {
-        $return = '';
-        foreach ($array as $key => $item) {
-            if (is_integer($key)) {
-                $key = 'ID_' . $key;
-            }
-            $key = str_replace('/', '[slash]', $key);
-            $key = str_replace('<', '[lt]', $key);
-            $key = str_replace('>', '[gt]', $key);
-            $key = str_replace('&', '[amp]', $key);
-            $key = str_replace('"', '[dquote]', $key);
-            $key = str_replace("'", '[squote]', $key);
-            $return .= str_repeat(' ', $depth) . '<' . $key . ">";
-            if (is_array($item)) {
-                $return .= "\r\n" . static::xml_encode($item, $depth + 4) . str_repeat(' ', $depth);
-            } else {
-                $return .= $item;
-            }
-            $return .= '</' . $key . ">\r\n";
-        }
-        return $return;
-    }
     
     /**
     * Do a redirection to the $new_page (relative to the base URI of the site)
@@ -391,7 +285,7 @@ class Base_Response
     *
     * @return void
     */
-    function redirectTo($new_page = '')
+    public static function redirectTo($new_page = '')
     {
         $arrRequestDetails = Base_Request::getRequest();
         if (substr($new_page, 0, 1) != '/') {

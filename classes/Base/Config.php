@@ -1,4 +1,28 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class obtains manipulates all the configuration data for the service. It
+ * handles local configuration (per-server), global configuration (per-site) and
+ * secure configuration (api keys, password salts etc.)
+ *
+ * @category Base
+ * @package  Config
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Base_Config
 {
@@ -8,6 +32,12 @@ class Base_Config
     protected $arrConfigLocal = null;
     protected $arrConfig = null;
     
+    /**
+     * This function sets up the database tables in an appropriate way for the
+     * per-site and secure configuration stores.
+     * 
+     * @return void
+     */
     function initialize()
     {
         $sql = "
@@ -23,6 +53,13 @@ class Base_Config
         }
     }
 
+    /**
+     * This function extends the previous function, and adds demo data to show,
+     * both what sort of data would be expected in the service, and to run
+     * demonstrations of the site to potential event organisers.
+     * 
+     * @return void
+     */
     function initializeDemo()
     {
         self::initialize();
@@ -52,11 +89,29 @@ class Base_Config
         return self::$config_handler;
     }
 
+    /**
+     * This singleton method is a wrapper to the getConfig function to map the
+     * expected functions (as used in functional code in the rest of the site)
+     * against the specific code for the Object_ orientated code used in the
+     * API.
+     * 
+     * @param string $key Key to search for in the public (non-secure) configuration items
+     * 
+     * @return string expected response.
+     */
     public function brokerByID($key = null)
     {
         return self::getConfig($key, null, true);
     }
     
+    /**
+     * This singleton method is a wrapper to the getConfig function to map the
+     * expected functions (as used in functional code in the rest of the site)
+     * against the specific code for the Object_ orientated code used in the
+     * API.
+     * 
+     * @return string All public (non-secure) configuration options.
+     */
     public function brokerAll()
     {
         return self::getConfig(null, null, true);
@@ -65,8 +120,9 @@ class Base_Config
     /**
      * This gets the value from the configuration table or file as appropriate
      *
-     * @param string $searchKey    The key to search for in the global or local config
-     * @param string $defaultValue The default to return should the key not exist.
+     * @param string  $searchKey    The key to search for in the global or local config
+     * @param string  $defaultValue The default to return should the key not exist.
+     * @param boolean $asArray      Whether to return this data as an array or not.
      *
      * @return string The config value to use
      */
@@ -181,7 +237,7 @@ class Base_Config
     }
 
     /**
-     * This function reads the config files to use later
+     * This function reads the config sources to use later
      *
      * @return void
      */
@@ -270,6 +326,19 @@ class Base_Config
     }
 }
 
+/**
+ * This class is a wrapper for the Configuration objects retrieved for use
+ * in the API. It is functionally sound, as it will allow the user to set global
+ * configuration options. These, however, will be overriden by the local config
+ * files.
+ *
+ * @category Base
+ * @package  Config
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+
 class Object_Config extends Base_GenericObject
 {
     protected $arrDBItems = array('value' => null);
@@ -280,6 +349,16 @@ class Object_Config extends Base_GenericObject
     protected $isOverriden = null;
     protected $isLocal = null;
 
+    /**
+     * This function creates an object containing the Configuration Values provided to it
+     * 
+     * @param string  $key         The name of the key to use
+     * @param string  $value       The value of that key
+     * @param boolean $isOverriden If it does not match the value in the SQL server, as a local configuration file has changed it.
+     * @param boolean $isLocal     If it is based on a value present only in the local system
+     * 
+     * @return object The constructed "Object" for use elsewhere.
+     */
     function __construct($key = null, $value = null, $isOverriden = null, $isLocal = null)
     {
         $this->key = $key;

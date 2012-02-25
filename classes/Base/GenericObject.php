@@ -1,4 +1,28 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class provides all the object specific functions used throughout the site.
+ * It is used as the basis for every object.
+ *
+ * @category Object
+ * @package  Generic
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+
 class Base_GenericObject
 {
     // Generic Object Requirements
@@ -51,6 +75,9 @@ class Base_GenericObject
     /**
      * Get all objects by a particular search field
      *
+     * @param string $column The column to search
+     * @param string $value  The value to look for.
+     * 
      * @return array The array of objects matching this search
      */
     static function brokerByColumnSearch($column = null, $value = null)
@@ -62,7 +89,7 @@ class Base_GenericObject
         $this_class_name = get_called_class();
         $this_class = new $this_class_name(false);
         $process = false;
-        foreach($this_class->arrDBItems as $db_item => $dummy) {
+        foreach ($this_class->arrDBItems as $db_item => $dummy) {
             if ($db_item == $column) {
                 $process = true;
             }
@@ -132,7 +159,7 @@ class Base_GenericObject
      */
     function setFull($full)
     {
-        $this->booleanFull = $this->asBoolean($full);
+        $this->booleanFull = Base_GeneralFunctions::asBoolean($full);
     }
 
     /**
@@ -145,6 +172,15 @@ class Base_GenericObject
         return (boolean) $this->booleanFull;
     }
 
+    /**
+     * This function ensures that the keyname to be set is one of the recognised database values
+     * then sets it, and updates the "arrChanges" array to show it's ready to be committed.
+     *
+     * @param string $keyname The key to modify
+     * @param any    $value   The value to store
+     * 
+     * @return void
+     */
     function setKey($keyname = '', $value = '')
     {
         if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
@@ -155,6 +191,13 @@ class Base_GenericObject
         }
     }
     
+    /**
+     * Return the value of the Object's key, provided it's in the list of approved values
+     *
+     * @param string $keyname The key to search for
+     * 
+     * @return any The value from the object
+     */
     function getKey($keyname = '')
     {
         if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
@@ -406,210 +449,6 @@ class Base_GenericObject
         }
         foreach ($this->arrDBItems as $key => $dummy) {
             $return[$key] = $this->$key;
-        }
-        return $return;
-    }
-
-    /**
-     * Return boolean true for 1 and boolean false for 0
-     *
-     * @param integer $check Value to check
-     *
-     * @return boolean Result
-     */
-    function asBoolean($check)
-    {
-        switch((string) $check) {
-        case 'no':
-        case '0':
-        case 'false':
-            return false;
-        case '1':
-        case 'yes':
-        case 'true':
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    /**
-     * Return the value marked as being "preferred", or failing that, the first entry in the array, or the only entry.
-     *
-     * @param JSON $strJson A JSON encoded string, containing an array of data, or just a simple string.
-     *
-     * @return string The preferred value.
-     */
-    function preferredJson($strJson = '')
-    {
-        $arrJson = (array) json_decode($strJson);
-        if (count($arrJson) > 1) {
-            foreach ($arrJson as $key=>$value) {
-                if ($key == 'preferred') {
-                    return $value;
-                }
-            }
-            // We didn't find a preferred value, so just return the first one as being "preferred"
-            foreach ($arrJson as $value) {
-                return $value;
-            }
-        } elseif (is_array($arrJson) and count($arrJson) == 1) {
-            foreach ($arrJson as $value) {
-                return $value;
-            }
-        } else {
-            return $strJson;
-        }
-    }
-
-    /**
-     * Return the size of the JSON array
-     *
-     * @param JSON $strJson A JSON encoded array
-     *
-     * @return integer The size of the JSON array
-     */
-    function sizeJson($strJson = '')
-    {
-        $arrJson = (array) json_decode($strJson);
-        if (count($arrJson == 0)) {
-            $arrJson[] = $strJson;
-        }
-        return count($arrJson);
-    }
-
-    /**
-     * Add a new string to an existing JSON array, or promote one value to being "preferred"
-     *
-     * @param JSON    $strJson     The existing JSON array.
-     * @param string  $strNewValue The value to add, or prefer.
-     * @param boolean $preferred   Optional. Set to true to make this value preferred.
-     *
-     * @return JSON The resulting JSON array.
-     */
-    function addJson($strJson = '', $strNewValue = '', $preferred = false)
-    {
-        $set = false;
-        $arrJson = (array) json_decode($strJson);
-        if (count($arrJson) == 0 and $strJson != '') {
-            $arrJson[] = $strJson;
-        } elseif ($strJson == '') {
-            $arrJson = array();
-        }
-        $arrTemp = array();
-        $intKey = 0;
-        if ($preferred == true) {
-            foreach ($arrJson as $value) {
-                if ($value == $strNewValue) {
-                    $arrTemp['preferred'] = $value;
-                    $set = true;
-                } else {
-                    $arrTemp[$intKey++] = $value;
-                }
-            }
-            if ($set == false) {
-                $arrTemp['preferred'] = $strNewValue;
-            }
-        } else {
-            foreach ($arrJson as $value) {
-                if ($value == $strNewValue) {
-                    $set = true;
-                } else {
-                    $arrTemp[$intKey++] = $value;
-                }
-            }
-            if ($set == false) {
-                $arrTemp[$intKey++] = $strNewValue;
-            }
-        }
-        return json_encode($arrTemp);
-    }
-
-    /**
-     * This function removes a value from the JSON array, preserving the "preferred" key, where appropriate.
-     *
-     * @param JSON   $strJson          The JSON array to operate on
-     * @param string $strValueToRemove The value to remove from the array
-     *
-     * @return false|JSON The modified array, or false, if there is only one value.
-     */
-    function delJson($strJson = '', $strValueToRemove = '')
-    {
-        $arrJson = (array) json_decode($strJson);
-        if (count($arrJson) == 0) {
-            $arrJson[] = $strJson;
-        }
-        if (count($arrJson) <= 1) {
-            return $strJson;
-        }
-        $arrTemp = array();
-        $intKey = 0;
-        foreach ($arrJson as $key=>$value) {
-            if ($value != $strValueToRemove) {
-                if ($key == 'preferred') {
-                    $arrTemp['preferred'] = $value;
-                } else {
-                    $arrTemp[$intKey++] = $value;
-                }
-            }
-        }
-        return json_encode($arrTemp);
-    }
-
-    /**
-     * Find a value in a JSON encoded array
-     *
-     * @param JSON   $strJson        The JSON encoded array.
-     * @param string $strValueToFind The value to find
-     *
-     * @return boolean If the value is there.
-     */
-    function inJson($strJson = '', $strValueToFind = '')
-    {
-        $arrJson = (array) json_decode($strJson);
-        if (count($arrJson) == 0) {
-            $arrJson[] = $strJson;
-        }
-        foreach ($arrJson as $value) {
-            if ($value == $strValueToFind) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Return the decoded JSON array of data
-     *
-     * @param JSON $strJson The data to decode
-     *
-     * @return array The data, in array format.
-     */
-    function getJson($strJson = '')
-    {
-        $arrJson = (array) json_decode($strJson);
-        if (count($arrJson) == 0) {
-            $arrJson[] = $strJson;
-        }
-        $arrJson = $this->deobjectifyArray($arrJson);
-        return $arrJson;
-    }
-
-    /**
-     * Return an array of data when presented with an object
-     *
-     * @param array|object $process Values to be processed
-     *
-     * @return array Processed array
-     */
-    function deobjectifyArray($process)
-    {
-        foreach ((array) $process as $key => $value) {
-            if (is_object($value)) {
-                $return[$key] = deobjectifyArray($value);
-            } else {
-                $return[$key] = $value;
-            }
         }
         return $return;
     }
