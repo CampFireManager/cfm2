@@ -4,7 +4,63 @@ class Base_Request
 {
     protected static $request_handler = null;
     protected $arrRequestData = null;
+    protected static $arrMediaTypes = array(
+        'application/json' => array('media' => false, 'rest' => true, 'site' => false),
+        'application/atom+xml' => array('media' => false, 'rest' => true, 'site' => false),
+        'application/pdf' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/postscript' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/rss+xml' => array('media' => false, 'rest' => true, 'site' => false),
+        'application/soap+xml' => array('media' => false, 'rest' => false, 'site' => false),
+        'application/xhtml+xml' => array('media' => false, 'rest' => true, 'site' => true),
+        'application/zip' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/x-gzip' => array('media' => true, 'rest' => false, 'site' => false),
+        'audio/mpeg' => array('media' => true, 'rest' => false, 'site' => false),
+        'audio/mp4' => array('media' => true, 'rest' => false, 'site' => false),
+        'audio/ogg' => array('media' => true, 'rest' => false, 'site' => false),
+        'image/png' => array('media' => true, 'rest' => false, 'site' => false),
+        'image/jpeg' => array('media' => true, 'rest' => false, 'site' => false),
+        'image/gif' => array('media' => true, 'rest' => false, 'site' => false),
+        'image/svg+xml' => array('media' => true, 'rest' => false, 'site' => false),
+        'text/css' => array('media' => true, 'rest' => false, 'site' => true),
+        'text/html' => array('media' => false, 'rest' => true, 'site' => true),
+        'text/csv' => array('media' => false, 'rest' => true, 'site' => false),
+        'text/xml' => array('media' => false, 'rest' => true, 'site' => false),
+        'text/plain' => array('media' => false, 'rest' => true, 'site' => true),
+        'text/vcard' => array('media' => false, 'rest' => true, 'site' => true),
+        'video/ogg' => array('media' => true, 'rest' => false, 'site' => false),
+        'video/mpeg' => array('media' => true, 'rest' => false, 'site' => false),
+        'video/mp4' => array('media' => true, 'rest' => false, 'site' => false),
+        'video/webm' => array('media' => true, 'rest' => false, 'site' => false),
+        'video/x-ms-wmv' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/msword' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.oasis.opendocument.text' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.ms-excel' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.oasis.opendocument.spreadsheet' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.ms-powerpoint' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => array('media' => true, 'rest' => false, 'site' => false),
+        'application/vnd.oasis.opendocument.presentation' => array('media' => true, 'rest' => false, 'site' => false)
+    );
 
+    public static function getMediaType($category = 'site', $mediaType = null)
+    {
+        if ($mediaType == null) {
+            $handler = self::getHandler();
+            $mediaType = $handler->arrRequestData['strPreferredAcceptType'];
+        }
+        if (isset(Base_Request::$arrMediaTypes[$mediaType])) {
+            switch ($category) {
+                case 'media':
+                case 'rest':
+                case 'site':
+                    return Base_Request::$arrMediaTypes[$mediaType][$category];
+                    break;
+            }
+        }
+        return false;
+    }
+    
     /**
      * This function creates or returns an instance of this class.
      *
@@ -186,8 +242,42 @@ class Base_Request
         // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request#comment-3218
 
         $handler->arrRequestData['pathFormat'] = '';
+        $handler->arrRequestData['intPreferredAcceptType'] = 0;
+        $handler->arrRequestData['strPreferredAcceptType'] = 'text/html';
         $handler->arrRequestData['arrAcceptTypes'] = array();
+        $handler->arrRequestData['arrDenyTypes'] = array();
 
+        // This is based on http://stackoverflow.com/questions/1049401/how-to-select-content-type-from-http-accept-header-in-php
+
+        // Make the list of accepted types into an array, and then step through it.
+
+        $arrAccept = explode(',', strtolower(str_replace(' ', '', $_SERVER['HTTP_ACCEPT'])));
+        foreach ($arrAccept as $acceptItem) {
+
+            // All accepted Internet Media Types (or Mime Types, as they once we known) have a Q (Quality?) value
+            // The default "Q" value is 1;
+            $q = 1;
+
+            // but the client may have sent another value
+            if (strpos($acceptItem, ';q=')) {
+                // In which case, use it.
+                list($acceptItem, $q) = explode(';q=', $acceptItem);
+            }
+
+            // If the quality is 0, it's not accepted - in this case, so why bother logging it?
+            // Also, IE has a bad habit of saying it accepts everything. Ignore that case.
+
+            if ($q > 0 && $acceptItem != '*/*') {
+                $handler->arrRequestData['arrAcceptTypes'][$acceptItem] = $q;
+                if ($q > $handler->arrRequestData['intPreferredAcceptType']) {
+                    $handler->arrRequestData['intPreferredAcceptType'] = $q;
+                    $handler->arrRequestData['strPreferredAcceptType'] = $acceptItem;
+                }
+            } else {
+                $handler->arrRequestData['arrDenyTypes'][$acceptItem] = true;
+            }
+        }
+        
         // If the last item contains a dot, for example file.json, then we can suspect the user is specifying the file format to prefer.
         // So, let's look at the last chunk of the requested URL. Does it contain a dot in it?
 
@@ -219,173 +309,144 @@ class Base_Request
                     // Application types
 
                     case 'json':
-                        $handler->arrRequestData['arrAcceptTypes']['application/json'] = 1;
+                        $handler->setAcceptType('application/json');
                         break;
                     case 'atom':
-                        $handler->arrRequestData['arrAcceptTypes']['application/atom+xml'] = 1;
+                        $handler->setAcceptType('application/atom+xml');
                         break;
                     case 'pdf':
-                        $handler->arrRequestData['arrAcceptTypes']['application/pdf'] = 1;
+                        $handler->setAcceptType('application/pdf');
                         break;
                     case 'ps':
-                        $handler->arrRequestData['arrAcceptTypes']['application/postscript'] = 1;
+                        $handler->setAcceptType('application/postscript');
                         break;
                     case 'rss':
-                        $handler->arrRequestData['arrAcceptTypes']['application/rss+xml'] = 1;
+                        $handler->setAcceptType('application/rss+xml');
                         break;
                     case 'soap':
-                        $handler->arrRequestData['arrAcceptTypes']['application/soap+xml'] = 1;
+                        $handler->setAcceptType('application/soap+xml');
                         break;
                     case 'xhtml':
-                        $handler->arrRequestData['arrAcceptTypes']['application/xhtml+xml'] = 1;
+                        $handler->setAcceptType('application/xhtml+xml');
                         break;
                     case 'zip':
-                        $handler->arrRequestData['arrAcceptTypes']['application/zip'] = 1;
+                        $handler->setAcceptType('application/zip');
                         break;
                     case 'gz':
                     case 'gzip':
-                        $handler->arrRequestData['arrAcceptTypes']['application/x-gzip'] = 1;
+                        $handler->setAcceptType('application/x-gzip');
                         break;
 
                     // Audio Types
 
                     case 'mp3':
                     case 'mpeg3':
-                        $handler->arrRequestData['arrAcceptTypes']['audio/mpeg'] = 1;
+                        $handler->setAcceptType('audio/mpeg');
                         break;
                     case 'm4a':
-                        $handler->arrRequestData['arrAcceptTypes']['audio/mp4'] = 1;
+                        $handler->setAcceptType('audio/mp4');
                         break;
                     case 'ogg':
-                        $handler->arrRequestData['arrAcceptTypes']['audio/ogg'] = 1;
+                        $handler->setAcceptType('audio/ogg');
                         break;
 
                     // Image types
 
                     case 'png':
-                        $handler->arrRequestData['arrAcceptTypes']['image/png'] = 1;
+                        $handler->setAcceptType('image/png');
                         break;
                     case 'jpg':
                     case 'jpeg':
-                        $handler->arrRequestData['arrAcceptTypes']['image/jpeg'] = 1;
+                        $handler->setAcceptType('image/jpeg');
                         break;
                     case 'gif':
-                        $handler->arrRequestData['arrAcceptTypes']['image/gif'] = 1;
+                        $handler->setAcceptType('image/gif');
                         break;
                     case 'svg':
-                        $handler->arrRequestData['arrAcceptTypes']['image/svg+xml'] = 1;
+                        $handler->setAcceptType('image/svg+xml');
                         break;
 
                     // Text types
 
                     case 'css':
-                        $handler->arrRequestData['arrAcceptTypes']['text/css'] = 1;
+                        $handler->setAcceptType('text/css');
                         break;
                     case 'htm':
                     case 'html':
-                        $handler->arrRequestData['arrAcceptTypes']['text/html'] = 1;
+                        $handler->setAcceptType('text/html');
                         break;
                     case 'csv':
-                        $handler->arrRequestData['arrAcceptTypes']['text/csv'] = 1;
+                        $handler->setAcceptType('text/csv');
                         break;
                     case 'xml':
-                        $handler->arrRequestData['arrAcceptTypes']['text/xml'] = 1;
+                        $handler->setAcceptType('text/xml');
                         break;
                     case 'txt':
-                        $handler->arrRequestData['arrAcceptTypes']['text/plain'] = 1;
+                        $handler->setAcceptType('text/plain');
                         break;
                     case 'vcd':
-                        $handler->arrRequestData['arrAcceptTypes']['text/vcard'] = 1;
+                        $handler->setAcceptType('text/vcard');
                         break;
 
                     // Video types
 
                     case 'ogv':
-                        $handler->arrRequestData['arrAcceptTypes']['video/ogg'] = 1;
+                        $handler->setAcceptType('video/ogg');
                         break;
                     case 'avi':
-                        $handler->arrRequestData['arrAcceptTypes']['video/mpeg'] = 1;
+                        $handler->setAcceptType('video/mpeg');
                         break;
                     case 'mp4':
                     case 'mpeg':
-                        $handler->arrRequestData['arrAcceptTypes']['video/mp4'] = 1;
+                        $handler->setAcceptType('video/mp4');
                         break;
                     case 'webm':
-                        $handler->arrRequestData['arrAcceptTypes']['video/webm'] = 1;
+                        $handler->setAcceptType('video/webm');
                         break;
                     case 'wmv':
-                        $handler->arrRequestData['arrAcceptTypes']['video/x-ms-wmv'] = 1;
+                        $handler->setAcceptType('video/x-ms-wmv');
                         break;
 
                     // Open/Libre/MS Office file formats
 
                     case 'doc':
-                        $handler->arrRequestData['arrAcceptTypes']['application/msword'] = 1;
+                        $handler->setAcceptType('application/msword');
                         break;
                     case 'docx':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.openxmlformats-officedocument.wordprocessingml.document'] = 1;
+                        $handler->setAcceptType('application/vnd.openxmlformats-officedocument.wordprocessingml.document');
                         break;
                     case 'odt':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.oasis.opendocument.text'] = 1;
+                        $handler->setAcceptType('application/vnd.oasis.opendocument.text');
                         break;
                     case 'xls':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.ms-excel'] = 1;
+                        $handler->setAcceptType('application/vnd.ms-excel');
                         break;
                     case 'xlsx':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'] = 1;
+                        $handler->setAcceptType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                         break;
                     case 'ods':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.oasis.opendocument.spreadsheet'] = 1;
+                        $handler->setAcceptType('application/vnd.oasis.opendocument.spreadsheet');
                         break;
                     case 'ppt':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.ms-powerpoint'] = 1;
+                        $handler->setAcceptType('application/vnd.ms-powerpoint');
                         break;
                     case 'pptx':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.openxmlformats-officedocument.presentationml.presentation'] = 1;
+                        $handler->setAcceptType('application/vnd.openxmlformats-officedocument.presentationml.presentation');
                         break;
                     case 'odp':
-                        $handler->arrRequestData['arrAcceptTypes']['application/vnd.oasis.opendocument.presentation'] = 1;
+                        $handler->setAcceptType('application/vnd.oasis.opendocument.presentation');
                         break;
 
                     // Not one of the above types. Hopefully you won't see this!!!
 
                     default:
-                        $handler->arrRequestData['arrAcceptTypes']['unknown/' . $handler->arrRequestData['pathFormat']] = 1;
+                        $handler->setAcceptType('unknown/' . $handler->arrRequestData['pathFormat']);
                     }
                 } else {
                     if ($handler->arrRequestData['pathItems'][count($handler->arrRequestData['pathItems'])-1] != '') {
                         $handler->arrRequestData['pathItems'][count($handler->arrRequestData['pathItems'])-1] .= '.';
                     }
                     $handler->arrRequestData['pathItems'][count($handler->arrRequestData['pathItems'])-1] .= $UrlItem;
-                }
-            }
-        }
-        
-        // This is based on http://stackoverflow.com/questions/1049401/how-to-select-content-type-from-http-accept-header-in-php
-
-        // Make the list of accepted types into an array, and then step through it.
-
-        $arrAccept = explode(',', strtolower(str_replace(' ', '', $_SERVER['HTTP_ACCEPT'])));
-        foreach ($arrAccept as $acceptItem) {
-
-            // All accepted Internet Media Types (or Mime Types, as they once we known) have a Q (Quality?) value
-            // The default "Q" value is 1;
-            $q = 1;
-
-            // but the client may have sent another value
-            if (strpos($acceptItem, ';q=')) {
-                // In which case, use it.
-                list($acceptItem, $q) = explode(';q=', $acceptItem);
-            }
-
-            // If the quality is 0, it's not accepted - in this case, we'll remove it!
-            // Also, IE has a bad habit of saying it accepts everything. Ignore that case.
-
-            if ($q > 0 && $acceptItem != '*/*') {
-                $handler->arrRequestData['arrAcceptTypes'][$acceptItem] = $q;
-            } else {
-                if (isset($handler->arrRequestData['arrAcceptTypes'][$acceptItem])) {
-                    unset($handler->arrRequestData['arrAcceptTypes'][$acceptItem]);
                 }
             }
         }
@@ -411,5 +472,16 @@ class Base_Request
         }
         
         return $handler->arrRequestData;
+    }
+    
+    function setAcceptType($strAcceptType = '')
+    {
+        if (! isset($this->arrRequestData['arrDenyTypes'][$strAcceptType])) {
+            $this->arrRequestData['arrAcceptTypes'][$strAcceptType] = 2;
+        }
+        if (2 > $this->arrRequestData['intPreferredAcceptType']) {
+            $this->arrRequestData['intPreferredAcceptType'] = 2;
+            $this->arrRequestData['strPreferredAcceptType'] = $strAcceptType;
+        }
     }
 }

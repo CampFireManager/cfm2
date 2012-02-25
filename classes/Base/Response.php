@@ -281,7 +281,7 @@ class Base_Response
             if (is_array($val) || is_object($val)) {
                 $newArray[utf8_encode($key)] = static::utf8element($val);
             } elseif ($val === false) {
-                $newArray[utf8_encode($key)] = '0';
+                $newArray[utf8_encode($key)] = 'false';
             } elseif ($val == null) {
                 $newArray[utf8_encode($key)] = '';
             } else {
@@ -364,6 +364,9 @@ class Base_Response
     {
         $return = '';
         foreach ($array as $key => $item) {
+            if (is_integer($key)) {
+                $key = 'ID_' . $key;
+            }
             $key = str_replace('/', '[slash]', $key);
             $key = str_replace('<', '[lt]', $key);
             $key = str_replace('>', '[gt]', $key);
