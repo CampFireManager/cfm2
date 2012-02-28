@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @category ConfigFiles
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3

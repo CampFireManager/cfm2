@@ -1,18 +1,16 @@
 <?php
 /**
- * CCHits.net is a website designed to promote Creative Commons Music,
- * the artists who produce it and anyone or anywhere that plays it.
- * These files are used to generate the site.
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
  *
  * PHP version 5
  *
  * @category Default
- * @package  CCHitsClass
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     http://cchits.net Actual web service
- * @link     http://code.cchits.net Developers Web Site
- * @link     http://gitorious.net/cchits-net Version Control Service
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 /**
  * A basic autoloader

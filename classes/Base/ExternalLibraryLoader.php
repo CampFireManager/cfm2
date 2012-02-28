@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @category CampFireManager2
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
@@ -16,7 +16,7 @@
  * This singleton class handles all the loading of external libraries.
  *
  * @category Base_ExternalLibraryLoader
- * @package  CampFireManager2_Base
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

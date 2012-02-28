@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @category CampFireManager2
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
@@ -16,7 +16,7 @@
  * This plugin is used to broadcast to twitter when talks are about to start.
  *
  * @category Plugin_Twitter
- * @package  CampFireManager2_Plugin
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

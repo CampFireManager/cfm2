@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @category CampFireManager2
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
@@ -19,7 +19,7 @@
  * slot), or not locked at all.
  * 
  * @category Object_DefaultSlotType
- * @package  CampFireManager2_Objects
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
@@ -45,7 +45,7 @@ class Object_DefaultSlotType extends Base_GenericObject
  * This class defines some default and demo data for the use in demos.
  * 
  * @category Object_DefaultSlotType
- * @package  CampFireManager2_Objects
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

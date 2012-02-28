@@ -1,14 +1,16 @@
 <?php
 /**
- * Missing Function Finder is a script to ensure all referenced functions are included in all the scripts.
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
  *
  * PHP version 5
  *
- * @category Testing
- * @package  CCHitsTests
+ * @category Default
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     http://gitorious.net/cchits-net Version Control Service
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 if ( ! isset($argv[1]) or $argv[1] == '') {
     showHelp("No directory specified.");

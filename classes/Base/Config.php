@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @category CampFireManager2
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
@@ -18,7 +18,7 @@
  * secure configuration (api keys, password salts etc.)
  *
  * @category Base_Config
- * @package  CampFireManager2_Base
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
@@ -327,13 +327,10 @@ class Base_Config
 }
 
 /**
- * This class is a wrapper for the Configuration objects retrieved for use
- * in the API. It is functionally sound, as it will allow the user to set global
- * configuration options. These, however, will be overriden by the local config
- * files.
+ * This class defines some default and demo data for the use in demos.
  *
- * @category Base
- * @package  Config
+ * @category Base_Config
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @category CampFireManager2
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
@@ -16,7 +16,7 @@
  * This class defines the object for PDO to use when retrives data about a tag.
  * 
  * @category Object_Tag
- * @package  CampFireManager2_Objects
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
@@ -42,7 +42,7 @@ class Object_Tag extends Base_GenericObject
  * This class defines some default and demo data for the use in demos.
  * 
  * @category Object_Tag
- * @package  CampFireManager2_Objects
+ * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

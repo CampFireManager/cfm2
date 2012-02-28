@@ -6,13 +6,16 @@
  *
  * PHP version 5
  *
- * @category Initialization
+ * @category Default
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
+/**
+ * This file defines the autoloader for the classes mentioned elsewhere.
+ */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
 Base_Config::initializeDemo();
 foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) {
