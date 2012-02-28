@@ -22,10 +22,8 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_Timetable
+class Collection_Timetable extends Base_GenericCollection
 {
-    protected $arrData = array();
-    
     /**
      * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
      *
@@ -48,51 +46,54 @@ class Collection_Timetable
         if ($date != null) {
             $date = date('Y-m-d', strtotime($date));
         }
+        $self = self::getHandler();
         
-        $this->arrData['Rooms'] = Object_Room::brokerAll();
-        $this->arrData['Slots'] = Object_Slot::brokerAll();
-        $this->arrData['Talks'] = Object_Talk::brokerAll();
+        $arrRoomObjects = Object_Room::brokerAll();
+        $arrSlotObjects = Object_Slot::brokerAll();
+        $arrTalkObjects = Object_Talk::brokerAll();
+        $arrDefaultSlotTypeObjects = Object_DefaultSlotType::brokerAll();
+        foreach ($arrDefaultSlotTypeObjects as $objDefaultSlotType) {
+            $arrDefaultSlotTypes[$objDefaultSlotType->getKey('intDefaultSlotTypeID')] = $objDefaultSlotType->getSelf();
+        }
 
-        foreach ($this->arrData['Rooms'] as $room) {
-            $room->setFull(true);
-            $this->arrData['Timetable']['Rooms'][$room->getKey('intRoomID')] = $room->getSelf();
-        }
-        foreach ($this->arrData['Slots'] as $slot) {
-            $slot->setFull(true);
-            $this->arrData['Timetable']['Slots'][$slot->getKey('intSlotID')] = $slot->getSelf();
-        }
-        
-        if (is_array($this->arrData['Rooms']) && is_array($this->arrData['Slots'])) {
-            foreach ($this->arrData['Rooms'] as $room) {
-                foreach ($this->arrData['Slots'] as $slot) {
-                    if ($date == null || $slot->getKey('startDate') == $date) {
-                        $this->arrData['Timetable']['Room_' . $room->getKey('intRoomID')]['Slot_' . $slot->getKey('intSlotID')] = $slot->getKey('intDefaultSlotTypeID');
+        foreach ($arrSlotObjects as $objSlot) {
+            if ($date == null || $objSlot->getKey('startDate') == $date) {
+                foreach ($arrRoomObjects as $objRoom) {
+                    $objRoom->setFull(true);
+                    if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
+                        $self->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
+                            'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
+                            'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
+                            'arrRoom' => $objRoom->getSelf(),
+                            'arrSlot' => $objSlot->getSelf()
+                        );
+                    } else {
+                        $self->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
+                            'strTalkTitle' => '', 
+                            'isLocked' => 'none',
+                            'arrRoom' => $objRoom->getSelf(),
+                            'arrSlot' => $objSlot->getSelf()
+                        );
                     }
                 }
             }
         }
-        
-        if (is_array($this->arrData['Talks'])) {
-            foreach ($this->arrData['Talks'] as $talk) {
-
-                $talk->setFull(true);
-                for ($slot = $talk->getKey('intSlotID'); $slot < $talk->getKey('intSlotID') + $talk->getKey('intLength'); $slot++) {
-                    if ($date == null || $slot->getKey('startDate') == $date) {
-                        $this->arrData['Timetable']['Room_' . $talk->getKey('intRoomID')]['Slot_' . $slot] = $talk->getSelf();
+                
+        if (is_array($arrTalkObjects)) {
+            foreach ($arrTalkObjects as $objTalk) {
+                $objTalk->setFull(true);
+                for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
+                    if ($date == null || $objSlot->getKey('startDate') == $date) {
+                        $self->arrData[$objTalk->getKey('intRoomID')][$intSlotID] = $objTalk->getSelf();
+                        if ($objTalk->getKey('isSlotLocked') == 1) {
+                            $self->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'hardlock';
+                        } else {
+                            $self->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'none';
+                        }
                     }
                 }
             }
         }
-        return $this->arrData;
-    }
-
-    /**
-     * A function to return all the timetable data. This will probably be superceeded by something.
-     *
-     * @return array
-     */
-    public function getSelf()
-    {
-        return $this->arrData['Timetable'];
+        return array($self);
     }
 }
