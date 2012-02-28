@@ -1,6 +1,6 @@
 #! /bin/bash
 BASE_DIR="`dirname $0`"
-GENDOCS=false
+GENDOCS=true
 if [ "$1" == "true" ]; then
   GENDOCS=true
 fi
@@ -15,7 +15,7 @@ if [ -z $2 ]; then
   if [ ! -s /tmp/phpcs_stats ]; then
     if [ "$GENDOCS" == "true" ]; then
       echo -n "Generating Documentation... "
-      `which phpdoc` -o HTML:frames:earthli -d "$BASE_DIR/.." -t "$BASE_DIR/../DOCS" > /dev/null
+      `which phpdoc` -i */ExternalLibraries/*/*,*/Templates/C* -o HTML:frames:earthli -d "$BASE_DIR/.." -t "$BASE_DIR/../DOCS" > /dev/null
     fi
     echo "Done."
   fi
