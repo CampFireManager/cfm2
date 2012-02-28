@@ -107,6 +107,7 @@ class Object_Talk extends Base_GenericObject
                     $self['arrPresenters'][] = $objPresenter->getSelf();
                 }
             }
+            $self['intVotes'] = Object_Vote::countByColumnSearch('intTalkID', $this->intTalkID);
         }
         return $self;
     }

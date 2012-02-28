@@ -26,7 +26,8 @@ class Object_Track extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-    	'strTrackName' => array('type' => 'varchar', 'length' => 255)
+    	'strTrackName' => array('type' => 'varchar', 'length' => 255),
+        'rgbColour' => array('type' => 'varchar', 'length' => 6)
     );
     protected $strDBTable = "track";
     protected $strDBKeyCol = "intTrackID";
@@ -34,6 +35,7 @@ class Object_Track extends Base_GenericObject
     // Local Object Requirements
     protected $intTrackID = null;
     protected $strTrackName = null;
+    protected $rgbColour = null;
     // Post-processing Properties
     protected $arrTalks = null;
 

@@ -180,6 +180,44 @@ class Base_GenericObject
     }
 
     /**
+     * Get a tally of the number of objects by a particular search field
+     *
+     * @param string $column The column to search
+     * @param string $value  The value to look for.
+     * 
+     * @return integer The number of rows matching the search criteria
+     */
+    static function countByColumnSearch($column = null, $value = null)
+    {
+        if ($column == null) {
+            return false;
+        }
+        $objCache = Base_Cache::getHandler();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
+        $process = false;
+        foreach ($this_class->arrDBItems as $db_item => $dummy) {
+            if ($db_item == $column) {
+                $process = true;
+            }
+        }
+        if ($process == false) {
+            return false;
+        }
+        try {
+            $db = Base_Database::getConnection();
+            $sql = "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable} WHERE {$column} = ?";
+            $query = $db->prepare($sql);
+            $query->execute(array($value));
+            $result = $query->fetchColumn();
+            return $result;
+        } catch(PDOException $e) {
+            error_log('Error running SQL Query: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
      * Get all objects by a particular search field
      *
      * @return array The array of objects matching this search
@@ -208,6 +246,31 @@ class Base_GenericObject
         }
     }
 
+    /**
+     * Get a tally of the number of rows in a table
+     *
+     * @return integer The number of rows in the table
+     */
+    static function countAll()
+    {
+        if ($column == null) {
+            return false;
+        }
+        $objCache = Base_Cache::getHandler();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
+        try {
+            $db = Base_Database::getConnection();
+            $sql = "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable}";
+            $query = $db->prepare($sql);
+            $query->execute();
+            $result = $query->fetchColumn();
+            return $result;
+        } catch(PDOException $e) {
+            error_log('Error running SQL Query: ' . $e->getMessage());
+            return false;
+        }
+    }
     
     /**
      * Set booleanFull to this value - expands the existing object to include it's
@@ -268,7 +331,9 @@ class Base_GenericObject
     /**
      * Ensure that all database items are backed up before processing
      *
-     * @param boolean $isReal Used to determine whether to process the response further. Not used in this class but may be used in derived classes. Here for safety sake.
+     * @param boolean $isReal Used to determine whether to process the response 
+     * further. Not used in this class but may be used in derived classes. Here
+     * for safety sake.
      * 
      * @return object This class.
      */
