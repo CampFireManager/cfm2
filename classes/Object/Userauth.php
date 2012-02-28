@@ -1,4 +1,26 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class defines the object for PDO to use when retrives data about a talk.
+ * 
+ * @category Object_Userauth
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Object_Userauth extends Base_GenericObject
 {
@@ -17,7 +39,47 @@ class Object_Userauth extends Base_GenericObject
     protected $strAuthValue = null;
     protected $strCleartext = null;
 
-    function set_enumAuthType($set = '')
+    /**
+     * This overloaded function will process the normal setKey function, unless
+     * it matches a pre-defined set of overideable functions.
+     * 
+     * @param string       $keyname The key to set
+     * @param string|array $value   The value(s) to set against the key
+     * 
+     * @return void
+     */
+    function setKey($keyname = '', $value = '')
+    {
+        switch ($keyname) {
+        case 'enumAuthType':
+            $this->set_enumAuthType($value);
+            break;
+        case 'strAuthValue':
+            if (is_array($value) && isset($value['username']) && isset($value['password'])) {
+                $username = $value['username'];
+                $password = $value['password'];
+                $this->set_strAuthValue($password, $username);
+            } elseif (is_array($value) && isset($value['password'])) {
+                $password = $value['password'];
+                $this->set_strAuthValue($password);
+            } elseif (is_string($value)) {
+                $this->set_strAuthValue($value);
+            } else {
+                return false;
+            }
+        default:
+            parent::setKey($keyname, $value);
+        }
+    }
+    
+    /**
+     * The function to set the enumAuthType from a list of pre-defined enums.
+     *
+     * @param string $set Value to set
+     * 
+     * @return void
+     */
+    private function set_enumAuthType($set = '')
     {
         if ($set != '' && $this->enumAuthType != $set) {
             $valid = false;
@@ -33,6 +95,14 @@ class Object_Userauth extends Base_GenericObject
         }
     }
 
+    /**
+     * The Authentication Credentials to commit to the database.
+     *
+     * @param string $password The password to set
+     * @param string $username The optional username to set
+     * 
+     * @return void
+     */
     function set_strAuthValue($password = '', $username = '')
     {
         if ($this->enumAuthType != null) {
@@ -49,6 +119,11 @@ class Object_Userauth extends Base_GenericObject
         }
     }
 
+    /**
+     * A function to broker the current user object back to the engine.
+     *
+     * @return object 
+     */
     function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
@@ -171,21 +246,21 @@ class Object_Userauth extends Base_GenericObject
         } elseif ($codeonly != false) {
             $this_class->set_enumAuthType('codeonly');
             $authString = '';
-            while($authString == '') {
-              $authString = Base_GeneralFunctions::genRandStr(5, 9);
-              if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Base_Config::getConfigSecure('salt') . $authString))) > 0) {
-                  $authString == '';
-              }
+            while ($authString == '') {
+                $authString = Base_GeneralFunctions::genRandStr(5, 9);
+                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Base_Config::getConfigSecure('salt') . $authString))) > 0) {
+                    $authString == '';
+                }
             }
             $this_class->set_strAuthValue($authString, $codeonly);
         } elseif ($onetime == true) {
             $this_class->set_enumAuthType('onetime');
             $authString = '';
-            while($authString == '') {
-              $authString = Base_GeneralFunctions::genRandStr(8, 12);
-              if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Base_Config::getConfigSecure('salt') . $authString))) > 0) {
-                  $authString == '';
-              }
+            while ($authString == '') {
+                $authString = Base_GeneralFunctions::genRandStr(8, 12);
+                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Base_Config::getConfigSecure('salt') . $authString))) > 0) {
+                    $authString == '';
+                }
             }
             $this_class->set_strAuthValue($authString, 'onetime');
         } else {
@@ -195,6 +270,12 @@ class Object_Userauth extends Base_GenericObject
         return $this;
     }
     
+    /**
+     * This overloaded function returns the data from the PDO object and adds
+     * supplimental data based on linked tables
+     * 
+     * @return array
+     */
     function getSelf()
     {
         $self = parent::getSelf();
@@ -219,6 +300,16 @@ class Object_Userauth extends Base_GenericObject
         return $self;
     }
 }
+
+/**
+ * This class defines some default and demo data for the use in demos.
+ * 
+ * @category Object_Userauth
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Object_Userauth_Demo extends Object_Userauth
 {

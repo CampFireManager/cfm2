@@ -1,4 +1,26 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class defines the object for PDO to use when retrives data about a room.
+ * 
+ * @category Object_Room
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Object_Room extends Base_GenericObject
 {
@@ -20,6 +42,12 @@ class Object_Room extends Base_GenericObject
     protected $strRoomName = null;
     protected $jsonResourceList = null;
     
+    /**
+     * This overloaded function returns the data from the PDO object and adds
+     * supplimental data based on linked tables
+     * 
+     * @return array
+     */
     function getSelf()
     {
         $self = parent::getSelf();
@@ -36,6 +64,15 @@ class Object_Room extends Base_GenericObject
     }
 }
 
+/**
+ * This class defines some default and demo data for the use in demos.
+ * 
+ * @category Object_Room
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 class Object_Room_Demo extends Object_Room
 {
     protected $mustBeAdminToModify = false;

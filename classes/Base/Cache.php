@@ -15,8 +15,8 @@
 /**
  * This class caches all the responses from the database searches.
  *
- * @category Base
- * @package  Cache
+ * @category Base_Cache
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

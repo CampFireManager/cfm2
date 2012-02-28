@@ -16,8 +16,8 @@
  * This class provides all the object specific functions used throughout the site.
  * It is used as the basis for every object.
  *
- * @category Object
- * @package  Generic
+ * @category Base_GenericObject
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
@@ -25,14 +25,74 @@
 
 class Base_GenericObject
 {
-    // Generic Object Requirements
+    /**
+     * This is an array of database items. It is an array of arrays, where the
+     * outer array has keys which make up the database table, and each key has
+     * an array of database attributes, including the type, the length and 
+     * whether the key is unique or not.
+     * 
+     * This array is used to validate whether updates apply to the database or
+     * not, and to initialize the database.
+     * 
+     * @var array
+     */
     protected $arrDBItems = array();
+    /**
+     * This defines the name of the database table. It is used in subsequent
+     * queries.
+     * 
+     * @var string
+     */
     protected $strDBTable = "";
+    /**
+     * This is name of the primary key column - it will be an integer, of length
+     * 11 that auto increments.
+     * 
+     * @var string
+     */
     protected $strDBKeyCol = "";
+    /**
+     * This array is used to compact update requests, by ensuring that only the
+     * changes are sent to the database. Each key is processed, and running the
+     * setKey() function will create a key in this table, with the value set to
+     * true.
+     * 
+     * @var array
+     */
     protected $arrChanges = array();
+    /**
+     * If this is set to true, when running the getSelf() function, it will
+     * drill down into the linked tables to derive as much information as
+     * possible, and return it all as an array.
+     * 
+     * @var boolean
+     */
     protected $booleanFull = false;
+    /**
+     * Whenever this object is instantiated, it copies all of its values into
+     * the $old array. This means, we can compare against the old column if
+     * needed.
+     * 
+     * @var array
+     */
     protected $old = array();
+    /**
+     * This variable, if set to true, will require the user making the chage to
+     * be considered to be an administator to configure them. This relates to
+     * key concerns around concrete values - such as the available rooms, slots
+     * etc.
+     * 
+     * @var boolean
+     */
     protected $mustBeAdminToModify = false;
+    /**
+     * This variable contains demonstration data for the extensions to each of
+     * the Object_ classes, allowing you to create a full demonstration site
+     * with relative ease. This array goes hand-in-hand with the $arrDBItems
+     * array for initial set-ups.
+     * 
+     * @var array|null
+     */
     protected $arrDemoData = null;
     
     /**

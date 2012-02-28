@@ -1,4 +1,29 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class defines the default value for a slot, and whether this value would
+ * hardlock that slot (no-one can put a talk into that slot), softlock (anyone 
+ * can propos a talk for that slot, but it won't be dynamically sorted into that
+ * slot), or not locked at all.
+ * 
+ * @category Object_DefaultSlotType
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Object_DefaultSlotType extends Base_GenericObject
 {
@@ -16,6 +41,15 @@ class Object_DefaultSlotType extends Base_GenericObject
     protected $locksSlot = null;
 }
 
+/**
+ * This class defines some default and demo data for the use in demos.
+ * 
+ * @category Object_DefaultSlotType
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 class Object_DefaultSlotType_Demo extends Object_DefaultSlotType
 {
     protected $mustBeAdminToModify = false;

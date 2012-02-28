@@ -1,8 +1,29 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category CampFireManager2
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+/**
+ * This class defines the object for PDO to use when retrives data about a talk.
+ * 
+ * @category Object_User
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 class Object_User extends Base_GenericObject
 {
-    // Generic Object Requirements
     protected $arrDBItems = array(
     	'strUserName' => array('type' => 'varchar', 'length' => 255),
         'isWorker' => array('type' => 'tinyint', 'length' => 1),
@@ -62,9 +83,10 @@ class Object_User extends Base_GenericObject
      * 
      * @param boolean $isReal Perform Creation Actions (default false)
      *
-     * @return object
+     * @return object This object
      */
-    function __construct($isReal = false) {
+    function __construct($isReal = false)
+    {
         parent::__construct($isReal);
         if (! $isReal) {
             return $this;
@@ -83,6 +105,11 @@ class Object_User extends Base_GenericObject
         }
     }
     
+    /**
+     * This function clears values related to a logged in user.
+     * 
+     * @return void
+     */
     function logout()
     {
         Base_GeneralFunctions::sessionStart();
@@ -98,6 +125,12 @@ class Object_User extends Base_GenericObject
         }
     }
     
+    /**
+     * This overloaded function returns the data from the PDO object and adds
+     * supplimental data based on linked tables
+     * 
+     * @return array
+     */
     function getSelf()
     {
         $self = parent::getSelf();
@@ -111,6 +144,15 @@ class Object_User extends Base_GenericObject
     }
 }
 
+/**
+ * This class defines some default and demo data for the use in demos.
+ * 
+ * @category Object_User
+ * @package  CampFireManager2_Objects
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 class Object_User_Demo extends Object_User
 {
     protected $arrDemoData = array(

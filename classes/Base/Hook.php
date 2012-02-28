@@ -16,8 +16,8 @@
  * This class handles all hooks and triggers for the site, including loading
  * all the hook/plugin objects.
  *
- * @category Base
- * @package  Hook
+ * @category Base_Hook
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

@@ -16,8 +16,8 @@
  * This class provides all the functions which are needed by code in the site
  * but which don't fit into more specific classes.
  *
- * @category Base
- * @package  ResponseHandler
+ * @category Base_Response
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

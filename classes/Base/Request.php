@@ -16,8 +16,8 @@
  * This class reads everything related to the request that might be useful to the
  * script, and passes it back as an array.
  *
- * @category Base
- * @package  RequestParser
+ * @category Base_Request
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

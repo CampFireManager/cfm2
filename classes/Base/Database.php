@@ -17,8 +17,8 @@
  * read-write or read-only) and returns a handler for that to the rest of the
  * code.
  *
- * @category Base
- * @package  Database
+ * @category Base_Database
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service

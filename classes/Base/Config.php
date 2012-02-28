@@ -17,8 +17,8 @@
  * handles local configuration (per-server), global configuration (per-site) and
  * secure configuration (api keys, password salts etc.)
  *
- * @category Base
- * @package  Config
+ * @category Base_Config
+ * @package  CampFireManager2_Base
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
