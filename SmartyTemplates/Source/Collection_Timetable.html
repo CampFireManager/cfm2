@@ -1,0 +1,11 @@
+{include file="header.tpl" title="Timetable"}
+<table>
+{foreach $Collection_Timetable[0] as $roomid=>$roomcontent}
+    <tr>
+{foreach $roomcontent as $slotid=>$slotcontent}
+        <td></td>
+{/foreach}
+    </tr>
+{/foreach}
+</table>
+{include file="footer.tpl"}

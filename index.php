@@ -53,34 +53,57 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
 }
     
 // What type of objects can we request
-$object = array('config' => 'Base_Config');
+$arrValidObjects = array('config' => 'Base_Config');
 
 foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) {
     if ($file->isDir() || $file->isDot()) continue;
     if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
-        $object[strtolower($file->getBasename('.php'))] = 'Object_' . $file->getBasename('.php');
+        $arrValidObjects[strtolower($file->getBasename('.php'))] = 'Object_' . $file->getBasename('.php');
     }
 }
 
 foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Collection') as $file) {
     if ($file->isDir() || $file->isDot()) continue;
     if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
-        $object[strtolower($file->getBasename('.php'))] = 'Collection_' . $file->getBasename('.php');
+        $arrValidObjects[strtolower($file->getBasename('.php'))] = 'Collection_' . $file->getBasename('.php');
     }
 }
 
+/**
+ * A value which stores the last processed object type
+ * @var string
+ */
 $lastObject = null;
+/**
+ * An array of objects requested
+ * @var array
+ */
 $useObjects = array();
+/**
+ * An array of the processed requested objects
+ * @var array
+ */
 $arrObjects = array();
+/**
+ * An array containing the values from the requested objects
+ * @var array
+ */
 $arrObjectsData = array();
+/**
+ * Load the template of the last object type requested. This value stores what
+ * that was.
+ * @var string
+ */
+$renderPage = null;
 
 if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0 && $arrRequestData['pathItems'][0] != '') {
     foreach ($arrRequestData['pathItems'] as $pathItem) {
-        if (isset($object[$pathItem])) {
-            $useObjects[$object[$pathItem]] = null;
+        if (isset($arrValidObjects[$pathItem])) {
+            $useObjects[$arrValidObjects[$pathItem]] = null;
             $lastObject = $pathItem;
+            $renderPage = $arrValidObjects[$pathItem];
         } elseif ($lastObject != null) {
-            $useObjects[$object[$lastObject]] = $pathItem;
+            $useObjects[$arrValidObjects[$lastObject]] = $pathItem;
             $lastObject = null;
         }
     }
@@ -93,7 +116,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
         }
     }
 } else {
-    Base_Response::redirectTo('Timetable');
+    Base_Response::redirectTo('timetable');
 }
 
 $useObjects['Object_User'] = 'current';
@@ -123,5 +146,5 @@ if ($rest) {
         break;
     }
 } else {
-    Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+    Base_TemplateLoader::render($renderPage, $arrObjectsData);
 }
