@@ -40,4 +40,36 @@ class Plugin_Verbose
         }
         echo "}\r\n";
     }
+
+    /**
+     * This function triggers whenever a deleteRecord is called.
+     * 
+     * @param object $object The object in which the deleteRecord was just triggered
+     * 
+     * @return void
+     */
+    function hook_deleteRecord($object)
+    {
+        echo "(" . $object->sql . ") {";
+        foreach ($object->sql_value as $valuename => $value) {
+            echo "$valuename - $value, ";
+        }
+        echo "}\r\n";
+    }
+
+    /**
+     * This function triggers whenever an updateRecord is called.
+     * 
+     * @param object $object The object in which the updateRecord was just triggered
+     * 
+     * @return void
+     */
+    function hook_updateRecord($object)
+    {
+        echo "(" . $object->sql . ") {";
+        foreach ($object->sql_value as $valuename => $value) {
+            echo "$valuename - $value, ";
+        }
+        echo "}\r\n";
+    }
 }
