@@ -1,4 +1,17 @@
 <?php
+/**
+ * CampFire Manager is a scheduling tool predominently used at BarCamps to 
+ * schedule talks based, mainly, on the number of people attending each talk
+ * receives.
+ *
+ * PHP version 5
+ *
+ * @category ConfigFiles
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 
 $RW_TYPE = 'mysql';
 $RW_HOST = '127.0.0.1';
