@@ -91,8 +91,7 @@ class Collection_Timetable
      *
      * @return array
      */
-    
-    public function getData()
+    public function getSelf()
     {
         return $this->arrData['Timetable'];
     }
