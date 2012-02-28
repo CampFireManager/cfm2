@@ -27,6 +27,21 @@ class Base_ExternalLibraryLoader
     protected $libs = array();
     protected $externalsDir = null;
 
+    protected static $externallibraryloader_handler = null;
+
+    /**
+     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
+     *
+     * @return object This class by itself.
+     */
+    public static function getHandler()
+    {
+        if (self::$externallibraryloader_handler == null) {
+            self::$externallibraryloader_handler = new self();
+        }
+        return self::$externallibraryloader_handler;
+    }
+
     /**
      * Construct the array of libs
      *
@@ -63,18 +78,19 @@ class Base_ExternalLibraryLoader
      *
      * @return string Library version to load
      */
-    function getVersion($library = '')
+    function loadLibrary($library = '')
     {
-        if (isset($this->libs[$library]) and file_exists($this->externalsDir . '/' . $library . '/' . $this->libs[$library])) {
-            return $this->libs[$library];
+        $self = self::getHandler();
+        if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
+            return $self->externalsDir . '/' . $library . '/' . $self->libs[$library];
         } else {
-            if (file_exists($this->externalsDir . '/libraries.json')) {
-                unlink($this->externalsDir . '/libraries.json');
+            if (file_exists($self->externalsDir . '/libraries.json')) {
+                unlink($self->externalsDir . '/libraries.json');
             }
-            $this->libs = array();
-            $this->__construct();
-            if (isset($this->libs[$library]) and file_exists($this->externalsDir . '/' . $library . '/' . $this->libs[$library])) {
-                return $this->libs[$library];
+            $self->libs = array();
+            $self->__construct();
+            if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
+                return $self->externalsDir . '/' . $library . '/' . $self->libs[$library];
             } else {
                 return false;
             }

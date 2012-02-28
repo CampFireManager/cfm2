@@ -1,1 +1,3 @@
-php_OpenID
+PHP_OpenID from https://github.com/openid/php-openid
+TwitterHelper (AKA tmhOAuth) from https://github.com/themattharris/tmhOAuth/
+Smarty from http://www.smarty.net
