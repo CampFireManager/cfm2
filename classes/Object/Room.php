@@ -32,11 +32,6 @@ class Object_Room extends Base_GenericObject
     protected $strDBTable = "room";
     protected $strDBKeyCol = "intRoomID";
     protected $mustBeAdminToModify = true;
-    protected $arrDemoData = array(
-        array('intRoomID' => 1, 'strRoomName' => 'Room A', 'jsonResourceList' => '[1,2]'),
-        array('intRoomID' => 2, 'strRoomName' => 'Room B', 'jsonResourceList' => '[2,3]'),
-        array('intRoomID' => 3, 'strRoomName' => 'Room C', 'jsonResourceList' => '[3]')
-    );
     // Local Object Requirements
     protected $intRoomID = null;
     protected $strRoomName = null;

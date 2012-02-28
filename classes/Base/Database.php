@@ -62,7 +62,7 @@ class Base_Database
         } else {
             include dirname(__FILE__) . '/../../config/default.php';
             try {
-                if (!isset($RO_DSN)) {
+                if ($RO_DSN == '') {
                     $RequireWrite = true;
                     $self->ro_db = &$self->rw_db;
                 }

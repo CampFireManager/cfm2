@@ -33,7 +33,7 @@ class Base_TemplateLoader
      *
      * @return void
      */
-    function __construct($template = '', $arrAssignments = array())
+    static function render($template = '', $arrAssignments = array())
     {
         $libSmarty = Base_ExternalLibraryLoader::loadLibrary("Smarty");
         if ($libSmarty == false) {
@@ -41,7 +41,7 @@ class Base_TemplateLoader
         }
         $libSmarty .= '/libs/Smarty.class.php';
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
-        $smarty_debugging = (Base_Config::getConfig('smarty_debug', 'false'));
+        $smarty_debugging = (Base_Config::getConfig('smarty_debug', 'true'));
         include_once $libSmarty;
         $objSmarty = new Smarty();
         if ($smarty_debugging) {
@@ -54,7 +54,7 @@ class Base_TemplateLoader
                 $objSmarty->assign($key, $value);
             }
         }
-        $objSmarty->display($template . '.tpl');
+        $objSmarty->display($template . '.html');
     }
 
 }
