@@ -141,22 +141,22 @@ class Base_Request
 
             // Let's check if they gave us HTTP credentials
 
-            $handler->arrRequestData['username'] = null;
-            $handler->arrRequestData['password'] = null;
+            $username = null;
+            $password = null;
             if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
                 $auth_params = explode(":", base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
-                $handler->arrRequestData['username'] = $auth_params[0];
+                $username = $auth_params[0];
                 unset($auth_params[0]);
-                $handler->arrRequestData['password'] = implode('', $auth_params);
+                $password = implode('', $auth_params);
             } elseif (isset($_SERVER['PHP_AUTH_USER']) and isset($_SERVER['PHP_AUTH_PW'])) {
-                $handler->arrRequestData['username'] = $_SERVER['PHP_AUTH_USER'];
-                $handler->arrRequestData['password'] = $_SERVER['PHP_AUTH_PW'];
+                $username = $_SERVER['PHP_AUTH_USER'];
+                $password = $_SERVER['PHP_AUTH_PW'];
             }
            
-            if ($handler->arrRequestData['username'] != null) {
-                $url .= $handler->arrRequestData['username'];
-                if ($handler->arrRequestData['password'] != null) {
-                    $url .= ':' . $handler->arrRequestData['password'];
+            if ($username != null) {
+                $url .= $username;
+                if ($password != null) {
+                    $url .= ':' . $password;
                 }
                 $url .= '@';
             }
@@ -165,32 +165,6 @@ class Base_Request
                 $url .= ':' . $_SERVER['SERVER_PORT'];
             }
             $url .= $_SERVER['REQUEST_URI'];
-            switch(strtolower($_SERVER['REQUEST_METHOD'])) {
-            case 'head':
-                // Typically a request to see if this has changed since the last time
-                $handler->arrRequestData['method'] = 'head';
-                $data = $_REQUEST;
-                break;
-            case 'get':
-                $data = $_GET;
-                break;
-            case 'post':
-                $handler->arrRequestData['method'] = 'post';
-                $data = $_POST;
-                if (isset($_FILES) and is_array($_FILES)) {
-                    $data['_FILES'] = $_FILES;
-                }
-                break;
-            case 'put':
-                $handler->arrRequestData['method'] = 'put';
-                parse_str(file_get_contents('php://input'), $_PUT);
-                $data = $_PUT;
-                break;
-            case 'delete':
-                $handler->arrRequestData['method'] = 'delete';
-                $data = $_REQUEST;
-                break;
-            }
         }
 
         // Next, parse the URL or script name we just received, and store it.
@@ -207,6 +181,39 @@ class Base_Request
             $handler->arrRequestData['requestUrlExcludingParameters'] = $url;
         }
 
+        $handler->arrRequestData['username'] = $username;
+        $handler->arrRequestData['password'] = $password;
+
+        switch(strtolower($_SERVER['REQUEST_METHOD'])) {
+        case 'head':
+            // Typically a request to see if this has changed since the last time
+            $handler->arrRequestData['method'] = 'head';
+            $data = $_REQUEST;
+            break;
+        case 'get':
+            $handler->arrRequestData['method'] = 'get';
+            $data = $_GET;
+            break;
+        case 'post':
+            $handler->arrRequestData['method'] = 'post';
+            $data = $_POST;
+            if (isset($_FILES) and is_array($_FILES)) {
+                $data['_FILES'] = $_FILES;
+            }
+            break;
+        case 'put':
+            $handler->arrRequestData['method'] = 'put';
+            parse_str(file_get_contents('php://input'), $_PUT);
+            $data = $_PUT;
+            break;
+        case 'delete':
+            $handler->arrRequestData['method'] = 'delete';
+            $data = $_REQUEST;
+            break;
+        }
+
+
+        
         // Store any of the parameters we aquired before. Add an "if-modified-since" parameter too.
 
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
