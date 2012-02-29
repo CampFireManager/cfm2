@@ -144,8 +144,13 @@ class Base_GeneralFunctions
      *
      * @return boolean Result
      */
-    function asBoolean($check)
+    public static function asBoolean($check)
     {
+        if ($check === true) {
+            return true;
+        } elseif ($check === false) {
+            return false;
+        }
         switch((string) $check) {
         case 'no':
         case '0':
