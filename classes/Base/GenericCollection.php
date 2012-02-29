@@ -48,7 +48,7 @@ class Base_GenericCollection
      * 
      * @return object This class.
      */
-    function __construct($isReal = false)
+    protected function __construct($isReal = false)
     {
         return $this;
     }
@@ -74,5 +74,138 @@ class Base_GenericCollection
     public function setFull($dummy = false)
     {
         return $dummy;
+    }
+
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @return boolean
+     */
+    public function delete()
+    {
+        return false;
+    }
+
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @return boolean
+     */
+    public function create()
+    {
+        return false;
+    }
+
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @return boolean
+     */
+    public function write()
+    {
+        return false;
+    }
+
+    /**
+     * Get a key from the collated data
+     * 
+     * @param string $key The value from the collated data
+     *
+     * @return mixed
+     */
+    public function getKey($key = '')
+    {
+        if (isset($this->arrData[$key])) {
+            return $this->arrData[$key];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @param mixed $key   Dummy value
+     * @param mixed $value Dummy value
+     * 
+     * @return boolean
+     */
+    public function setKey($key = '', $value = '')       
+    {
+        return false;
+    }
+    
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @return boolean
+     */
+    public function getFull()
+    {
+        return false;
+    }
+    
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @param mixed $column Dummy value
+     * @param mixed $value  Dummy value
+     * 
+     * @return boolean
+     */
+    public function countByColumnSearch($column = '', $value = '')
+    {
+        return false;
+    }
+
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @param mixed $column Dummy value
+     * @param mixed $value  Dummy value
+     * 
+     * @return boolean
+     */
+    public static function brokerByColumnSearch($column = '', $value = '')
+    {
+        return false;
+    }
+    /**
+     * Return a specific aspect of the class
+     *
+     * @param string $id The collection ID to retrieve. Leave blank for all of 
+     * those collection objects.
+     * 
+     * @return array
+     */
+    public static function brokerByID($id = null)
+    {
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name($id);
+        if (is_object($this_class)) {
+            return $this_class;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This is a dummy function in case the function is called by accident
+     *
+     * @return integer There will only ever be one collection at a time
+     */
+    static public function countAll()
+    {
+        return 1;
+    }
+    
+    /**
+     * Return everything to do with this collection
+     *
+     * @return array
+     */
+    public static function brokerAll()
+    {
+        return array(self::brokerByID());
     }
 }

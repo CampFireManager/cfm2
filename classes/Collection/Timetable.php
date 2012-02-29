@@ -25,29 +25,14 @@
 class Collection_Timetable extends Base_GenericCollection
 {
     /**
-     * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
+     * Collect the data for this collection
      *
-     * @return array
-     */
-    public static function brokerAll()
-    {
-        return Collection_Timetable::brokerByID();
-    }
-    
-    /**
-     * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
-     *
-     * @param string $date The date of the timetable to retrieve. Leave blank for all dates known
+     * @param integer|null $date The date to return, or everything if null
      * 
-     * @return array
+     * @return object This class 
      */
-    public static function brokerByID($date = null)
+    protected function __construct($date = null)
     {
-        if ($date != null) {
-            $date = date('Y-m-d', strtotime($date));
-        }
-        $self = self::getHandler();
-        
         $arrRoomObjects = Object_Room::brokerAll();
         $arrSlotObjects = Object_Slot::brokerAll();
         $arrTalkObjects = Object_Talk::brokerAll();
@@ -61,14 +46,14 @@ class Collection_Timetable extends Base_GenericCollection
                 foreach ($arrRoomObjects as $objRoom) {
                     $objRoom->setFull(true);
                     if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
-                        $self->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
+                        $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                             'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
                             'arrRoom' => $objRoom->getSelf(),
                             'arrSlot' => $objSlot->getSelf()
                         );
                     } else {
-                        $self->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
+                        $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => '', 
                             'isLocked' => 'none',
                             'arrRoom' => $objRoom->getSelf(),
@@ -84,16 +69,31 @@ class Collection_Timetable extends Base_GenericCollection
                 $objTalk->setFull(true);
                 for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
                     if ($date == null || $objSlot->getKey('startDate') == $date) {
-                        $self->arrData[$objTalk->getKey('intRoomID')][$intSlotID] = $objTalk->getSelf();
+                        $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID] = $objTalk->getSelf();
                         if ($objTalk->getKey('isSlotLocked') == 1) {
-                            $self->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'hardlock';
+                            $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'hardlock';
                         } else {
-                            $self->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'none';
+                            $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'none';
                         }
                     }
                 }
             }
         }
-        return array($self);
+        return $this;
+    }
+    
+    /**
+     * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
+     *
+     * @param string $date The date of the timetable to retrieve. Leave blank for all dates known
+     * 
+     * @return array
+     */
+    public static function brokerByID($date = null)
+    {
+        if ($date != null) {
+            $date = date('Y-m-d', strtotime($date));
+        }
+        return parent::brokerByID($date);
     }
 }
