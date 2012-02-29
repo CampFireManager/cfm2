@@ -53,6 +53,20 @@ class Object_Slot extends Base_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
+        if ((string) $this->dateStart == '') {
+            $self['dateStart'] = date('Y-m-d');
+            if ((string) $this->dateEnd == '') {
+                if ($this->timeStart > $this->timeEnd) {
+                    $self['dateEnd'] = date('Y-m-d', strtotime("tomorrow"));
+                } else {
+                    $self['dateEnd'] = date('Y-m-d');
+                }
+            }
+        }
+        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
+        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
+        $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
+        
         if ($this->getFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);

@@ -99,6 +99,12 @@ $RO_PASS = '';
  */
 $APPCONFIG = array();
 
+/**
+ * This is the local timezone indicator
+ * @var string
+ */
+$TZ = 'UTC';
+
 if (file_exists(dirname(__FILE__) . "/local.php")) {
     /**
      * The referenced file is the local configuration settings.
@@ -121,3 +127,18 @@ if ($RO_DSN == '' && $SPLIT_RO_RW == true) {
         'pass' => $RO_PASS
     );
 }
+
+date_default_timezone_set($TZ);
+// This code from http://www.php.net/manual/en/datetimezone.getoffset.php#105705
+if (date_default_timezone_get() == 'UTC') {
+    $offsetString = 'Z'; // No need to calculate offset, as default timezone is already UTC
+} else {
+    $phpTime = '2001-01-01 01:00:00';
+    $millis = strtotime($phpTime); // Convert time to milliseconds since 1970, using default timezone
+    $timezone = new DateTimeZone(date_default_timezone_get()); // Get default system timezone to create a new DateTimeZone object
+    $offset = $timezone->getOffset(new DateTime($phpTime)); // Offset in seconds to UTC
+    $offsetHours = round(abs($offset)/3600);
+    $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
+    $offsetString = ($offset < 0 ? '-' : '+') . ($offsetHours < 10 ? '0' : '') . $offsetHours . ':' . ($offsetMinutes < 10 ? '0' : '') . $offsetMinutes;
+}
+$APPCONFIG['TZ_Offset'] = $offsetString;

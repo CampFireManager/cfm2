@@ -32,3 +32,6 @@
 // $RO_PASS = '';
 
 // $APPCONFIG = array();
+
+// Get a list of acceptable timezones from http://www.php.net/manual/en/timezones.php
+// $TZ = '';
