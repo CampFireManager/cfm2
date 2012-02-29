@@ -54,7 +54,12 @@ class Base_TemplateLoader
                 $objSmarty->assign($key, $value);
             }
         }
-        $objSmarty->display($template . '.html');
+        if (file_exists($baseSmarty . 'Source/' . $template . '.html')) {
+            $objSmarty->display($template . '.html');
+        } else {
+            $objSmarty->display('Generic_Object.html');
+        }
+        
     }
 
 }
