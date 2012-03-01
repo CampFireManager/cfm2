@@ -51,6 +51,22 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             Base_Response::dl_file_resumable($file, TRUE, $arrRequestData['strPreferredAcceptType']);
         }
     }
+    if ($arrRequestData['pathItems'][0] == 'openid') {
+        if (isset($_POST['id'])) {
+            Base_OpenID::request($_POST['id'], $arrRequestData['basePath'] . $arrRequestData['pathSite'] . 'openid', $arrRequestData['basePath'] . $arrRequestData['pathSite'], $arrRequestData['basePath'] . $arrRequestData['pathSite']);
+        } elseif (isset($_REQUEST['return'])) {
+            Base_OpenID::response($arrRequestData['basePath'] . $arrRequestData['pathSite'] . 'openid');
+        } elseif (isset($_GET['logout'])) {
+            if ($arrObjects['Object_User']['current'] != false) {
+                if (isset($arrRequestData['requestUrlParameters']['logout'])) {
+                    $arrObjects['Object_User']['current']->logout();
+                    Base_Response::redirectTo('timetable');
+                }
+            }
+        } else {
+            Base_Response::redirectTo('timetable');
+        }
+    }
     if ($arrRequestData['pathItems'][0] == 'rest' && Base_Request::getMediaType('rest')) {
         unset($arrRequestData['pathItems'][0]);
         $tmpPathItems = array();
