@@ -41,20 +41,10 @@ class Collection_NowAndNext extends Base_GenericCollection
             $arrDefaultSlotTypes[$objDefaultSlotType->getKey('intDefaultSlotTypeID')] = $objDefaultSlotType->getSelf();
         }
 
-        $now = null;
-        $next = null;
+        list($now, $next) = Object_Slot::getNowAndNext();
         foreach ($arrSlotObjects as $objSlot) {
-            $arrSlot = $objSlot->getSelf();
-            if (date('YmdHi', strtotime($arrSlot['dateStart'] . ' ' . $arrSlot['timeStart'])) <= date('YmdHi')
-                && date('YmdHi', strtotime($arrSlot['dateEnd'] . ' ' . $arrSlot['timeEnd'])) >= date('YmdHi')
-                || ($now == null && date('YmdHi') <= date('YmdHi', strtotime($arrSlot['dateStart'] . ' ' . $arrSlot['timeStart'])))
-                || ($now != null && $next == null)
-            ) {
-                if ($now == null) {
-                    $now = $arrSlot['intSlotID'];
-                } else {
-                    $next = $arrSlot['intSlotID'];
-                }
+            if ($objSlot->getKey('intSlotID') == $now || $objSlot->getKey('intSlotID') == $next) {
+                $arrSlot = $objSlot->getSelf();
                 foreach ($arrRoomObjects as $objRoom) {
                     if ($room == null || $objRoom->getKey('intRoomID') == $room) {
                         $objRoom->setFull(true);
@@ -63,15 +53,24 @@ class Collection_NowAndNext extends Base_GenericCollection
                                 'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                                 'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
                                 'arrRoom' => $objRoom->getSelf(),
-                                'arrSlot' => $objSlot->getSelf()
+                                'arrSlot' => $objSlot->getSelf(),
+                                'isNow' => false,
+                                'isNext' => false
                             );
                         } else {
                             $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
                                 'strTalkTitle' => '', 
                                 'isLocked' => 'none',
                                 'arrRoom' => $objRoom->getSelf(),
-                                'arrSlot' => $objSlot->getSelf()
+                                'arrSlot' => $objSlot->getSelf(),
+                                'isNow' => false,
+                                'isNext' => false
                             );
+                        }
+                        if ($objSlot->getKey('intSlotID') == $now) {
+                            $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')]['isNow'] = true;
+                        } elseif ($objSlot->getKey('intSlotID') == $next) {
+                            $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')]['isNext'] = true;
                         }
                     }
                 }
@@ -88,6 +87,11 @@ class Collection_NowAndNext extends Base_GenericCollection
                             $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'hardlock';
                         } else {
                             $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'none';
+                        }
+                        if ($intSlotID == $now) {
+                            $this->arrData[$objRoom->getKey('intRoomID')][$intSlotID]['isNow'] = true;
+                        } elseif ($intSlotID == $next) {
+                            $this->arrData[$objRoom->getKey('intRoomID')][$intSlotID]['isNext'] = true;
                         }
                     }
                 }

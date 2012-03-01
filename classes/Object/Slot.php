@@ -78,7 +78,33 @@ class Object_Slot extends Base_GenericObject
         return $self;
     }
 
-    
+    /**
+     * Get the intSlotID's of the "Now slot" and "Next slot"
+     * 
+     * @todo Edge case - outside of this slot, before next slot ... no "Now" or "Next"
+     *
+     * @return array
+     */
+    public static function getNowAndNext()
+    {
+        $arrSlots = self::brokerAll();
+        $now = null;
+        $next = null;
+        foreach ($arrSlots as $slot) {
+            if (date('YmdHi', strtotime($self['dateStart'] . ' ' . $self['timeStart'])) <= date('YmdHi')
+                && date('YmdHi', strtotime($self['dateEnd'] . ' ' . $self['timeEnd'])) >= date('YmdHi')
+                || ($now == null && date('YmdHi') <= date('YmdHi', strtotime($self['dateStart'] . ' ' . $self['timeStart'])))
+                || ($now != null && $next == null)
+            ) {
+                if ($now == null) {
+                    $now = $self['intSlotID'];
+                } else {
+                    $next = $self['intSlotID'];
+                }
+            }
+        }
+        return array($now, $next);
+    }
 }
 
 /**

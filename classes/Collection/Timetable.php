@@ -41,6 +41,7 @@ class Collection_Timetable extends Base_GenericCollection
             $arrDefaultSlotTypes[$objDefaultSlotType->getKey('intDefaultSlotTypeID')] = $objDefaultSlotType->getSelf();
         }
 
+        list($now, $next) = Object_Slot::getNowAndNext();
         foreach ($arrSlotObjects as $objSlot) {
             if ($date == null || $objSlot->getKey('startDate') == $date) {
                 foreach ($arrRoomObjects as $objRoom) {
@@ -50,15 +51,24 @@ class Collection_Timetable extends Base_GenericCollection
                             'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                             'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
                             'arrRoom' => $objRoom->getSelf(),
-                            'arrSlot' => $objSlot->getSelf()
+                            'arrSlot' => $objSlot->getSelf(),
+                            'isNow' => false,
+                            'isNext' => false
                         );
                     } else {
                         $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => '', 
                             'isLocked' => 'none',
                             'arrRoom' => $objRoom->getSelf(),
-                            'arrSlot' => $objSlot->getSelf()
+                            'arrSlot' => $objSlot->getSelf(),
+                            'isNow' => false,
+                            'isNext' => false
                         );
+                    }
+                    if ($objSlot->getKey('intSlotID') == $now) {
+                        $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')]['isNow'] = true;
+                    } elseif ($objSlot->getKey('intSlotID') == $next) {
+                        $this->arrData[$objRoom->getKey('intRoomID')][$objSlot->getKey('intSlotID')]['isNext'] = true;
                     }
                 }
             }
@@ -74,6 +84,11 @@ class Collection_Timetable extends Base_GenericCollection
                             $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'hardlock';
                         } else {
                             $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isLocked'] = 'none';
+                        }
+                        if ($intSlotID == $now) {
+                            $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isNow'] = true;
+                        } elseif ($intSlotID == $next) {
+                            $this->arrData[$objTalk->getKey('intRoomID')][$intSlotID]['isNext'] = true;
                         }
                     }
                 }
