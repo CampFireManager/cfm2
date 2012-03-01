@@ -266,7 +266,7 @@ class Base_Config
                 $query->execute();
                 $handler->arrConfigGlobal = $query->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
                 foreach ($handler->arrConfigGlobal as $key => $value) {
-                    $handler->arrConfig[$key] = array('isLocal' => false, 'isOverriden' => false, 'value' => $value);
+                    $handler->arrConfig[$key] = array('isLocal' => false, 'isOverriden' => false, 'value' => $value[0]);
                 }
                 
                 // This is the configuration settings local to this individual machine.

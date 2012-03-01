@@ -54,6 +54,10 @@ class Base_TemplateLoader
                 $objSmarty->assign($key, $value);
             }
         }
+        foreach (Base_Config::getConfig() as $key=>$value) {
+            $config[$key] = $value['value'];
+        }
+        $objSmarty->assign('SiteConfig', $config);
         if (file_exists($baseSmarty . 'Source/' . $template . '.html')) {
             $objSmarty->display($template . '.html');
         } else {
