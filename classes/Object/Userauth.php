@@ -139,12 +139,9 @@ class Object_Userauth extends Base_GenericObject
         } elseif (isset($arrRequestData['username']) && $arrRequestData['username'] != null && isset($arrRequestData['password']) && $arrRequestData['password'] != null) {
             $key = 'basicauth';
             $value = $arrRequestData['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['password']);
-        } elseif (isset($arrRequestData['code']) && $arrRequestData['code'] != null) {
+        } elseif (isset($arrRequestData['requestUrlParameters']['code']) && $arrRequestData['requestUrlParameters']['code'] != null) {
             $key = 'codeonly';
-            $value = '%:' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['code']);
-        } elseif (isset($arrRequestData['onetime']) && $arrRequestData['onetime'] != null) {
-            $key = 'onetime';
-            $value = 'onetime:' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['onetime']);
+            $value = '%:' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['requestUrlParameters']['code']);
         } elseif (isset($arrRequestData['requestUrlParameters']['login']) 
                 && isset($arrRequestData['requestUrlParameters']['username']) 
                 && isset($arrRequestData['requestUrlParameters']['password'])
