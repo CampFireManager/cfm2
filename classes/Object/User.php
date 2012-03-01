@@ -47,7 +47,7 @@ class Object_User extends Base_GenericObject
      *
      * @return object UserObject for intUserID
      */
-    function brokerCurrent()
+    public static function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
         $this_class_name = get_called_class();
