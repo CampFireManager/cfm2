@@ -614,6 +614,29 @@ class Base_GenericObject
         foreach ($this->arrDBItems as $key => $dummy) {
             $return[$key] = $this->$key;
         }
+        if ($this->mustBeAdminToModify
+            && ((Object_User::brokerCurrent() != false 
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
+            || Object_User::brokerCurrent() == false)
+        ) {
+            $return['isEditable'] = array();
+        } elseif ($this->mustBeCreatorToModify
+            && isset($this->arrDBItems['intUserID'])
+            && ((Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
+            || (Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('isWorker') == false)
+            || (Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false)
+            || Object_User::brokerCurrent() == false)
+        ) {
+            $return['isEditable'] = array();
+        } else {
+            foreach ($this->arrDBItems as $key=>$value) {
+                $return['isEditable'][$key] = $value['type'];
+            }
+        }
+
         return $return;
     }
 }
