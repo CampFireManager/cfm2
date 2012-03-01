@@ -49,7 +49,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             $file .= '.' . $arrRequestData['pathFormat'];
         }
         if (is_file($file)) {
-            Base_Response::dl_file_resumable($file, TRUE, $arrRequestData['strPreferredAcceptType']);
+            Base_Response::sendResumableFile($file, TRUE, $arrRequestData['strPreferredAcceptType']);
         }
     }
     if ($arrRequestData['pathItems'][0] == 'openid') {
