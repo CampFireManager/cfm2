@@ -48,7 +48,7 @@ class Base_TemplateLoader
             $objSmarty->debugging = true;
         }
         $objSmarty->setTemplateDir($baseSmarty . 'Source');
-        $objSmarty->setCompileDir($baseSmarty . '.compiled');
+        $objSmarty->setCompileDir(Base_Config::getConfig('TemporaryFiles', '/tmp') . '/smartyCompiled');
         if (is_array($arrAssignments) and count($arrAssignments) > 0) {
             foreach ($arrAssignments as $key=>$value) {
                 $objSmarty->assign($key, $value);
