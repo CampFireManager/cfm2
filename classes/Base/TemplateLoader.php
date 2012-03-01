@@ -59,6 +59,9 @@ class Base_TemplateLoader
         }
         $arrRequestData = Base_Request::getRequest();
         $config['baseurl'] = $arrRequestData['basePath'] . $arrRequestData['pathSite'];
+        if (substr($config['baseurl'], -1) != '/') {
+            $config['baseurl'] .= '/';
+        }
         $objSmarty->assign('SiteConfig', $config);
         if (file_exists($baseSmarty . 'Source/' . $template . '.html')) {
             $objSmarty->display($template . '.html');
