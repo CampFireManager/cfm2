@@ -32,6 +32,7 @@ class Object_Userauth extends Base_GenericObject
     );
     protected $strDBTable = "userauth";
     protected $strDBKeyCol = "intUserAuthID";
+    protected $mustBeCreatorToModify = true;
     // Local Object Requirements
     protected $intUserAuthID = null;
     protected $intUserID = null;

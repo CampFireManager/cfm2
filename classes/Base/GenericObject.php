@@ -86,6 +86,13 @@ class Base_GenericObject
      */
     protected $mustBeAdminToModify = false;
     /**
+     * This variable, if set to true, will require the user making the chage to
+     * be either an admin to make the change, or the user who created the object.
+     * 
+     * @var boolean
+     */
+    protected $mustBeCreatorToModify = false;
+    /**
      * This variable contains demonstration data for the extensions to each of
      * the Object_ classes, allowing you to create a full demonstration site
      * with relative ease. This array goes hand-in-hand with the $arrDBItems
@@ -361,6 +368,18 @@ class Base_GenericObject
         ) {
             return false;
         }
+        if ($this->mustBeCreatorToModify
+            && isset($this->arrDBItems['intUserID'])
+            && ((Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
+            || (Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('isWorker') == false)
+            || (Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false)
+            || Object_User::brokerCurrent() == false)
+        ) {
+            return false;
+        }
         if (count($this->arrChanges) > 0) {
             $sql = '';
             $where = '';
@@ -461,6 +480,16 @@ class Base_GenericObject
         ) {
             return false;
         }
+        if ($this->mustBeCreatorToModify
+            && isset($this->arrDBItems['intUserID'])
+            && ((Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
+            || (Object_User::brokerCurrent() != false
+            && Object_User::brokerCurrent()->getKey('isAdmin') == false)
+            || Object_User::brokerCurrent() == false)
+        ) {
+            return false;
+        }
         $sql = "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?";
         try {
             $db = Base_Database::getConnection(true);
@@ -553,6 +582,8 @@ class Base_GenericObject
         $className = get_called_class();
         foreach ($this->arrDemoData as $entry) {
             $object = new $className(false);
+            $object->mustBeAdminToModify = false;
+            $object->mustBeCreatorToModify = false;
             foreach ($entry as $key => $value) {
                 $object->setKey($key, $value);
             }

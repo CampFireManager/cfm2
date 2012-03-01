@@ -93,7 +93,6 @@ class Object_Slot extends Base_GenericObject
 
 class Object_Slot_Demo extends Object_Slot
 {
-    protected $mustBeAdminToModify = false;
     protected $arrDemoData = array(
         array('intSlotID' => 1, 'dateStart' => '', 'timeStart' => '09:00', 'dateEnd' => '', 'timeEnd' => '09:45', 'intDefaultSlotTypeID' => 1),
         array('intSlotID' => 2, 'dateStart' => '', 'timeStart' => '10:00', 'dateEnd' => '', 'timeEnd' => '10:45', 'intDefaultSlotTypeID' => null),

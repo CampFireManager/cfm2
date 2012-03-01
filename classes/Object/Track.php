@@ -74,7 +74,6 @@ class Object_Track extends Base_GenericObject
 
 class Object_Track_Demo extends Object_Track
 {
-    protected $mustBeAdminToModify = false;
     protected $arrDemoData = array(
         array('intTrackID' => 1, 'strTrackName' => 'Coding'),
         array('intTrackID' => 1, 'strTrackName' => 'Novice')

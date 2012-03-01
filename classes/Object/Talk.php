@@ -41,6 +41,7 @@ class Object_Talk extends Base_GenericObject
     );
     protected $strDBTable = "talk";
     protected $strDBKeyCol = "intTalkID";
+    protected $mustBeCreatorToModify = true;
     // Local Object Requirements
     protected $intTalkID = null;
     protected $strTalkTitle = null;

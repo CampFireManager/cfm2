@@ -52,7 +52,6 @@ class Object_DefaultSlotType extends Base_GenericObject
  */
 class Object_DefaultSlotType_Demo extends Object_DefaultSlotType
 {
-    protected $mustBeAdminToModify = false;
     protected $arrDemoData = array(
         array('intDefaultSlotTypeID' => 1, 'strDefaultSlotType' => 'Keynote', 'locksSlot' => 'hardlock'),
         array('intDefaultSlotTypeID' => 2, 'strDefaultSlotType' => 'Lunch', 'locksSlot' => 'softlock'),

@@ -50,7 +50,6 @@ class Object_Resource extends Base_GenericObject
  */
 class Object_Resource_Demo extends Object_Resource
 {
-    protected $mustBeAdminToModify = false;
     protected $arrDemoData = array(
         array('intResourceID' => 1, 'strResourceName' => 'Projector', 'decCostToUse' => 0.000),
         array('intResourceID' => 2, 'strResourceName' => 'PA', 'decCostToUse' => 0.500),

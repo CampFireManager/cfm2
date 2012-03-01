@@ -31,6 +31,7 @@ class Object_Vote extends Base_GenericObject
     );
     protected $strDBTable = "vote";
     protected $strDBKeyCol = "intVoteID";
+    protected $mustBeCreatorToModify = true;
     // Local Object Requirements
     protected $intVoteID = null;
     protected $intUserID = null;

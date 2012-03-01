@@ -33,6 +33,7 @@ class Object_User extends Base_GenericObject
     );
     protected $strDBTable = "user";
     protected $strDBKeyCol = "intUserID";
+    protected $mustBeCreatorToModify = true;
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;
