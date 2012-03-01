@@ -126,7 +126,7 @@ class Base_Config
      *
      * @return string The config value to use
      */
-    public function getConfig($searchKey = null, $defaultValue = null, $asArray = false)
+    public static function getConfig($searchKey = null, $defaultValue = null, $asArray = false)
     {
         $handler = self::getHandler();
 
@@ -169,7 +169,7 @@ class Base_Config
     *
     * @return string The config value to use
     */
-    public function getConfigLocal($searchKey = null, $defaultValue = null)
+    public static function getConfigLocal($searchKey = null, $defaultValue = null)
     {
         $handler = self::getHandler();
 
@@ -194,7 +194,7 @@ class Base_Config
     *
     * @return string The config value to use
     */
-    public function getConfigGlobal($searchKey = null, $defaultValue = null)
+    public static function getConfigGlobal($searchKey = null, $defaultValue = null)
     {
         $handler = self::getHandler();
 
@@ -219,7 +219,7 @@ class Base_Config
     *
     * @return string The config value to use
     */
-    public function getConfigSecure($searchKey = null, $defaultValue = null)
+    public static function getConfigSecure($searchKey = null, $defaultValue = null)
     {
         $handler = self::getHandler();
 
@@ -241,7 +241,7 @@ class Base_Config
      *
      * @return void
      */
-    private function readConfig()
+    private static function readConfig()
     {
         $handler = self::getHandler();
         if (null == $handler->arrConfigGlobal && null == $handler->arrConfigLocal && null == $handler->arrConfigSecure) {
@@ -292,7 +292,7 @@ class Base_Config
      *
      * @return boolean Success or failure of the operation.
      */
-    function setGlobalConfig($key = null, $value = null)
+    public static function setGlobalConfig($key = null, $value = null)
     {
         if (null == $key) {
             return false;
