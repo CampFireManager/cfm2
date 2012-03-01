@@ -208,4 +208,17 @@ class Base_GenericCollection
     {
         return array(self::brokerByID());
     }
+    
+    /**
+     * This dummy function returns the array key for the collection - which will
+     * be 0 in all cases, as the array keys start at zero and we only have one
+     * object in any case.
+     *
+     * @return integer
+     */
+    public function getPrimaryKeyValue()
+    {
+        return 0;
+    }
+
 }

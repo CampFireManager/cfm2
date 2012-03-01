@@ -260,9 +260,6 @@ class Base_GenericObject
      */
     static function countAll()
     {
-        if ($column == null) {
-            return false;
-        }
         $objCache = Base_Cache::getHandler();
         $this_class_name = get_called_class();
         $this_class = new $this_class_name(false);
@@ -277,6 +274,17 @@ class Base_GenericObject
             error_log('Error running SQL Query: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * This function returns the value of the primary key
+     *
+     * @return integer
+     */
+    public function getPrimaryKeyValue()
+    {
+        $primaryKey = $this_class->strDBKeyCol;
+        return $this->$primaryKey;
     }
     
     /**
