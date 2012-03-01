@@ -31,7 +31,8 @@
 // $RO_USER = '';
 // $RO_PASS = '';
 
-// $APPCONFIG = array();
+// Add to the APPCONFIG settings by adding the lines like the following
+// $APPCONFIG['key'] = 'value';
 
 // Get a list of acceptable timezones from http://www.php.net/manual/en/timezones.php
 // $TZ = '';
