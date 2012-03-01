@@ -38,14 +38,15 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
         if (! $media) {
             Base_Response::sendHttpResponse(404, null, $arrRequestData['strPreferredAcceptType']);
         }
-        $file = Base_Config::getConfigLocal('strMediaPath', dirname(__FILE__) . '/media');
+        $file = Base_Config::getConfigLocal('strMediaPath', dirname(__FILE__) . '/Media');
         foreach ($arrRequestData['pathItems'] as $key => $pathItem) {
-            if ($key != 0) {
-                if ($pathItem == '..') {
-                    Base_Response::sendHttpResponse(403, null, $arrRequestData['strPreferredAcceptType']);
-                }
-                $file .= '/' . $pathItem;
+            if ($pathItem == '..') {
+                Base_Response::sendHttpResponse(403, null, $arrRequestData['strPreferredAcceptType']);
             }
+            $file .= '/' . $pathItem;
+        }
+        if (isset($arrRequestData['pathFormat']) && $arrRequestData['pathFormat'] != '') {
+            $file .= '.' . $arrRequestData['pathFormat'];
         }
         if (is_file($file)) {
             Base_Response::dl_file_resumable($file, TRUE, $arrRequestData['strPreferredAcceptType']);
