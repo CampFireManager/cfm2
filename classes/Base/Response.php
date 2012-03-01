@@ -93,18 +93,11 @@ class Base_Response
      * @return void
      */
     public static function sendHttpResponse($status = 200, $body = null, $content_type = 'text/html', $extra = '')
-    {
-        // Send the relevant headers for this type of response
-        header('HTTP/1.1 ' . $status . ' ' . static::$http_status_codes[$status]);
-        header('Content-type: ' . $content_type);
+    {        
 
         // Is there something for us to send
-        if ($body != '' and $body != null) {
-            // Send it
-            echo $body;
-            exit(0);
-        } elseif ($content_type != 'text/html') {
-            // We can't send anything because we don't have a valid response which is non-html based.
+        if (($body != '' && $body != null) || $content_type != 'text/html') {
+            // We'll send the $body next
         } else {
             // Let's make an appropriate response.
             $message = '';
@@ -148,10 +141,38 @@ class Base_Response
 ' .                     '    ' . $message_content . '
 ' .                     '  </body>
 ' .                     '</html>';
-                echo $body;
             }
-            exit(0);
         }
+        
+        // Because we don't track when content was last changed (should we? perhaps!)
+        // instead, I'm using the etag header to only send content that doesn't
+        // match the If-None-Match header.
+        // This information was compiled using a lot of information at StackOverflow:
+        // This gave me a lot of detail about what I would expect to see in the
+        // If-None-Match header.
+        // http://stackoverflow.com/q/2086712/5738
+        // This was where I thought about using preg_match_all to match the INM
+        // header
+        // http://stackoverflow.com/a/2001482/5738
+        //
+        // I might need to turn this off, given some of the comments on the SO site!
+        
+        
+        $arrRequestData = Base_Request::getRequest();
+        $thisetag = sha1($arrRequestData['requestUrlExcludingParameters'] . $body);
+        header("ETag: \"$thisetag\"");
+        foreach ($arrRequestData['If-None-Match'] as $etag) {
+            if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
+                header('HTTP/1.1 304 ' . static::$http_status_codes[304]);
+                exit(0);
+            }
+        }
+        
+        // Send the relevant headers for this type of response
+        header('HTTP/1.1 ' . $status . ' ' . static::$http_status_codes[$status]);
+        header('Content-type: ' . $content_type);
+        echo $body;
+        exit(0);
     }
 
     /**

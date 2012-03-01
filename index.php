@@ -29,6 +29,11 @@ $media = false;
 if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0) {
     if ($arrRequestData['pathItems'][0] == 'media') {
         unset($arrRequestData['pathItems'][0]);
+        $tmpPathItems = array();
+        foreach ($arrRequestData['pathItems'] as $data) {
+            $tmpPathItems[] = $data;
+        }
+        $arrRequestData['pathItems'] = $tmpPathItems;
         $media = Base_Request::getMediaType('media');
         if (! $media) {
             Base_Response::sendHttpResponse(404, null, $arrRequestData['strPreferredAcceptType']);
@@ -48,6 +53,11 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
     }
     if ($arrRequestData['pathItems'][0] == 'rest' && Base_Request::getMediaType('rest')) {
         unset($arrRequestData['pathItems'][0]);
+        $tmpPathItems = array();
+        foreach ($arrRequestData['pathItems'] as $data) {
+            $tmpPathItems[] = $data;
+        }
+        $arrRequestData['pathItems'] = $tmpPathItems;
         $rest = true;
     }
 }
@@ -99,20 +109,89 @@ $renderPage = null;
 if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0 && $arrRequestData['pathItems'][0] != '') {
     foreach ($arrRequestData['pathItems'] as $pathItem) {
         if (isset($arrValidObjects[$pathItem])) {
-            $useObjects[$arrValidObjects[$pathItem]] = null;
-            $lastObject = $pathItem;
-            $renderPage = $arrValidObjects[$pathItem];
+            if ($renderPage == null) {
+                $useObjects[$arrValidObjects[$pathItem]] = null;
+                $lastObject = $pathItem;
+                $renderPage = $arrValidObjects[$pathItem];
+            }
         } elseif ($lastObject != null) {
             $useObjects[$arrValidObjects[$lastObject]] = $pathItem;
+            $lastObject = null;
+        } else {
             $lastObject = null;
         }
     }
 
     foreach ($useObjects as $object => $item) {
         if ($item == null) {
-            $arrObjects[$object] = $object::brokerAll();
+            switch ($arrRequestData['method']) {
+            case 'head':
+            case 'get':
+                $arrObjects[$object] = $object::brokerAll();
+                break;
+            case 'post':
+            case 'put':
+                $newobject = new $object(false);
+                foreach ($arrRequestData['requestUrlParameters'] as $key => $value) {
+                    $newobject->setKey($key, $value);
+                }
+                try {
+                    $newobject->create();
+                    $key = $newobject->getPrimaryKeyValue();
+                    if ($key == '') {
+                        throw new Exception("Although the object was created, we didn't receive a primary key for it. Values are: " . print_r($newobject->getSelf()));
+                    } else {
+                        $arrType = explode('_', $object);
+                        $object_type = strtolower($arrType[1]);
+                        Base_Response::redirectTo($object_type . '/' . $key);
+                    }
+                } catch (Exception $e) {
+                    error_log("Unable to create new object of type $object due to error " . $e->getMessage());
+                    Base_Response::sendHttpResponse(406);
+                }
+                break;
+            case 'delete':
+                Base_Response::sendHttpResponse(405);
+            }
         } else {
-            $arrObjects[$object][$item] = $object::brokerByID($item);
+            $requestedobject = $object::brokerByID($item);
+            switch ($arrRequestData['method']) {
+            case 'head':
+            case 'get':
+                $arrObjects[$object][$item] = $requestedobject;
+                break;
+            case 'post':
+            case 'put':
+                if ($requestedobject == false) {
+                    Base_Response::sendHttpResponse(404);
+                } else {
+                    foreach ($arrRequestData['requestUrlParameters'] as $key => $value) {
+                        $requestedobject->setKey($key, $value);
+                    }
+                    try {
+                        $requestedobject->write();
+                        $arrType = explode('_', $object);
+                        $object_type = strtolower($arrType[1]);
+                        Base_Response::redirectTo($object_type . '/' . $item);
+                    } catch (Exception $e) {
+                        error_log("Unable to update object of type $object, item code $item due to error " . $e->getMessage());
+                        Base_Response::sendHttpResponse(406);
+                    }
+                }
+                break;
+            case 'delete':
+                if ($requestedobject == false) {
+                    Base_Response::sendHttpResponse(404);
+                } else {
+                    try {
+                        $requestedobject->delete();
+                        Base_Response::redirectTo('timetable');
+                    } catch (Exception $e) {
+                        error_log("Unable to update object of type $object, item code $item due to error " . $e->getMessage());
+                        Base_Response::sendHttpResponse(406);
+                    }
+                }
+            }
         }
     }
 } else {
@@ -144,6 +223,7 @@ if ($rest) {
     case 'text/html':
         Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
         break;
+    // I'd like to add RDFa or TTL files here, but I need to work out how to set the data up for that.
     }
 } else {
     Base_TemplateLoader::render($renderPage, $arrObjectsData);

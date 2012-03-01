@@ -211,14 +211,19 @@ class Base_Request
             $data = $_REQUEST;
             break;
         }
-
-
         
         // Store any of the parameters we aquired before. Add an "if-modified-since" parameter too.
 
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             // Taken from http://www.justsoftwaresolutions.co.uk/webdesign/provide-last-modified-headers-and-handle-if-modified-since-in-php.html
-            $data['If-Modified-Since'] = preg_replace('/;.*$/','',$_SERVER["HTTP_IF_MODIFIED_SINCE"]);
+            $handler->arrRequestData['If-Modified-Since'] = preg_replace('/;.*$/','',$_SERVER["HTTP_IF_MODIFIED_SINCE"]);
+        }
+        
+        if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+            preg_match_all('/"([^"^,]+)/',$_SERVER["HTTP_IF_NONE_MATCH"], $handler->arrRequestData['If-None-Match']);
+            if (isset($handler->arrRequestData['If-None-Match'][0])) {
+                unset($handler->arrRequestData['If-None-Match'][0]);
+            }
         }
 
         $handler->arrRequestData['requestUrlParameters'] = $data;
