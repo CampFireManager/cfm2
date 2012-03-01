@@ -203,24 +203,6 @@ class Object_Userauth extends Base_GenericObject
     {
         parent::__construct($isReal);
         if (! $isReal) {
-            $user = Object_User::brokerCurrent();
-            // We may need to store the password for *ONE* itteration in cleartext
-            // Only the user needs to see this cleartext password and it's only to
-            // be stored for 2 minutes or one viewing. Otherwise return an empty
-            // string. The guarantee of clearing tmpCleartext values needs to be
-            // picked up by a cronTick hook. This plugin needs to be written!
-            if ($this->tmpCleartext != ''
-                && ($user != false 
-                && $user->getKey('intUserID') == $this->intUserID)
-                || strtotime($this->lastChange) < strtotime("2 minutes ago")
-            ) {
-                $tmpCleartext = $this->tmpCleartext;
-                $this->setKey('tmpCleartext', '');
-                $this->write();
-                $this->tmpCleartext = $tmpCleartext;
-            } else {
-                $this->tmpCleartext = '';
-            }
             return $this;
         }
         Base_GeneralFunctions::startSession();
@@ -296,7 +278,31 @@ class Object_Userauth extends Base_GenericObject
             }
             break;
         }
+        $self['strCleartext'] = $this->getCleartext();
         return $self;
+    }
+    
+    function getCleartext()
+    {
+        $user = Object_User::brokerCurrent();
+        // We may need to store the password for *ONE* itteration in cleartext
+        // Only the user needs to see this cleartext password and it's only to
+        // be stored for 2 minutes or one viewing. Otherwise return an empty
+        // string. The guarantee of clearing tmpCleartext values needs to be
+        // picked up by a cronTick hook. This plugin needs to be written!
+        if ($this->tmpCleartext != ''
+            && ($user != false 
+            && $user->getKey('intUserID') == $this->intUserID)
+            || strtotime($this->lastChange) < strtotime("2 minutes ago")
+        ) {
+            $tmpCleartext = $this->tmpCleartext;
+            $this->setKey('tmpCleartext', '');
+            $this->write();
+            $this->tmpCleartext = $tmpCleartext;
+        } else {
+            $this->tmpCleartext = '';
+        }
+        return $this->tmpCleartext;
     }
 }
 
