@@ -76,8 +76,8 @@ class Base_Response
     */
     public static function requireAuth()
     {
-        $arrRequestDetails = Base_Request::getRequest();
-        if ($arrRequestDetails['username'] == null) {
+        $arrRequestData = Base_Request::getRequest();
+        if ($arrRequestData['username'] == null) {
             Base_Response::sendHttpResponse(401);
         }
     }
@@ -308,14 +308,14 @@ class Base_Response
     */
     public static function redirectTo($new_page = '')
     {
-        $arrRequestDetails = Base_Request::getRequest();
+        $arrRequestData = Base_Request::getRequest();
         if (substr($new_page, 0, 1) != '/') {
             $new_page = '/' . $new_page;
         }
-        if (substr($arrRequestDetails['pathSite'], -1) == '/') {
-            $arrRequestDetails['pathSite'] = substr($arrRequestDetails['pathSite'], 0, -1);
+        if (substr($arrRequestData['pathSite'], -1) == '/') {
+            $arrRequestData['pathSite'] = substr($arrRequestData['pathSite'], 0, -1);
         }
-        $redirect_url = $arrRequestDetails['basePath'] . $arrRequestDetails['pathSite'] . $new_page;
+        $redirect_url = $arrRequestData['basePath'] . $arrRequestData['pathSite'] . $new_page;
         header("Location: $redirect_url");
         exit(0);
     }
