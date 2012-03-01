@@ -57,6 +57,8 @@ class Base_TemplateLoader
         foreach (Base_Config::getConfig() as $key=>$value) {
             $config[$key] = $value['value'];
         }
+        $arrRequestData = Base_Request::getRequest();
+        $config['baseurl'] = $arrRequestData['basePath'] . $arrRequestData['pathSite'];
         $objSmarty->assign('SiteConfig', $config);
         if (file_exists($baseSmarty . 'Source/' . $template . '.html')) {
             $objSmarty->display($template . '.html');
