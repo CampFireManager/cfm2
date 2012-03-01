@@ -28,7 +28,9 @@ class Object_Userauth extends Base_GenericObject
     protected $arrDBItems = array(
         'intUserID' => array('type' => 'int', 'length' => 11),
     	'enumAuthType' => array('type' => 'enum', 'options' => array('openid', 'basicauth', 'codeonly', 'onetime'), 'unique' => true),
-        'strAuthValue' => array('type' => 'varchar', 'length' => '255', 'unique' => true)
+        'strAuthValue' => array('type' => 'varchar', 'length' => '255', 'unique' => true),
+        'tmpCleartext' => array('type' => 'varchar', 'length' => '255'),
+        'lastChange' => array('datetime')
     );
     protected $strDBTable = "userauth";
     protected $strDBKeyCol = "intUserAuthID";
@@ -38,7 +40,8 @@ class Object_Userauth extends Base_GenericObject
     protected $intUserID = null;
     protected $enumAuthType = null;
     protected $strAuthValue = null;
-    protected $strCleartext = null;
+    protected $tmpCleartext = null;
+    protected $lastChange = null;
 
     /**
      * This overloaded function will process the normal setKey function, unless
@@ -53,70 +56,46 @@ class Object_Userauth extends Base_GenericObject
     {
         switch ($keyname) {
         case 'enumAuthType':
-            $this->set_enumAuthType($value);
-            break;
-        case 'strAuthValue':
-            if (is_array($value) && isset($value['username']) && isset($value['password'])) {
-                $username = $value['username'];
-                $password = $value['password'];
-                $this->set_strAuthValue($password, $username);
-            } elseif (is_array($value) && isset($value['password'])) {
-                $password = $value['password'];
-                $this->set_strAuthValue($password);
-            } elseif (is_string($value)) {
-                $this->set_strAuthValue($value);
-            } else {
-                return false;
-            }
-        default:
-            parent::setKey($keyname, $value);
-        }
-    }
-    
-    /**
-     * The function to set the enumAuthType from a list of pre-defined enums.
-     *
-     * @param string $set Value to set
-     * 
-     * @return void
-     */
-    private function set_enumAuthType($set = '')
-    {
-        if ($set != '' && $this->enumAuthType != $set) {
-            $valid = false;
-            foreach ($this->arrDBItems['enumAuthType']['options'] as $option) {
-                if ($option == $set) {
-                    $valid = true;
+            if ($value != '' && $this->enumAuthType != $value) {
+                $valid = false;
+                foreach ($this->arrDBItems['enumAuthType']['options'] as $option) {
+                    if ($option == $set) {
+                        $valid = true;
+                    }
+                }
+                if ($valid == true) {
+                    $this->enumAuthType = $value;
+                    $this->arrChanges['enumAuthType'] = true;
                 }
             }
-            if ($valid == true) {
-                $this->enumAuthType = $set;
-                $this->arrChanges['enumAuthType'] = true;
+            break;
+        case 'strAuthValue':
+            if ($this->enumAuthType != null) {
+                if ($this->enumAuthType == 'openid'
+                    || $this->enumAuthType == 'codeonly'
+                    || $this->enumAuthType == 'onetime'
+                ) {
+                    if (is_array($value) && isset($value['password'])) {
+                        $password = $value['password'];
+                    }
+                    $set = sha1(Base_Config::getConfigSecure('salt') . $password);
+                } elseif ($this->enumAuthType == 'basicauth' 
+                    && is_array($value) 
+                    && isset($value['username']) 
+                    && isset($value['password'])
+                ) {
+                    $password = $value['password'];
+                    $set = $value['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $value['password']);
+                }
+                if ($set != '' && $this->strAuthValue != $set) {
+                    $this->strCleartext = $password;
+                    $this->strAuthValue = $set;
+                    $this->arrChanges['strAuthValue'] = true;
+                }
             }
-        }
-    }
-
-    /**
-     * The Authentication Credentials to commit to the database.
-     *
-     * @param string $password The password to set
-     * @param string $username The optional username to set
-     * 
-     * @return void
-     */
-    function set_strAuthValue($password = '', $username = '')
-    {
-        if ($this->enumAuthType != null) {
-            if ($this->enumAuthType == 'openid' || $this->enumAuthType == 'codeonly' || $this->enumAuthType == 'onetime') {
-                $set = sha1(Base_Config::getConfigSecure('salt') . $password);
-            } elseif ($this->enumAuthType == 'basicauth') {
-                $set = $username . ':' . sha1(Base_Config::getConfigSecure('salt') . $password);
-            }
-            if ($set != '' && $this->strAuthValue != $set) {
-                $this->strCleartext = $password;
-                $this->strAuthValue = $set;
-                $this->arrChanges['strAuthValue'] = true;
-            }
+            break;
+        default:
+            parent::setKey($keyname, $value);
         }
     }
 
@@ -213,7 +192,8 @@ class Object_Userauth extends Base_GenericObject
     /**
      * Create a new User object
      * 
-     * @param boolean $isReal   Perform Creation Actions (default false)
+     * @param boolean $isReal   Perform Creation Actions (default false), or just
+     * handle the data supplied by the PDO request.
      * @param string  $codeonly The code associated to this type of authentication
      * @param boolean $onetime  Return a one-time unique code to use
      *
@@ -223,6 +203,24 @@ class Object_Userauth extends Base_GenericObject
     {
         parent::__construct($isReal);
         if (! $isReal) {
+            $user = Object_User::brokerCurrent();
+            // We may need to store the password for *ONE* itteration in cleartext
+            // Only the user needs to see this cleartext password and it's only to
+            // be stored for 2 minutes or one viewing. Otherwise return an empty
+            // string. The guarantee of clearing tmpCleartext values needs to be
+            // picked up by a cronTick hook. This plugin needs to be written!
+            if ($this->tmpCleartext != ''
+                && ($user != false 
+                && $user->getKey('intUserID') == $this->intUserID)
+                || strtotime($this->lastChange) < strtotime("2 minutes ago")
+            ) {
+                $tmpCleartext = $this->tmpCleartext;
+                $this->setKey('tmpCleartext', '');
+                $this->write();
+                $this->tmpCleartext = $tmpCleartext;
+            } else {
+                $this->tmpCleartext = '';
+            }
             return $this;
         }
         Base_GeneralFunctions::startSession();
@@ -231,8 +229,8 @@ class Object_Userauth extends Base_GenericObject
             unset($_SESSION['intUserAuthID']);
         }
         if (isset($_SESSION['OPENID_AUTH'])) {
-            $this_class->set_enumAuthType('openid');
-            $this_class->set_strAuthValue($arrRequestData['OPENID_AUTH']);
+            $this_class->setKey('enumAuthType', 'openid');
+            $this_class->setKey('strAuthValue', $arrRequestData['OPENID_AUTH']);
         } elseif (
             isset($arrRequestData['requestUrlParameters']['username']) 
             && $arrRequestData['requestUrlParameters']['username'] != null 
@@ -242,10 +240,10 @@ class Object_Userauth extends Base_GenericObject
             if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', $arrRequestData['requestUrlParameters']['username'] . ':%')) > 0) {
                 throw new Exception("This username already exists, please select another");
             }
-            $this_class->set_enumAuthType('basicauth');
-            $this_class->set_strAuthValue(Base_Config::getConfigSecure('salt') . $arrRequestData['requestUrlParameters']['password'], $arrRequestData['requestUrlParameters']['username']);
+            $this_class->setKey('enumAuthType', 'basicauth');
+            $this_class->setKey('strAuthValue', array('password' => $arrRequestData['requestUrlParameters']['password'], 'username' => $arrRequestData['requestUrlParameters']['username']));
         } elseif ($codeonly != false) {
-            $this_class->set_enumAuthType('codeonly');
+            $this_class->setKey('enumAuthType', 'codeonly');
             $authString = '';
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(5, 9);
@@ -253,9 +251,9 @@ class Object_Userauth extends Base_GenericObject
                     $authString == '';
                 }
             }
-            $this_class->set_strAuthValue($authString, $codeonly);
+            $this_class->setKey('strAuthValue', array('password' => $authString, 'username' => $codeonly));
         } elseif ($onetime == true) {
-            $this_class->set_enumAuthType('onetime');
+            $this_class->setKey('enumAuthType', 'onetime');
             $authString = '';
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(8, 12);
@@ -263,7 +261,7 @@ class Object_Userauth extends Base_GenericObject
                     $authString == '';
                 }
             }
-            $this_class->set_strAuthValue($authString, 'onetime');
+            $this_class->setKey('strAuthValue', array('password' => $authString, 'username' => 'onetime'));
         } else {
             return false;
         }
