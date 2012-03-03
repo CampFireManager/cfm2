@@ -13,5 +13,8 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-// Base_Hook::addHook(new Plugin_HelloWorld());
+// This is vital - it clears the cleartext passwords stored for display purposes
+Base_Hook::addHook(new Plugin_ResetCleartexts());
+
+// Base_Hook::addHook(new Plugin_Twitter());
 // Base_Hook::addHook(new Plugin_Verbose());
