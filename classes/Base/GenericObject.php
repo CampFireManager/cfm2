@@ -583,6 +583,13 @@ class Base_GenericObject
      */
     function initializeDemo()
     {
+        $sql = "DROP TABLE IF EXISTS `{$this->strDBTable}`";
+        try {
+            $db = Base_Database::getConnection(true);
+            $db->exec($sql);
+        } catch (PDOException $e) {
+            error_log("Error dropping table: " . $e->getMessage() . '; Tried ' . $sql);
+        }
         $this->initialize();
         if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
             return false;
