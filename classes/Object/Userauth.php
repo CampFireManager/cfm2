@@ -90,8 +90,9 @@ class Object_Userauth extends Base_GenericObject
                     $set = $value['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $value['password']);
                 }
                 if ($set != '' && $this->strAuthValue != $set) {
-                    $this->strCleartext = $password;
-                    $this->strAuthValue = $set;
+                    $this->tmpCleartext = $password;
+                    $this->strAuthValue = $set;                    
+                    $this->arrChanges['tmpCleartext'] = true;
                     $this->arrChanges['strAuthValue'] = true;
                 }
             }
