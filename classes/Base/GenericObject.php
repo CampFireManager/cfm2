@@ -167,9 +167,15 @@ class Base_GenericObject
         $arrResult = array();
         try {
             $db = Base_Database::getConnection();
-            $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ? ORDER BY {$this_class->strDBKeyCol} ASC";
-            $query = $db->prepare($sql);
-            $query->execute(array($value));
+            if ($value == '%') {
+                $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$this_class->strDBKeyCol} ASC";
+                $query = $db->prepare($sql);
+                $query->execute();
+            } else {
+                $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ? ORDER BY {$this_class->strDBKeyCol} ASC";
+                $query = $db->prepare($sql);
+                $query->execute(array($value));
+            }
             $result = $query->fetchObject($this_class_name);
             if ($result == false) {
                 return array();
