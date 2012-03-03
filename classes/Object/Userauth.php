@@ -189,17 +189,17 @@ class Object_Userauth extends Base_GenericObject
     /**
      * Create a new User object
      * 
-     * @param boolean $isReal   Perform Creation Actions (default false), or just
-     * handle the data supplied by the PDO request.
-     * @param string  $codeonly The code associated to this type of authentication
-     * @param boolean $onetime  Return a one-time unique code to use
+     * @param boolean $isCreationAction Perform Creation Actions (default 
+     * false), or just handle the data supplied by the PDO request.
+     * @param string  $codeonly         The code associated to this type of authentication
+     * @param boolean $onetime          Return a one-time unique code to use
      *
      * @return object
      */
-    function __construct($isReal = false, $codeonly = false, $onetime = false)
+    function __construct($isCreationAction = false, $codeonly = false, $onetime = false)
     {
-        parent::__construct($isReal);
-        if (! $isReal) {
+        parent::__construct($isCreationAction);
+        if (! $isCreationAction) {
             return $this;
         }
         Base_GeneralFunctions::startSession();

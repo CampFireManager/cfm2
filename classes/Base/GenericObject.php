@@ -346,13 +346,13 @@ class Base_GenericObject
     /**
      * Ensure that all database items are backed up before processing
      *
-     * @param boolean $isReal Used to determine whether to process the response 
-     * further. Not used in this class but may be used in derived classes. Here
-     * for safety sake.
+     * @param boolean $isCreationAction Used to determine whether to 
+     * post-process the PDO object, to pre-process a creation action or, as in
+     * this case, ignored.
      * 
      * @return object This class.
      */
-    function __construct($isReal = false)
+    function __construct($isCreationAction = false)
     {
         if (isset($this->arrDBItems) and is_array($this->arrDBItems) and count($this->arrDBItems) > 0) {
             foreach ($this->arrDBItems as $item=>$dummy) {

@@ -41,17 +41,18 @@ class Object_Tag extends Base_GenericObject
     protected $intUserID = null;
     
     /**
-     * This function overloads the normal construction function to ensure that Tag modifications are set as per the config file.
+     * This function overloads the normal construction function to ensure that
+     * Tag modifications are set as per the config file.
      *
-     * @param boolean $isReal Pass this variable on to the parent class
+     * @param boolean $isCreationAction Pass this variable on to the parent class
      * 
      * @return object
      */
-    function __construct($isReal = false)
+    function __construct($isCreationAction = false)
     {
         $this->mustBeAdminToModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyAdminsCanTagTalks', 'false'));
         $this->mustBeCreatorToModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyTagCreatorsCanEditTalkTags', 'false'));
-        return parent::__construct($isReal);
+        return parent::__construct($isCreationAction);
     }
 }
 

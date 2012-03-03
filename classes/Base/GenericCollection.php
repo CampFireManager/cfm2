@@ -42,13 +42,13 @@ class Base_GenericCollection
      * A standard constructor method, which may be extended for specific 
      * collections.
      * 
-     * @param boolean $isReal Used to determine whether to process the response 
+     * @param boolean $isCreationAction Used to determine whether to process the response 
      * further. Not used in this class but may be used in derived classes. Here 
      * for safety sake.
      * 
      * @return object This class.
      */
-    protected function __construct($isReal = false)
+    protected function __construct($isCreationAction = false)
     {
         return $this;
     }

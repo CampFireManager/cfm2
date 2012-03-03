@@ -80,16 +80,16 @@ class Object_User extends Base_GenericObject
     }
     
     /**
-     * Create a new User object
+     * Create a new User object, or post-process the PDO data
      * 
-     * @param boolean $isReal Perform Creation Actions (default false)
+     * @param boolean $isCreationAction Perform Creation Actions (default false)
      *
      * @return object This object
      */
-    function __construct($isReal = false)
+    function __construct($isCreationAction = false)
     {
-        parent::__construct($isReal);
-        if (! $isReal) {
+        parent::__construct($isCreationAction);
+        if (! $isCreationAction) {
             return $this;
         }
         try {
