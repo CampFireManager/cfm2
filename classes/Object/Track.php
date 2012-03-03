@@ -37,8 +37,6 @@ class Object_Track extends Base_GenericObject
     protected $intTrackID = null;
     protected $strTrackName = null;
     protected $rgbColour = null;
-    // Post-processing Properties
-    protected $arrTalks = null;
     protected $lastChange = null;
 
     /**
@@ -51,11 +49,9 @@ class Object_Track extends Base_GenericObject
     {
         $self = parent::getSelf();
         if ($this->booleanFull) {
-            if ($this->arrTalks == null) {
-                $this->arrTalks = Object_Talk::brokerByColumnSearch('intTrackID', $this->intTrackID);
-            }
-            if ($this->arrTalks == null) {
-                foreach ($this->arrTalks as $talk) {
+            $arrTalks = Object_Talk::brokerByColumnSearch('intTrackID', $this->intTrackID);
+            if ($arrTalks != false) {
+                foreach ($arrTalks as $talk) {
                     $self['arrTalks'][] = $talk->getSelf();
                 }
             }
