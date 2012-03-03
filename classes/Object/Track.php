@@ -27,7 +27,8 @@ class Object_Track extends Base_GenericObject
     // Generic Object Requirements
     protected $arrDBItems = array(
     	'strTrackName' => array('type' => 'varchar', 'length' => 255),
-        'rgbColour' => array('type' => 'varchar', 'length' => 6)
+        'rgbColour' => array('type' => 'varchar', 'length' => 6),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "track";
     protected $strDBKeyCol = "intTrackID";
@@ -38,6 +39,7 @@ class Object_Track extends Base_GenericObject
     protected $rgbColour = null;
     // Post-processing Properties
     protected $arrTalks = null;
+    protected $lastChange = null;
 
     /**
      * This overloaded function returns the data from the PDO object and adds

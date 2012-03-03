@@ -27,7 +27,8 @@ class Object_Room extends Base_GenericObject
     // Generic Object Requirements
     protected $arrDBItems = array(
     	'strRoomName' => array('type' => 'varchar', 'length' => 255),
-        'jsonResourceList' => array('type' => 'text')
+        'jsonResourceList' => array('type' => 'text'),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "room";
     protected $strDBKeyCol = "intRoomID";
@@ -36,6 +37,7 @@ class Object_Room extends Base_GenericObject
     protected $intRoomID = null;
     protected $strRoomName = null;
     protected $jsonResourceList = null;
+    protected $lastChange = null;
     
     /**
      * This overloaded function returns the data from the PDO object and adds

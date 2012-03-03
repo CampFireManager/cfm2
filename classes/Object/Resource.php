@@ -28,7 +28,8 @@ class Object_Resource extends Base_GenericObject
     // Generic Object Requirements
     protected $arrDBItems = array(
     	'strResourceName' => array('type' => 'varchar', 'length' => 255),
-        'decCostToUse' => array('type' => 'decimal', 'length' => '7,3')
+        'decCostToUse' => array('type' => 'decimal', 'length' => '7,3'),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "resource";
     protected $strDBKeyCol = "intResourceID";
@@ -37,6 +38,7 @@ class Object_Resource extends Base_GenericObject
     protected $intResourceID = null;
     protected $strResourceName = null;
     protected $decCostToUse = null;
+    protected $lastChange = null;
 }
 
 /**

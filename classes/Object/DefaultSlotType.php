@@ -30,15 +30,17 @@ class Object_DefaultSlotType extends Base_GenericObject
     // Generic Object Requirements
     protected $arrDBItems = array(
         'strDefaultSlotType' => array('type' => 'varchar', 'length' => 255),
-        'locksSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none'))
+        'locksSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none')),
+        'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "defaultSlotType";
+    protected $strDBTable = "defaultslottype";
     protected $strDBKeyCol = "intDefaultSlotTypeID";
     protected $mustBeAdminToModify = true;
     // Local Object Requirements
     protected $intDefaultSlotTypeID = null;
     protected $strDefaultSlotType = null;
     protected $locksSlot = null;
+    protected $lastChange = null;
 }
 
 /**

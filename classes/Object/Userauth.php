@@ -30,7 +30,7 @@ class Object_Userauth extends Base_GenericObject
     	'enumAuthType' => array('type' => 'enum', 'options' => array('openid', 'basicauth', 'codeonly', 'onetime'), 'unique' => true),
         'strAuthValue' => array('type' => 'varchar', 'length' => '255', 'unique' => true),
         'tmpCleartext' => array('type' => 'varchar', 'length' => '255'),
-        'lastChange' => array('datetime')
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "userauth";
     protected $strDBKeyCol = "intUserAuthID";

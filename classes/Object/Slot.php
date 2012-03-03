@@ -30,7 +30,8 @@ class Object_Slot extends Base_GenericObject
         'timeStart' => array('type' => 'time'),
         'dateEnd' => array('type' => 'date'),
         'timeEnd' => array('type' => 'time'),
-        'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11)
+        'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "slot";
     protected $strDBKeyCol = "intSlotID";
@@ -43,6 +44,7 @@ class Object_Slot extends Base_GenericObject
     protected $timeEnd = null;
     protected $intDefaultSlotTypeID = null;
     protected $isAvailable = true;
+    protected $lastChange = true;
 
     /**
      * This overloaded function returns the data from the PDO object and adds

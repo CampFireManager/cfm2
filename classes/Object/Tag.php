@@ -28,7 +28,8 @@ class Object_Tag extends Base_GenericObject
     protected $arrDBItems = array(
     	'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
         'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true),
-        'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true)
+        'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "tag";
     protected $strDBKeyCol = "intTagID";
@@ -39,6 +40,7 @@ class Object_Tag extends Base_GenericObject
     protected $strTagName = null;
     protected $intTalkID = null;
     protected $intUserID = null;
+    protected $lastChange = null;
     
     /**
      * This function overloads the normal construction function to ensure that

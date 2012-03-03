@@ -27,7 +27,8 @@ class Object_Vote extends Base_GenericObject
     // Generic Object Requirements
     protected $arrDBItems = array(
     	'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
-        'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true)
+        'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "vote";
     protected $strDBKeyCol = "intVoteID";
@@ -36,6 +37,7 @@ class Object_Vote extends Base_GenericObject
     protected $intVoteID = null;
     protected $intUserID = null;
     protected $intTalkID = null;
+    protected $lastChange = null;
 }
 
 /**

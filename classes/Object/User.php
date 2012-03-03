@@ -29,7 +29,8 @@ class Object_User extends Base_GenericObject
         'isWorker' => array('type' => 'tinyint', 'length' => 1),
         'isAdmin' => array('type' => 'tinyint', 'length' => 1),
         'hasAttended' => array('type' => 'tinyint', 'length' => 1),
-        'isHere' => array('type' => 'tinyint', 'length' => 1)
+        'isHere' => array('type' => 'tinyint', 'length' => 1),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "user";
     protected $strDBKeyCol = "intUserID";
@@ -41,6 +42,7 @@ class Object_User extends Base_GenericObject
     protected $isAdmin = false;
     protected $hasAttended = false;
     protected $isHere = false;
+    protected $lastChange = false;
 
     /**
      * Get the object for the current user.

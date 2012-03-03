@@ -321,10 +321,13 @@ class Base_GenericObject
      */
     function setKey($keyname = '', $value = '')
     {
-        if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
-            if ($value != '' && $this->$keyname != $value) {
-                $this->$keyname = $value;
-                $this->arrChanges[$keyname] = true;
+        // Only the create and write functions should set the lastChange value.
+        if ($keyname != 'lastChange') {
+            if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
+                if ($value != '' && $this->$keyname != $value) {
+                    $this->$keyname = $value;
+                    $this->arrChanges[$keyname] = true;
+                }
             }
         }
     }
@@ -388,6 +391,8 @@ class Base_GenericObject
         ) {
             return false;
         }
+        $this->lastChange = date('Y-m-d H:i:s');
+        $this->arrChanges['lastChange'] = true;
         if (count($this->arrChanges) > 0) {
             $sql = '';
             $where = '';
@@ -443,6 +448,7 @@ class Base_GenericObject
         ) {
             return false;
         }
+        $this->lastChange = date('Y-m-d H:i:s');
         $this->arrChanges = array();
         $keys = '';
         $key_place = '';

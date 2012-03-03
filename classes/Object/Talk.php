@@ -38,6 +38,7 @@ class Object_Talk extends Base_GenericObject
         'isSlotLocked' => array('type' => 'tinyint', 'length' => 1),
         'jsonResources' => array('type' => 'text'),
         'jsonOtherPresenters' => array('type' => 'text'),
+        'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "talk";
     protected $strDBKeyCol = "intTalkID";
@@ -56,6 +57,7 @@ class Object_Talk extends Base_GenericObject
     protected $isSlotLocked = false;
     protected $jsonResources = null;
     protected $jsonOtherPresenters = null;
+    protected $lastChange = null;
 
     /**
      * This overloaded function returns the data from the PDO object and adds
