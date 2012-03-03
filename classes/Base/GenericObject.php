@@ -283,7 +283,7 @@ class Base_GenericObject
      */
     public function getPrimaryKeyValue()
     {
-        $primaryKey = $this_class->strDBKeyCol;
+        $primaryKey = $this->strDBKeyCol;
         return $this->$primaryKey;
     }
     
@@ -396,7 +396,7 @@ class Base_GenericObject
                 $values[$strDBKeyCol] = $this->$strDBKeyCol;
                 $where = "{$this->strDBKeyCol} = :{$this->strDBKeyCol}";
             } elseif (isset($this->arrDBKeyCol) and is_array($this->arrDBKeyCol) and count($this->arrDBKeyCol) > 0) {
-                foreach ($this->arrDBKeyCol as $keycol=>$dummy) {
+                foreach ($this->arrDBKeyCol as $keycol => $dummy) {
                     if ($where != '') {
                         $where .= ' AND ';
                     }
@@ -404,7 +404,7 @@ class Base_GenericObject
                     $where .= "$keycol = :old$keycol";
                 }
             }
-            foreach ($this->arrChanges as $change_key=>$change_value) {
+            foreach ($this->arrChanges as $change_key => $change_value) {
                 if ($change_value == true and isset($this->arrDBItems[$change_key])) {
                     if ($sql != '') {
                         $sql .= ", ";

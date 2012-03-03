@@ -90,16 +90,17 @@ class Object_Slot extends Base_GenericObject
         $arrSlots = self::brokerAll();
         $now = null;
         $next = null;
-        foreach ($arrSlots as $slot) {
-            if (date('YmdHi', strtotime($self['dateStart'] . ' ' . $self['timeStart'])) <= date('YmdHi')
-                && date('YmdHi', strtotime($self['dateEnd'] . ' ' . $self['timeEnd'])) >= date('YmdHi')
-                || ($now == null && date('YmdHi') <= date('YmdHi', strtotime($self['dateStart'] . ' ' . $self['timeStart'])))
+        foreach ($arrSlots as $objSlot) {
+            $slot = $objSlot->getSelf();
+            if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi')
+                && date('YmdHi', strtotime($slot['dateEnd'] . ' ' . $slot['timeEnd'])) >= date('YmdHi')
+                || ($now == null && date('YmdHi') <= date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])))
                 || ($now != null && $next == null)
             ) {
                 if ($now == null) {
-                    $now = $self['intSlotID'];
+                    $now = $slot['intSlotID'];
                 } else {
-                    $next = $self['intSlotID'];
+                    $next = $slot['intSlotID'];
                 }
             }
         }

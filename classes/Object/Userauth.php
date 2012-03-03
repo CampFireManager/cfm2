@@ -59,7 +59,7 @@ class Object_Userauth extends Base_GenericObject
             if ($value != '' && $this->enumAuthType != $value) {
                 $valid = false;
                 foreach ($this->arrDBItems['enumAuthType']['options'] as $option) {
-                    if ($option == $set) {
+                    if ($option == $value) {
                         $valid = true;
                     }
                 }
@@ -72,14 +72,16 @@ class Object_Userauth extends Base_GenericObject
         case 'strAuthValue':
             if ($this->enumAuthType != null) {
                 if ($this->enumAuthType == 'openid'
-                    || $this->enumAuthType == 'codeonly'
                     || $this->enumAuthType == 'onetime'
                 ) {
                     if (is_array($value) && isset($value['password'])) {
                         $password = $value['password'];
+                    } else {
+                        $password = $value;
                     }
                     $set = sha1(Base_Config::getConfigSecure('salt') . $password);
-                } elseif ($this->enumAuthType == 'basicauth' 
+                } elseif (($this->enumAuthType == 'basicauth'
+                    || $this->enumAuthType == 'codeonly')
                     && is_array($value) 
                     && isset($value['username']) 
                     && isset($value['password'])
@@ -279,14 +281,18 @@ class Object_Userauth extends Base_GenericObject
         return $self;
     }
     
+    /**
+     * We may need to store the password for *ONE* itteration in cleartext.
+     * Only the user needs to see this cleartext password and it's only to
+     * be stored for 2 minutes or one viewing. Otherwise return an empty
+     * string. The guarantee of clearing tmpCleartext values needs to be
+     * picked up by a cronTick hook. This plugin needs to be written!
+     *
+     * @return string 
+     */
     function getCleartext()
     {
         $user = Object_User::brokerCurrent();
-        // We may need to store the password for *ONE* itteration in cleartext
-        // Only the user needs to see this cleartext password and it's only to
-        // be stored for 2 minutes or one viewing. Otherwise return an empty
-        // string. The guarantee of clearing tmpCleartext values needs to be
-        // picked up by a cronTick hook. This plugin needs to be written!
         if ($this->tmpCleartext != ''
             && ($user != false 
             && $user->getKey('intUserID') == $this->intUserID)
@@ -316,11 +322,11 @@ class Object_Userauth extends Base_GenericObject
 class Object_Userauth_Demo extends Object_Userauth
 {
     protected $arrDemoData = array(
-        array('intUserAuthID' => 1, 'intUserID' => 1, 'enumAuthType' => 'onetime', 'strAuthValue' => '4b2ddfb08ff0bd38d94320be391fcdac0f43baad'), // SHA1('salt' . 'abcd2346ACDE');
-        array('intUserAuthID' => 2, 'intUserID' => 2, 'enumAuthType' => 'openid', 'strAuthValue' => 'a6fb734121aa9c075476e5e8aa745cd2934157fb'), // SHA1('salt' . 'http://www.openid.net');
-        array('intUserAuthID' => 3, 'intUserID' => 2, 'enumAuthType' => 'basicauth', 'strAuthValue' => 'cfmadmin:59b3e8d637cf97edbe2384cf59cb7453dfe30789'), // SHA1('salt' . 'password');
-        array('intUserAuthID' => 4, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => '+447777777777:6e32856b3ee3e41d267708a88081c40f1ac06b59'), // SHA1('salt' . 'codeonly');
-        array('intUserAuthID' => 5, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => 'user@gmail.com:1e8a2a0da098b481b7c274d51597751142e42614'), // SHA1('salt' . 'email');
-        array('intUserAuthID' => 6, 'intUserID' => 4, 'enumAuthType' => 'openid', 'strAuthValue' => '990d538923af9542484873551d65a01733abf252') // SHA1('salt' . 'http://www.google.com/accounts/o8/id');
+        array('intUserAuthID' => 1, 'intUserID' => 1, 'enumAuthType' => 'onetime', 'strAuthValue' => 'abcd2346ACDE'),
+        array('intUserAuthID' => 2, 'intUserID' => 2, 'enumAuthType' => 'openid', 'strAuthValue' => 'http://www.openid.net'),
+        array('intUserAuthID' => 3, 'intUserID' => 2, 'enumAuthType' => 'basicauth', 'strAuthValue' => array('username' => 'cfmadmin', 'password' => 'password')),
+        array('intUserAuthID' => 4, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => array('username' => '+447777777777', 'password' => 'codeonly')),
+        array('intUserAuthID' => 5, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => array('username' => 'user@gmail.com', 'password' => 'email')),
+        array('intUserAuthID' => 6, 'intUserID' => 4, 'enumAuthType' => 'openid', 'strAuthValue' => 'http://www.google.com/accounts/o8/id')
     );    
 }
