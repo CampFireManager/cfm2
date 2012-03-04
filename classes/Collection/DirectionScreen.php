@@ -70,10 +70,11 @@ class Collection_DirectionScreen extends Base_GenericCollection
         $arrRoomDirections = array();
         
         foreach ($arrScreen['arrDirections'] as $strDirection => $arrDirections) {
-            ksort($arrRooms);
+            ksort($arrDirections);
             foreach ($arrDirections as $intRoomID => $objDirection) {
                 $arrScreenDirections[$strDirection][$objDirection->getKey('intScreenDirectionID')] = $arrRooms[$intRoomID];
                 $arrRoomDirections[$intRoomID] = $objDirection->getSelf();
+                $this->arrData['arrScreenDirections'][$strDirection][$objDirection->getKey('intScreenDirectionID')] = $arrRooms[$intRoomID]->getSelf();
             }
         }
         
