@@ -24,14 +24,15 @@
 
 class Collection_TimetablePortrait extends Collection_Timetable
 {
-    public function __construct($date = null) {
-        $self = parent::__construct($date);
-        foreach ($self->arrData['arrTimetable'] as $roomid => $arrslot) {
-            foreach ($arrslot as $slotid => $use) {
-                $tmpTimetable[$slotid][$roomid] = $use;
-            }
+    public static function brokerByID($date = null)
+    {
+        if ($date != null) {
+            $date = date('Y-m-d', strtotime($date));
         }
-        $self->arrData['arrTimetable'] = $tmpTimetable;
-        return $self;
+        if (Object_Room::countAll() <= Object_Slot::countAll()) {
+            return new Collection_TimetableBySlotRoom($date);
+        } else {
+            return new Collection_TimetableByRoomSlot($date);
+        }
     }
 }

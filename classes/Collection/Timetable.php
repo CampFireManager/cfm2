@@ -25,6 +25,28 @@
 class Collection_Timetable extends Base_GenericCollection
 {
     /**
+     * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
+     *
+     * @param string $date The date of the timetable to retrieve. Leave blank for all dates known
+     * 
+     * @return array
+     */
+    public static function brokerByID($date = null)
+    {
+        if ($date != null) {
+            $date = date('Y-m-d', strtotime($date));
+        }
+        if (Object_Room::countAll() > Object_Slot::countAll()) {
+            return new Collection_TimetableBySlotRoom($date);
+        } else {
+            return new Collection_TimetableByRoomSlot($date);
+        }
+    }
+}
+
+class Collection_TimetableByRoomSlot extends Collection_Timetable
+{
+        /**
      * Collect the data for this collection
      *
      * @param integer|null $date The date to return, or everything if null
@@ -102,19 +124,26 @@ class Collection_Timetable extends Base_GenericCollection
         }
         return $this;
     }
-    
+}
+
+class Collection_TimetableBySlotRoom extends Collection_TimetableByRoomSlot
+{
     /**
-     * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
+     * This function wrappers the TimetableByRoomSlot and re-jigs the timetable
+     * array to match the desired layout
      *
-     * @param string $date The date of the timetable to retrieve. Leave blank for all dates known
+     * @param string $date The date to return a timetable for
      * 
-     * @return array
+     * @return object
      */
-    public static function brokerByID($date = null)
-    {
-        if ($date != null) {
-            $date = date('Y-m-d', strtotime($date));
+    public function __construct($date = null) {
+        $self = parent::__construct($date);
+        foreach ($self->arrData['arrTimetable'] as $roomid => $arrslot) {
+            foreach ($arrslot as $slotid => $use) {
+                $tmpTimetable[$slotid][$roomid] = $use;
+            }
         }
-        return parent::brokerByID($date);
+        $self->arrData['arrTimetable'] = $tmpTimetable;
+        return $self;
     }
 }
