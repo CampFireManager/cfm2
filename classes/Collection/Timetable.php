@@ -53,7 +53,7 @@ class Collection_Timetable extends Base_GenericCollection
                 foreach ($arrRoomObjects as $objRoom) {
                     $objRoom->setFull(true);
                     if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
-                        $this->arrData['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                             'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
                             'arrRoom' => $objRoom->getSelf(),
@@ -62,7 +62,7 @@ class Collection_Timetable extends Base_GenericCollection
                             'isNext' => false
                         );
                     } else {
-                        $this->arrData['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => '', 
                             'isLocked' => 'none',
                             'arrRoom' => $objRoom->getSelf(),
@@ -72,9 +72,9 @@ class Collection_Timetable extends Base_GenericCollection
                         );
                     }
                     if ($objSlot->getKey('intSlotID') == $now) {
-                        $this->arrData['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNow'] = true;
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNow'] = true;
                     } elseif ($objSlot->getKey('intSlotID') == $next) {
-                        $this->arrData['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNext'] = true;
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNext'] = true;
                     }
                 }
             }
@@ -85,16 +85,16 @@ class Collection_Timetable extends Base_GenericCollection
                 $objTalk->setFull(true);
                 for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
                     if ($date == null || $objSlot->getKey('startDate') == $date) {
-                        $this->arrData['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID] = $objTalk->getSelf();
+                        $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID] = $objTalk->getSelf();
                         if ($objTalk->getKey('isSlotLocked') == 1) {
-                            $this->arrData['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'hardlock';
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'hardlock';
                         } else {
-                            $this->arrData['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'none';
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'none';
                         }
                         if ($intSlotID == $now) {
-                            $this->arrData['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNow'] = true;
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNow'] = true;
                         } elseif ($intSlotID == $next) {
-                            $this->arrData['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNext'] = true;
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNext'] = true;
                         }
                     }
                 }
