@@ -34,7 +34,13 @@ class Collection_NowAndNext extends Base_GenericCollection
     protected function __construct($room = null)
     {        
         $arrRoomObjects = Object_Room::brokerAll();
+        foreach ($arrRoomObjects as $objRoom) {
+            $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
+        }
         $arrSlotObjects = Object_Slot::brokerAll();
+        foreach ($arrSlotObjects as $objSlot) {
+            $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
+        }
         $arrTalkObjects = Object_Talk::brokerAll();
         $arrDefaultSlotTypeObjects = Object_DefaultSlotType::brokerAll();
         foreach ($arrDefaultSlotTypeObjects as $objDefaultSlotType) {
@@ -43,9 +49,11 @@ class Collection_NowAndNext extends Base_GenericCollection
 
         list($now, $next) = Object_Slot::getNowAndNext();
         foreach ($arrSlotObjects as $objSlot) {
+            $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
             if ($objSlot->getKey('intSlotID') == $now || $objSlot->getKey('intSlotID') == $next) {
                 $arrSlot = $objSlot->getSelf();
                 foreach ($arrRoomObjects as $objRoom) {
+                    $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
                     if ($room == null || $objRoom->getKey('intRoomID') == $room) {
                         $objRoom->setFull(true);
                         if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {

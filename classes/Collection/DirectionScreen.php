@@ -51,6 +51,7 @@ class Collection_DirectionScreen extends Base_GenericCollection
         foreach ($arrRoomObjects as $objRoom) {
             $objRoom->setFull(true);
             $arrRooms[$objRoom->getKey('intRoomID')] = $objRoom;
+            $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
         }
 
         $arrScreen = $objScreen->getSelf();
@@ -85,6 +86,7 @@ class Collection_DirectionScreen extends Base_GenericCollection
 
         list($now, $next) = Object_Slot::getNowAndNext();
         foreach ($arrSlotObjects as $objSlot) {
+            $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
             if ($objSlot->getKey('intSlotID') == $now || $objSlot->getKey('intSlotID') == $next) {
                 $arrSlot = $objSlot->getSelf();
                 foreach ($arrScreen['arrDirections'] as $strDirection => $arrRooms) {

@@ -34,7 +34,13 @@ class Collection_Timetable extends Base_GenericCollection
     protected function __construct($date = null)
     {
         $arrRoomObjects = Object_Room::brokerAll();
+        foreach ($arrRoomObjects as $objRoom) {
+            $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
+        }
         $arrSlotObjects = Object_Slot::brokerAll();
+        foreach ($arrSlotObjects as $objSlot) {
+            $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
+        }
         $arrTalkObjects = Object_Talk::brokerAll();
         $arrDefaultSlotTypeObjects = Object_DefaultSlotType::brokerAll();
         foreach ($arrDefaultSlotTypeObjects as $objDefaultSlotType) {
