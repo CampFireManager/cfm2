@@ -131,6 +131,12 @@ class Object_Slot_Demo extends Object_Slot
         array('intSlotID' => 6, 'dateStart' => '', 'timeStart' => '14:00', 'dateEnd' => '', 'timeEnd' => '14:45', 'intDefaultSlotTypeID' => null),
         array('intSlotID' => 7, 'dateStart' => '', 'timeStart' => '15:00', 'dateEnd' => '', 'timeEnd' => '15:45', 'intDefaultSlotTypeID' => null),
         array('intSlotID' => 8, 'dateStart' => '', 'timeStart' => '16:00', 'dateEnd' => '', 'timeEnd' => '16:45', 'intDefaultSlotTypeID' => null),
-        array('intSlotID' => 9, 'dateStart' => '', 'timeStart' => '17:00', 'dateEnd' => '', 'timeEnd' => '17:45', 'intDefaultSlotTypeID' => 3)
+        array('intSlotID' => 9, 'dateStart' => '', 'timeStart' => '17:00', 'dateEnd' => '', 'timeEnd' => '17:45', 'intDefaultSlotTypeID' => 3),
+        array('intSlotID' => 10, 'dateStart' => '', 'timeStart' => '18:00', 'dateEnd' => '', 'timeEnd' => '18:45', 'intDefaultSlotTypeID' => null),
+        array('intSlotID' => 11, 'dateStart' => '', 'timeStart' => '19:00', 'dateEnd' => '', 'timeEnd' => '19:45', 'intDefaultSlotTypeID' => null),
+        array('intSlotID' => 12, 'dateStart' => '', 'timeStart' => '20:00', 'dateEnd' => '', 'timeEnd' => '20:45', 'intDefaultSlotTypeID' => null),
+        array('intSlotID' => 13, 'dateStart' => '', 'timeStart' => '21:00', 'dateEnd' => '', 'timeEnd' => '21:45', 'intDefaultSlotTypeID' => null),
+        array('intSlotID' => 14, 'dateStart' => '', 'timeStart' => '22:00', 'dateEnd' => '', 'timeEnd' => '22:45', 'intDefaultSlotTypeID' => null),
+        array('intSlotID' => 15, 'dateStart' => '', 'timeStart' => '23:00', 'dateEnd' => '', 'timeEnd' => '23:45', 'intDefaultSlotTypeID' => null),
     );
 }
