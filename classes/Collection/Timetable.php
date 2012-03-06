@@ -25,35 +25,37 @@
 class Collection_Timetable extends Base_GenericCollection
 {
     /**
-     * A mock up of the Object_ style of broker functions, for collections of data (not quite working the same!)
+     * A mock up of the Object_ style of broker functions
      *
      * @param string $date The date of the timetable to retrieve. Leave blank for all dates known
      * 
      * @return array
      */
-    public static function brokerByID($date = null)
+    protected function __construct($date = null)
     {
         if ($date != null) {
             $date = date('Y-m-d', strtotime($date));
         }
         if (Object_Room::countAll() > Object_Slot::countAll()) {
-            return new Collection_TimetableBySlotRoom($date);
+            $self = new Collection_TimetableBySlotRoom($date);
         } else {
-            return new Collection_TimetableByRoomSlot($date);
+            $self = new Collection_TimetableByRoomSlot($date);
         }
+        $this->arrData = $self->arrData;
+        return $this;
     }
 }
 
 class Collection_TimetableByRoomSlot extends Collection_Timetable
 {
-        /**
+    /**
      * Collect the data for this collection
      *
      * @param integer|null $date The date to return, or everything if null
      * 
      * @return object This class 
      */
-    protected function __construct($date = null)
+    public function __construct($date = null)
     {
         $arrRoomObjects = Object_Room::brokerAll();
         foreach ($arrRoomObjects as $objRoom) {

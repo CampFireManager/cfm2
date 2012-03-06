@@ -1,6 +1,6 @@
 {include file="header.tpl" title="Timetable"}
 <table>
-{foreach $Collection_Timetable.0.arrTimetable as $xaxis}
+{foreach $Collection_TimetablePortrait.0.arrTimetable as $xaxis}
 {if $xaxis@first}
     <tr>
         <th>&nbsp;</th>
@@ -17,10 +17,10 @@
 {foreach $xaxis as $yaxis}
 {if $yaxis@first}
 {if (substr($xaxis@key, 0, 4) == 'room')}
-{$room=$Collection_Timetable.0.arrRooms[$xaxis@key]}
+{$room=$Collection_TimetablePortrait.0.arrRooms[$xaxis@key]}
         <th class="room" id="{$xaxis@key}">Room {$room.intRoomID} {$room.strRoomName}</th>
 {else}
-{$slot=$Collection_Timetable.0.arrSlots[$xaxis@key]}
+{$slot=$Collection_TimetablePortrait.0.arrSlots[$xaxis@key]}
         <th class="slot" id="{$xaxis@key}">Slot {$slot.intSlotID} {$slot.timeStart}-{$slot.timeEnd}</th>
 {/if}
 {/if}

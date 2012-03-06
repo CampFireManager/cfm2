@@ -24,15 +24,24 @@
 
 class Collection_TimetablePortrait extends Collection_Timetable
 {
-    public static function brokerByID($date = null)
+    /**
+     * A mock up of the Object_ style of broker functions
+     *
+     * @param string $date The date of the timetable to retrieve. Leave blank for all dates known
+     * 
+     * @return array
+     */
+    public function __construct($date = null)
     {
         if ($date != null) {
             $date = date('Y-m-d', strtotime($date));
         }
-        if (Object_Room::countAll() <= Object_Slot::countAll()) {
-            return new Collection_TimetableBySlotRoom($date);
+        if (Object_Room::countAll() < Object_Slot::countAll()) {
+            $self = new Collection_TimetableBySlotRoom($date);
         } else {
-            return new Collection_TimetableByRoomSlot($date);
+            $self = new Collection_TimetableByRoomSlot($date);
         }
+        $this->arrData = $self->arrData;
+        return $this;
     }
 }
