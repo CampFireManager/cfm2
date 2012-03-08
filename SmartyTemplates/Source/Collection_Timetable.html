@@ -8,26 +8,30 @@
 {if (substr($yaxis@key, 0, 4) == 'room')}
         <th class="room" id="{$yaxis@key}">Room {$yaxis.intRoomID} {$yaxis.arrRoom.strRoomName}</th>
 {else}
-        <th class="slot" id="{$yaxis@key}">Slot {$yaxis.intSlotID} {$yaxis.arrSlot.timeStart}-{$yaxis.arrSlot.timeEnd}</th>
+        <th class="slot {if $xaxis.arrSlot.isNow}slot_now{elseif $xaxis.arrSlot.isNext}slot_next{/if}" id="{$yaxis@key}">Slot {$yaxis.intSlotID} {$yaxis.arrSlot.timeStart}-{$yaxis.arrSlot.timeEnd}</th>
 {/if}
 {/foreach}
     </tr>
 {/if}
-    <tr>
 {foreach $xaxis as $yaxis}
 {if $yaxis@first}
+    <tr id="{$xaxis@key}" class="{if $yaxis.isNow}slot_now{elseif $yaxis.isNext}slot_next{/if}">
 {if (substr($xaxis@key, 0, 4) == 'room')}
 {$room=$Collection_Timetable.0.arrRooms[$xaxis@key]}
         <th class="room" id="{$xaxis@key}">Room {$room.intRoomID} {$room.strRoomName}</th>
 {else}
 {$slot=$Collection_Timetable.0.arrSlots[$xaxis@key]}
-        <th class="slot" id="{$xaxis@key}">Slot {$slot.intSlotID} {$slot.timeStart}-{$slot.timeEnd}</th>
+        <th class="slot{if $yaxis.isNow} slot_now{elseif $yaxis.isNext} slot_next{/if}" id="{$xaxis@key}">Slot {$slot.intSlotID} {$slot.timeStart}-{$slot.timeEnd}</th>
 {/if}
 {/if}
-        <td>
-            {$yaxis.strTalkTitle}
+        <td class="{if $yaxis.isNow}slot_now{elseif $yaxis.isNext}slot_next{/if}{if isset($yaxis.arrTrack.intTrackID) and $yaxis.arrTrack.intTrackID > 0} track_{$yaxis.arrTrack.intTrackID}{/if}" id="{$xaxis@key}_{$yaxis@key}">
+            {foreach $yaxis as $talkdata}
+                <div>{$talkdata@key}:{$talkdata}</div>
+            {/foreach}
+            <span class="intTalkID">{$yaxis.intTalkID}</span>
+            <span class="strTalkTitle">{$yaxis.strTalkTitle}</span>
 {if isset($yaxis.arrUser.strUserName)}
-            by {$yaxis.arrUser.strUserName}
+            <span class="label_strUserName">by <span class="strUserName">{$yaxis.arrUser.strUserName}</span></span>
 {/if}
         </td>
 {/foreach}
