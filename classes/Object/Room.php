@@ -53,7 +53,11 @@ class Object_Room extends Base_GenericObject
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {
-                    $self['arrResources'][] = $objResource->getSelf();
+                    $arrResource = $objResource->getSelf();
+                    $self['arrResources'][] = $arrResource;
+                    if ($arrResource['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $arrResource['lastChange'];
+                    }
                 }
             }
         }

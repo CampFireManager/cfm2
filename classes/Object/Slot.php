@@ -74,6 +74,9 @@ class Object_Slot extends Base_GenericObject
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
                 if (is_object($objDefaultSlotType)) {
                     $self['arrDefaultSlotType'] = $objDefaultSlotType->getSelf();
+                    if ($self['arrDefaultSlotType']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrDefaultSlotType']['lastChange'];
+                    }
                 }
             }
         }

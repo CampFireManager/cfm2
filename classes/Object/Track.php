@@ -51,8 +51,12 @@ class Object_Track extends Base_GenericObject
         if ($this->booleanFull) {
             $arrTalks = Object_Talk::brokerByColumnSearch('intTrackID', $this->intTrackID);
             if ($arrTalks != false) {
-                foreach ($arrTalks as $talk) {
-                    $self['arrTalks'][] = $talk->getSelf();
+                foreach ($arrTalks as $objTalk) {
+                    $arrTalk = $objTalk->getSelf();
+                    $self['arrTalks'][] = $arrTalk;
+                    if ($arrTalk['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $arrTalk['lastChange'];
+                    }
                 }
             }
         }

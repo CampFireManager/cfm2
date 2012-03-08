@@ -229,9 +229,50 @@ class Base_GenericObject
             return false;
         }
     }
+
+    /**
+     * Get the most recent lastChange date based on the column to search
+     *
+     * @param string $column The column to search
+     * @param string $value  The value to look for.
+     * 
+     * @return datetime The most recent datetime string matching the search criteria
+     */
+    static function lastChangeByColumnSearch($column = null, $value = null)
+    {
+        if ($column == null) {
+            return false;
+        }
+        $objCache = Base_Cache::getHandler();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
+        $process = false;
+        if (!isset($this_class->arrDBItems['lastChange'])) {
+            return false;
+        }
+        foreach ($this_class->arrDBItems as $db_item => $dummy) {
+            if ($db_item == $column) {
+                $process = true;
+            }
+        }
+        if ($process == false) {
+            return false;
+        }
+        try {
+            $db = Base_Database::getConnection();
+            $sql = "SELECT max(lastChange) FROM {$this_class->strDBTable} WHERE {$column} = ?";
+            $query = $db->prepare($sql);
+            $query->execute(array($value));
+            $result = $query->fetchColumn();
+            return $result;
+        } catch(PDOException $e) {
+            error_log('Error running SQL Query: ' . $e->getMessage());
+            return false;
+        }
+    }
     
     /**
-     * Get all objects by a particular search field
+     * Get all objects in this table
      *
      * @return array The array of objects matching this search
      */
@@ -259,6 +300,30 @@ class Base_GenericObject
         }
     }
 
+    /**
+     * Get the most recent "lastChange" datetime from this table
+     *
+     * @return datetime The most recent lastChange date from this whole table
+     */
+    static function lastChangeAll()
+    {
+        $objCache = Base_Cache::getHandler();
+        $this_class_name = get_called_class();
+        $this_class = new $this_class_name(false);
+        $arrResult = array();
+        try {
+            $db = Base_Database::getConnection();
+            $sql = "SELECT max(lastChange) FROM {$this_class->strDBTable} ORDER BY {$this_class->strDBKeyCol} ASC";
+            $query = $db->prepare($sql);
+            $query->execute();
+            $result = $query->fetchColumn();
+            return $arrResult;
+        } catch(PDOException $e) {
+            error_log('Error running SQL Query: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
     /**
      * Get a tally of the number of rows in a table
      *

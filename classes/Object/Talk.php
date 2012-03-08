@@ -73,6 +73,9 @@ class Object_Talk extends Base_GenericObject
                 $objUser = Object_User::brokerByID($this->intUserID);
                 if (is_object($objUser)) {
                     $self['arrUser'] = $objUser->getSelf();
+                    if ($self['arrUser']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrUser']['lastChange'];
+                    }
                 }
             }
             if ($this->intRoomID != null && $this->intRoomID > 0) {
@@ -80,6 +83,9 @@ class Object_Talk extends Base_GenericObject
                 if (is_object($objRoom)) {
                     $objRoom->setFull(true);
                     $self['arrRoom'] = $objRoom->getSelf();
+                    if ($self['arrRoom']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrRoom']['lastChange'];
+                    }
                 }
             }
             if ($this->intSlotID != null && $this->intSlotID > 0) {
@@ -87,12 +93,18 @@ class Object_Talk extends Base_GenericObject
                 if (is_object($objSlot)) {
                     $objSlot->setFull(true);
                     $self['arrSlot'] = $objSlot->getSelf();
+                    if ($self['arrSlot']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrSlot']['lastChange'];
+                    }
                 }
             }
             if ($this->intTrackID != null && $this->intTrackID > 0) {
                 $objTrack = Object_Track::brokerByID($this->intTrackID);
                 if (is_object($objTrack)) {
                     $self['arrTrack'] = $objTrack->getSelf();
+                    if ($self['arrTrack']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrTrack']['lastChange'];
+                    }
                 }
             }
             $self['arrLinks'] = (array) json_decode($this->jsonLinks);
@@ -100,17 +112,28 @@ class Object_Talk extends Base_GenericObject
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {
-                    $self['arrResources'][] = $objResource->getSelf();
+                    $arrResource = $objResource->getSelf();
+                    $self['arrResources'][] = $arrResource;
+                    if ($arrResource['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $arrResource['lastChange'];
+                    }
                 }
             }
             $presenters = (array) json_decode($this->jsonOtherPresenters);
             foreach ($presenters as $presenter) {
                 $objPresenter = Object_User::brokerByID($presenter);
                 if (is_object($objPresenter)) {
-                    $self['arrPresenters'][] = $objPresenter->getSelf();
+                    $arrPresenter = $objPresenter->getSelf();
+                    $self['arrPresenters'][] = $arrPresenter;
+                    if ($arrPresenter['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $arrPresenter['lastChange'];
+                    }
                 }
             }
             $self['intVotes'] = Object_Vote::countByColumnSearch('intTalkID', $this->intTalkID);
+            if (Object_Vote::lastChangeByColumnSearch('intTalkID', $this->intTalkID) > $self['lastChange']) {
+                $self['lastChange'] = Object_Vote::lastChangeByColumnSearch('intTalkID', $this->intTalkID);
+            }
         }
         return $self;
     }
