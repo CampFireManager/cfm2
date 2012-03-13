@@ -13,16 +13,16 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 /**
- * This class defines the object for PDO to use when retrives data about a Vote.
+ * This class defines the object for PDO to use when retrives data about a Attendee.
  * 
- * @category Object_Vote
+ * @category Object_Attendee
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Vote extends Base_GenericObject
+class Object_Attendee extends Base_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -30,11 +30,11 @@ class Object_Vote extends Base_GenericObject
         'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "vote";
-    protected $strDBKeyCol = "intVoteID";
+    protected $strDBTable = "attendee";
+    protected $strDBKeyCol = "intAttendeeID";
     protected $mustBeCreatorToModify = true;
     // Local Object Requirements
-    protected $intVoteID = null;
+    protected $intAttendeeID = null;
     protected $intUserID = null;
     protected $intTalkID = null;
     protected $lastChange = null;
@@ -43,17 +43,17 @@ class Object_Vote extends Base_GenericObject
 /**
  * This class defines some default and demo data for the use in demos.
  * 
- * @category Object_Vote
+ * @category Object_Attendee
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
-class Object_Vote_Demo extends Object_Vote
+class Object_Attendee_Demo extends Object_Attendee
 {
     protected $arrDemoData = array(
-        array('intVoteID' => 1, 'intUserID' => '2', 'intTalkID' => '1'),
-        array('intVoteID' => 2, 'intUserID' => '3', 'intTalkID' => '1'),
-        array('intVoteID' => 3, 'intUserID' => '4', 'intTalkID' => '1')
+        array('intAttendeeID' => 1, 'intUserID' => '2', 'intTalkID' => '1'),
+        array('intAttendeeID' => 2, 'intUserID' => '3', 'intTalkID' => '1'),
+        array('intAttendeeID' => 3, 'intUserID' => '4', 'intTalkID' => '1')
     );
 }

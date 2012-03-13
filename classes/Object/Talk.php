@@ -130,10 +130,12 @@ class Object_Talk extends Base_GenericObject
                     }
                 }
             }
-            $self['intVotes'] = Object_Vote::countByColumnSearch('intTalkID', $this->intTalkID);
-            if (Object_Vote::lastChangeByColumnSearch('intTalkID', $this->intTalkID) > $self['lastChange']) {
-                $self['lastChange'] = Object_Vote::lastChangeByColumnSearch('intTalkID', $this->intTalkID);
+            $self['intAttendees'] = Object_Attendee::countByColumnSearch('intTalkID', $this->intTalkID);
+            if (Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID) > $self['lastChange']) {
+                $self['lastChange'] = Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID);
             }
+            $self['strSlotID'] = 'slot_' . $this->intSlotID;
+            $self['strRoomID'] = 'room_' . $this->intRoomID;
         }
         return $self;
     }
