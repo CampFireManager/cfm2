@@ -121,9 +121,9 @@ class Base_GenericObject
         $objCache = Base_Cache::getHandler();
         $this_class_name = get_called_class();
         $this_class = new $this_class_name(false);
-        if (0 + $intID > 0) {
-            if (isset($objCache->arrCache[$this_class_name]['id'][$intID])) {
-                return $objCache->arrCache[$this_class_name]['id'][$intID];
+        if ((integer) $intID > 0) {
+            if (isset($objCache->arrCache[$this_class_name]['id'][(string) $intID])) {
+                return $objCache->arrCache[$this_class_name]['id'][(string) $intID];
             }
             try {
                 $db = Base_Database::getConnection();

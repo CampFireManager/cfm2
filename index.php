@@ -123,9 +123,6 @@ $arrObjectsData = array();
  */
 $renderPage = null;
 
-$useObjects['Object_User'] = 'current';
-$arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
-
 if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0 && $arrRequestData['pathItems'][0] != '') {
     foreach ($arrRequestData['pathItems'] as $pathItem) {
         if (isset($arrValidObjects[$pathItem])) {
@@ -217,6 +214,9 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
 } else {
     Base_Response::redirectTo('timetable');
 }
+
+$useObjects['Object_User']['current'] = Object_User::brokerCurrent();
+$arrObjects['Object_User']['current'] = $useObjects['Object_User']['current'];
 
 foreach ($arrObjects as $object_group => $data) {
     foreach ($data as $key => $object) {

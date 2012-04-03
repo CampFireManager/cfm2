@@ -55,7 +55,7 @@ class Object_User extends Base_GenericObject
     {
         $objCache = Base_Cache::getHandler();
         $this_class_name = get_called_class();
-        $this_class = new $this_class_name();
+        $this_class = new $this_class_name(false);
         if (true === isset($objCache->arrCache[$this_class_name]['current'])
             && $objCache->arrCache[$this_class_name]['current'] != null
             && $objCache->arrCache[$this_class_name]['current'] != false

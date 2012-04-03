@@ -111,7 +111,6 @@ class Object_Userauth extends Base_GenericObject
     {
         $objCache = Base_Cache::getHandler();
         $this_class_name = get_called_class();
-        $this_class = new $this_class_name(false);
         $createIfNotExist = false;
         if (isset($objCache->arrCache[$this_class_name]['current'])
             && $objCache->arrCache[$this_class_name]['current'] != null
@@ -128,7 +127,7 @@ class Object_Userauth extends Base_GenericObject
                 $query = $db->prepare($sql);
                 $query->execute(array($_SESSION['intUserAuthID']));
                 $result = $query->fetchObject($this_class_name);
-                $objCache->arrCache[$this_class_name]['id'][$intUserID] = $result;
+                $objCache->arrCache[$this_class_name]['id'][$result->getKey('intUserID')] = $result;
                 $objCache->arrCache[$this_class_name]['current'] = $result;
                 return $result;
             } catch (PDOException $e) {
@@ -145,11 +144,11 @@ class Object_Userauth extends Base_GenericObject
         } elseif (isset($arrRequestData['requestUrlParameters']['code']) && $arrRequestData['requestUrlParameters']['code'] != null) {
             $key = 'codeonly';
             $value = '%:' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['requestUrlParameters']['code']);
-        } elseif (isset($arrRequestData['requestUrlParameters']['strUsername']) 
-                && isset($arrRequestData['requestUrlParameters']['strPassword'])
+        } elseif (isset($arrRequestData['requestUrlParameters']['username']) 
+                && isset($arrRequestData['requestUrlParameters']['password'])
                 ) {
             $key = 'basicauth';
-            $value = $arrRequestData['requestUrlParameters']['strUsername'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['requestUrlParameters']['strPassword']);
+            $value = $arrRequestData['requestUrlParameters']['username'] . ':' . sha1(Base_Config::getConfigSecure('salt') . $arrRequestData['requestUrlParameters']['password']);
             if (isset($arrRequestData['requestUrlParameters']['register'])) {
                 $createIfNotExist = true;
             }
@@ -222,11 +221,11 @@ class Object_Userauth extends Base_GenericObject
             && isset($arrRequestData['requestUrlParameters']['password']) 
             && $arrRequestData['requestUrlParameters']['password'] != null
         ) {
-            if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', $arrRequestData['requestUrlParameters']['strUsername'] . ':%')) > 0) {
+            if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', $arrRequestData['requestUrlParameters']['username'] . ':%')) > 0) {
                 throw new Exception("This username already exists, please select another");
             }
             $this->setKey('enumAuthType', 'basicauth');
-            $this->setKey('strAuthValue', array('password' => $arrRequestData['requestUrlParameters']['strPassword'], 'username' => $arrRequestData['requestUrlParameters']['strUsername']));
+            $this->setKey('strAuthValue', array('password' => $arrRequestData['requestUrlParameters']['password'], 'username' => $arrRequestData['requestUrlParameters']['username']));
         } elseif ($codeonly != false) {
             $this->setKey('enumAuthType', 'codeonly');
             $authString = '';
