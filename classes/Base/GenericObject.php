@@ -101,6 +101,13 @@ class Base_GenericObject
      * @var array|null
      */
     protected $arrDemoData = null;
+    /**
+     * Error message hand back. To hand back thrown error messages from new
+     * instances of objects where we don't want code to be stopped.
+     *
+     * @var string|boolean
+     */
+    protected $errorMessageReturn = false;
     
     /**
      * Get the object for the ID associated with a particular row
@@ -722,5 +729,16 @@ class Base_GenericObject
         }
 
         return $return;
+    }
+    
+    /**
+     * This function returns any errors we want to pass back to the client we 
+     * collected during the creation of a new object
+     * 
+     * @return string|boolean
+     */
+    function getErrorMessage()
+    {
+        return $this->errorMessageReturn;
     }
 }

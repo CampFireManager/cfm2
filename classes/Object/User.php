@@ -43,6 +43,8 @@ class Object_User extends Base_GenericObject
     protected $hasAttended = false;
     protected $isHere = false;
     protected $lastChange = false;
+    // Temporary storage values
+    public $temp_intUserAuthID = null;
 
     /**
      * Get the object for the current user.
@@ -80,10 +82,10 @@ class Object_User extends Base_GenericObject
             return false;
         }
     }
-    
+
     /**
      * Create a new User object, or post-process the PDO data
-     * 
+     *
      * @param boolean $isCreationAction Perform Creation Actions (default false)
      *
      * @return object This object
@@ -95,19 +97,22 @@ class Object_User extends Base_GenericObject
             return $this;
         }
         try {
-            $objUserAuth = new Object_Userauth();
-            if (false !== $objUserAuth) {
+            $objUserAuth = new Object_Userauth(true);
+            if (is_object($objUserAuth)) {
                 $this->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
                 $this->create();
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
+                $this->temp_intUserAuthID = $objUserAuth->getKey('intUserAuthID');
+            } else {
+                $this->errorMessageReturn = $objUserAuth;
             }
             return $this;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
     }
-    
+
     /**
      * This function clears values related to a logged in user.
      * 
@@ -127,6 +132,7 @@ class Object_User extends Base_GenericObject
             Base_Response::sendHttpResponse(401);
         }
     }
+    
     
     /**
      * This overloaded function returns the data from the PDO object and adds
