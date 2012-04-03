@@ -36,7 +36,7 @@ class Collection_Timetable extends Base_GenericCollection
         if ($date != null) {
             $date = date('Y-m-d', strtotime($date));
         }
-        if (Object_Room::countAll() > Object_Slot::countAll()) {
+        if (Object_Room::countAll() < Object_Slot::countAll()) {
             $self = new Collection_TimetableBySlotRoom($date);
         } else {
             $self = new Collection_TimetableByRoomSlot($date);
@@ -57,6 +57,8 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
      */
     public function __construct($date = null)
     {
+        $this->arrData['x_axis'] = 'room';
+        $this->arrData['y_axis'] = 'slot';
         $arrRoomObjects = Object_Room::brokerAll();
         foreach ($arrRoomObjects as $objRoom) {
             $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
@@ -140,6 +142,8 @@ class Collection_TimetableBySlotRoom extends Collection_TimetableByRoomSlot
      */
     public function __construct($date = null) {
         $self = parent::__construct($date);
+        $this->arrData['x_axis'] = 'slot';
+        $this->arrData['y_axis'] = 'room';
         foreach ($self->arrData['arrTimetable'] as $roomid => $arrslot) {
             foreach ($arrslot as $slotid => $use) {
                 $tmpTimetable[$slotid][$roomid] = $use;

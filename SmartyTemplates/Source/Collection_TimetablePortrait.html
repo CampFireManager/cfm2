@@ -1,38 +1,38 @@
 {include file="header.tpl" title="Timetable"}
 <table>
-{foreach $Collection_TimetablePortrait.0.arrTimetable as $xaxis}
-{if $xaxis@first}
     <tr>
         <th>&nbsp;</th>
-{foreach $xaxis as $yaxis}
-{if (substr($yaxis@key, 0, 4) == 'room')}
-        <th class="room" id="{$yaxis@key}">Room {$yaxis.intRoomID} {$yaxis.arrRoom.strRoomName}</th>
+{if $Collection_TimetablePortrait.0.x_axis == 'room'}
+{assign var="xaxis" value=$Collection_TimetablePortrait.0.arrRooms}
+{assign var="yaxis" value=$Collection_TimetablePortrait.0.arrSlots}
 {else}
-        <th class="slot{if $yaxis.isNow} slot_now{elseif $yaxis.isNext} slot_next{/if}" id="{$yaxis@key}">Slot {$yaxis.intSlotID} {$yaxis.arrSlot.timeStart}-{$yaxis.arrSlot.timeEnd}</th>
+{assign var="xaxis" value=$Collection_TimetablePortrait.0.arrSlots}
+{assign var="yaxis" value=$Collection_TimetablePortrait.0.arrRooms}
+{/if}
+{foreach $xaxis as $xaxis_value}
+{if $Collection_TimetablePortrait.0.x_axis == 'room'}
+        <th class="room" id="{$xaxis_value@key}">Room {$xaxis_value.intRoomID} {$xaxis_value.strRoomName}</th>
+{else}
+        <th class="slot{if isset($xaxis_value.isNow) && $xaxis_value.isNow} slot_now{elseif isset($xaxis_value.isNext) && $xaxis_value.isNext} slot_next{/if}" id="{$xaxis_value@key}">
+            Slot {$xaxis_value.intSlotID} {$xaxis_value.timeStart}-{$xaxis_value.timeEnd}
+        </th>
 {/if}
 {/foreach}
     </tr>
-{/if}
-{foreach $xaxis as $yaxis}
-{if $yaxis@first}
-    <tr id="{$xaxis@key}" class="{if $yaxis.isNow}slot_now{elseif $yaxis.isNext}slot_next{/if}">
-{if (substr($xaxis@key, 0, 4) == 'room')}
-{$room=$Collection_TimetablePortrait.0.arrRooms[$xaxis@key]}
-        <th class="room" id="{$xaxis@key}">Room {$room.intRoomID} {$room.strRoomName}</th>
+
+{foreach $yaxis as $yaxis_value}
+{if $Collection_TimetablePortrait.0.y_axis == 'room'}
+    <tr class="room" id="{$yaxis_value@key}">
+        <th class="room" id="{$yaxis_value@key}">Room {$yaxis_value.intRoomID} {$yaxis_value.strRoomName}</th>
 {else}
-{$slot=$Collection_TimetablePortrait.0.arrSlots[$xaxis@key]}
-        <th class="slot{if $yaxis.isNow} slot_now{elseif $yaxis.isNext} slot_next{/if}" id="{$xaxis@key}">Slot {$slot.intSlotID} {$slot.timeStart}-{$slot.timeEnd}</th>
+    <tr class="slot{if isset($yaxis_value.isNow) && $yaxis_value.isNow} slot_now{elseif isset($yaxis_value.isNext) && $yaxis_value.isNext} slot_next{/if}" id="{$yaxis_value@key}">
+        <th class="slot{if isset($yaxis_value.isNow) && $yaxis_value.isNow} slot_now{elseif isset($yaxis_value.isNext) && $yaxis_value.isNext} slot_next{/if}" id="{$yaxis_value@key}">
+            Slot {$yaxis_value.intSlotID} {$yaxis_value.timeStart}-{$yaxis_value.timeEnd}
+        </th>
 {/if}
-{/if}
-        <td class="{if $yaxis.isNow}slot_now{elseif $yaxis.isNext}slot_next{/if} {if isset($yaxis.arrTrack.intTrackID) and $yaxis.arrTrack.intTrackID > 0} track_{$yaxis.arrTrack.intTrackID}{/if}" id="{$xaxis@key}_{$yaxis@key}">
-            {foreach $yaxis as $talkdata}
-                <div>{$talkdata@key}:{$talkdata}</div>
-            {/foreach}
-            <span class="intTalkID">{$yaxis.intTalkID}</span>
-            <span class="strTalkTitle">{$yaxis.strTalkTitle}</span>
-{if isset($yaxis.arrUser.strUserName)}
-            <span class="label_strUserName">by <span class="strUserName">{$yaxis.arrUser.strUserName}</span></span>
-{/if}
+{foreach $xaxis as $xaxis_value}
+        <td class="talk">
+{include file="Timetable_TalkCell.tpl" cell=$Collection_TimetablePortrait.0.arrTimetable[$xaxis_value@key][$yaxis_value@key]}
         </td>
 {/foreach}
     </tr>

@@ -36,7 +36,7 @@ class Collection_TimetablePortrait extends Collection_Timetable
         if ($date != null) {
             $date = date('Y-m-d', strtotime($date));
         }
-        if (Object_Room::countAll() < Object_Slot::countAll()) {
+        if (Object_Room::countAll() > Object_Slot::countAll()) {
             $self = new Collection_TimetableBySlotRoom($date);
         } else {
             $self = new Collection_TimetableByRoomSlot($date);
