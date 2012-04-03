@@ -92,9 +92,20 @@ class Object_Talk extends Base_GenericObject
                 $objSlot = Object_Slot::brokerByID($this->intSlotID);
                 if (is_object($objSlot)) {
                     $objSlot->setFull(true);
-                    $self['arrSlot'] = $objSlot->getSelf();
-                    if ($self['arrSlot']['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $self['arrSlot']['lastChange'];
+                    $self['arrSlot_start'] = $objSlot->getSelf();
+                    if ($self['arrSlot_start']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrSlot_start']['lastChange'];
+                    }
+                    $self['arrSlot_stop'] = $objSlot->getSelf();
+                }
+                if ($this->intLength > 1) {
+                    $objSlot = Object_Slot::brokerByID($this->intSlotID + ($this->intLength - 1));
+                    if (is_object($objSlot)) {
+                        $objSlot->setFull(true);
+                        $self['arrSlot_stop'] = $objSlot->getSelf();
+                        if ($self['arrSlot_stop']['lastChange'] > $self['lastChange']) {
+                            $self['lastChange'] = $self['arrSlot_stop']['lastChange'];
+                        }
                     }
                 }
             }
