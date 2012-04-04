@@ -11,7 +11,7 @@
                 <h1>{$SiteConfig.eventName}</h1>
             </div>
             <div id="useractions">
-{if isset($User_Object.current.strUserName)}
+{if isset($Object_User.current.strUserName)}
                 [ <a href="{$SiteConfig.baseurl}?logout">Logout</a>
                 | <a href="{$SiteConfig.baseurl}user/{$User_Object.current.intUserID}">Edit my settings</a>]
 {else}
@@ -32,7 +32,7 @@
                         <input type="text" name="id" size="10" value="http://" />
                         <input type="submit" value="Own" />
                     </form>
-                | <form method="post" action="{$SiteConfig.baseurl}user">
+                | <form method="post" action="{$SiteConfig.baseurl}">
                     Username: <input type="text" size="10" name="username" value="" /> 
                     Password: <input type="password" size="10" name="password" value="" /> 
                     Register? <input type="checkbox" value="true" name="register" />

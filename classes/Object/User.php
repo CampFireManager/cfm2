@@ -118,7 +118,7 @@ class Object_User extends Base_GenericObject
      * 
      * @return void
      */
-    function logout()
+    static function logout()
     {
         Base_GeneralFunctions::startSession();
         $arrRequestData = Base_Request::getRequest();
@@ -128,7 +128,7 @@ class Object_User extends Base_GenericObject
         if (isset($_SESSION['OPENID_AUTH']) && $_SESSION['OPENID_AUTH'] != '') {
             unset($_SESSION['OPENID_AUTH']);
         }
-        if (isset($arrRequestData['username'])) {
+        if (isset($arrRequestData['username']) && $arrRequestData['username'] != '') {
             Base_Response::sendHttpResponse(401);
         }
     }

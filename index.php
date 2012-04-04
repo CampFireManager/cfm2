@@ -22,6 +22,11 @@ require_once dirname(__FILE__) . '/classes/autoloader.php';
 $arrRequestData = Base_Request::getRequest();
 $arrMediaType = explode('/', $arrRequestData['strPreferredAcceptType']);
 
+if (isset($arrRequestData['requestUrlParameters']['logout'])) {
+    Object_User::logout();
+    Base_Response::redirectTo('timetable');
+}
+
 // What type of request is this
 $rest = false;
 $media = false;
@@ -123,6 +128,8 @@ $arrObjectsData = array();
  */
 $renderPage = null;
 
+$arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
+
 if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0 && $arrRequestData['pathItems'][0] != '') {
     foreach ($arrRequestData['pathItems'] as $pathItem) {
         if (isset($arrValidObjects[$pathItem])) {
@@ -214,9 +221,6 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
 } else {
     Base_Response::redirectTo('timetable');
 }
-
-$useObjects['Object_User']['current'] = Object_User::brokerCurrent();
-$arrObjects['Object_User']['current'] = $useObjects['Object_User']['current'];
 
 foreach ($arrObjects as $object_group => $data) {
     foreach ($data as $key => $object) {
