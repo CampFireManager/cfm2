@@ -48,6 +48,12 @@ class Object_User extends Base_GenericObject
 
     /**
      * Get the object for the current user.
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
+     * 
+     * @todo Use the getDependency() function to get the userauth object, 
+     * rather than Object_Userauth::brokerCurrent()
      *
      * @return object UserObject for intUserID
      */

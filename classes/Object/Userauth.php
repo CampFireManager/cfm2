@@ -104,6 +104,9 @@ class Object_Userauth extends Base_GenericObject
 
     /**
      * A function to broker the current user object back to the engine.
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      *
      * @return object 
      */

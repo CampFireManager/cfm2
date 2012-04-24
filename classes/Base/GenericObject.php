@@ -108,13 +108,147 @@ class Base_GenericObject
      * @var string|boolean
      */
     protected $errorMessageReturn = false;
+
+    /**
+     * The array of injected dependencies from the setDependencies() function.
+     * Run on __construct() automatically (unless overriden of course!)
+     * @var array
+     */
+    protected $arrDependencies = array();
+
+    /**
+     * Ensure that all database items are backed up before processing.
+     *
+     * This is our usual construct method for all extended classes. This also
+     * allows us to inject dependencies if we need them. For example, you
+     * may wish to ensure you always have the Request class loaded here, or
+     * perhaps the Database class?
+     *
+     * Doing it this way means that should we need to, we should be able to
+     * inject mock dependencies in order to run unit testing.
+     *
+     * @param boolean    $isCreationAction Used to determine whether to 
+     * post-process the PDO object, to pre-process a creation action or, as in
+     * this case, ignored.
+     * @param array|null $arrDependencies  Collection of dependencies to inject
+     * 
+     * @return object This class.
+     */
+    function __construct($isCreationAction = false, $arrDependencies = null)
+    {
+        $this->_setDependencies($arrDependencies);
+        if (isset($this->arrDBItems) and is_array($this->arrDBItems) and count($this->arrDBItems) > 0) {
+            foreach ($this->arrDBItems as $item=>$dummy) {
+                $this->old[$item] = $this->$item;
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * This iterates through the array of dependencies and lets us inject
+     * them as required. It moves it out of the construct class, and also
+     * means that potentially, our code can request new dependencies if
+     * they are needed, without requiring a whole new instance of the class
+     * to be created.
+     *
+     * @param array|null $arrDependencies Collection of dependencies to
+     * inject.
+     *
+     * @return boolean Return true unless any of the dependencies failed to
+     * be injected.
+     */
+    function setDependencies($arrDependencies = null)
+    {
+        $result = true;
+        if (is_array($arrDependencies) && count($arrDependencies) > 0) {
+            foreach ($arrDependencies as $classnameDependency => $objectDependency) {
+                try {
+                    $this->_setDependency($classnameDependency, $objectDependency);
+                } catch (Exception $e) {
+                    $result = false;
+                    error_log("Tried to inject dependency $classnameDependency, but got error {$e->getMessage()}");
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * This function injects an individual dependency - either by loading
+     * it from the passed object (in the case of unit testing or perhaps
+     * where a user is acting on behalf of another?) or by loading that
+     * class afresh. It may throw errors, particularly if the type of
+     * dependency we want to inject hasn't been set, or if it's already
+     * been injected. Also, if the __construct function for that object
+     * throws it's own exception, this will be caught and passed up the
+     * stack.
+     *
+     * @param string      $key    The name of the object to inject.
+     * @param object|null $object The object to inject, or leave null to
+     * create a fresh object using no conditions.
+     *
+     * @return object This dependency
+     */
+    protected function setDependency($key = null, $object = null)
+    {
+        if ($key == null) {
+            throw new Exception("The dependency to inject isn't set.");
+        } elseif ($this->arrDependencies[$key] != null) {
+            throw new Exception("This dependency is already set - we shouldn't overwrite it.");
+        }
+        $baseclass = 'Base_' . $key;
+        if ($object != null && is_object($object)) {
+            $this->arrDependencies[$key] = $object;
+        } else {
+            try {
+                $this->arrDependencies[$key] = new $baseclass();
+                return $this->arrDependencies[$key];
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+    }
     
+    /**
+     * This function checks to see whether the dependency is pre-loaded, and if
+     * not, loads it.
+     *
+     * @param string $key The dependency to load. Note this only loads classes
+     * prefixed Base_
+     * 
+     * @return object The required dependency.
+     * 
+     * @todo check whether PHP will let me confirm whether there's a method
+     * available without instantiating it.
+     */
+    protected function getDependency($key = null)
+    {
+        if ($key == null) {
+            return false;
+        }
+        if (isset($this->arrDependencies[$key])) {
+            return $this->arrDependencies[$key];
+        } else {
+            try {
+                return $this->_setDependency($key);
+            } catch (Exception $e) {
+                error_log("Unable to load dependency $key due to {$e->getMessage()}");
+                die("Error loading critical function");
+            }
+            
+        }
+    }
+
     /**
      * Get the object for the ID associated with a particular row
      *
      * @param integer $intID The Object ID to search for
      *
      * @return object UserObject for intUserID
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      */
     static function brokerByID($intID = 0)
     {
@@ -153,6 +287,9 @@ class Base_GenericObject
      * @param string $value  The value to look for.
      * 
      * @return array The array of objects matching this search
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      */
     static function brokerByColumnSearch($column = null, $value = null)
     {
@@ -206,6 +343,9 @@ class Base_GenericObject
      * @param string $value  The value to look for.
      * 
      * @return integer The number of rows matching the search criteria
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      */
     static function countByColumnSearch($column = null, $value = null)
     {
@@ -244,6 +384,9 @@ class Base_GenericObject
      * @param string $value  The value to look for.
      * 
      * @return datetime The most recent datetime string matching the search criteria
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      */
     static function lastChangeByColumnSearch($column = null, $value = null)
     {
@@ -280,6 +423,9 @@ class Base_GenericObject
     
     /**
      * Get all objects in this table
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      *
      * @return array The array of objects matching this search
      */
@@ -309,6 +455,9 @@ class Base_GenericObject
 
     /**
      * Get the most recent "lastChange" datetime from this table
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      *
      * @return datetime The most recent lastChange date from this whole table
      */
@@ -333,6 +482,9 @@ class Base_GenericObject
     
     /**
      * Get a tally of the number of rows in a table
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      *
      * @return integer The number of rows in the table
      */
@@ -423,28 +575,15 @@ class Base_GenericObject
             return $this->$keyname;
         }
     }
-    
-    /**
-     * Ensure that all database items are backed up before processing
-     *
-     * @param boolean $isCreationAction Used to determine whether to 
-     * post-process the PDO object, to pre-process a creation action or, as in
-     * this case, ignored.
-     * 
-     * @return object This class.
-     */
-    function __construct($isCreationAction = false)
-    {
-        if (isset($this->arrDBItems) and is_array($this->arrDBItems) and count($this->arrDBItems) > 0) {
-            foreach ($this->arrDBItems as $item=>$dummy) {
-                $this->old[$item] = $this->$item;
-            }
-        }
-        return $this;
-    }
 
     /**
      * Commit any changes to the database
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
+     * 
+     * @todo Use the getDependency() function to get the user object, rather
+     * than Object_User::brokerCurrent()
      *
      * @return void
      */
@@ -514,6 +653,12 @@ class Base_GenericObject
 
     /**
      * Create the object
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
+     * 
+     * @todo Use the getDependency() function to get the user object, rather
+     * than Object_User::brokerCurrent()
      *
      * @return boolean status of the create operation
      */
@@ -561,6 +706,12 @@ class Base_GenericObject
     /**
      * Delete a row from the relevant table
      * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
+     * 
+     * @todo Use the getDependency() function to get the user object, rather
+     * than Object_User::brokerCurrent()
+     * 
      * @return boolean Whether there was an error deleting the row
      */
     function delete()
@@ -600,6 +751,9 @@ class Base_GenericObject
     
     /**
      * This is used to first initialize the tables of the database.
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
      * 
      * @return boolean State of table creation
      */
@@ -663,6 +817,9 @@ class Base_GenericObject
     /**
      * This is used to first initialize the tables of the database. It then adds a set of demo data.
      * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection
+     * 
      * @return boolean State of table creation
      */
     function initializeDemo()
@@ -693,6 +850,9 @@ class Base_GenericObject
     
     /**
      * Return an array of the collected or created data.
+     * 
+     * @todo Use the getDependency() function to get the user object, rather
+     * than Object_User::brokerCurrent()
      *
      * @return array A mixed array of these items
      */

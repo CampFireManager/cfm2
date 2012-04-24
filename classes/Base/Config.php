@@ -36,6 +36,9 @@ class Base_Config
      * This function sets up the database tables in an appropriate way for the
      * per-site and secure configuration stores.
      * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection. This function is in GenericObject
+     * 
      * @return void
      */
     function initialize()
@@ -57,6 +60,9 @@ class Base_Config
      * This function extends the previous function, and adds demo data to show,
      * both what sort of data would be expected in the service, and to run
      * demonstrations of the site to potential event organisers.
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection. This function is in GenericObject
      * 
      * @return void
      */
@@ -246,6 +252,9 @@ class Base_Config
 
     /**
      * This function reads the config sources to use later
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection. This function is in GenericObject
      *
      * @return void
      */
@@ -299,6 +308,9 @@ class Base_Config
      * @param string $value The value to store in the config table. Set to null to erase the entry.
      *
      * @return boolean Success or failure of the operation.
+     * 
+     * @todo Use the getDependency() function to load the database, rather
+     * than Base_Database::getConnection. This function is in GenericObject
      */
     public static function setGlobalConfig($key = null, $value = null)
     {
