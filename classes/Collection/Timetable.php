@@ -13,7 +13,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 /**
- * This class collates all the objects needed to render a full timetable
+ * This class wrappers the Collection_TimetableByXY functions
  *
  * @category Collection_Timetable
  * @package  CampFireManager2
@@ -46,6 +46,16 @@ class Collection_Timetable extends Base_GenericCollection
     }
 }
 
+/**
+ * This class collates all the objects needed to render a full timetable,
+ * ordered by Room and then slot.
+ *
+ * @category Collection_Timetable
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 class Collection_TimetableByRoomSlot extends Collection_Timetable
 {
     /**
@@ -130,6 +140,16 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
     }
 }
 
+/**
+ * This class collates all the objects needed to render a full timetable,
+ * ordered by Slot and then Room.
+ *
+ * @category Collection_Timetable
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
 class Collection_TimetableBySlotRoom extends Collection_TimetableByRoomSlot
 {
     /**
@@ -140,7 +160,8 @@ class Collection_TimetableBySlotRoom extends Collection_TimetableByRoomSlot
      * 
      * @return object
      */
-    public function __construct($date = null) {
+    public function __construct($date = null)
+    {
         $self = parent::__construct($date);
         $this->arrData['x_axis'] = 'slot';
         $this->arrData['y_axis'] = 'room';
