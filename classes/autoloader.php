@@ -24,7 +24,7 @@ function __autoload($className)
     $arrClass = explode('_', $className);
     $class_path  = dirname(__FILE__);
     foreach ($arrClass as $class_point) {
-        if ($class_point != 'Demo') {
+        if ($class_point != 'Demo' && $class_point != 'Testable') {
             $class_path .= '/' . $class_point;
         }
     }
@@ -37,3 +37,5 @@ function __autoload($className)
     }
     return false;
 }
+
+spl_autoload_register('__autoload');

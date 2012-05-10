@@ -39,7 +39,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             $tmpPathItems[] = $data;
         }
         $arrRequestData['pathItems'] = $tmpPathItems;
-        $media = Base_Request::getMediaType('media');
+        $media = Base_Request::hasMediaType('media');
         if (! $media) {
             Base_Response::sendHttpResponse(404, null, $arrRequestData['strPreferredAcceptType']);
         }
@@ -73,7 +73,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             Base_Response::redirectTo('timetable');
         }
     }
-    if ($arrRequestData['pathItems'][0] == 'rest' && Base_Request::getMediaType('rest')) {
+    if ($arrRequestData['pathItems'][0] == 'rest' && Base_Request::hasMediaType('rest')) {
         unset($arrRequestData['pathItems'][0]);
         $tmpPathItems = array();
         foreach ($arrRequestData['pathItems'] as $data) {

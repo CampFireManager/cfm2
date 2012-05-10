@@ -25,7 +25,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Screen extends Base_GenericObject
+class Object_Screen extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(

@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_User extends Base_GenericObject
+class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
     	'strUserName' => array('type' => 'varchar', 'length' => 255),
@@ -34,7 +34,7 @@ class Object_User extends Base_GenericObject
     );
     protected $strDBTable = "user";
     protected $strDBKeyCol = "intUserID";
-    protected $mustBeCreatorToModify = true;
+    protected $onlyCreatorMayModify = true;
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;
@@ -49,12 +49,6 @@ class Object_User extends Base_GenericObject
     /**
      * Get the object for the current user.
      * 
-     * @todo Use the getDependency() function to load the database, rather
-     * than Base_Database::getConnection
-     * 
-     * @todo Use the getDependency() function to get the userauth object, 
-     * rather than Object_Userauth::brokerCurrent()
-     *
      * @return object UserObject for intUserID
      */
     public static function brokerCurrent()
@@ -75,9 +69,9 @@ class Object_User extends Base_GenericObject
             return false;
         }
         try {
-            $db = Base_Database::getConnection();
+            $objDatabase = Container_Database::getConnection();
             $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
-            $query = $db->prepare($sql);
+            $query = $objDatabase->prepare($sql);
             $query->execute(array($intUserID));
             $result = $query->fetchObject($this_class_name);
             $objCache->arrCache[$this_class_name]['id'][$intUserID] = $result;
@@ -149,7 +143,7 @@ class Object_User extends Base_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
-        if ($this->getFull() == true) {
+        if ($this->isFull() == true) {
             $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
             foreach ($arrUserAuth as $key => $value) {
                 $self['arrUserAuth'][$key] = $value->getSelf();

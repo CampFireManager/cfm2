@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_NowAndNext extends Base_GenericCollection
+class Collection_NowAndNext extends Abstract_GenericCollection
 {
     /**
      * Collect the data for this collection

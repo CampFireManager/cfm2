@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_Timetable extends Base_GenericCollection
+class Collection_Timetable extends Abstract_GenericCollection
 {
     /**
      * A mock up of the Object_ style of broker functions

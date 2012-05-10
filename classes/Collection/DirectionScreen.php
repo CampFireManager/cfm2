@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_DirectionScreen extends Base_GenericCollection
+class Collection_DirectionScreen extends Abstract_GenericCollection
 {
     /**
      * Collect the data for this collection

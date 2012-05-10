@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Userauth extends Base_GenericObject
+class Object_Userauth extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -34,7 +34,7 @@ class Object_Userauth extends Base_GenericObject
     );
     protected $strDBTable = "userauth";
     protected $strDBKeyCol = "intUserAuthID";
-    protected $mustBeCreatorToModify = true;
+    protected $onlyCreatorMayModify = true;
     // Local Object Requirements
     protected $intUserAuthID = null;
     protected $intUserID = null;
@@ -105,9 +105,6 @@ class Object_Userauth extends Base_GenericObject
     /**
      * A function to broker the current user object back to the engine.
      * 
-     * @todo Use the getDependency() function to load the database, rather
-     * than Base_Database::getConnection
-     *
      * @return object 
      */
     function brokerCurrent()
@@ -125,9 +122,9 @@ class Object_Userauth extends Base_GenericObject
         $arrRequestData = Base_Request::getRequest();
         if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
             try {
-                $db = Base_Database::getConnection();
+                $objDatabase = Container_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE intUserAuthID = ? LIMIT 1";
-                $query = $db->prepare($sql);
+                $query = $objDatabase->prepare($sql);
                 $query->execute(array($_SESSION['intUserAuthID']));
                 $result = $query->fetchObject($this_class_name);
                 $objCache->arrCache[$this_class_name]['id'][$result->getKey('intUserID')] = $result;
@@ -158,9 +155,9 @@ class Object_Userauth extends Base_GenericObject
         }
         if (isset($key)) {
             try {
-                $db = Base_Database::getConnection();
+                $objDatabase = Container_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE enumAuthType = ? and strAuthValue = ? LIMIT 1";
-                $query = $db->prepare($sql);
+                $query = $objDatabase->prepare($sql);
                 $query->execute(array($key, $value));
                 $result = $query->fetchObject($this_class_name);
                 if ($result != false) {
@@ -169,7 +166,7 @@ class Object_Userauth extends Base_GenericObject
                     $objCache->arrCache[$this_class_name]['current'] = $result;
                     if ($key == 'onetime') {
                         $sql = "DELETE FROM userauth WHERE $key = ? LIMIT 1";
-                        $query = $db->prepare($sql);
+                        $query = $objDatabase->prepare($sql);
                         $query->execute(array($value));
                     }
                 } else {

@@ -16,14 +16,14 @@
  * This class provides all the collection specific functions used throughout the
  * site. It is used as the basis for every object.
  *
- * @category Base_GenericCollection
+ * @category Abstract_GenericCollection
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Base_GenericCollection
+abstract class Abstract_GenericCollection
 {
     protected $arrData = array();
     
@@ -140,7 +140,7 @@ class Base_GenericCollection
      *
      * @return boolean
      */
-    public function getFull()
+    public function isFull()
     {
         return false;
     }
@@ -173,15 +173,15 @@ class Base_GenericCollection
     /**
      * Return a specific aspect of the class
      *
-     * @param string $id The collection ID to retrieve. Leave blank for all of 
+     * @param string $intID The collection ID to retrieve. Leave blank for all of 
      * those collection objects.
      * 
      * @return array
      */
-    public static function brokerByID($id = null)
+    public static function brokerByID($intID = null)
     {
         $this_class_name = get_called_class();
-        $this_class = new $this_class_name($id);
+        $this_class = new $this_class_name($intID);
         if (is_object($this_class)) {
             return $this_class;
         } else {

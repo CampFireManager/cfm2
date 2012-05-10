@@ -109,28 +109,28 @@ class Base_GeneralFunctions
 
             if ($batch == 1) {
                 $str = '';
-                $i = 1;
-                while ($i <= $strLen) {
+                $counter = 1;
+                while ($counter <= $strLen) {
                     $rand = rand(0, $count-1);
                     $newChar = $finalArray[$rand];
                     $str .= $newChar;
-                    $i++;
+                    $counter++;
                 }
                 $result = $str;
             } else {
-                $j = 1;
+                $outercounter = 1;
                 $result = array();
-                while ($j <= $batch) {
+                while ($outercounter <= $batch) {
                     $str = '';
-                    $i = 1;
-                    while ($i <= $strLen) {
+                    $innercounter = 1;
+                    while ($innercounter <= $strLen) {
                         $rand = rand(0, $count-1);
                         $newChar = $finalArray[$rand];
                         $str .= $newChar;
-                        $i++;
+                        $innercounter++;
                     }
                     $result[] = $str;
-                    $j++;
+                    $outercounter++;
                 }
             }
             return $result;

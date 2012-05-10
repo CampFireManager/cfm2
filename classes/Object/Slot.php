@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Slot extends Base_GenericObject
+class Object_Slot extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -69,7 +69,7 @@ class Object_Slot extends Base_GenericObject
         $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         
-        if ($this->getFull() == true) {
+        if ($this->isFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
                 if (is_object($objDefaultSlotType)) {

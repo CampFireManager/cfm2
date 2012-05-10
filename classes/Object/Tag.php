@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Tag extends Base_GenericObject
+class Object_Tag extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -34,7 +34,7 @@ class Object_Tag extends Base_GenericObject
     protected $strDBTable = "tag";
     protected $strDBKeyCol = "intTagID";
     protected $mustBeAdminToModify = false;
-    protected $mustBeCreatorToModify = false;
+    protected $onlyCreatorMayModify = false;
     // Local Object Requirements
     protected $intTagID = null;
     protected $strTagName = null;
@@ -52,8 +52,8 @@ class Object_Tag extends Base_GenericObject
      */
     function __construct($isCreationAction = false)
     {
-        $this->mustBeAdminToModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyAdminsCanTagTalks', 'false'));
-        $this->mustBeCreatorToModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyTagCreatorsCanEditTalkTags', 'false'));
+        $this->onlyAdminMayModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyAdminsCanTagTalks', 'false'));
+        $this->onlyCreatorMayModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyTagCreatorsCanEditTalkTags', 'false'));
         return parent::__construct($isCreationAction);
     }
 }

@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Room extends Base_GenericObject
+class Object_Room extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -48,7 +48,7 @@ class Object_Room extends Base_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
-        if ($this->getFull() == true) {
+        if ($this->isFull() == true) {
             $resources = (array) json_decode($this->jsonResourceList);
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);

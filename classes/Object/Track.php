@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Track extends Base_GenericObject
+class Object_Track extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(

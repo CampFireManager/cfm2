@@ -282,20 +282,20 @@ class Base_Response
         header('Content-Length: '.($seek_end - $seek_start + 1));
 
         //open the file
-        $fp = fopen($file, 'rb');
+        $filepointer = fopen($file, 'rb');
         //seek to start of missing part
-        fseek($fp, $seek_start);
+        fseek($filepointer, $seek_start);
 
         //start buffered download
-        while (!feof($fp)) {
+        while (!feof($filepointer)) {
             //reset time limit for big files
             set_time_limit(0);
-            print(fread($fp, 1024*8));
+            print(fread($filepointer, 1024*8));
             flush();
             ob_flush();
         }
 
-        fclose($fp);
+        fclose($filepointer);
         exit;
     }
     

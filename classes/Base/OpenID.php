@@ -76,7 +76,7 @@ class Base_OpenID
 
         $libOpenID = Base_ExternalLibraryLoader::loadLibrary("PHP_OpenID");
         if ($libOpenID == false) {
-            die("Failed to load OpenID");
+            throw new BadMethodCallException("Failed to load OpenID");
         }
         set_include_path(get_include_path() . PATH_SEPARATOR . $libOpenID);
 
@@ -96,17 +96,21 @@ class Base_OpenID
     /**
      * Request authentication from the $id
      *
-     * @param string $id      The requested OpenID authentication
-     * @param string $base    The path where these functions are triggered from
-     * @param string $success The path to return to after authentication is completed successfully
-     * @param string $fail    The path to return to after authentication is completed unsuccessfully or fails
+     * @param string $strOpenID The requested OpenID authentication
+     * @param string $base      The path where these functions are triggered from
+     * @param string $success   The path to return to after authentication is completed successfully
+     * @param string $fail      The path to return to after authentication is completed unsuccessfully or fails
      *
      * @return void
      */
-    public static function request($id = '', $base = '', $success = '', $fail = '')
-    {
+    public static function request(
+        $strOpenID = '', 
+        $base = '', 
+        $success = '', 
+        $fail = ''
+    ) {
         $handler = self::getHandler();
-        $auth = $handler->consumer->begin($id);
+        $auth = $handler->consumer->begin($strOpenID);
         if (!$auth) {
             $_SESSION['OPENID_AUTH'] = false;
             $_SESSION['OPENID_FAILED_REASON'] = 0;
@@ -163,11 +167,11 @@ class Base_OpenID
         }
 
         // Add AX fetch request to authentication request
-        $ax = new Auth_OpenID_AX_FetchRequest;
+        $OpenID_AX = new Auth_OpenID_AX_FetchRequest;
         foreach ($handler->ax_attribute as $attr) {
-            $ax->add($attr);
+            $OpenID_AX->add($attr);
         }
-        $auth->addExtension($ax);
+        $auth->addExtension($OpenID_AX);
 
         // Add SReg attributes to authentication request
         $sreg_request = Auth_OpenID_SRegRequest::build(array(), $handler->sreg_attribute);

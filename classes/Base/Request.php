@@ -76,7 +76,7 @@ class Base_Request
      * 
      * @return boolean The value from the table above.
      */
-    public static function getMediaType($category = 'site', $mediaType = null)
+    public static function hasMediaType($category = 'site', $mediaType = null)
     {
         if ($mediaType == null) {
             $handler = self::getHandler();
@@ -109,11 +109,49 @@ class Base_Request
 
     /**
      * This function returns a parsed version of the data used to request this page
+     * 
+     * @param array  $arrGlobals A dependency injection entry for $GLOBALS
+     * @param array  $arrServer  A dependency injection entry for $_SERVER
+     * @param array  $arrRequest A dependency injection entry for $_REQUEST
+     * @param array  $arrGet     A dependency injection entry for $_GET
+     * @param array  $arrPost    A dependency injection entry for $_POST
+     * @param array  $arrFiles   A dependency injection entry for $_FILES
+     * @param string $strInput   A dependency injection entry for php://input
      *
      * @return array The compiled data
      */
-    public function getRequest()
-    {
+    
+    public static function getRequest(
+        $arrGlobals = null, 
+        $arrServer = null,
+        $arrRequest = null,
+        $arrGet = null,
+        $arrPost = null,
+        $arrFiles = null,
+        $strInput = null
+    ) {
+        if ($arrGlobals == null) {
+            $arrGlobals = $GLOBALS;
+        }
+        if ($arrServer == null) {
+            $arrServer = $_SERVER;
+        }
+        if ($arrRequest == null) {
+            $arrRequest = $_REQUEST;
+        }
+        if ($arrGet == null) {
+            $arrGet = $_GET;
+        }
+        if ($arrPost == null) {
+            $arrPost = $_POST;
+        }
+        if ($arrFiles == null) {
+            $arrFiles = $_FILES;
+        }
+        if ($strInput == null) {
+            $strInput = file_get_contents('php://input');
+        }
+        
         // If we've parsed the Request Parameters before, just return that data
 
         $handler = self::getHandler();
@@ -123,18 +161,18 @@ class Base_Request
 
         // First, get the script name or URL, and any parameters received
 
-        if ( ! isset($_SERVER['REQUEST_METHOD'])) {
-            if (preg_match('/\/(.*)$/', $GLOBALS['argv'][0]) == 0) {
-                $filename = trim(`pwd`) . '/' . $GLOBALS['argv'][0];
+        if ( ! isset($arrServer['REQUEST_METHOD'])) {
+            if (preg_match('/\/(.*)$/', $arrGlobals['argv'][0]) == 0) {
+                $filename = trim(`pwd`) . '/' . $arrGlobals['argv'][0];
             } else {
-                $filename = $GLOBALS['argv'][0];
+                $filename = $arrGlobals['argv'][0];
             }
             $url = 'file://' . $filename;
-            $data = $GLOBALS['argv'];
+            $data = $arrGlobals['argv'];
             unset($data[0]);
         } else {
             $url = "http";
-            if (isset($_SERVER['HTTPS'])) {
+            if (isset($arrServer['HTTPS'])) {
                 $url .= 's';
             }
             $url .= '://';
@@ -143,14 +181,14 @@ class Base_Request
 
             $username = null;
             $password = null;
-            if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-                $auth_params = explode(":", base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+            if (isset($arrServer['HTTP_AUTHORIZATION'])) {
+                $auth_params = explode(":", base64_decode(substr($arrServer['HTTP_AUTHORIZATION'], 6)));
                 $username = $auth_params[0];
                 unset($auth_params[0]);
                 $password = implode('', $auth_params);
-            } elseif (isset($_SERVER['PHP_AUTH_USER']) and isset($_SERVER['PHP_AUTH_PW'])) {
-                $username = $_SERVER['PHP_AUTH_USER'];
-                $password = $_SERVER['PHP_AUTH_PW'];
+            } elseif (isset($arrServer['PHP_AUTH_USER']) and isset($arrServer['PHP_AUTH_PW'])) {
+                $username = $arrServer['PHP_AUTH_USER'];
+                $password = $arrServer['PHP_AUTH_PW'];
             }
            
             if ($username != null) {
@@ -160,11 +198,11 @@ class Base_Request
                 }
                 $url .= '@';
             }
-            $url .= $_SERVER['SERVER_NAME'];
-            if ((isset($_SERVER['HTTPS']) and $_SERVER['SERVER_PORT'] != 443) || ( ! isset($_SERVER['HTTPS']) and $_SERVER['SERVER_PORT'] != 80)) {
-                $url .= ':' . $_SERVER['SERVER_PORT'];
+            $url .= $arrServer['SERVER_NAME'];
+            if ((isset($arrServer['HTTPS']) and $arrServer['SERVER_PORT'] != 443) || ( ! isset($arrServer['HTTPS']) and $arrServer['SERVER_PORT'] != 80)) {
+                $url .= ':' . $arrServer['SERVER_PORT'];
             }
-            $url .= $_SERVER['REQUEST_URI'];
+            $url .= $arrServer['REQUEST_URI'];
         }
 
         // Next, parse the URL or script name we just received, and store it.
@@ -184,43 +222,43 @@ class Base_Request
         $handler->arrRequestData['username'] = $username;
         $handler->arrRequestData['password'] = $password;
 
-        switch(strtolower($_SERVER['REQUEST_METHOD'])) {
+        switch(strtolower($arrServer['REQUEST_METHOD'])) {
         case 'head':
             // Typically a request to see if this has changed since the last time
             $handler->arrRequestData['method'] = 'head';
-            $data = $_REQUEST;
+            $data = $arrRequest;
             break;
         case 'get':
             $handler->arrRequestData['method'] = 'get';
-            $data = $_GET;
+            $data = $arrGet;
             break;
         case 'post':
             $handler->arrRequestData['method'] = 'post';
-            $data = $_POST;
-            if (isset($_FILES) and is_array($_FILES)) {
-                $data['_FILES'] = $_FILES;
+            $data = $arrPost;
+            if (isset($arrFiles) and is_array($arrFiles)) {
+                $data['_FILES'] = $arrFiles;
             }
             break;
         case 'put':
             $handler->arrRequestData['method'] = 'put';
-            parse_str(file_get_contents('php://input'), $_PUT);
+            parse_str($strInput, $_PUT);
             $data = $_PUT;
             break;
         case 'delete':
             $handler->arrRequestData['method'] = 'delete';
-            $data = $_REQUEST;
+            $data = $arrRequest;
             break;
         }
         
         // Store any of the parameters we aquired before. Add an "if-modified-since" parameter too.
 
-        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+        if (isset($arrServer['HTTP_IF_MODIFIED_SINCE'])) {
             // Taken from http://www.justsoftwaresolutions.co.uk/webdesign/provide-last-modified-headers-and-handle-if-modified-since-in-php.html
-            $handler->arrRequestData['If-Modified-Since'] = preg_replace('/;.*$/','',$_SERVER["HTTP_IF_MODIFIED_SINCE"]);
+            $handler->arrRequestData['If-Modified-Since'] = preg_replace('/;.*$/','',$arrServer["HTTP_IF_MODIFIED_SINCE"]);
         }
         
-        if (isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
-            preg_match_all('/"([^"^,]+)/',$_SERVER["HTTP_IF_NONE_MATCH"], $handler->arrRequestData['If-None-Match']);
+        if (isset($arrServer['HTTP_IF_NONE_MATCH'])) {
+            preg_match_all('/"([^"^,]+)/',$arrServer["HTTP_IF_NONE_MATCH"], $handler->arrRequestData['If-None-Match']);
             if (isset($handler->arrRequestData['If-None-Match'][0])) {
                 unset($handler->arrRequestData['If-None-Match'][0]);
             }
@@ -250,12 +288,12 @@ class Base_Request
 
         // Next make sure that we have a script name, and that this is not just a CLI script.
 
-        if (isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER['SCRIPT_NAME'])) {
+        if (isset($arrServer['REQUEST_METHOD']) && isset($arrServer['SCRIPT_NAME'])) {
 
             // Separate out the individual characters of the URL path we received and the script path
 
             $path_elements = str_split($handler->arrRequestData['path']);
-            $match = preg_match('/\/(.*)$/', $_SERVER['SCRIPT_NAME'], $matches);
+            $match = preg_match('/\/(.*)$/', $arrServer['SCRIPT_NAME'], $matches);
             $script_elements = str_split($matches[1]);
 
             // Then compare each character one-by-one until we reach the end of the URL or the script name and path names diverge
@@ -295,7 +333,7 @@ class Base_Request
 
         // Make the list of accepted types into an array, and then step through it.
 
-        $arrAccept = explode(',', strtolower(str_replace(' ', '', $_SERVER['HTTP_ACCEPT'])));
+        $arrAccept = explode(',', strtolower(str_replace(' ', '', $arrServer['HTTP_ACCEPT'])));
         foreach ($arrAccept as $acceptItem) {
 
             // All accepted Internet Media Types (or Mime Types, as they once we known) have a Q (Quality?) value
@@ -510,9 +548,9 @@ class Base_Request
         // Let's get the user agent - it's just for a giggle in most cases, as it's not authorititive, but it might help if you're
         // getting site stats, or trying not to track people with cookies.
 
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+        if (isset($arrServer['HTTP_USER_AGENT'])) {
             // Remember, this isn't guaranteed to be accurate
-            $handler->arrRequestData['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+            $handler->arrRequestData['userAgent'] = $arrServer['HTTP_USER_AGENT'];
         }
         
         return $handler->arrRequestData;

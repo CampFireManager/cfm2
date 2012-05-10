@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Attendee extends Base_GenericObject
+class Object_Attendee extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -32,7 +32,7 @@ class Object_Attendee extends Base_GenericObject
     );
     protected $strDBTable = "attendee";
     protected $strDBKeyCol = "intAttendeeID";
-    protected $mustBeCreatorToModify = true;
+    protected $onlyCreatorMayModify = true;
     // Local Object Requirements
     protected $intAttendeeID = null;
     protected $intUserID = null;
