@@ -18,8 +18,10 @@ $generator = microtime(true);
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
+Container_Config::GetLoadedConfig();
 
-$arrRequestData = Base_Request::getRequest();
+
+$arrRequestData = Container_Request::getRequest();
 $arrMediaType = explode('/', $arrRequestData['strPreferredAcceptType']);
 
 if (isset($arrRequestData['requestUrlParameters']['logout'])) {
