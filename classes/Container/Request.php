@@ -2,31 +2,24 @@
 
 class Container_Request
 {
-    protected static $self = null;
+    protected static $objRequest = null;
     
     protected static function GetHandler()
     {
-        if (self::$self == null) {
-            self::$self = new self();
+        if (self::$objRequest == null) {
+            self::$objRequest = new Base_Request();
         }
-        return self::$self;
+        return self::$objRequest;
     }
     
     protected static function reset()
     {
-        self::$self = null;
-    }
-}
-
-class Container_Request_Testable extends Container_Request
-{
-    public static function GetHandler()
-    {
-        return parent::GetHandler();
+        self::$objRequest = null;
     }
     
-    public static function reset()
+    public static function getRequest()
     {
-        parent::reset();
+        $request = self::GetHandler();
+        $request->parse();
     }
 }
