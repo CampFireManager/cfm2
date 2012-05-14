@@ -1,6 +1,4 @@
 <?php
-require_once dirname(__FILE__) . '/../../../classes/autoloader.php';
-
 class Container_DatabaseTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()

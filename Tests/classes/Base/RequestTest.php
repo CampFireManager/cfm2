@@ -1,6 +1,4 @@
 <?php
-require_once dirname(__FILE__) . '/../../../classes/autoloader.php';
-
 class Base_RequestTest extends PHPUnit_Framework_TestCase
 {
     public function testSimulatedServerConnection()
