@@ -6,27 +6,27 @@ class Base_Database
     protected $arrDsnRo = null;
     protected $objPdoRw = null;
     protected $objPdoRo = null;
-    protected $strDbType = 'mysql';
+    protected $strDbType = null;
 
     public function setConnectionVars(
-        $strDbType = 'mysql',
+        $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
     ) {
-        if ($this->strDbType != $strDbType && $strDbType != null) {
+        if ($strDbType != null) {
             $this->strDbType = $strDbType;
         }
-        if ($this->arrDsnRo != $arrDsnRo && $arrDsnRo != null) {
+        if ($arrDsnRo != null) {
             $this->arrDsnRo = $arrDsnRo;
         }
-        if ($this->arrDsnRw != $arrDsnRw && $arrDsnRw != null) {
+        if ($arrDsnRw != null) {
             $this->arrDsnRw = $arrDsnRw;
         }
     }
     
     public function getConnection(
         $boolRequireWrite = false,
-        $strDbType = 'mysql',
+        $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
     ) {
@@ -82,5 +82,19 @@ class Base_Database
     public function getConnectionTypeVar()
     {
         return $this->strDbType;
+    }
+    
+    public function getSqlString($arrStrings = array())
+    {
+        if (!is_array($arrStrings) || count($arrStrings) == 0) {
+            throw new InvalidArgumentException("This function does not contain any strings");
+        }
+        if (isset($arrStrings[$this->strDbType])) {
+            return $arrStrings[$this->strDbType];
+        } elseif (isset($arrStrings['sql'])) {
+            return $arrStrings['sql'];
+        } else {
+            throw new InvalidArgumentException("The strings you passed did not include a valid string for your database type.");
+        }
     }
 }

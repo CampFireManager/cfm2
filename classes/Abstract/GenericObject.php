@@ -148,7 +148,11 @@ abstract class Abstract_GenericObject
             }
             try {
                 $objDatabase = Container_Database::getConnection();
-                $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1"
+                    )
+                );
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($intID));
                 $result = $query->fetchObject($this_class_name);
@@ -159,8 +163,7 @@ abstract class Abstract_GenericObject
                     return $result;
                 }
             } catch(Exception $e) {
-                error_log("Error brokering by ID: " . $e->getMessage());
-                return false;
+                throw $e;
             }
         } else {
             return false;
@@ -196,11 +199,19 @@ abstract class Abstract_GenericObject
         try {
             $objDatabase = Container_Database::getConnection();
             if ($value == '%') {
-                $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$this_class->strDBKeyCol} ASC";
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$this_class->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$this_class->strDBKeyCol}"
+                    )
+                );
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
             } else {
-                $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ? ORDER BY {$this_class->strDBKeyCol} ASC";
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$this_class->strDBTable} WHERE {$column} = ? ORDER BY {$this_class->strDBKeyCol}"
+                    )
+                );
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($value));
             }
@@ -214,9 +225,8 @@ abstract class Abstract_GenericObject
                 $result = $query->fetchObject($this_class_name);
             }
             return $arrResult;
-        } catch(PDOException $e) {
-            error_log('Error running SQL Query: ' . $e->getMessage());
-            return false;
+        } catch(Exception $e) {
+            throw $e;
         }
     }
 
@@ -247,14 +257,17 @@ abstract class Abstract_GenericObject
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable} WHERE {$column} = ?";
+            $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable} WHERE {$column} = ?"
+                    )
+                );
             $query = $objDatabase->prepare($sql);
             $query->execute(array($value));
             $result = $query->fetchColumn();
             return $result;
-        } catch(PDOException $e) {
-            error_log('Error running SQL Query: ' . $e->getMessage());
-            return false;
+        } catch(Exception $e) {
+            throw $e;
         }
     }
 
@@ -288,14 +301,17 @@ abstract class Abstract_GenericObject
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT max(lastChange) FROM {$this_class->strDBTable} WHERE {$column} = ?";
+            $sql = Container_Database::getSqlString(
+                array(
+                    'sql' => "SELECT max(lastChange) FROM {$this_class->strDBTable} WHERE {$column} = ?"
+                )
+            );
             $query = $objDatabase->prepare($sql);
             $query->execute(array($value));
             $result = $query->fetchColumn();
             return $result;
-        } catch(PDOException $e) {
-            error_log('Error running SQL Query: ' . $e->getMessage());
-            return false;
+        } catch(Exception $e) {
+            throw $e;
         }
     }
     
@@ -312,7 +328,19 @@ abstract class Abstract_GenericObject
         $arrResult = array();
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT * FROM {$this_class->strDBTable} ORDER BY {$this_class->strDBKeyCol} ASC";
+            if ($this_class->strDBKeyCol != '') {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$this_class->strDBTable} ORDER BY {$this_class->strDBKeyCol}"
+                    )
+                );
+            } else {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$this_class->strDBTable}"
+                    )
+                );
+            }
             $query = $objDatabase->prepare($sql);
             $query->execute();
             $result = $query->fetchObject($this_class_name);
@@ -322,9 +350,8 @@ abstract class Abstract_GenericObject
                 $result = $query->fetchObject($this_class_name);
             }
             return $arrResult;
-        } catch(PDOException $e) {
-            error_log('Error running SQL Query: ' . $e->getMessage());
-            return false;
+        } catch(Exception $e) {
+            throw $e;
         }
     }
 
@@ -341,14 +368,17 @@ abstract class Abstract_GenericObject
         $arrResult = array();
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT max(lastChange) FROM {$this_class->strDBTable} ORDER BY {$this_class->strDBKeyCol} ASC";
+            $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT max(lastChange) FROM {$this_class->strDBTable}"
+                    )
+                );
             $query = $objDatabase->prepare($sql);
             $query->execute();
             $result = $query->fetchColumn();
             return $arrResult;
-        } catch(PDOException $e) {
-            error_log('Error running SQL Query: ' . $e->getMessage());
-            return false;
+        } catch(Exception $e) {
+            throw $e;
         }
     }
     
@@ -364,14 +394,17 @@ abstract class Abstract_GenericObject
         $this_class = new $this_class_name(false);
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable}";
+            $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable}"
+                    )
+                );
             $query = $objDatabase->prepare($sql);
             $query->execute();
             $result = $query->fetchColumn();
             return $result;
-        } catch(PDOException $e) {
-            error_log('Error running SQL Query: ' . $e->getMessage());
-            return false;
+        } catch(Exception $e) {
+            throw $e;
         }
     }
 
@@ -452,65 +485,76 @@ abstract class Abstract_GenericObject
      */
     function write()
     {
-        if ($this->onlyAdminMayModify
-            && ((Object_User::brokerCurrent() != false 
-            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
-            || Object_User::brokerCurrent() == false)
-        ) {
-            return false;
-        }
-        if ($this->onlyCreatorMayModify
-            && isset($this->arrDBItems['intUserID'])
-            && ((Object_User::brokerCurrent() != false
-            && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
-            || (Object_User::brokerCurrent() != false
-            && Object_User::brokerCurrent()->getKey('isWorker') == false)
-            || (Object_User::brokerCurrent() != false
-            && Object_User::brokerCurrent()->getKey('isAdmin') == false)
-            || Object_User::brokerCurrent() == false)
-        ) {
-            return false;
-        }
-        $this->lastChange = date('Y-m-d H:i:s');
-        $this->arrChanges['lastChange'] = true;
-        if (count($this->arrChanges) > 0) {
-            $sql = '';
-            $where = '';
-            if (isset($this->strDBKeyCol) and $this->strDBKeyCol != '') {
-                $strDBKeyCol = $this->strDBKeyCol;
-                $values[$strDBKeyCol] = $this->$strDBKeyCol;
-                $where = "{$this->strDBKeyCol} = :{$this->strDBKeyCol}";
-            } elseif (isset($this->arrDBKeyCol) and is_array($this->arrDBKeyCol) and count($this->arrDBKeyCol) > 0) {
-                foreach ($this->arrDBKeyCol as $keycol => $dummy) {
-                    if ($where != '') {
-                        $where .= ' AND ';
-                    }
-                    $values["old$keycol"] = $this->old[$keycol];
-                    $where .= "$keycol = :old$keycol";
-                }
+        try {
+            if ($this->onlyAdminMayModify
+                && ((Object_User::brokerCurrent() != false 
+                && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
+                || Object_User::brokerCurrent() == false)
+            ) {
+                return false;
             }
-            foreach ($this->arrChanges as $change_key => $change_value) {
-                if ($change_value == true and isset($this->arrDBItems[$change_key])) {
-                    if ($sql != '') {
-                        $sql .= ", ";
-                    }
-                    $sql .= "$change_key = :$change_key";
-                    $values[$change_key] = $this->$change_key;
-                }
+            if ($this->onlyCreatorMayModify
+                && isset($this->arrDBItems['intUserID'])
+                && ((Object_User::brokerCurrent() != false
+                && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
+                || (Object_User::brokerCurrent() != false
+                && Object_User::brokerCurrent()->getKey('isWorker') == false)
+                || (Object_User::brokerCurrent() != false
+                && Object_User::brokerCurrent()->getKey('isAdmin') == false)
+                || Object_User::brokerCurrent() == false)
+            ) {
+                return false;
             }
-            $full_sql = "UPDATE {$this->strDBTable} SET $sql WHERE $where";
-            try {
+            $this->lastChange = date('Y-m-d H:i:s');
+            $this->arrChanges['lastChange'] = true;
+            if (count($this->arrChanges) > 0) {
                 $objDatabase = Container_Database::getConnection(true);
+                $sql = '';
+                $where = '';
+                if (isset($this->strDBKeyCol) and $this->strDBKeyCol != '') {
+                    $strDBKeyCol = $this->strDBKeyCol;
+                    $values[$strDBKeyCol] = $this->$strDBKeyCol;
+                    $where = Container_Database::getSqlString(
+                        array(
+                            'sql' => "{$this->strDBKeyCol} = :{$this->strDBKeyCol}"
+                        )
+                    );
+                } elseif (isset($this->arrDBKeyCol) and is_array($this->arrDBKeyCol) and count($this->arrDBKeyCol) > 0) {
+                    foreach ($this->arrDBKeyCol as $keycol => $dummy) {
+                        if ($where != '') {
+                            $where .= ' AND ';
+                        }
+                        $values["old$keycol"] = $this->old[$keycol];
+                        $where .= Container_Database::getSqlString(
+                        array(
+                            'sql' => "$keycol = :old$keycol"
+                        )
+                    );
+                    }
+                }
+                foreach ($this->arrChanges as $change_key => $change_value) {
+                    if ($change_value == true and isset($this->arrDBItems[$change_key])) {
+                        if ($sql != '') {
+                            $sql .= ", ";
+                        }
+                        $sql .= "$change_key = :$change_key";
+                        $values[$change_key] = $this->$change_key;
+                    }
+                }
+                $full_sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "UPDATE {$this->strDBTable} SET $sql WHERE $where"
+                    )
+                );
                 $query = $objDatabase->prepare($full_sql);
                 $query->execute($values);
                 $this->sql = $full_sql;
                 $this->sql_value = $values;
                 Base_Hook::triggerHook('updateRecord', $this);
                 return true;
-            } catch(Exception $e) {
-                error_log("Error writing: " . $e->getMessage());
-                return false;
             }
+        } catch(Exception $e) {
+            throw $e;
         }
     }
 
@@ -541,9 +585,13 @@ abstract class Abstract_GenericObject
             $key_place .= ":$field_name";
             $values[$field_name] = $this->$field_name;
         }
-        $full_sql = "INSERT INTO {$this->strDBTable} ($keys) VALUES ($key_place)";
         try {
             $objDatabase = Container_Database::getConnection(true);
+            $full_sql = Container_Database::getSqlString(
+                array(
+                    'sql' => "INSERT INTO {$this->strDBTable} ($keys) VALUES ($key_place)"
+                )
+            );
             $query = $objDatabase->prepare($full_sql);
             $query->execute($values);
             if ($this->strDBKeyCol != '') {
@@ -554,9 +602,8 @@ abstract class Abstract_GenericObject
             $this->sql_value = $values;
             Base_Hook::triggerHook('createRecord', $this);
             return true;
-        } catch (PDOException $e) {
-            error_log("Error creating: " . $e->getMessage());
-            return false;
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 
@@ -584,9 +631,13 @@ abstract class Abstract_GenericObject
         ) {
             return false;
         }
-        $sql = "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?";
         try {
             $objDatabase = Container_Database::getConnection(true);
+            $sql = Container_Database::getSqlString(
+                array(
+                    'sql' => "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?"
+                )
+            );
             $query = $objDatabase->prepare($sql);
             $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
@@ -594,9 +645,8 @@ abstract class Abstract_GenericObject
             $this->sql_value = $this->$key;
             Base_Hook::triggerHook('deleteRecord', $this);
             return true;
-        } catch (PDOException $e) {
-            error_log("Error deleting: " . $e->getMessage());
-            return false;
+        } catch (Exception $e) {
+            throw $e;
         }
     }
     
@@ -607,63 +657,99 @@ abstract class Abstract_GenericObject
      */
     function initialize()
     {
-        $unique_key = '';
-        $sql = "CREATE TABLE IF NOT EXISTS `{$this->strDBTable}` (";
-        $field_data = '';
-        if ($this->strDBKeyCol != '') {
-            $field_data .= "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT";
-        }
-        foreach ($this->arrDBItems as $field_name => $settings) {
-            if ($field_data != '') {
-                $field_data .= ', ';
-            }
-            if (isset($settings['null'])) {
-                if ($settings['null']) {
-                    $isNull = "NULL";
-                } else {
-                    $isNull = "NOT NULL";
-                }
-            } else {
-                $isNull = "DEFAULT NULL";
-            }
-            if ($settings['type'] == 'text') {
-                $field_data .= "`{$field_name}` text $isNull";
-            } elseif ($settings['type'] == 'enum') {
-                $options = '';
-                foreach ($settings['options'] as $option) {
-                    if ($options != '') {
-                        $options .= ',';
-                    }
-                    $options .= "'$option'";
-                }
-                $field_data .= "`{$field_name}` enum({$options}) $isNull";
-            } elseif (isset($settings['length'])) {
-                $field_data .= "`{$field_name}` {$settings['type']}({$settings['length']})  $isNull";
-            } else {
-                $field_data .= "`{$field_name}` {$settings['type']} $isNull";
-            }
-            if (isset($settings['unique'])) {
-                if ($unique_key != '') {
-                    $unique_key .= ',';
-                }
-                $unique_key .= "`{$field_name}`";
-            }
-        }
-        $sql .= $field_data;
-        if ($this->strDBKeyCol != '') {
-            $sql .= ", PRIMARY KEY (`{$this->strDBKeyCol}`)";
-        }
-        if ($unique_key != '') {
-            $sql .= ", UNIQUE KEY `unique_key` ({$unique_key})";
-        }
-        $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;";
         try {
             $objDatabase = Container_Database::getConnection(true);
+            $unique_key = '';
+            $sql = Container_Database::getSqlString(
+                array(
+                    'sql' => "CREATE TABLE IF NOT EXISTS `{$this->strDBTable}` ("
+                )
+            );
+            $field_data = '';
+            if ($this->strDBKeyCol != '') {
+                $field_data .= Container_Database::getSqlString(
+                    array(
+                        'sql' => "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT"
+                    )
+                );
+            }
+            foreach ($this->arrDBItems as $field_name => $settings) {
+                if ($field_data != '') {
+                    $field_data .= ', ';
+                }
+                if (isset($settings['null'])) {
+                    if ($settings['null']) {
+                        $isNull = "NULL";
+                    } else {
+                        $isNull = "NOT NULL";
+                    }
+                } else {
+                    $isNull = "DEFAULT NULL";
+                }
+                if ($settings['type'] == 'text') {
+                    $field_data .= Container_Database::getSqlString(
+                        array(
+                            'sql' => "`{$field_name}` text $isNull"
+                        )
+                    );
+                } elseif ($settings['type'] == 'enum') {
+                    $options = '';
+                    foreach ($settings['options'] as $option) {
+                        if ($options != '') {
+                            $options .= ',';
+                        }
+                        $options .= "'$option'";
+                    }
+                    $field_data .= Container_Database::getSqlString(
+                        array(
+                            'sql' => "`{$field_name}` enum({$options}) $isNull"
+                        )
+                    );
+                } elseif (isset($settings['length'])) {
+                    $field_data .= Container_Database::getSqlString(
+                        array(
+                            'sql' => "`{$field_name}` {$settings['type']}({$settings['length']})  $isNull"
+                        )
+                    );
+                } else {
+                    $field_data .= Container_Database::getSqlString(
+                        array(
+                            'sql' => "`{$field_name}` {$settings['type']} $isNull"
+                        )
+                    );
+                }
+                if (isset($settings['unique'])) {
+                    if ($unique_key != '') {
+                        $unique_key .= ',';
+                    }
+                    $unique_key .= "`{$field_name}`";
+                }
+            }
+            $sql .= $field_data;
+            if ($this->strDBKeyCol != '') {
+                $sql .= Container_Database::getSqlString(
+                        array(
+                            'sql' => ", PRIMARY KEY (`{$this->strDBKeyCol}`)"
+                        )
+                    );
+            }
+            if ($unique_key != '') {
+                $sql .= Container_Database::getSqlString(
+                        array(
+                            'sql' => ", UNIQUE KEY `unique_key` ({$unique_key})"
+                        )
+                    );
+            }
+            $sql .= Container_Database::getSqlString(
+                        array(
+                            'mysql' => ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;",
+                            'sql'   => ")"
+                        )
+                    );
             $objDatabase->exec($sql);
             return true;
-        } catch (PDOException $e) {
-            error_log("Error initializing table: " . $e->getMessage() . '; Tried ' . $sql);
-            return false;
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 
@@ -674,26 +760,30 @@ abstract class Abstract_GenericObject
      */
     function initializeDemo()
     {
-        $sql = "DROP TABLE IF EXISTS `{$this->strDBTable}`";
         try {
             $objDatabase = Container_Database::getConnection(true);
+            $sql = Container_Database::getSqlString(
+                array(
+                    'sql' => "DROP TABLE IF EXISTS `{$this->strDBTable}`"
+                )
+            );
             $objDatabase->exec($sql);
-        } catch (PDOException $e) {
-            error_log("Error dropping table: " . $e->getMessage() . '; Tried ' . $sql);
-        }
-        $this->initialize();
-        if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
-            return false;
-        }
-        $className = get_called_class();
-        foreach ($this->arrDemoData as $entry) {
-            $object = new $className(false);
-            $object->onlyAdminMayModify = false;
-            $object->onlyCreatorMayModify = false;
-            foreach ($entry as $key => $value) {
-                $object->setKey($key, $value);
+            $this->initialize();
+            if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
+                return false;
             }
-            $object->create();
+            $className = get_called_class();
+            foreach ($this->arrDemoData as $entry) {
+                $object = new $className(false);
+                $object->onlyAdminMayModify = false;
+                $object->onlyCreatorMayModify = false;
+                foreach ($entry as $key => $value) {
+                    $object->setKey($key, $value);
+                }
+                $object->create();
+            }
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 

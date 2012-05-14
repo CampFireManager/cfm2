@@ -230,35 +230,3 @@ class Container_Config
         }
     }
 }
-
-/**
- * In order to test the protected function, extend the class
- *
- * @category Container_Config
- * @package  CampFireManager2
- * @author   Jon Spriggs <jon@sprig.gs>
- * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
- */
-class Container_Config_Testable extends Container_Config
-{
-    /**
-     * Return the parent handler
-     *
-     * @return object
-     */
-    public static function GetHandler()
-    {
-        return parent::GetHandler();
-    }
-    
-    /**
-     * Reset the class for testing purposes
-     * 
-     * @return void
-     */
-    public static function reset()
-    {
-        parent::reset();
-    }
-}

@@ -19,7 +19,7 @@ class Container_Database
     }
         
     public static function setConnection(
-        $strDbType = 'mysql',
+        $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
     ) {
@@ -30,7 +30,7 @@ class Container_Database
     
     public static function getConnection(
         $boolRequireWrite = false,
-        $strDbType = 'mysql',
+        $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
     ) {
@@ -56,17 +56,16 @@ class Container_Database
         }
     }
 
-}
-
-class Container_Database_Testable extends Container_Database
-{
-    public static function GetHandler()
-    {
-        return parent::GetHandler();
-    }
-    
-    public static function reset()
-    {
-        parent::reset();
+    public static function getSqlString($arrStrings = array()) {
+        $self = self::getHandler();
+        if (is_object($self->objDatabase)) {
+            try {
+                return $self->objDatabase->getSqlString($arrStrings);
+            } catch (Exception $e) {
+                throw $e;
+            }
+        } else {
+            throw new OutOfBoundsException("Database has not been initialized");
+        }
     }
 }
