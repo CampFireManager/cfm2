@@ -258,10 +258,10 @@ abstract class Abstract_GenericObject
         try {
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable} WHERE {$column} = ?"
-                    )
-                );
+                array(
+                    'sql' => "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable} WHERE {$column} = ?"
+                )
+            );
             $query = $objDatabase->prepare($sql);
             $query->execute(array($value));
             $result = $query->fetchColumn();
@@ -369,10 +369,10 @@ abstract class Abstract_GenericObject
         try {
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT max(lastChange) FROM {$this_class->strDBTable}"
-                    )
-                );
+                array(
+                    'sql' => "SELECT max(lastChange) FROM {$this_class->strDBTable}"
+                )
+            );
             $query = $objDatabase->prepare($sql);
             $query->execute();
             $result = $query->fetchColumn();
@@ -395,10 +395,10 @@ abstract class Abstract_GenericObject
         try {
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable}"
-                    )
-                );
+                array(
+                    'sql' => "SELECT count({$this_class->strDBKeyCol}) FROM {$this_class->strDBTable}"
+                )
+            );
             $query = $objDatabase->prepare($sql);
             $query->execute();
             $result = $query->fetchColumn();
@@ -526,10 +526,10 @@ abstract class Abstract_GenericObject
                         }
                         $values["old$keycol"] = $this->old[$keycol];
                         $where .= Container_Database::getSqlString(
-                        array(
-                            'sql' => "$keycol = :old$keycol"
-                        )
-                    );
+                            array(
+                                'sql' => "$keycol = :old$keycol"
+                            )
+                        );
                     }
                 }
                 foreach ($this->arrChanges as $change_key => $change_value) {
@@ -728,24 +728,24 @@ abstract class Abstract_GenericObject
             $sql .= $field_data;
             if ($this->strDBKeyCol != '') {
                 $sql .= Container_Database::getSqlString(
-                        array(
-                            'sql' => ", PRIMARY KEY (`{$this->strDBKeyCol}`)"
-                        )
-                    );
+                    array(
+                        'sql' => ", PRIMARY KEY (`{$this->strDBKeyCol}`)"
+                    )
+                );
             }
             if ($unique_key != '') {
                 $sql .= Container_Database::getSqlString(
-                        array(
-                            'sql' => ", UNIQUE KEY `unique_key` ({$unique_key})"
-                        )
-                    );
+                    array(
+                        'sql' => ", UNIQUE KEY `unique_key` ({$unique_key})"
+                    )
+                );
             }
             $sql .= Container_Database::getSqlString(
-                        array(
-                            'mysql' => ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;",
-                            'sql'   => ")"
-                        )
-                    );
+                array(
+                    'mysql' => ") ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;",
+                    'sql'   => ")"
+                )
+            );
             $objDatabase->exec($sql);
             return true;
         } catch (Exception $e) {
