@@ -26,6 +26,13 @@
 class Base_GeneralFunctions
 {
     /**
+     * This is here purely to prevent the class being instantiated as "new".
+     */
+    public function __construct() {
+        throw new BadMethodCallException("Do not instantiate this class");
+    }
+    
+    /**
      * This function looks for a value within an array or an object, and returns it if it's there. If it isn't it
      * returns the default value.
      *
@@ -36,7 +43,7 @@ class Base_GeneralFunctions
      *
      * @return mixed The value found, or the default if not.
      */
-    function getValue($haystack = null, $needle = null, $default = false, $emptyisfalse = true)
+    public static function getValue($haystack = null, $needle = null, $default = false, $emptyisfalse = true)
     {
         if ($haystack != null && $needle !== null) {
             if (is_array($haystack) && count($haystack) > 0 && isset($haystack[$needle])) {
@@ -73,7 +80,7 @@ class Base_GeneralFunctions
      * 
      * @link http://www.php.net/manual/en/function.rand.php#94788
      */
-    function genRandStr($minLen, $maxLen, $alphaLower = true, $alphaUpper = true, $num = true, $batch = 1)
+    public static function genRandStr($minLen, $maxLen, $alphaLower = true, $alphaUpper = true, $num = true, $batch = 1)
     {
         $alphaLowerArray = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
         $alphaUpperArray = array('A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
@@ -172,7 +179,7 @@ class Base_GeneralFunctions
      *
      * @return string The preferred value.
      */
-    function preferredJson($strJson = '')
+    public static function preferredJson($strJson = '')
     {
         $arrJson = (array) json_decode($strJson);
         if (count($arrJson) > 1) {
@@ -201,7 +208,7 @@ class Base_GeneralFunctions
      *
      * @return integer The size of the JSON array
      */
-    function sizeJson($strJson = '')
+    public static function sizeJson($strJson = '')
     {
         $arrJson = (array) json_decode($strJson);
         if (count($arrJson == 0)) {
@@ -219,7 +226,7 @@ class Base_GeneralFunctions
      *
      * @return JSON The resulting JSON array.
      */
-    function addJson($strJson = '', $strNewValue = '', $preferred = false)
+    public static function addJson($strJson = '', $strNewValue = '', $preferred = false)
     {
         $set = false;
         $arrJson = (array) json_decode($strJson);
@@ -265,7 +272,7 @@ class Base_GeneralFunctions
      *
      * @return false|JSON The modified array, or false, if there is only one value.
      */
-    function delJson($strJson = '', $strValueToRemove = '')
+    public static function delJson($strJson = '', $strValueToRemove = '')
     {
         $arrJson = (array) json_decode($strJson);
         if (count($arrJson) == 0) {
@@ -296,7 +303,7 @@ class Base_GeneralFunctions
      *
      * @return boolean If the value is there.
      */
-    function inJson($strJson = '', $strValueToFind = '')
+    public static function inJson($strJson = '', $strValueToFind = '')
     {
         $arrJson = (array) json_decode($strJson);
         if (count($arrJson) == 0) {
@@ -317,7 +324,7 @@ class Base_GeneralFunctions
      *
      * @return array The data, in array format.
      */
-    function getJson($strJson = '')
+    public static function getJson($strJson = '')
     {
         $arrJson = (array) json_decode($strJson);
         if (count($arrJson) == 0) {
@@ -334,7 +341,7 @@ class Base_GeneralFunctions
      *
      * @return array Processed array
      */
-    function deobjectifyArray($process)
+    public static function deobjectifyArray($process)
     {
         foreach ((array) $process as $key => $value) {
             if (is_object($value)) {

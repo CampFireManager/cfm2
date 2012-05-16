@@ -56,7 +56,8 @@ class Container_Database
         }
     }
 
-    public static function getSqlString($arrStrings = array()) {
+    public static function getSqlString($arrStrings = array())
+    {
         $self = self::getHandler();
         if (is_object($self->objDatabase)) {
             try {

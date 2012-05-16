@@ -25,7 +25,7 @@
 
 class Base_Hook
 {
-    protected static $hook_handler = null;
+    protected $boolFileLoaded = false;
     protected $arrHooks = array();
     protected $start = true;
     protected $arrTriggers = array(
@@ -97,23 +97,30 @@ class Base_Hook
         'destroySlot' => true
     );
 
-    /**
-     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
-     *
-     * @return object This class by itself.
-     */
-    public static function getHandler()
+    public function Load($strFileName = null)
     {
-        if (Base_Hook::$hook_handler == null) {
-            Base_Hook::$hook_handler = new Base_Hook();
+        if ($strFileName == null) {
+            throw new UnexpectedValueException(
+                "You did not specify a filename."
+            );
         }
-        if (Base_Hook::$hook_handler->start == true) {
-            Base_Hook::$hook_handler->start = false;
-            include dirname(__FILE__) . '/../../config/plugin.php';
+        
+        if (!file_exists(dirname(__FILE__) . '/../../config/' . $strFileName)) {
+            throw new UnexpectedValueException("This file does not exist.");
         }
-        return Base_Hook::$hook_handler;
+        
+        if (! include dirname(__FILE__) . '/../../config/' . $strFileName) {
+            throw new InvalidArgumentException("Can't load this file");
+        }
+        
+        $this->boolFileLoaded = true;
     }
-
+    
+    public function isFileLoaded()
+    {
+        return $this->boolFileLoaded;
+    }
+    
     /**
      * This function adds a new trigger to the comprehensive list above.
      *
@@ -121,7 +128,7 @@ class Base_Hook
      *
      * @return void
      */
-    public static function addTrigger($strTrigger = null)
+    public function addTrigger($strTrigger = null)
     {
         if ($strTrigger != null) {
             $this->arrTriggers[$strTrigger] = true;
@@ -135,22 +142,21 @@ class Base_Hook
      * 
      * @return void
      */
-    public static function addHook($objHook = null)
+    public function addHook($objHook = null)
     {
-        $self = Base_Hook::getHandler();
         if (is_object($objHook)) {
             $boolTriggerSet = false;
-            foreach ($self->arrTriggers as $strTrigger => $dummyValue) {
+            foreach ($this->arrTriggers as $strTrigger => $dummyValue) {
                 if (method_exists($objHook, 'hook_' . $strTrigger)) {
-                    $self->arrHooks[$strTrigger][] = $objHook;
+                    $this->arrHooks[$strTrigger][] = $objHook;
                     $boolTriggerSet = true;
                 }
             }
             if ($boolTriggerSet == false) {
-                throw new Exception('No recognised hooks', 0);
+                throw new InvalidArgumentException('No recognised hooks', 0);
             }
         } else {
-            throw new Exception('Not an object', 1);
+            throw new InvalidArgumentException('Not an object', 1);
         }
     }
 
@@ -163,24 +169,25 @@ class Base_Hook
      * 
      * @return void
      */
-    public static function triggerHook($strAction = null, $parameters = null)
+    public function triggerHook($strAction = null, $parameters = null)
     {
-        $self = Base_Hook::getHandler();
         if ($strAction == null) {
-            throw new Exception('No hooks triggered', 0);
+            throw new InvalidArgumentException('No hooks triggered', 0);
         } else {
             $activeHook = false;
-            foreach ($self->arrTriggers as $strTrigger => $dummyValue) {
+            foreach ($this->arrTriggers as $strTrigger => $dummyValue) {
                 if ($strAction == $strTrigger) {
                     $activeHook = true;
                 }
             }
             if ($activeHook == false) {
-                throw new Exception('Invalid hook triggered', 1);
+                throw new InvalidArgumentException('Invalid hook triggered', 1);
             }
             $strHookAction = 'hook_' . $strAction;
-            if (isset($self->arrHooks[$strAction]) && count($self->arrHooks[$strAction]) > 0) {
-                foreach ($self->arrHooks[$strAction] as $objHook) {
+            if (isset($this->arrHooks[$strAction]) 
+                && count($this->arrHooks[$strAction]) > 0
+            ) {
+                foreach ($this->arrHooks[$strAction] as $objHook) {
                     $objHook->$strHookAction($parameters);
                 }
             }

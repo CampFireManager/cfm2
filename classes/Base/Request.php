@@ -165,8 +165,15 @@ class Base_Request
                 $filename = $arrGlobals['argv'][0];
             }
             $url = 'file://' . $filename;
-            $data = $arrGlobals['argv'];
-            unset($data[0]);
+            $args = $arrGlobals['argv'];
+            unset($args[0]);
+            foreach ($args as $key => $part) {
+                if (preg_match('/^([^=]+)=(.*)$/', $part, $matches)) {
+                    $data[$matches[1]] = $matches[2];
+                } else {
+                    $data[$part] = '';
+                }
+            }
             $this->strRequestMethod = 'file';
         } else {
             $url = "http";
@@ -179,25 +186,22 @@ class Base_Request
 
             if (isset($arrServer['HTTP_AUTHORIZATION'])) {
                 $auth_params = explode(":", base64_decode(substr($arrServer['HTTP_AUTHORIZATION'], 6)));
-                $username = $auth_params[0];
+                $this->strUsername = $auth_params[0];
                 unset($auth_params[0]);
-                $password = implode('', $auth_params);
-                $this->strUsername = $username;
-                $this->strPassword = $password;
+                $this->strPassword = implode('', $auth_params);
             } elseif (isset($arrServer['PHP_AUTH_USER']) and isset($arrServer['PHP_AUTH_PW'])) {
-                $username = $arrServer['PHP_AUTH_USER'];
-                $password = $arrServer['PHP_AUTH_PW'];
-                $this->strUsername = $username;
-                $this->strPassword = $password;
+                $this->strUsername = $arrServer['PHP_AUTH_USER'];
+                $this->strPassword = $arrServer['PHP_AUTH_PW'];
             }
-           
-            if ($username != null) {
-                $url .= $username;
-                if ($password != null) {
-                    $url .= ':' . $password;
+
+            if ($this->strUsername != null) {
+                $url .= $this->strUsername;
+                if ($this->strPassword != null) {
+                    $url .= ':' . $this->strPassword;
                 }
                 $url .= '@';
             }
+            
             $url .= $arrServer['SERVER_NAME'];
             if ((isset($arrServer['HTTPS']) and $arrServer['SERVER_PORT'] != 443) || ( ! isset($arrServer['HTTPS']) and $arrServer['SERVER_PORT'] != 80)) {
                 $url .= ':' . $arrServer['SERVER_PORT'];
@@ -257,9 +261,18 @@ class Base_Request
         }
         
         if (isset($arrServer['HTTP_IF_NONE_MATCH'])) {
-            preg_match_all('/"([^"^,]+)/',$arrServer["HTTP_IF_NONE_MATCH"], $this->hasIfNoneMatch);
-            if (isset($this->hasIfNoneMatch[0])) {
-                unset($this->hasIfNoneMatch[0]);
+            preg_match_all('/"([^"^,]+)/',$arrServer["HTTP_IF_NONE_MATCH"], $hasIfNoneMatch);
+            if (isset($hasIfNoneMatch[0])) {
+                unset($hasIfNoneMatch[0]);
+                foreach ($hasIfNoneMatch as $tempIfNoneMatch) {
+                    if (is_array($tempIfNoneMatch)) {
+                        foreach ($tempIfNoneMatch as $value) {
+                            $this->hasIfNoneMatch[] = $value;
+                        }
+                    } elseif ($tempIfNoneMatch != '') {
+                        $this->hasIfNoneMatch[] = $tempIfNoneMatch;
+                    }
+                }
             }
         }
 

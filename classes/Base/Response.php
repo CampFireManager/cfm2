@@ -69,6 +69,11 @@ class Base_Response
     505 => 'HTTP Version Not Supported'
     );
 
+    public function __construct()
+    {
+        throw new BadMethodCallException("Do not instantiate this class.");
+    }
+    
     /**
     * A helper function to ensure pages that require authentication, get them.
     *

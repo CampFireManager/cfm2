@@ -19,12 +19,11 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
         $config->LoadFile('democonfig.php');
         $this->assertTrue($config->get('demo') == 1);
         $config->SetUpDatabaseConnection();
-        $objConfig = new Object_Config();
+        $objConfig = new Object_Config_Demo();
         $objConfig->initializeDemo();
-        $objSecureConfig = new Object_SecureConfig();
+        $objSecureConfig = new Object_SecureConfig_Demo();
         $objSecureConfig->initializeDemo();
         $config->LoadDatabaseConfig();
-        
     }
     
     /**

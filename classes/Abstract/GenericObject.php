@@ -346,7 +346,14 @@ abstract class Abstract_GenericObject
             $result = $query->fetchObject($this_class_name);
             while ($result != false) {
                 $arrResult[] = $result;
-                $objCache->arrCache[$this_class_name]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
+                if (isset($this_class->strDBKeyCol) 
+                    && $this_class->strDBKeyCol != '' 
+                    && $this_class->strDBKeyCol != null
+                ) {
+                    $objCache->arrCache[$this_class_name]['id'][$result->getKey($this_class->strDBKeyCol)] = $result;
+                } else {
+                    $objCache->arrCache[$this_class_name]['id'][$result->getKey('key')] = $result;
+                }
                 $result = $query->fetchObject($this_class_name);
             }
             return $arrResult;
@@ -473,8 +480,10 @@ abstract class Abstract_GenericObject
      */
     function getKey($keyname = '')
     {
-        if (array_key_exists($keyname, $this->arrDBItems) or $keyname == $this->strDBKeyCol) {
+        if ((array_key_exists($keyname, $this->arrDBItems) || $keyname == $this->strDBKeyCol) && (isset($this->$keyname) || $this->$keyname != null)) {
             return $this->$keyname;
+        } else {
+            return null;
         }
     }
 
@@ -550,7 +559,7 @@ abstract class Abstract_GenericObject
                 $query->execute($values);
                 $this->sql = $full_sql;
                 $this->sql_value = $values;
-                Base_Hook::triggerHook('updateRecord', $this);
+                Container_Hook::Load()->triggerHook('updateRecord', $this);
                 return true;
             }
         } catch(Exception $e) {
@@ -600,7 +609,7 @@ abstract class Abstract_GenericObject
             }
             $this->sql = $full_sql;
             $this->sql_value = $values;
-            Base_Hook::triggerHook('createRecord', $this);
+            Container_Hook::Load()->triggerHook('createRecord', $this);
             return true;
         } catch (Exception $e) {
             throw $e;
@@ -643,7 +652,7 @@ abstract class Abstract_GenericObject
             $query->execute(array($this->$key));
             $this->sql = $sql;
             $this->sql_value = $this->$key;
-            Base_Hook::triggerHook('deleteRecord', $this);
+            Container_Hook::Load()->triggerHook('deleteRecord', $this);
             return true;
         } catch (Exception $e) {
             throw $e;
@@ -669,7 +678,8 @@ abstract class Abstract_GenericObject
             if ($this->strDBKeyCol != '') {
                 $field_data .= Container_Database::getSqlString(
                     array(
-                        'sql' => "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT"
+                        'sql' => "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT",
+                        'sqlite' => "`{$this->strDBKeyCol}` int(11) PRIMARY KEY"
                     )
                 );
             }
@@ -729,14 +739,16 @@ abstract class Abstract_GenericObject
             if ($this->strDBKeyCol != '') {
                 $sql .= Container_Database::getSqlString(
                     array(
-                        'sql' => ", PRIMARY KEY (`{$this->strDBKeyCol}`)"
+                        'sql' => ", PRIMARY KEY (`{$this->strDBKeyCol}`)",
+                        'sqlite' => ''
                     )
                 );
             }
             if ($unique_key != '') {
                 $sql .= Container_Database::getSqlString(
                     array(
-                        'sql' => ", UNIQUE KEY `unique_key` ({$unique_key})"
+                        'sql' => ", UNIQUE KEY `unique_key` ({$unique_key})",
+                        'sqlite' => ", UNIQUE ({$unique_key})"
                     )
                 );
             }

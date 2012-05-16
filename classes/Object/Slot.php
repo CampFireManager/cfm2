@@ -65,8 +65,8 @@ class Object_Slot extends Abstract_GenericObject
                 }
             }
         }
-        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
-        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
+        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::get('TZ_Offset', 'Z');
+        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::get('TZ_Offset', 'Z');
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         
         if ($this->isFull() == true) {

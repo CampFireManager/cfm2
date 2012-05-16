@@ -1,9 +1,37 @@
 <?php
 class Object_AttendeeTest extends PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        $config = Container_Config_Testable::GetHandler();
+        $config->LoadFile('democonfig.php');
+        $config->SetUpDatabaseConnection();
+        $objConfig = new Object_Config_Demo();
+        $objConfig->initializeDemo();
+        $objSecureConfig = new Object_SecureConfig_Demo();
+        $objSecureConfig->initializeDemo();
+        $config->LoadDatabaseConfig();
+        $objAttendee = new Object_Attendee_Demo();
+        $objAttendee->initializeDemo();
+    }
+    
     public function testObjectAttendeeCreation()
     {
-        $objConfig = new Object_Attendee();
-        $this->assertTrue(is_object($objConfig));
+        $objAttendee = new Object_Attendee();
+        $this->assertTrue(is_object($objAttendee));
+        $data = $objAttendee->getSelf();
+        $this->assertTrue($data['intAttendeeID'] == null);
+        $this->assertTrue($data['intUserID'] == null);
+        $this->assertTrue($data['intTalkID'] == null);
+        $this->assertTrue($data['lastChange'] == null);
+        $this->assertTrue($objAttendee->getKey('intAttendeeID') == null);
+    }
+    
+    public function testBrokerAllAttendeeObjects()
+    {
+        $data = Object_Attendee::brokerAll();
+        $this->assertTrue(count($data) == 3);
+        $item = $data[0]->getSelf();
+        $this->assertTrue($item['intUserID'] == '2');
     }
 }

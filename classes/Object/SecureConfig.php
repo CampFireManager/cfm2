@@ -65,3 +65,20 @@ class Object_SecureConfig extends Abstract_GenericObject
         }
     }
 }
+
+/**
+ * This class defines some default and demo data for the use in demos.
+ * 
+ * @category Object_SecureConfig
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+class Object_SecureConfig_Demo extends Object_SecureConfig
+{
+    protected $arrDemoData = array(
+        array('key' => 'Twitter API Key', 'value' => 'Not Yet Set'),
+        array('key' => 'Twitter API Secret', 'value' => 'Not Yet Set'),
+    );
+}

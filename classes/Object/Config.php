@@ -69,13 +69,13 @@ class Object_Config extends Abstract_GenericObject
 /**
  * This class defines some default and demo data for the use in demos.
  * 
- * @category Object_Attendee
+ * @category Object_Config
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
-class Object_Config_Demo extends Object_Attendee
+class Object_Config_Demo extends Object_Config
 {
     protected $arrDemoData = array(
         array('key' => 'Site Name', 'value' => 'A Demo Site'),

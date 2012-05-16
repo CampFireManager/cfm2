@@ -17,9 +17,24 @@ class Container_Request
         self::$objRequest = null;
     }
     
-    public static function getRequest()
-    {
+    public static function getRequest(
+        $arrGlobals = null, 
+        $arrServer = null,
+        $arrRequest = null,
+        $arrGet = null,
+        $arrPost = null,
+        $arrFiles = null,
+        $strInput = null
+    ) {
         $request = self::GetHandler();
-        $request->parse();
+        $request->parse(
+            $arrGlobals, 
+            $arrServer,
+            $arrRequest,
+            $arrGet,
+            $arrPost,
+            $arrFiles,
+            $strInput
+        );
     }
 }

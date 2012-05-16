@@ -51,7 +51,7 @@ class Container_Config
      * 
      * @return void
      */
-    public static function reset()
+    protected static function reset()
     {
         self::$self = null;
     }
@@ -76,6 +76,9 @@ class Container_Config
         $self = self::GetHandler();
         if (! $self->isFileLoaded || $doReloadFile == true) {
             try {
+                if ($strFileName == null) {
+                    $strFileName = 'default.php';
+                }
                 $self->LoadFile($strFileName);
                 $self->isFileLoaded = true;
             } catch (Exception $e) {
@@ -229,4 +232,24 @@ class Container_Config
             return $this->arrConfig[$key]->getKey('value');
         }
     }
+
+    /**
+     * Pull the config value out of the config array, or the default value if
+     * it's not already set.
+     *
+     * @param string $key               The array key to look for
+     * @param mixed  $mixedDefaultValue The value to return if the key doesn't
+     * exist
+     *
+     * @return string
+     */
+    public function getSecure($key = null, $mixedDefaultValue = null)
+    {
+        if (! isset($this->arrSecureConfig[$key])) {
+            return $mixedDefaultValue;
+        } else {
+            return $this->arrSecureConfig[$key]->getKey('value');
+        }
+    }
+    
 }

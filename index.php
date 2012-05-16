@@ -45,7 +45,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
         if (! $media) {
             Base_Response::sendHttpResponse(404, null, $arrRequestData['strPreferredAcceptType']);
         }
-        $file = Base_Config::getConfigLocal('strMediaPath', dirname(__FILE__) . '/Media');
+        $file = Container_Config::get('strMediaPath', dirname(__FILE__) . '/Media');
         foreach ($arrRequestData['pathItems'] as $key => $pathItem) {
             if ($pathItem == '..') {
                 Base_Response::sendHttpResponse(403, null, $arrRequestData['strPreferredAcceptType']);
