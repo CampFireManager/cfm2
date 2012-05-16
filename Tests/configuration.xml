@@ -13,4 +13,10 @@ and open the template in the editor.
          stopOnFailure="true">
 </phpunit-->
 
-<phpunit colors="false" />
+<phpunit colors="false">
+    <filter>
+      <blacklist>
+        <directory suffix=".php">/var/www/cfm2/ExternalLibraries</directory>
+      </blacklist>
+    </filter>
+</phpunit>
