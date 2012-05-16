@@ -319,4 +319,50 @@ class Base_Response
         header("Location: $redirect_url");
         exit(0);
     }
+    
+    /**
+     * This function ensures we've got the Smarty library loaded, and then
+     * starts the template associated to it.
+     *
+     * @param string $template       Template to load
+     * @param array  $arrAssignments Variables to be assigned to the template
+     *
+     * @return void
+     */
+    public static function render($template = '', $arrAssignments = array())
+    {
+        $libSmarty = Base_ExternalLibraryLoader::loadLibrary("Smarty");
+        if ($libSmarty == false) {
+            die("Failed to load Smarty");
+        }
+        $libSmarty .= '/libs/Smarty.class.php';
+        $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
+        $smarty_debugging = (Container_Config::get('smarty_debug', 'true'));
+        include_once $libSmarty;
+        $objSmarty = new Smarty();
+        if ($smarty_debugging) {
+            $objSmarty->debugging = true;
+        }
+        $objSmarty->setTemplateDir($baseSmarty . 'Source');
+        $objSmarty->setCompileDir(Container_Config::get('TemporaryFiles', '/tmp') . '/smartyCompiled');
+        if (is_array($arrAssignments) and count($arrAssignments) > 0) {
+            foreach ($arrAssignments as $key=>$value) {
+                $objSmarty->assign($key, $value);
+            }
+        }
+        foreach (Container_Config::get() as $key=>$value) {
+            $config[$key] = $value['value'];
+        }
+        $arrRequestData = Base_Request::getRequest();
+        $config['baseurl'] = $arrRequestData['basePath'] . $arrRequestData['pathSite'];
+        if (substr($config['baseurl'], -1) != '/') {
+            $config['baseurl'] .= '/';
+        }
+        $objSmarty->assign('SiteConfig', $config);
+        if (file_exists($baseSmarty . 'Source/' . $template . '.html')) {
+            $objSmarty->display($template . '.html');
+        } else {
+            $objSmarty->display('Generic_Object.html');
+        }
+    }
 }
