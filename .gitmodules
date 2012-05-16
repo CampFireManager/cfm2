@@ -1,6 +1,6 @@
 [submodule "ExternalLibraries/PHP_OpenID/current"]
 	path = ExternalLibraries/PHP_OpenID/current
-	url = git://github.com/openid/php-openid.git
+	url = https://github.com/openid/php-openid.git
 [submodule "ExternalLibraries/TwitterHelper/current"]
 	path = ExternalLibraries/TwitterHelper/current
 	url = git://github.com/themattharris/tmhOAuth.git
