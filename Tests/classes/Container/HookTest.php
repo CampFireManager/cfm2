@@ -19,6 +19,16 @@ class Container_HookTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_object($hook));
         $this->assertTrue(get_class($hook) == 'Base_Hook');
     }
+
+    public function testValidReLoad()
+    {
+        $hook = Container_Hook::Load();
+        $this->assertTrue(is_object($hook));
+        $this->assertTrue(get_class($hook) == 'Base_Hook');
+        $this->assertTrue($hook->isFileLoaded());
+        $hook = Container_Hook::Load('plugin.php', true);
+        $this->assertTrue($hook->isFileLoaded());
+    }
     
     /**
      * @expectedException InvalidArgumentException

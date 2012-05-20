@@ -65,8 +65,8 @@ class Object_Slot extends Abstract_GenericObject
                 }
             }
         }
-        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::get('TZ_Offset', 'Z');
-        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::get('TZ_Offset', 'Z');
+        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
+        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         
         if ($this->isFull() == true) {

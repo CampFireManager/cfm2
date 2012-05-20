@@ -25,13 +25,14 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Container_Config
+class Container_Config implements Interface_Object
 {
     protected static $self      = null;
     protected $arrConfig        = array();
     protected $arrSecureConfig  = array();
     protected $isFileLoaded     = false;
     protected $isDatabaseLoaded = false;
+    protected $fileModifiedTime = null;
     
     /**
      * This protected function helps make this class a singleton
@@ -68,7 +69,7 @@ class Container_Config
      * 
      * @return object 
      */
-    public static function GetLoadedConfig(
+    public static function LoadConfig(
         $strFileName = null, 
         $doReloadDatabase = false, 
         $doReloadFile = false
@@ -85,7 +86,7 @@ class Container_Config
                 throw $e;
             }
         }
-        
+
         if (! $self->isDatabaseLoaded 
             || $doReloadDatabase == true 
             || $doReloadFile == true
@@ -119,6 +120,10 @@ class Container_Config
         if (!file_exists(dirname(__FILE__) . '/../../config/' . $strFileName)) {
             throw new UnexpectedValueException("This file does not exist.");
         }
+        
+        $this->fileModifiedTime = filemtime(
+            realpath(dirname(__FILE__) . '/../../config/' . $strFileName)
+        );
         
         if (! include dirname(__FILE__) . '/../../config/' . $strFileName) {
             throw new InvalidArgumentException("Can't load this file");
@@ -179,15 +184,15 @@ class Container_Config
     {
         $allConfig = Object_Config::brokerAll();
         if (is_array($allConfig) && count($allConfig) > 0) {
-            foreach ($allConfig as $key => $value) {
-                $this->arrConfig[$key] = $value;
+            foreach ($allConfig as $value) {
+                $this->arrConfig[$value->getKey('key')] = $value;
             }
         }
-        
+
         $allSecureConfig = Object_SecureConfig::brokerAll();
         if (is_array($allSecureConfig) && count($allSecureConfig) > 0) {
-            foreach ($allSecureConfig as $key => $value) {
-                $this->arrSecureConfig[$key] = $value;
+            foreach ($allSecureConfig as $value) {
+                $this->arrSecureConfig[$value->getKey('key')] = $value;
             }
         }
     }
@@ -207,10 +212,15 @@ class Container_Config
                 array(
                     'key' => $key, 
                     'value' => $value
-                )
+                ),
+                date('Y-m-d H:i:s', $this->fileModifiedTime)
             );
         } else {
             $this->arrConfig[$key]->setKey('value', $value);
+            $this->arrConfig[$key]->setKey(
+                'lastChange', 
+                date('Y-m-d H:i:s', $this->fileModifiedTime)
+            );
         }
     }
     
@@ -224,12 +234,153 @@ class Container_Config
      *
      * @return string
      */
-    public function get($key = null, $mixedDefaultValue = null)
+    public static function brokerByID($key = null, $mixedDefaultValue = null)
     {
-        if (! isset($this->arrConfig[$key])) {
-            return $mixedDefaultValue;
+        $self = self::GetHandler();
+        if (! isset($self->arrConfig[$key])) {
+            return new Object_Config(
+                array(
+                    'key' => $key,
+                    'value' => $mixedDefaultValue
+                ),
+                date('Y-m-d H:i:s')
+            );
         } else {
-            return $this->arrConfig[$key]->getKey('value');
+            return $self->arrConfig[$key];
+        }
+    }
+    
+    public static function brokerAll()
+    {
+        $self = self::GetHandler();
+        if (isset($self->arrConfig)
+            && is_array($self->arrConfig)
+            && count($self->arrConfig) > 0
+        ) {
+            return $self->arrConfig;
+        }
+        return array();
+    }
+
+    public static function brokerByColumnSearch($column = null, $value = null)
+    {
+        $self = self::GetHandler();
+        if ($column == null) {
+            return false;
+        } elseif (!isset($self->arrConfig) 
+            || !is_array($self->arrConfig)
+            || count($self->arrConfig) == 0
+        ) {
+            return false;
+        } elseif ($column != 'key' && $column != 'value') {
+            return false;
+        }
+        if ($column == 'key') {
+            if (isset($self->arrConfig[$key])) {
+                return $self->arrConfig[$key];
+            }
+            foreach ($self->arrConfig as $key => $object) {
+                if (strstr($object->getKey('key'), $value)) {
+                    return $object;
+                }
+            }
+        } else {
+            foreach ($self->arrConfig as $key => $object) {
+                if ($object->getKey('value') == $value) {
+                    return $object;
+                } elseif (strstr($object->getKey('value'), $value)) {
+                    return $object;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static function countByColumnSearch($column = null, $value = null)
+    {
+        $self = self::GetHandler();
+        if ($column == null) {
+            return 0;
+        } elseif (!isset($self->arrConfig) 
+            || !is_array($self->arrConfig)
+            || count($self->arrConfig) == 0
+        ) {
+            return 0;
+        } elseif ($column != 'key' && $column != 'value') {
+            return 0;
+        }
+        $counter = 0;
+        foreach ($self->arrConfig as $key => $object) {
+            if ($object->getKey($column) == $value 
+                || strstr($object->getKey($column), $value)
+            ) {
+                $counter++;
+            }
+        }
+        return $counter;
+    }
+    
+    public static function lastChangeByColumnSearch($column = null, $value = null)
+    {
+        $self = self::GetHandler();
+        if ($column == null) {
+            return false;
+        } elseif (!isset($self->arrConfig) 
+            || !is_array($self->arrConfig)
+            || count($self->arrConfig) == 0
+        ) {
+            return false;
+        } elseif ($column != 'key' && $column != 'value') {
+            return false;
+        }
+        if ($column == 'key') {
+            if (isset($self->arrConfig[$key])) {
+                return $self->arrConfig[$key]->getKey('lastChange');
+            }
+            foreach ($self->arrConfig as $key => $object) {
+                if (strstr($object->getKey('key'), $value)) {
+                    return $object->getKey('lastChange');
+                }
+            }
+        } else {
+            foreach ($self->arrConfig as $key => $object) {
+                if ($object->getKey('value') == $value) {
+                    return $object->getKey('lastChange');
+                } elseif (strstr($object->getKey('value'), $value)) {
+                    return $object->getKey('lastChange');
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static function lastChangeAll()
+    {
+        $self = self::GetHandler();
+        if (!isset($self->arrConfig) 
+            || !is_array($self->arrConfig)
+            || count($self->arrConfig) == 0
+        ) {
+            return false;
+        }
+        $lastChange = 0;
+        foreach ($self->arrConfig as $key => $object) {
+            if (strtotime($object->getKey('lastChange')) > $lastChange) {
+                $lastChange = strtotime($object->getKey('lastChange'));
+            }
+        }
+        return $lastChange;
+    }
+    
+    public static function countAll()
+    {
+        $self = self::GetHandler();
+        if (!isset($self->arrConfig) 
+            || !is_array($self->arrConfig)
+        ) {
+            return 0;
+        } else {
+            return count($self->arrConfig);
         }
     }
 
@@ -243,12 +394,19 @@ class Container_Config
      *
      * @return string
      */
-    public function getSecure($key = null, $mixedDefaultValue = null)
+    public function getSecureByID($key = null, $mixedDefaultValue = null)
     {
-        if (! isset($this->arrSecureConfig[$key])) {
-            return $mixedDefaultValue;
+        $self = self::GetHandler();
+        if (! isset($self->arrSecureConfig[$key])) {
+            return new Object_SecureConfig(
+                array(
+                    'key' => $key,
+                    'value' => $mixedDefaultValue
+                ),
+                date('Y-m-d H:i:s')
+            );
         } else {
-            return $this->arrSecureConfig[$key]->getKey('value');
+            return $self->arrSecureConfig[$key];
         }
     }
     

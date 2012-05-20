@@ -6,4 +6,4 @@
 /DOCS/
 /.phpcs/
 /.htaccess
-/Tests/test.sqlite
+/config/demo.sqlite

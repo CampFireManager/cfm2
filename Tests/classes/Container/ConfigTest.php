@@ -17,13 +17,20 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = Container_Config_Testable::GetHandler();
         $config->LoadFile('democonfig.php');
-        $this->assertTrue($config->get('demo') == 1);
+        $this->assertTrue(Container_Config_Testable::brokerByID('demo', 0)->getKey('value') == 1);
         $config->SetUpDatabaseConnection();
         $objConfig = new Object_Config_Demo();
         $objConfig->initializeDemo();
         $objSecureConfig = new Object_SecureConfig_Demo();
         $objSecureConfig->initializeDemo();
         $config->LoadDatabaseConfig();
+        $data = $config->brokerAll();
+        $item = Container_Config_Testable::brokerByID('Site Name');
+        $this->assertTrue($item->getKey('value') == 'A Demo Site');
+        $item->setKey('value', 'Some Demo Data');
+        $item->write();
+        $item = Container_Config_Testable::brokerByID('Site Name');
+        $this->assertTrue($item->getKey('value') == 'Some Demo Data');
     }
     
     /**
@@ -70,9 +77,8 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     
     public function testGetUnconfiguredValue()
     {
-        $config = Container_Config_Testable::GetHandler();
-        $this->assertTrue($config->get('UnconfiguredValue', true));
-        $this->assertTrue($config->get('UnconfiguredValue') == null);
+        $this->assertTrue(Container_Config_Testable::brokerByID('UnconfiguredValue', true)->getKey('value'));
+        $this->assertTrue(Container_Config_Testable::brokerByID('UnconfiguredValue')->getKey('value') == null);
     }
 }
 

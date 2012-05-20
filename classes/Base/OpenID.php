@@ -86,7 +86,7 @@ class Base_OpenID
         include_once "Auth/OpenID/AX.php";
 
         // create file storage area for OpenID data
-        $store = new Auth_OpenID_FileStore(Container_Config::get('TemporaryFiles', '/tmp') . '/OPENID_STORE');
+        $store = new Auth_OpenID_FileStore(Container_Config::brokerByID('TemporaryFiles', '/tmp')->getKey('value') . '/OPENID_STORE');
 
         // create OpenID consumer
         $this->consumer = new Auth_OpenID_Consumer($store);

@@ -28,7 +28,8 @@ class Base_GeneralFunctions
     /**
      * This is here purely to prevent the class being instantiated as "new".
      */
-    public function __construct() {
+    public function __construct()
+    {
         throw new BadMethodCallException("Do not instantiate this class");
     }
     

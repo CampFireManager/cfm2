@@ -23,7 +23,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-abstract class Abstract_GenericObject
+abstract class Abstract_GenericObject implements Interface_Object
 {
     /**
      * This is an array of database items. It is an array of arrays, where the
@@ -540,6 +540,18 @@ abstract class Abstract_GenericObject
                             )
                         );
                     }
+                } else {
+                    foreach ($this->arrDBItems as $keycol => $dummy) {
+                        if ($where != '') {
+                            $where .= ' AND ';
+                        }
+                        $values["old$keycol"] = $this->old[$keycol];
+                        $where .= Container_Database::getSqlString(
+                            array(
+                                'sql' => "$keycol = :old$keycol"
+                            )
+                        );
+                    }
                 }
                 foreach ($this->arrChanges as $change_key => $change_value) {
                     if ($change_value == true and isset($this->arrDBItems[$change_key])) {
@@ -780,6 +792,7 @@ abstract class Abstract_GenericObject
                 )
             );
             $objDatabase->exec($sql);
+
             $this->initialize();
             if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
                 return false;

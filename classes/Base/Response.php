@@ -342,20 +342,20 @@ class Base_Response
         }
         $libSmarty .= '/libs/Smarty.class.php';
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
-        $smarty_debugging = (Container_Config::get('smarty_debug', 'true'));
+        $smarty_debugging = (Container_Config::brokerByID('smarty_debug', 'true')->getKey('value'));
         include_once $libSmarty;
         $objSmarty = new Smarty();
         if ($smarty_debugging) {
             $objSmarty->debugging = true;
         }
         $objSmarty->setTemplateDir($baseSmarty . 'Source');
-        $objSmarty->setCompileDir(Container_Config::get('TemporaryFiles', '/tmp') . '/smartyCompiled');
+        $objSmarty->setCompileDir(Container_Config::brokerByID('TemporaryFiles', '/tmp')->getKey('value') . '/smartyCompiled');
         if (is_array($arrAssignments) and count($arrAssignments) > 0) {
             foreach ($arrAssignments as $key=>$value) {
                 $objSmarty->assign($key, $value);
             }
         }
-        foreach (Container_Config::get() as $key=>$value) {
+        foreach (Container_Config::brokerAll() as $key=>$value) {
             $config[$key] = $value['value'];
         }
         $arrRequestData = Base_Request::getRequest();

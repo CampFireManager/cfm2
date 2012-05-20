@@ -23,7 +23,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-abstract class Abstract_GenericCollection
+abstract class Abstract_GenericCollection implements Interface_Object
 {
     protected $arrData = array();
     

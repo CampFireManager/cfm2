@@ -79,7 +79,7 @@ class Object_Userauth extends Abstract_GenericObject
                     } else {
                         $password = $value;
                     }
-                    $set = sha1(Container_Config::getSecure('salt') . $password);
+                    $set = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $password);
                 } elseif (($this->enumAuthType == 'basicauth'
                     || $this->enumAuthType == 'codeonly')
                     && is_array($value) 
@@ -87,7 +87,7 @@ class Object_Userauth extends Abstract_GenericObject
                     && isset($value['password'])
                 ) {
                     $password = $value['password'];
-                    $set = $value['username'] . ':' . sha1(Container_Config::getSecure('salt') . $value['password']);
+                    $set = $value['username'] . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $value['password']);
                 }
                 if ($set != '' && $this->strAuthValue != $set) {
                     $this->tmpCleartext = $password;
@@ -136,19 +136,19 @@ class Object_Userauth extends Abstract_GenericObject
             }
         } elseif (isset($_SESSION['OPENID_AUTH']) AND $_SESSION['OPENID_AUTH'] != false) {
             $key = 'openid';
-            $value = sha1(Container_Config::getSecure('salt') . $arrRequestData['OPENID_AUTH']);
+            $value = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['OPENID_AUTH']);
             $createIfNotExist = true;
         } elseif (isset($arrRequestData['username']) && $arrRequestData['username'] != null && isset($arrRequestData['password']) && $arrRequestData['password'] != null) {
             $key = 'basicauth';
-            $value = $arrRequestData['username'] . ':' . sha1(Container_Config::getSecure('salt') . $arrRequestData['password']);
+            $value = $arrRequestData['username'] . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['password']);
         } elseif (isset($arrRequestData['requestUrlParameters']['code']) && $arrRequestData['requestUrlParameters']['code'] != null) {
             $key = 'codeonly';
-            $value = '%:' . sha1(Container_Config::getSecure('salt') . $arrRequestData['requestUrlParameters']['code']);
+            $value = '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['requestUrlParameters']['code']);
         } elseif (isset($arrRequestData['requestUrlParameters']['username']) 
                 && isset($arrRequestData['requestUrlParameters']['password'])
                 ) {
             $key = 'basicauth';
-            $value = $arrRequestData['requestUrlParameters']['username'] . ':' . sha1(Container_Config::getSecure('salt') . $arrRequestData['requestUrlParameters']['password']);
+            $value = $arrRequestData['requestUrlParameters']['username'] . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['requestUrlParameters']['password']);
             if (isset($arrRequestData['requestUrlParameters']['register'])) {
                 $createIfNotExist = true;
             }
@@ -231,7 +231,7 @@ class Object_Userauth extends Abstract_GenericObject
             $authString = '';
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(5, 9);
-                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecure('salt') . $authString))) > 0) {
+                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $authString))) > 0) {
                     $authString == '';
                 }
             }
@@ -241,7 +241,7 @@ class Object_Userauth extends Abstract_GenericObject
             $authString = '';
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(8, 12);
-                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecure('salt') . $authString))) > 0) {
+                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $authString))) > 0) {
                     $authString == '';
                 }
             }

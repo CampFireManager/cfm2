@@ -97,6 +97,13 @@ class Base_Hook
         'destroySlot' => true
     );
 
+    /**
+     * Load the plugin data to the object.
+     *
+     * @param string $strFileName Filename to load
+     * 
+     * @return void
+     */
     public function Load($strFileName = null)
     {
         if ($strFileName == null) {
@@ -116,6 +123,11 @@ class Base_Hook
         $this->boolFileLoaded = true;
     }
     
+    /**
+     * Return the value of whether the file is loaded.
+     *
+     * @return boolean 
+     */
     public function isFileLoaded()
     {
         return $this->boolFileLoaded;
@@ -164,8 +176,8 @@ class Base_Hook
      * This is the code which actually does something with the hook triggers we've set
      * in the funciton above.
      *
-     * @param string                      $strAction  The name of the trigger to action
-     * @param object|array|integer|string $parameters The resource to pass to the trigger function
+     * @param string $strAction  The name of the trigger to action
+     * @param mixed  $parameters The resource to pass to the trigger function
      * 
      * @return void
      */

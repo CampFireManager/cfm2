@@ -104,9 +104,12 @@ class Base_Request
             case 'site':
                 return $this->arrMediaTypes[$mediaType][$category];
                 break;
+            default:
+                return false;
             }
+        } else {
+            return false;
         }
-        return false;
     }
     
     /**
@@ -245,13 +248,10 @@ class Base_Request
 
         // Take off any parameters, if they've been kept
 
-        $match = preg_match('/^([^\?]+)/', $this->requestUrlFull, $matches);
-        if ($match > 0) {
+        if (strlen(trim($this->requestUrlFull)) > 0) {
+            $match = preg_match('/^([^\?]+)/', $this->requestUrlFull, $matches);
             $this->requestUrlExParams = $matches[1];
-        } else {
-            $this->requestUrlExParams = $url;
         }
-
         
         // Store any of the parameters we aquired before. Add an "if-modified-since" parameter too.
 
@@ -261,7 +261,7 @@ class Base_Request
         }
         
         if (isset($arrServer['HTTP_IF_NONE_MATCH'])) {
-            preg_match_all('/"([^"^,]+)/',$arrServer["HTTP_IF_NONE_MATCH"], $hasIfNoneMatch);
+            preg_match_all('/"([^"^,]+)/', $arrServer["HTTP_IF_NONE_MATCH"], $hasIfNoneMatch);
             if (isset($hasIfNoneMatch[0])) {
                 unset($hasIfNoneMatch[0]);
                 foreach ($hasIfNoneMatch as $tempIfNoneMatch) {
@@ -269,8 +269,6 @@ class Base_Request
                         foreach ($tempIfNoneMatch as $value) {
                             $this->hasIfNoneMatch[] = $value;
                         }
-                    } elseif ($tempIfNoneMatch != '') {
-                        $this->hasIfNoneMatch[] = $tempIfNoneMatch;
                     }
                 }
             }
@@ -702,11 +700,11 @@ class Base_Request
         if (! isset($arrDenyTypes[$strAcceptType])) {
             $this->arrAcceptTypes[$strAcceptType] = 2;
         }
-        if (2 > $intPrefAcceptType) {
+        if (2 > $this->intPrefAcceptType) {
             $this->intPrefAcceptType = 2;
             $this->strPrefAcceptType = $strAcceptType;
         }
-        return $intPrefAcceptType;
+        return $this->intPrefAcceptType;
     }
     
     public function get_arrRequestUrl()

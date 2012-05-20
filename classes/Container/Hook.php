@@ -52,10 +52,21 @@ class Container_Hook
         self::$objHook = null;
     }
     
+    /**
+     * Instantiate the class, load the config and return the handler.
+     *
+     * @param string  $strFileName  The filename to load
+     * @param boolean $doReloadFile Force a clear and reload
+     *
+     * @return object
+     */
     public static function Load($strFileName = null, $doReloadFile = false)
     {
+        if ($doReloadFile) {
+            self::reset();
+        }
         $objHook = self::GetHandler();
-        if (! $objHook->isFileLoaded() || $doReloadFile == true) {
+        if (! $objHook->isFileLoaded()) {
             try {
                 if ($strFileName == null) {
                     $strFileName = 'plugin.php';

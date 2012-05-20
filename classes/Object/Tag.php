@@ -52,8 +52,8 @@ class Object_Tag extends Abstract_GenericObject
      */
     function __construct($isCreationAction = false)
     {
-        $this->onlyAdminMayModify = Base_GeneralFunctions::asBoolean(Container_Config::get('OnlyAdminsCanTagTalks', 'false'));
-        $this->onlyCreatorMayModify = Base_GeneralFunctions::asBoolean(Container_Config::get('OnlyTagCreatorsCanEditTalkTags', 'false'));
+        $this->onlyAdminMayModify = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
+        $this->onlyCreatorMayModify = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
         return parent::__construct($isCreationAction);
     }
 }

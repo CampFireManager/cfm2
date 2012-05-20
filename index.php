@@ -18,7 +18,7 @@ $generator = microtime(true);
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
-Container_Config::GetLoadedConfig();
+Container_Config::LoadConfig();
 
 
 $arrRequestData = Container_Request::getRequest();
@@ -45,7 +45,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
         if (! $media) {
             Base_Response::sendHttpResponse(404, null, $arrRequestData['strPreferredAcceptType']);
         }
-        $file = Container_Config::get('strMediaPath', dirname(__FILE__) . '/Media');
+        $file = Container_Config::brokerByID('strMediaPath', dirname(__FILE__) . '/Media')->getKey('value');
         foreach ($arrRequestData['pathItems'] as $key => $pathItem) {
             if ($pathItem == '..') {
                 Base_Response::sendHttpResponse(403, null, $arrRequestData['strPreferredAcceptType']);
