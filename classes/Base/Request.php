@@ -405,6 +405,7 @@ class Base_Request
         }
 
         // To ensure the first character of the pathRouter isn't '/', check for it and trim it.
+        // I can't actually figure out why this went in here, but I don't seem to be able to test it!
         
         if (substr($this->_strPathRouter, 0, 1) == '/') {
             $this->_strPathRouter = substr($this->_strPathRouter, 1);

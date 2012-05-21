@@ -169,7 +169,16 @@ class Base_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($request->get_strPathSite() == '');
         $this->assertTrue($request->get_strPathRouter() == '');
     }
-    
+
+    public function testSimulatedHttpServerRequestOnNonStandardPort()
+    {
+        unset($this->SarrServer['HTTPS']);
+        $this->SarrServer['SERVER_PORT'] = 8081;
+        $request = new Base_Request();
+        $this->parseServer($request);
+        $this->assertTrue($request->get_requestUrlFull() == 'http://localhost:8081/service/talk/12/');
+    }
+
     public function testSimulatedServerConnectionUsingFormatExtensions()
     {
         $this->SarrServer['REQUEST_URI'] = '/service/talk/12.json';
