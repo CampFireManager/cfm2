@@ -25,7 +25,7 @@
 
 class Base_Response
 {
-    protected static $http_status_codes = Array(
+    protected static $_httpStatusCodes = Array(
     100 => 'Continue',
     101 => 'Switching Protocols',
     200 => 'OK',
@@ -92,16 +92,16 @@ class Base_Response
      *
      * @param integer $status       HTTP response code
      * @param string  $body         Message to be sent
-     * @param string  $content_type MIME type to send
+     * @param string  $contentType MIME type to send
      * @param string  $extra        Additional information beyond the routine HTTP status message
      *
      * @return void
      */
-    public static function sendHttpResponse($status = 200, $body = null, $content_type = 'text/html', $extra = '')
+    public static function sendHttpResponse($status = 200, $body = null, $contentType = 'text/html', $extra = '')
     {        
 
         // Is there something for us to send
-        if (($body != '' && $body != null) || $content_type != 'text/html') {
+        if (($body != '' && $body != null) || $contentType != 'text/html') {
             // We'll send the $body next
         } else {
             // Let's make an appropriate response.
@@ -115,8 +115,8 @@ class Base_Response
                 $message = 'You must be authorized to view this page.';
                 break;
             case 404:
-                list($uri, $data) = static::getPath();
-                $message = 'The requested URL ' . $uri . ' was not found.';
+                $temp = static::getPath();
+                $message = 'The requested URL ' . $temp[0] . ' was not found.';
                 break;
             case 500:
                 $message = 'The server encountered an error processing your request.';
@@ -129,21 +129,21 @@ class Base_Response
             // Again, don't send any text if the response is to send no further content
             if ($status != 204) {
                 // Send the stock message
-                $message_content = "<p>{$message}</p>";
+                $messageContent = "<p>{$message}</p>";
                 // Add extra padding if required
                 if ($extra != '') {
-                    $message_content .= "\r\n    <p>$extra</p>";
+                    $messageContent .= "\r\n    <p>$extra</p>";
                 }
                 // Here's the actual content to send.
                 $body = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 ' .                     '<html>
 ' .                     '  <head>
 ' .                     '    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-' .                     '    <title>' . $status . ' ' . static::$http_status_codes[$status] . '</title>
+' .                     '    <title>' . $status . ' ' . static::$_httpStatusCodes[$status] . '</title>
 ' .                     '  </head>
 ' .                     '  <body>
-' .                     '    <h1>' . static::$http_status_codes[$status] . '</h1>
-' .                     '    ' . $message_content . '
+' .                     '    <h1>' . static::$_httpStatusCodes[$status] . '</h1>
+' .                     '    ' . $messageContent . '
 ' .                     '  </body>
 ' .                     '</html>';
             }
@@ -168,14 +168,14 @@ class Base_Response
         header("ETag: \"$thisetag\"");
         foreach ($arrRequestData['If-None-Match'] as $etag) {
             if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
-                header('HTTP/1.1 304 ' . static::$http_status_codes[304]);
+                header('HTTP/1.1 304 ' . static::$_httpStatusCodes[304]);
                 exit(0);
             }
         }
         
         // Send the relevant headers for this type of response
-        header('HTTP/1.1 ' . $status . ' ' . static::$http_status_codes[$status]);
-        header('Content-type: ' . $content_type);
+        header('HTTP/1.1 ' . $status . ' ' . static::$_httpStatusCodes[$status]);
+        header('Content-type: ' . $contentType);
         echo $body;
         exit(0);
     }
@@ -202,8 +202,8 @@ class Base_Response
      */
     public static function returnHttpResponseString($status = 200)
     {
-        if (isset(self::$http_status_codes[$status])) {
-            return self::$http_status_codes[$status];
+        if (isset(self::$_httpStatusCodes[$status])) {
+            return self::$_httpStatusCodes[$status];
         } else {
             return false;
         }
@@ -213,14 +213,14 @@ class Base_Response
      * Provide a downloadable file and exit the script
      *
      * @param string  $file       File to send
-     * @param boolean $is_resume  Can we supply headers to make this file resumable?
-     * @param string  $media_type The Internet Media Type for this media. If unset, force the download in browsers.
+     * @param boolean $isResumable  Can we supply headers to make this file resumable?
+     * @param string  $mediaType The Internet Media Type for this media. If unset, force the download in browsers.
      *
      * @return void
      *
      * @link http://www.php.net/manual/en/function.fread.php#84115
      */
-    function sendResumableFile($file, $is_resume = TRUE, $media_type = 'application/force-download')
+    function sendResumableFile($file, $isResumable = TRUE, $mediaType = 'application/force-download')
     {
         //First, see if the file exists
         if (!is_file($file)) {
@@ -238,13 +238,13 @@ class Base_Response
         $fileinfo['basename'];
 
         //check if http_range is sent by browser (or download manager)
-        if ($is_resume && isset($_SERVER['HTTP_RANGE'])) {
-            list($size_unit, $range_orig) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+        if ($isResumable && isset($_SERVER['HTTP_RANGE'])) {
+            list($unitSize, $originalRange) = explode('=', $_SERVER['HTTP_RANGE'], 2);
 
-            if ($size_unit == 'bytes') {
+            if ($unitSize == 'bytes') {
                 // According to the spec, you could request several ranges here.
                 // For simplicity, just send the first one.
-                $ranges = explode(',', $range_orig);
+                $ranges = explode(',', $originalRange);
                 $range = $ranges[0];
             } else {
                 $range = '';
@@ -256,40 +256,40 @@ class Base_Response
         //figure out download piece from range (if set)
         $seek = explode('-', $range, 2);
         if (isset($seek[0])) {
-            $seek_start = $seek[0];
+            $seekStart = $seek[0];
         } else {
-            $seek_start = '';
+            $seekStart = '';
         }
         if (isset($seek[1])) {
-            $seek_end = $seek[1];
+            $seekEnd = $seek[1];
         } else {
-            $seek_end = '';
+            $seekEnd = '';
         }
 
         //set start and end based on range (if set), else set defaults
         //also check for invalid ranges.
-        $seek_end = (empty($seek_end)) ? ($size - 1) : min(abs(intval($seek_end)),($size - 1));
-        $seek_start = (empty($seek_start) || $seek_end < abs(intval($seek_start))) ? 0 : max(abs(intval($seek_start)),0);
+        $seekEnd = (empty($seekEnd)) ? ($size - 1) : min(abs(intval($seekEnd)), ($size - 1));
+        $seekStart = (empty($seekStart) || $seekEnd < abs(intval($seekStart))) ? 0 : max(abs(intval($seekStart)), 0);
 
         //add headers if resumable
-        if ($is_resume) {
+        if ($isResumable) {
             //Only send partial content header if downloading a piece of the file (IE workaround)
-            if ($seek_start > 0 || $seek_end < ($size - 1)) {
+            if ($seekStart > 0 || $seekEnd < ($size - 1)) {
                 header('HTTP/1.1 206 Partial Content');
             }
 
             header('Accept-Ranges: bytes');
-            header('Content-Range: bytes '.$seek_start.'-'.$seek_end.'/'.$size);
+            header('Content-Range: bytes '.$seekStart.'-'.$seekEnd.'/'.$size);
         }
 
-        header('Content-Type: ' . $media_type);
+        header('Content-Type: ' . $mediaType);
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: '.($seek_end - $seek_start + 1));
+        header('Content-Length: '.($seekEnd - $seekStart + 1));
 
         //open the file
         $filepointer = fopen($file, 'rb');
         //seek to start of missing part
-        fseek($filepointer, $seek_start);
+        fseek($filepointer, $seekStart);
 
         //start buffered download
         while (!feof($filepointer)) {
@@ -305,23 +305,23 @@ class Base_Response
     }
     
     /**
-    * Do a redirection to the $new_page (relative to the base URI of the site)
+    * Do a redirection to the $newPage (relative to the base URI of the site)
     *
-    * @param string $new_page New page to refer to
+    * @param string $newPage New page to refer to
     *
     * @return void
     */
-    public static function redirectTo($new_page = '')
+    public static function redirectTo($newPage = '')
     {
         $arrRequestData = Base_Request::getRequest();
-        if (substr($new_page, 0, 1) != '/') {
-            $new_page = '/' . $new_page;
+        if (substr($newPage, 0, 1) != '/') {
+            $newPage = '/' . $newPage;
         }
         if (substr($arrRequestData['pathSite'], -1) == '/') {
             $arrRequestData['pathSite'] = substr($arrRequestData['pathSite'], 0, -1);
         }
-        $redirect_url = $arrRequestData['basePath'] . $arrRequestData['pathSite'] . $new_page;
-        header("Location: $redirect_url");
+        $redirectUrl = $arrRequestData['basePath'] . $arrRequestData['pathSite'] . $newPage;
+        header("Location: $redirectUrl");
         exit(0);
     }
     
@@ -342,14 +342,16 @@ class Base_Response
         }
         $libSmarty .= '/libs/Smarty.class.php';
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
-        $smarty_debugging = (Container_Config::brokerByID('smarty_debug', 'true')->getKey('value'));
+        $enableSmartyDebugging = (Container_Config::brokerByID('smarty_debug', 'true')->getKey('value'));
         include_once $libSmarty;
         $objSmarty = new Smarty();
-        if ($smarty_debugging) {
+        if ($enableSmartyDebugging) {
             $objSmarty->debugging = true;
         }
         $objSmarty->setTemplateDir($baseSmarty . 'Source');
-        $objSmarty->setCompileDir(Container_Config::brokerByID('TemporaryFiles', '/tmp')->getKey('value') . '/smartyCompiled');
+        $objSmarty->setCompileDir(
+            Container_Config::brokerByID('TemporaryFiles', '/tmp')->getKey('value') . '/smartyCompiled'
+        );
         if (is_array($arrAssignments) and count($arrAssignments) > 0) {
             foreach ($arrAssignments as $key=>$value) {
                 $objSmarty->assign($key, $value);

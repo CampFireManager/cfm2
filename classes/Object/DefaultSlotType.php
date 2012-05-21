@@ -28,14 +28,14 @@
 class Object_DefaultSlotType extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $arrDBItems = array(
+    protected $_arrDBItems = array(
         'strDefaultSlotType' => array('type' => 'varchar', 'length' => 255),
         'locksSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none')),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "defaultslottype";
-    protected $strDBKeyCol = "intDefaultSlotTypeID";
-    protected $mustBeAdminToModify = true;
+    protected $_strDBTable = "defaultslottype";
+    protected $_strDBKeyCol = "intDefaultSlotTypeID";
+    protected $_reqAdminToMod = true;
     // Local Object Requirements
     protected $intDefaultSlotTypeID = null;
     protected $strDefaultSlotType = null;
@@ -54,7 +54,7 @@ class Object_DefaultSlotType extends Abstract_GenericObject
  */
 class Object_DefaultSlotType_Demo extends Object_DefaultSlotType
 {
-    protected $arrDemoData = array(
+    protected $_arrDemoData = array(
         array('intDefaultSlotTypeID' => 1, 'strDefaultSlotType' => 'Keynote', 'locksSlot' => 'hardlock'),
         array('intDefaultSlotTypeID' => 2, 'strDefaultSlotType' => 'Lunch', 'locksSlot' => 'softlock'),
         array('intDefaultSlotTypeID' => 3, 'strDefaultSlotType' => 'Closing talk', 'locksSlot' => 'hardlock'),

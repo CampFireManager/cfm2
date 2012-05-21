@@ -34,27 +34,41 @@ class Base_GeneralFunctions
     }
     
     /**
-     * This function looks for a value within an array or an object, and returns it if it's there. If it isn't it
-     * returns the default value.
+     * This function looks for a value within an array or an object, and 
+     * returns it if it's there. If it isn't it returns the default value.
      *
      * @param mixed   $haystack     The object or array to check within
      * @param string  $needle       The key or property to look for
-     * @param mixed   $default      The value to return if the key or property doesn't exist
-     * @param boolean $emptyisfalse If true, and the result of the check returns an empty string, return the default value
+     * @param mixed   $default      The value to return if the key or property 
+     * doesn't exist
+     * @param boolean $emptyisfalse If true, and the result of the check returns
+     * an empty string, return the default value
      *
      * @return mixed The value found, or the default if not.
      */
-    public static function getValue($haystack = null, $needle = null, $default = false, $emptyisfalse = true)
+    public static function getValue(
+        $haystack = null, 
+        $needle = null, 
+        $default = false, 
+        $emptyisfalse = true
+    )
     {
         if ($haystack != null && $needle !== null) {
-            if (is_array($haystack) && count($haystack) > 0 && isset($haystack[$needle])) {
-                if ($emptyisfalse == true && (string) $haystack[$needle] == '') {
+            if (is_array($haystack) 
+                && count($haystack) > 0 
+                && isset($haystack[$needle])
+            ) {
+                if ($emptyisfalse == true 
+                    && (string) $haystack[$needle] == ''
+                ) {
                     return $default;
                 } else {
                     return $haystack[$needle];
                 }
             } elseif (is_object($haystack) && isset($haystack->$needle)) {
-                if ($emptyisfalse == true && (string) $haystack->$needle == '') {
+                if ($emptyisfalse == true 
+                    && (string) $haystack->$needle == ''
+                ) {
                     return $default;
                 } else {
                     return $haystack->$needle;
@@ -72,19 +86,37 @@ class Base_GeneralFunctions
      *
      * @param integer $minLen     The minimum length of the string. Required.
      * @param integer $maxLen     The maximum length of the string. Required.
-     * @param boolean $alphaLower Toggles the use of lowercase letters (a-z). Default is 1 (lowecase letters may be used).
-     * @param boolean $alphaUpper Toggles the use of uppercase letters (A-Z). Default is 1 (uppercase letters may be used).
-     * @param boolean $num        Toggles the use of numbers (0-9). Default is 1 (numbers may be used).
-     * @param integer $batch      Specify the number of strings to create. Default is 1 (returns one string). When $batch is not 1 the function returns an array of multiple strings.
+     * @param boolean $alphaLower Toggles the use of lowercase letters (a-z). 
+     * Default is 1 (lowecase letters may be used).
+     * @param boolean $alphaUpper Toggles the use of uppercase letters (A-Z). 
+     * Default is 1 (uppercase letters may be used).
+     * @param boolean $num        Toggles the use of numbers (0-9). Default is 1 
+     * (numbers may be used).
+     * @param integer $batch      Specify the number of strings to create. 
+     * Default is 1 (returns one string). When $batch is not 1 the function 
+     * returns an array of multiple strings.
      * 
      * @return string The generated string
      * 
      * @link http://www.php.net/manual/en/function.rand.php#94788
      */
-    public static function genRandStr($minLen, $maxLen, $alphaLower = true, $alphaUpper = true, $num = true, $batch = 1)
+    public static function genRandStr(
+        $minLen, 
+        $maxLen, 
+        $alphaLower = true, 
+        $alphaUpper = true, 
+        $num = true, 
+        $batch = 1
+    )
     {
-        $alphaLowerArray = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
-        $alphaUpperArray = array('A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+        $alphaLowerArray = array(
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 
+            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+        );
+        $alphaUpperArray = array(
+            'A', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q', 
+            'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        );
         $numArray = array(2, 3, 4, 6, 7, 9);
 
         if (isset($minLen) && isset($maxLen)) {
@@ -93,10 +125,12 @@ class Base_GeneralFunctions
             } else {
                 $strLen = rand($minLen, $maxLen);
             }
-            $merged = array_merge($alphaLowerArray, $alphaUpperArray, $numArray);
-
             if ($alphaLower && $alphaUpper && $num) {
-                $finalArray = array_merge($alphaLowerArray, $alphaUpperArray, $numArray);
+                $finalArray = array_merge(
+                    $alphaLowerArray,
+                    $alphaUpperArray, 
+                    $numArray
+                );
             } elseif ($alphaLower && $alphaUpper && ! $num) {
                 $finalArray = array_merge($alphaLowerArray, $alphaUpperArray);
             } elseif ($alphaLower && ! $alphaUpper && $num) {
@@ -174,9 +208,11 @@ class Base_GeneralFunctions
     }
 
     /**
-     * Return the value marked as being "preferred", or failing that, the first entry in the array, or the only entry.
+     * Return the value marked as being "preferred", or failing that, the first 
+     * entry in the array, or the only entry.
      *
-     * @param JSON $strJson A JSON encoded string, containing an array of data, or just a simple string.
+     * @param JSON $strJson A JSON encoded string, containing an array of data, 
+     * or just a simple string.
      *
      * @return string The preferred value.
      */
@@ -189,7 +225,8 @@ class Base_GeneralFunctions
                     return $value;
                 }
             }
-            // We didn't find a preferred value, so just return the first one as being "preferred"
+            // We didn't find a preferred value, so just return the first one as 
+            // being "preferred"
             foreach ($arrJson as $value) {
                 return $value;
             }
@@ -219,15 +256,21 @@ class Base_GeneralFunctions
     }
 
     /**
-     * Add a new string to an existing JSON array, or promote one value to being "preferred"
+     * Add a new string to an existing JSON array, or promote one value to being 
+     * "preferred"
      *
      * @param JSON    $strJson     The existing JSON array.
      * @param string  $strNewValue The value to add, or prefer.
-     * @param boolean $preferred   Optional. Set to true to make this value preferred.
+     * @param boolean $preferred   Optional. Set to true to make this value 
+     * preferred.
      *
      * @return JSON The resulting JSON array.
      */
-    public static function addJson($strJson = '', $strNewValue = '', $preferred = false)
+    public static function addJson(
+        $strJson = '', 
+        $strNewValue = '', 
+        $preferred = false
+    )
     {
         $set = false;
         $arrJson = (array) json_decode($strJson);
@@ -266,12 +309,14 @@ class Base_GeneralFunctions
     }
 
     /**
-     * This function removes a value from the JSON array, preserving the "preferred" key, where appropriate.
+     * This function removes a value from the JSON array, preserving the 
+     * "preferred" key, where appropriate.
      *
      * @param JSON   $strJson          The JSON array to operate on
      * @param string $strValueToRemove The value to remove from the array
      *
-     * @return false|JSON The modified array, or false, if there is only one value.
+     * @return false|JSON The modified array, or false, if there is only one 
+     * value.
      */
     public static function delJson($strJson = '', $strValueToRemove = '')
     {
@@ -358,7 +403,8 @@ class Base_GeneralFunctions
      * Return UTF8 encoded array
      *
      * @param array|object|string|integer|float|boolean|null $array Ideally an 
-     * array of data to process, but failing that, return the data as a member of an array.
+     * array of data to process, but failing that, return the data as a member 
+     * of an array.
      *
      * @return array UTF8 encoded array
      *
@@ -411,11 +457,14 @@ class Base_GeneralFunctions
      */
     public static function utf8html($array = array())
     {
-        return Base_GeneralFunctions::html_encode(Base_GeneralFunctions::utf8element($array));
+        return Base_GeneralFunctions::html_encode(
+            Base_GeneralFunctions::utf8element($array)
+        );
     }
 
     /**
-     * Similar to the json_encode function, this returns nested HTML tables instead of nested JSON data
+     * Similar to the json_encode function, this returns nested HTML tables 
+     * instead of nested JSON data
      * 
      * @param array $array Data to encode
      * 
@@ -447,15 +496,21 @@ class Base_GeneralFunctions
      */
     public static function utf8xml($array = array(), $root = 'row')
     {
-        return Base_GeneralFunctions::xml_encode(array($root => Base_GeneralFunctions::utf8element($array)));
+        return Base_GeneralFunctions::xml_encode(
+            array(
+                $root => Base_GeneralFunctions::utf8element($array)
+            )
+        );
     }
     
     /**
      * Similar to the json_encode function, this returns nested XML stanzas.
-     * It doesn't have the concept of parameters. Also, replaces a forward slash with "[slash]"
+     * It doesn't have the concept of parameters. Also, replaces a forward slash
+     * with "[slash]"
      * 
      * @param array   $array Data to encode
-     * @param integer $depth The number of spaces to indent each nested stanza by
+     * @param integer $depth The number of spaces to indent each nested stanza 
+     * by
      * 
      * @return string XML formatted data
      */
@@ -474,7 +529,9 @@ class Base_GeneralFunctions
             $key = str_replace("'", '[squote]', $key);
             $return .= str_repeat(' ', $depth) . '<' . $key . ">";
             if (is_array($item)) {
-                $return .= "\r\n" . Base_GeneralFunctions::xml_encode($item, $depth + 4) . str_repeat(' ', $depth);
+                $return .= "\r\n" 
+                        . Base_GeneralFunctions::xml_encode($item, $depth + 4) 
+                        . str_repeat(' ', $depth);
             } else {
                 $return .= $item;
             }
@@ -484,7 +541,8 @@ class Base_GeneralFunctions
     }
     
     /**
-     * Overide the standard session_start() call, with our preferred longer cookie timer.
+     * Overide the standard session_start() call, with our preferred longer 
+     * cookie timer.
      *
      * @return void
      */
@@ -493,10 +551,21 @@ class Base_GeneralFunctions
         if (session_id()==='') {
             // 604800 is 7 Days in seconds
             $currentCookieParams = session_get_cookie_params();
-            session_set_cookie_params(604800, $currentCookieParams["path"], $currentCookieParams["domain"], $currentCookieParams["secure"], $currentCookieParams["httponly"]);
+            session_set_cookie_params(
+                604800, 
+                $currentCookieParams["path"], 
+                $currentCookieParams["domain"], 
+                $currentCookieParams["secure"], 
+                $currentCookieParams["httponly"]
+            );
             session_start();
-            setcookie(session_name(), session_id(), time() + 604800, $currentCookieParams["path"], $currentCookieParams["domain"]);
+            setcookie(
+                session_name(), 
+                session_id(), 
+                time() + 604800, 
+                $currentCookieParams["path"], 
+                $currentCookieParams["domain"]
+            );
         }
     }
-
 }

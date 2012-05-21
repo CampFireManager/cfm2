@@ -2,55 +2,56 @@
 
 class Container_Database
 {
-    protected static $self = null;
-    protected $objDatabase = null;
+    protected static $_self = null;
+    protected $_objDatabase = null;
     
     protected static function GetHandler()
     {
-        if (self::$self == null) {
-            self::$self = new self();
+        if (self::$_self == null) {
+            self::$_self = new self();
         }
-        return self::$self;
+        return self::$_self;
     }
 
     protected static function reset()
     {
-        self::$self = null;
+        self::$_self = null;
     }
         
     public static function setConnection(
-        $strDbType = null,
-        $arrDsnRo = null, 
-        $arrDsnRw = null
-    ) {
-        $self = self::GetHandler();
-        $self->objDatabase = new Base_Database();
-        $self->objDatabase->setConnectionVars($strDbType, $arrDsnRo, $arrDsnRw);
+        $_strDbType = null,
+        $_arrDsnRo = null, 
+        $_arrDsnRw = null
+    )
+    {
+        $_self = self::GetHandler();
+        $_self->_objDatabase = new Base_Database();
+        $_self->_objDatabase->setConnectionVars($_strDbType, $_arrDsnRo, $_arrDsnRw);
     }
     
     public static function getConnection(
         $boolRequireWrite = false,
-        $strDbType = null,
-        $arrDsnRo = null, 
-        $arrDsnRw = null
+        $_strDbType = null,
+        $_arrDsnRo = null, 
+        $_arrDsnRw = null
     ) {
-        $self = self::GetHandler();
-        if (! is_object($self->objDatabase)) {
-            $self->objDatabase = new Base_Database();
+        $_self = self::GetHandler();
+        if (! is_object($_self->_objDatabase)) {
+            $_self->_objDatabase = new Base_Database();
         }
-        return $self->objDatabase->getConnection(
+        return $_self->_objDatabase->getConnection(
             $boolRequireWrite, 
-            $strDbType, 
-            $arrDsnRo, 
-            $arrDsnRw
+            $_strDbType, 
+            $_arrDsnRo, 
+            $_arrDsnRw
         );
     }
     
     public static function getConnectionType()
     {
-        $self = self::getHandler();
-        if (is_object($self->objDatabase)) {
-            return $self->objDatabase->getConnectionTypeVar();
+        $_self = self::getHandler();
+        if (is_object($_self->_objDatabase)) {
+            return $_self->_objDatabase->getConnectionTypeVar();
         } else {
             throw new OutOfBoundsException("Database has not been initialized");
         }
@@ -58,10 +59,10 @@ class Container_Database
 
     public static function getSqlString($arrStrings = array())
     {
-        $self = self::getHandler();
-        if (is_object($self->objDatabase)) {
+        $_self = self::getHandler();
+        if (is_object($_self->_objDatabase)) {
             try {
-                return $self->objDatabase->getSqlString($arrStrings);
+                return $_self->_objDatabase->getSqlString($arrStrings);
             } catch (Exception $e) {
                 throw $e;
             }

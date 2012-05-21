@@ -25,16 +25,16 @@
 class Object_Tag extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $arrDBItems = array(
-    	'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
+    protected $_arrDBItems = array(
+        'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
         'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "tag";
-    protected $strDBKeyCol = "intTagID";
-    protected $mustBeAdminToModify = false;
-    protected $onlyCreatorMayModify = false;
+    protected $_strDBTable = "tag";
+    protected $_strDBKeyCol = "intTagID";
+    protected $_reqAdminToMod = false;
+    protected $_reqCreatorToMod = false;
     // Local Object Requirements
     protected $intTagID = null;
     protected $strTagName = null;
@@ -46,15 +46,13 @@ class Object_Tag extends Abstract_GenericObject
      * This function overloads the normal construction function to ensure that
      * Tag modifications are set as per the config file.
      *
-     * @param boolean $isCreationAction Pass this variable on to the parent class
-     * 
      * @return object
      */
-    function __construct($isCreationAction = false)
+    function __construct()
     {
-        $this->onlyAdminMayModify = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
-        $this->onlyCreatorMayModify = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
-        return parent::__construct($isCreationAction);
+        $this->_reqAdminToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
+        $this->_reqCreatorToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
+        return parent::__construct();
     }
 }
 
@@ -70,7 +68,7 @@ class Object_Tag extends Abstract_GenericObject
 
 class Object_Tag_Demo extends Object_Tag
 {
-    protected $arrDemoData = array(
+    protected $_arrDemoData = array(
         array('intTagID' => 1, 'strTagName' => 'Developers ^ 3', 'intTalkID' => 1, 'intUserID' => 2),
         array('intTagID' => 2, 'strTagName' => 'Open Source', 'intTalkID' => 2, 'intUserID' => 2),
         array('intTagID' => 3, 'strTagName' => 'Events', 'intTalkID' => 2, 'intUserID' => 2),

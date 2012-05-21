@@ -24,10 +24,10 @@
 
 class Base_ExternalLibraryLoader
 {
-    protected $libs = array();
-    protected $externalsDir = null;
+    protected $_libs = array();
+    protected $_externalsDir = null;
 
-    protected static $self = null;
+    protected static $_self = null;
 
     /**
      * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
@@ -36,10 +36,10 @@ class Base_ExternalLibraryLoader
      */
     public static function getHandler()
     {
-        if (self::$self == null) {
-            self::$self = new self();
+        if (self::$_self == null) {
+            self::$_self = new self();
         }
-        return self::$self;
+        return self::$_self;
     }
 
     /**
@@ -49,25 +49,25 @@ class Base_ExternalLibraryLoader
      */
     function __construct()
     {
-        $this->externalsDir = dirname(__FILE__) . '/../../ExternalLibraries';
+        $this->_externalsDir = dirname(__FILE__) . '/../../ExternalLibraries';
         $result = array();
-        if (file_exists("{$this->externalsDir}/libraries.json")) {
-            $this->libs = (array) json_decode(file_get_contents("{$this->externalsDir}/libraries.json"));
+        if (file_exists("{$this->_externalsDir}/libraries.json")) {
+            $this->_libs = (array) json_decode(file_get_contents("{$this->_externalsDir}/libraries.json"));
         } else {
-            $arrTree = self::recurse_dir($this->externalsDir, 0, 2);
+            $arrTree = self::recurse_dir($this->_externalsDir, 0, 2);
             foreach ($arrTree as $path) {
-                $newPath = substr($path, strlen($this->externalsDir) + 1);
+                $newPath = substr($path, strlen($this->_externalsDir) + 1);
                 $arrPath = explode('/', $newPath);
                 if (count($arrPath) > 1) {
                     $result[$arrPath[0]] = $arrPath[1];
                 }
             }
-            $handle = fopen("{$this->externalsDir}/libraries.json", 'w');
+            $handle = fopen("{$this->_externalsDir}/libraries.json", 'w');
             if ($handle != false) {
                 fwrite($handle, json_encode($result));
                 fclose($handle);
             }
-            $this->libs = $result;
+            $this->_libs = $result;
         }
     }
 
@@ -80,17 +80,17 @@ class Base_ExternalLibraryLoader
      */
     function loadLibrary($library = '')
     {
-        $self = self::getHandler();
-        if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
-            return $self->externalsDir . '/' . $library . '/' . $self->libs[$library];
+        $_self = self::getHandler();
+        if (isset($_self->_libs[$library]) and file_exists($_self->_externalsDir . '/' . $library . '/' . $_self->_libs[$library])) {
+            return $_self->_externalsDir . '/' . $library . '/' . $_self->_libs[$library];
         } else {
-            if (file_exists($self->externalsDir . '/libraries.json')) {
-                unlink($self->externalsDir . '/libraries.json');
+            if (file_exists($_self->_externalsDir . '/libraries.json')) {
+                unlink($_self->_externalsDir . '/libraries.json');
             }
-            $self->libs = array();
-            $self->__construct();
-            if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
-                return $self->externalsDir . '/' . $library . '/' . $self->libs[$library];
+            $_self->_libs = array();
+            $_self->__construct();
+            if (isset($_self->_libs[$library]) and file_exists($_self->_externalsDir . '/' . $library . '/' . $_self->_libs[$library])) {
+                return $_self->_externalsDir . '/' . $library . '/' . $_self->_libs[$library];
             } else {
                 return false;
             }

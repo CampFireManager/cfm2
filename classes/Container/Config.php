@@ -27,12 +27,12 @@
 
 class Container_Config implements Interface_Object
 {
-    protected static $self      = null;
-    protected $arrConfig        = array();
-    protected $arrSecureConfig  = array();
-    protected $isFileLoaded     = false;
-    protected $isDatabaseLoaded = false;
-    protected $fileModifiedTime = null;
+    protected static $_self      = null;
+    protected $_arrConfig        = array();
+    protected $_arrSecureConfig  = array();
+    protected $_isFileLoaded     = false;
+    protected $_isDatabaseLoaded = false;
+    protected $_fileModifiedTime = null;
     
     /**
      * This protected function helps make this class a singleton
@@ -41,10 +41,10 @@ class Container_Config implements Interface_Object
      */
     protected static function GetHandler()
     {
-        if (self::$self == null) {
-            self::$self = new self();
+        if (self::$_self == null) {
+            self::$_self = new self();
         }
-        return self::$self;
+        return self::$_self;
     }
     
     /**
@@ -54,7 +54,7 @@ class Container_Config implements Interface_Object
      */
     protected static function reset()
     {
-        self::$self = null;
+        self::$_self = null;
     }
     
     /**
@@ -73,33 +73,34 @@ class Container_Config implements Interface_Object
         $strFileName = null, 
         $doReloadDatabase = false, 
         $doReloadFile = false
-    ) {
-        $self = self::GetHandler();
-        if (! $self->isFileLoaded || $doReloadFile == true) {
+    )
+    {
+        $_self = self::GetHandler();
+        if (! $_self->_isFileLoaded || $doReloadFile == true) {
             try {
                 if ($strFileName == null) {
                     $strFileName = 'default.php';
                 }
-                $self->LoadFile($strFileName);
-                $self->isFileLoaded = true;
+                $_self->LoadFile($strFileName);
+                $_self->_isFileLoaded = true;
             } catch (Exception $e) {
                 throw $e;
             }
         }
 
-        if (! $self->isDatabaseLoaded 
+        if (! $_self->_isDatabaseLoaded 
             || $doReloadDatabase == true 
             || $doReloadFile == true
         ) {
             try {
-                $self->SetUpDatabaseConnection();
-                $self->LoadDatabaseConfig();
-                $self->isDatabaseLoaded = true;
+                $_self->SetUpDatabaseConnection();
+                $_self->LoadDatabaseConfig();
+                $_self->_isDatabaseLoaded = true;
             } catch (Exception $e) {
                 throw $e;
             }            
         }
-        return $self;
+        return $_self;
     }
 
     /**
@@ -121,7 +122,7 @@ class Container_Config implements Interface_Object
             throw new UnexpectedValueException("This file does not exist.");
         }
         
-        $this->fileModifiedTime = filemtime(
+        $this->_fileModifiedTime = filemtime(
             realpath(dirname(__FILE__) . '/../../config/' . $strFileName)
         );
         
@@ -137,40 +138,40 @@ class Container_Config implements Interface_Object
      */
     public function SetUpDatabaseConnection()
     {
-        $rw_connection = array(
-            'string' => $this->arrConfig['DatabaseType']->getKey('value') . ':' 
-                      . $this->arrConfig['RW_DSN']->getKey('value'),
-            'user' => $this->arrConfig['RW_User']->getKey('value'),
-            'pass' => $this->arrConfig['RW_Pass']->getKey('value'),
+        $connectionReadWrite = array(
+            'string' => $this->_arrConfig['DatabaseType']->getKey('value') . ':' 
+                      . $this->_arrConfig['RW_DSN']->getKey('value'),
+            'user' => $this->_arrConfig['RW_User']->getKey('value'),
+            'pass' => $this->_arrConfig['RW_Pass']->getKey('value'),
             'init' => array()
         );
-        if (isset($this->arrConfig['DatabaseInit'])) {
-            $rw_connection['init']
-                = $this->arrConfig['DatabaseInit']->getKey('value');
+        if (isset($this->_arrConfig['DatabaseInit'])) {
+            $connectionReadWrite['init']
+                = $this->_arrConfig['DatabaseInit']->getKey('value');
         }
-        if (isset($this->arrConfig['RO_DSN']) 
-            && $this->arrConfig['RO_DSN']->getKey('value') != null 
-            && isset($this->arrConfig['RO_User']) 
-            && isset($this->arrConfig['RO_Pass'])
+        if (isset($this->_arrConfig['RO_DSN']) 
+            && $this->_arrConfig['RO_DSN']->getKey('value') != null 
+            && isset($this->_arrConfig['RO_User']) 
+            && isset($this->_arrConfig['RO_Pass'])
         ) {
-            $ro_connection = array(
-                'string' => $this->arrConfig['DatabaseType']->getKey('value') 
-                    . ':' . $this->arrConfig['RO_DSN']->getKey('value'),
-                'user' => $this->arrConfig['RO_User']->getKey('value'),
-                'pass' => $this->arrConfig['RO_Pass']->getKey('value'),
+            $connectionReadOnly = array(
+                'string' => $this->_arrConfig['DatabaseType']->getKey('value') 
+                    . ':' . $this->_arrConfig['RO_DSN']->getKey('value'),
+                'user' => $this->_arrConfig['RO_User']->getKey('value'),
+                'pass' => $this->_arrConfig['RO_Pass']->getKey('value'),
                 'init' => array()
             );
-            if (isset($this->arrConfig['DatabaseInit'])) {
-                $ro_connection['init'] 
-                    = $this->arrConfig['DatabaseInit']->getKey('value');
+            if (isset($this->_arrConfig['DatabaseInit'])) {
+                $connectionReadOnly['init'] 
+                    = $this->_arrConfig['DatabaseInit']->getKey('value');
             }
         } else {
-            $ro_connection = null;
+            $connectionReadOnly = null;
         }
         Container_Database::setConnection(
-            $this->arrConfig['DatabaseType']->getKey('value'), 
-            $ro_connection, 
-            $rw_connection
+            $this->_arrConfig['DatabaseType']->getKey('value'), 
+            $connectionReadOnly, 
+            $connectionReadWrite
         );
     }
     
@@ -185,14 +186,14 @@ class Container_Config implements Interface_Object
         $allConfig = Object_Config::brokerAll();
         if (is_array($allConfig) && count($allConfig) > 0) {
             foreach ($allConfig as $value) {
-                $this->arrConfig[$value->getKey('key')] = $value;
+                $this->_arrConfig[$value->getKey('key')] = $value;
             }
         }
 
         $allSecureConfig = Object_SecureConfig::brokerAll();
         if (is_array($allSecureConfig) && count($allSecureConfig) > 0) {
             foreach ($allSecureConfig as $value) {
-                $this->arrSecureConfig[$value->getKey('key')] = $value;
+                $this->_arrSecureConfig[$value->getKey('key')] = $value;
             }
         }
     }
@@ -207,19 +208,19 @@ class Container_Config implements Interface_Object
      */
     public function set($key = null, $value = null)
     {
-        if (! isset($this->arrConfig[$key])) {
-            $this->arrConfig[$key] = new Object_Config(
+        if (! isset($this->_arrConfig[$key])) {
+            $this->_arrConfig[$key] = new Object_Config(
                 array(
                     'key' => $key, 
                     'value' => $value
                 ),
-                date('Y-m-d H:i:s', $this->fileModifiedTime)
+                date('Y-m-d H:i:s', $this->_fileModifiedTime)
             );
         } else {
-            $this->arrConfig[$key]->setKey('value', $value);
-            $this->arrConfig[$key]->setKey(
+            $this->_arrConfig[$key]->setKey('value', $value);
+            $this->_arrConfig[$key]->setKey(
                 'lastChange', 
-                date('Y-m-d H:i:s', $this->fileModifiedTime)
+                date('Y-m-d H:i:s', $this->_fileModifiedTime)
             );
         }
     }
@@ -236,8 +237,8 @@ class Container_Config implements Interface_Object
      */
     public static function brokerByID($key = null, $mixedDefaultValue = null)
     {
-        $self = self::GetHandler();
-        if (! isset($self->arrConfig[$key])) {
+        $_self = self::GetHandler();
+        if (! isset($_self->_arrConfig[$key])) {
             return new Object_Config(
                 array(
                     'key' => $key,
@@ -246,46 +247,46 @@ class Container_Config implements Interface_Object
                 date('Y-m-d H:i:s')
             );
         } else {
-            return $self->arrConfig[$key];
+            return $_self->_arrConfig[$key];
         }
     }
     
     public static function brokerAll()
     {
-        $self = self::GetHandler();
-        if (isset($self->arrConfig)
-            && is_array($self->arrConfig)
-            && count($self->arrConfig) > 0
+        $_self = self::GetHandler();
+        if (isset($_self->_arrConfig)
+            && is_array($_self->_arrConfig)
+            && count($_self->_arrConfig) > 0
         ) {
-            return $self->arrConfig;
+            return $_self->_arrConfig;
         }
         return array();
     }
 
     public static function brokerByColumnSearch($column = null, $value = null)
     {
-        $self = self::GetHandler();
+        $_self = self::GetHandler();
         if ($column == null) {
             return false;
-        } elseif (!isset($self->arrConfig) 
-            || !is_array($self->arrConfig)
-            || count($self->arrConfig) == 0
+        } elseif (!isset($_self->_arrConfig) 
+            || !is_array($_self->_arrConfig)
+            || count($_self->_arrConfig) == 0
         ) {
             return false;
         } elseif ($column != 'key' && $column != 'value') {
             return false;
         }
         if ($column == 'key') {
-            if (isset($self->arrConfig[$key])) {
-                return $self->arrConfig[$key];
+            if (isset($_self->_arrConfig[$key])) {
+                return $_self->_arrConfig[$key];
             }
-            foreach ($self->arrConfig as $key => $object) {
+            foreach ($_self->_arrConfig as $key => $object) {
                 if (strstr($object->getKey('key'), $value)) {
                     return $object;
                 }
             }
         } else {
-            foreach ($self->arrConfig as $key => $object) {
+            foreach ($_self->_arrConfig as $key => $object) {
                 if ($object->getKey('value') == $value) {
                     return $object;
                 } elseif (strstr($object->getKey('value'), $value)) {
@@ -298,19 +299,19 @@ class Container_Config implements Interface_Object
     
     public static function countByColumnSearch($column = null, $value = null)
     {
-        $self = self::GetHandler();
+        $_self = self::GetHandler();
         if ($column == null) {
             return 0;
-        } elseif (!isset($self->arrConfig) 
-            || !is_array($self->arrConfig)
-            || count($self->arrConfig) == 0
+        } elseif (!isset($_self->_arrConfig) 
+            || !is_array($_self->_arrConfig)
+            || count($_self->_arrConfig) == 0
         ) {
             return 0;
         } elseif ($column != 'key' && $column != 'value') {
             return 0;
         }
         $counter = 0;
-        foreach ($self->arrConfig as $key => $object) {
+        foreach ($_self->_arrConfig as $object) {
             if ($object->getKey($column) == $value 
                 || strstr($object->getKey($column), $value)
             ) {
@@ -322,28 +323,28 @@ class Container_Config implements Interface_Object
     
     public static function lastChangeByColumnSearch($column = null, $value = null)
     {
-        $self = self::GetHandler();
+        $_self = self::GetHandler();
         if ($column == null) {
             return false;
-        } elseif (!isset($self->arrConfig) 
-            || !is_array($self->arrConfig)
-            || count($self->arrConfig) == 0
+        } elseif (!isset($_self->_arrConfig) 
+            || !is_array($_self->_arrConfig)
+            || count($_self->_arrConfig) == 0
         ) {
             return false;
         } elseif ($column != 'key' && $column != 'value') {
             return false;
         }
         if ($column == 'key') {
-            if (isset($self->arrConfig[$key])) {
-                return $self->arrConfig[$key]->getKey('lastChange');
+            if (isset($_self->_arrConfig[$key])) {
+                return $_self->_arrConfig[$key]->getKey('lastChange');
             }
-            foreach ($self->arrConfig as $key => $object) {
+            foreach ($_self->_arrConfig as $key => $object) {
                 if (strstr($object->getKey('key'), $value)) {
                     return $object->getKey('lastChange');
                 }
             }
         } else {
-            foreach ($self->arrConfig as $key => $object) {
+            foreach ($_self->_arrConfig as $key => $object) {
                 if ($object->getKey('value') == $value) {
                     return $object->getKey('lastChange');
                 } elseif (strstr($object->getKey('value'), $value)) {
@@ -356,15 +357,15 @@ class Container_Config implements Interface_Object
     
     public static function lastChangeAll()
     {
-        $self = self::GetHandler();
-        if (!isset($self->arrConfig) 
-            || !is_array($self->arrConfig)
-            || count($self->arrConfig) == 0
+        $_self = self::GetHandler();
+        if (!isset($_self->_arrConfig) 
+            || !is_array($_self->_arrConfig)
+            || count($_self->_arrConfig) == 0
         ) {
             return false;
         }
         $lastChange = 0;
-        foreach ($self->arrConfig as $key => $object) {
+        foreach ($_self->_arrConfig as $object) {
             if (strtotime($object->getKey('lastChange')) > $lastChange) {
                 $lastChange = strtotime($object->getKey('lastChange'));
             }
@@ -374,13 +375,13 @@ class Container_Config implements Interface_Object
     
     public static function countAll()
     {
-        $self = self::GetHandler();
-        if (!isset($self->arrConfig) 
-            || !is_array($self->arrConfig)
+        $_self = self::GetHandler();
+        if (!isset($_self->_arrConfig) 
+            || !is_array($_self->_arrConfig)
         ) {
             return 0;
         } else {
-            return count($self->arrConfig);
+            return count($_self->_arrConfig);
         }
     }
 
@@ -396,8 +397,8 @@ class Container_Config implements Interface_Object
      */
     public function getSecureByID($key = null, $mixedDefaultValue = null)
     {
-        $self = self::GetHandler();
-        if (! isset($self->arrSecureConfig[$key])) {
+        $_self = self::GetHandler();
+        if (! isset($_self->_arrSecureConfig[$key])) {
             return new Object_SecureConfig(
                 array(
                     'key' => $key,
@@ -406,7 +407,7 @@ class Container_Config implements Interface_Object
                 date('Y-m-d H:i:s')
             );
         } else {
-            return $self->arrSecureConfig[$key];
+            return $_self->_arrSecureConfig[$key];
         }
     }
     

@@ -51,7 +51,7 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
         foreach ($arrRoomObjects as $objRoom) {
             $objRoom->setFull(true);
             $arrRooms[$objRoom->getKey('intRoomID')] = $objRoom;
-            $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
+            $this->_arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
         }
 
         $arrScreen = $objScreen->getSelf();
@@ -74,26 +74,25 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
             foreach ($arrDirections as $intRoomID => $objDirection) {
                 $arrScreenDirections[$strDirection][$objDirection->getKey('intScreenDirectionID')] = $arrRooms[$intRoomID];
                 $arrRoomDirections[$intRoomID] = $objDirection->getSelf();
-                $this->arrData['arrScreenDirections'][$strDirection][$objDirection->getKey('intScreenDirectionID')] = $arrRooms[$intRoomID]->getSelf();
+                $this->_arrData['arrScreenDirections'][$strDirection][$objDirection->getKey('intScreenDirectionID')] = $arrRooms[$intRoomID]->getSelf();
             }
         }
         
         $arrSlotObjects = Object_Slot::brokerAll();
         $arrTalkObjects = Object_Talk::brokerAll();
-        $arrDefaultSlotTypeObjects = Object_DefaultSlotType::brokerAll();
-        foreach ($arrDefaultSlotTypeObjects as $objDefaultSlotType) {
+        $arrDefSlotTypeObj = Object_DefaultSlotType::brokerAll();
+        foreach ($arrDefSlotTypeObj as $objDefaultSlotType) {
             $arrDefaultSlotTypes[$objDefaultSlotType->getKey('intDefaultSlotTypeID')] = $objDefaultSlotType->getSelf();
         }
 
         list($now, $next) = Object_Slot::getNowAndNext();
         foreach ($arrSlotObjects as $objSlot) {
-            $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
+            $this->_arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
             if ($objSlot->getKey('intSlotID') == $now || $objSlot->getKey('intSlotID') == $next) {
-                $arrSlot = $objSlot->getSelf();
                 foreach ($arrScreen['arrDirections'] as $strDirection => $arrRooms) {
                     foreach ($arrRooms as $intRoomID => $objRoom) {
                         if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
-                            $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
+                            $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                                 'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                                 'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
                                 'arrDirection' => $objRoom->getSelf(),
@@ -103,7 +102,7 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                                 'isNext' => false
                             );
                         } else {
-                            $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
+                            $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                                 'strTalkTitle' => '', 
                                 'isLocked' => 'none',
                                 'arrDirection' => $objRoom->getSelf(),
@@ -114,9 +113,9 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                             );
                         }
                         if ($objSlot->getKey('intSlotID') == $now) {
-                            $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNow'] = true;
+                            $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNow'] = true;
                         } elseif ($objSlot->getKey('intSlotID') == $next) {
-                            $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNext'] = true;
+                            $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNext'] = true;
                         }
                     }
                 }
@@ -128,18 +127,18 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                 $objTalk->setFull(true);
                 for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
                     if (($now == $intSlotID || $next == $intSlotID) && ($room == null || $room == $objTalk->getKey('intRoomID'))) {
-                        $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID] = $objTalk->getSelf();
+                        $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID] = $objTalk->getSelf();
                         if ($objTalk->getKey('isSlotLocked') == 1) {
-                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'hardlock';
+                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'hardlock';
                         } else {
-                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'none';
+                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'none';
                         }
                         if ($intSlotID == $now) {
-                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNow'] = true;
+                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNow'] = true;
                         } elseif ($intSlotID == $next) {
-                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNext'] = true;
+                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNext'] = true;
                         }
-                        $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['arrDirection'] = $arrRoomDirections[$objTalk->getKey('intRoomID')];
+                        $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['arrDirection'] = $arrRoomDirections[$objTalk->getKey('intRoomID')];
                     }
                 }
             }

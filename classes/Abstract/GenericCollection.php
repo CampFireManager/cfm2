@@ -25,31 +25,31 @@
 
 abstract class Abstract_GenericCollection implements Interface_Object
 {
-    protected $arrData = array();
+    protected $_arrData = array();
     
     /**
-     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
+     * An internal function to make this a singleton. This should only be used 
+     * when being used to find objects of itself.
      *
      * @return object This class by itself.
      */
     public static function getHandler()
     {
-        $this_class_name = get_called_class();
-        return new $this_class_name(false);
+        $thisClassName = get_called_class();
+        return new $thisClassName(false);
     }
 
     /**
      * A standard constructor method, which may be extended for specific 
      * collections.
      * 
-     * @param boolean $isCreationAction Used to determine whether to process the response 
-     * further. Not used in this class but may be used in derived classes. Here 
-     * for safety sake.
-     * 
      * @return object This class.
      */
-    protected function __construct($isCreationAction = false)
+    protected function __construct()
     {
+        if (func_num_args() > 0) {
+            throw new BadFunctionCallException("Too many arguments. This constructor does not accept parameters.");
+        }
         return $this;
     }
     
@@ -60,7 +60,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public function getSelf()
     {
-        return $this->arrData;
+        return $this->_arrData;
     }
 
     /**
@@ -115,8 +115,8 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public function getKey($key = '')
     {
-        if (isset($this->arrData[$key])) {
-            return $this->arrData[$key];
+        if (isset($this->_arrData[$key])) {
+            return $this->_arrData[$key];
         } else {
             return false;
         }
@@ -180,10 +180,10 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public static function brokerByID($intID = null)
     {
-        $this_class_name = get_called_class();
-        $this_class = new $this_class_name($intID);
-        if (is_object($this_class)) {
-            return $this_class;
+        $thisClassName = get_called_class();
+        $thisClass = new $thisClassName($intID);
+        if (is_object($thisClass)) {
+            return $thisClass;
         } else {
             return false;
         }

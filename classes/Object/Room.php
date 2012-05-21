@@ -25,14 +25,14 @@
 class Object_Room extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $arrDBItems = array(
-    	'strRoomName' => array('type' => 'varchar', 'length' => 255),
+    protected $_arrDBItems = array(
+        'strRoomName' => array('type' => 'varchar', 'length' => 255),
         'jsonResourceList' => array('type' => 'text'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "room";
-    protected $strDBKeyCol = "intRoomID";
-    protected $mustBeAdminToModify = true;
+    protected $_strDBTable = "room";
+    protected $_strDBKeyCol = "intRoomID";
+    protected $_reqAdminToMod = true;
     // Local Object Requirements
     protected $intRoomID = null;
     protected $strRoomName = null;
@@ -47,21 +47,21 @@ class Object_Room extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $self = parent::getSelf();
+        $_self = parent::getSelf();
         if ($this->isFull() == true) {
             $resources = (array) json_decode($this->jsonResourceList);
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {
                     $arrResource = $objResource->getSelf();
-                    $self['arrResources'][] = $arrResource;
-                    if ($arrResource['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $arrResource['lastChange'];
+                    $_self['arrResources'][] = $arrResource;
+                    if ($arrResource['lastChange'] > $_self['lastChange']) {
+                        $_self['lastChange'] = $arrResource['lastChange'];
                     }
                 }
             }
         }
-        return $self;
+        return $_self;
     }
 }
 
@@ -76,7 +76,7 @@ class Object_Room extends Abstract_GenericObject
  */
 class Object_Room_Demo extends Object_Room
 {
-    protected $arrDemoData = array(
+    protected $_arrDemoData = array(
         array('intRoomID' => 1, 'strRoomName' => 'Room A', 'jsonResourceList' => '[1,2]'),
         array('intRoomID' => 2, 'strRoomName' => 'Room B', 'jsonResourceList' => '[2,3]'),
         array('intRoomID' => 3, 'strRoomName' => 'Room C', 'jsonResourceList' => '[3]')

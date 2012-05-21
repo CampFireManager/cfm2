@@ -26,17 +26,17 @@
 
 class Base_OpenID
 {
-    protected static $handler = null;
+    protected static $_self = null;
 
-    protected $nickname    = FALSE;
-    protected $email       = TRUE;
-    protected $realname    = FALSE;
-    protected $language    = FALSE;
-    protected $dateofbirth = FALSE;
-    protected $gender	   = FALSE;
-    protected $postcode	   = FALSE;
-    protected $country	   = FALSE;
-    protected $timezone    = FALSE;
+    protected $_nickname     = FALSE;
+    protected $_email        = TRUE;
+    protected $_realname     = FALSE;
+    protected $_language     = FALSE;
+    protected $_dateofbirth  = FALSE;
+    protected $_gender       = FALSE;
+    protected $_postcode     = FALSE;
+    protected $_country      = FALSE;
+    protected $_timezone     = FALSE;
 
     // There are more AX attributes we can ask for, but most will not be supplied. Also, these others
     // don't correspond with the SReg attributes that can be requested.
@@ -45,10 +45,10 @@ class Base_OpenID
     // If you know about another sreg or ax attribute you want to request, specify them in here, using
     // the templates below to add them in.
 
-    protected $ax_attribute = array();
-    protected $sreg_attribute = array();
+    protected $_attributeAx = array();
+    protected $_attributeSReg = array();
 
-    protected static $consumer = null;
+    protected static $_consumer = null;
 
     /**
      * An internal function to make this a singleton
@@ -57,10 +57,10 @@ class Base_OpenID
      */
     private static function getHandler()
     {
-        if (self::$handler == null) {
-            self::$handler = new self();
+        if (self::$_self == null) {
+            self::$_self = new self();
         }
-        return self::$handler;
+        return self::$_self;
     }
 
 
@@ -108,7 +108,8 @@ class Base_OpenID
         $base = '', 
         $success = '', 
         $fail = ''
-    ) {
+    )
+    {
         $handler = self::getHandler();
         $auth = $handler->consumer->begin($strOpenID);
         if (!$auth) {
@@ -120,61 +121,61 @@ class Base_OpenID
         $_SESSION['OPENID_SUCCESS'] = $success;
         $_SESSION['OPENID_FAILED'] = $fail;
 
-        if (isset($handler->nickname) and $handler->nickname == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/friendly',1,1,'friendly');
-            $handler->sreg_attribute[] = 'nickname';
+        if (isset($handler->_nickname) and $handler->_nickname == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/friendly', 1, 1, 'friendly');
+            $handler->_attributeSReg[] = 'nickname';
         }
 
-        if (isset($handler->email) and $handler->email == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/contact/email',1,1,'email');
-            $handler->sreg_attribute[] = 'email';
+        if (isset($handler->_email) and $handler->_email == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/contact/email', 1, 1, 'email');
+            $handler->_attributeSReg[] = 'email';
         }
-        if (isset($handler->realname) and $handler->realname == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson',1,1,'fullname');
+        if (isset($handler->_realname) and $handler->_realname == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson', 1, 1, 'fullname');
             // Google doesn't actually return a response to fullname, but will return the first and last name.
             // http://code.google.com/apis/accounts/docs/OpenID.html#Parameters
             // Just to be sure we don't miss anything, we'll request the lot.
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/prefix',1,1,'prefix');
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/first',1,1,'firstname');
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/middle',1,1,'middlename');
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/last',1,1,'lastname');
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/suffix',1,1,'suffix');
-            $handler->sreg_attribute[] = 'fullname';
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/prefix', 1, 1, 'prefix');
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/first', 1, 1, 'firstname');
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/middle', 1, 1, 'middlename');
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/last', 1, 1, 'lastname');
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/suffix', 1, 1, 'suffix');
+            $handler->_attributeSReg[] = 'fullname';
         }
-        if (isset($handler->dateofbirth) and $handler->dateofbirth == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/birthDate',1,1,'dob');
-            $handler->sreg_attribute[] = 'dob';
+        if (isset($handler->_dateofbirth) and $handler->_dateofbirth == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/birthDate', 1, 1, 'dob');
+            $handler->_attributeSReg[] = 'dob';
         }
-        if (isset($handler->gender) and $handler->gender == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/person/gender',1,1,'gender');
-            $handler->sreg_attribute[] = 'gender';
+        if (isset($handler->_gender) and $handler->_gender == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/person/gender', 1, 1, 'gender');
+            $handler->_attributeSReg[] = 'gender';
         }
-        if (isset($handler->postcode) and $handler->postcode == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/contact/postalCode/home',1,1,'postcode');
-            $handler->sreg_attribute[] = 'postcode';
+        if (isset($handler->_postcode) and $handler->_postcode == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/contact/postalCode/home', 1, 1, 'postcode');
+            $handler->_attributeSReg[] = 'postcode';
         }
-        if (isset($handler->country) and $handler->country == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/contact/country/home',1,1,'country');
-            $handler->sreg_attribute[] = 'country';
+        if (isset($handler->_country) and $handler->_country == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/contact/country/home', 1, 1, 'country');
+            $handler->_attributeSReg[] = 'country';
         }
-        if (isset($handler->language) and $handler->language == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/pref/language',1,1,'language');
-            $handler->sreg_attribute[] = 'language';
+        if (isset($handler->_language) and $handler->_language == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/pref/language', 1, 1, 'language');
+            $handler->_attributeSReg[] = 'language';
         }
-        if (isset($handler->timezone) and $handler->timezone == TRUE) {
-            $handler->ax_attribute[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/pref/timezone',1,1,'timezone');
-            $handler->sreg_attribute[] = 'timezone';
+        if (isset($handler->_timezone) and $handler->_timezone == TRUE) {
+            $handler->_attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/pref/timezone', 1, 1, 'timezone');
+            $handler->_attributeSReg[] = 'timezone';
         }
 
         // Add AX fetch request to authentication request
         $OpenID_AX = new Auth_OpenID_AX_FetchRequest;
-        foreach ($handler->ax_attribute as $attr) {
+        foreach ($handler->_attributeAx as $attr) {
             $OpenID_AX->add($attr);
         }
         $auth->addExtension($OpenID_AX);
 
         // Add SReg attributes to authentication request
-        $sreg_request = Auth_OpenID_SRegRequest::build(array(), $handler->sreg_attribute);
+        $sreg_request = Auth_OpenID_SRegRequest::build(array(), $handler->_attributeSReg);
         if ($sreg_request) {
             $auth->addExtension($sreg_request);
         }
@@ -339,7 +340,7 @@ class Base_OpenID
     public static function set_nickname($state)
     {
         $handler = self::getHandler();
-        $handler->nickname = $state;
+        $handler->_nickname = $state;
     }
 
     /**
@@ -352,7 +353,7 @@ class Base_OpenID
     public static function set_email($state)
     {
         $handler = self::getHandler();
-        $handler->email = $state;
+        $handler->_email = $state;
     }
 
     /**
@@ -365,7 +366,7 @@ class Base_OpenID
     public static function set_realname($state)
     {
         $handler = self::getHandler();
-        $handler->realname = $state;
+        $handler->_realname = $state;
     }
 
     /**
@@ -378,7 +379,7 @@ class Base_OpenID
     public static function set_language($state)
     {
         $handler = self::getHandler();
-        $handler->language = $state;
+        $handler->_language = $state;
     }
 
     /**
@@ -391,7 +392,7 @@ class Base_OpenID
     public static function set_dateofbirth($state)
     {
         $handler = self::getHandler();
-        $handler->dateofbirth = $state;
+        $handler->_dateofbirth = $state;
     }
 
     /**
@@ -404,7 +405,7 @@ class Base_OpenID
     public static function set_gender($state)
     {
         $handler = self::getHandler();
-        $handler->gender = $state;
+        $handler->_gender = $state;
     }
 
     /**
@@ -417,7 +418,7 @@ class Base_OpenID
     public static function set_postcode($state)
     {
         $handler = self::getHandler();
-        $handler->postcode = $state;
+        $handler->_postcode = $state;
     }
 
     /**
@@ -430,7 +431,7 @@ class Base_OpenID
     public static function set_country($state)
     {
         $handler = self::getHandler();
-        $handler->country = $state;
+        $handler->_country = $state;
     }
 
     /**
@@ -443,7 +444,7 @@ class Base_OpenID
     public static function set_timezone($state)
     {
         $handler = self::getHandler();
-        $handler->timezone = $state;
+        $handler->_timezone = $state;
     }
 
     /**
@@ -456,7 +457,7 @@ class Base_OpenID
     public static function set_ax_attribute($array)
     {
         $handler = self::getHandler();
-        $handler->ax_attribute = $array;
+        $handler->_attributeAx = $array;
     }
 
     /**
@@ -469,6 +470,6 @@ class Base_OpenID
     public static function set_sreg_attribute($array)
     {
         $handler = self::getHandler();
-        $handler->sreg_attribute = $array;
+        $handler->_attributeSReg = $array;
     }
 }

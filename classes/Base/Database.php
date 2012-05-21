@@ -2,76 +2,78 @@
 
 class Base_Database
 {
-    protected $arrDsnRw = null;
-    protected $arrDsnRo = null;
-    protected $objPdoRw = null;
-    protected $objPdoRo = null;
-    protected $strDbType = null;
+    protected $_arrDsnRw = null;
+    protected $_arrDsnRo = null;
+    protected $_objPdoRw = null;
+    protected $_objPdoRo = null;
+    protected $_strDbType = null;
 
     public function setConnectionVars(
-        $strDbType = null,
-        $arrDsnRo = null, 
-        $arrDsnRw = null
-    ) {
-        if ($strDbType != null) {
-            $this->strDbType = $strDbType;
+        $_strDbType = null,
+        $_arrDsnRo = null, 
+        $_arrDsnRw = null
+    )
+    {
+        if ($_strDbType != null) {
+            $this->_strDbType = $_strDbType;
         }
-        if ($arrDsnRo != null) {
-            $this->arrDsnRo = $arrDsnRo;
+        if ($_arrDsnRo != null) {
+            $this->_arrDsnRo = $_arrDsnRo;
         }
-        if ($arrDsnRw != null) {
-            $this->arrDsnRw = $arrDsnRw;
+        if ($_arrDsnRw != null) {
+            $this->_arrDsnRw = $_arrDsnRw;
         }
     }
     
     public function getConnection(
         $boolRequireWrite = false,
-        $strDbType = null,
-        $arrDsnRo = null, 
-        $arrDsnRw = null
-    ) {
-        $this->setConnectionVars($strDbType, $arrDsnRo, $arrDsnRw);
-        if (($boolRequireWrite == true && $this->objPdoRw != null) 
-            || ($boolRequireWrite == false && $this->objPdoRo != null)
+        $_strDbType = null,
+        $_arrDsnRo = null, 
+        $_arrDsnRw = null
+    )
+    {
+        $this->setConnectionVars($_strDbType, $_arrDsnRo, $_arrDsnRw);
+        if (($boolRequireWrite == true && $this->_objPdoRw != null) 
+            || ($boolRequireWrite == false && $this->_objPdoRo != null)
         ) {
             if ($boolRequireWrite == true) {
-                return $this->objPdoRw;
+                return $this->_objPdoRw;
             } else {
-                return $this->objPdoRo;
+                return $this->_objPdoRo;
             }
         } else {
             try {
-                if ($arrDsnRo == null 
-                    || count($arrDsnRo) == 0 
-                    || !isset($arrDsnRo['string'])
+                if ($_arrDsnRo == null 
+                    || count($_arrDsnRo) == 0 
+                    || !isset($_arrDsnRo['string'])
                 ) {
                     $boolRequireWrite = true;
-                    $this->objPdoRo = &$this->objPdoRw;
+                    $this->_objPdoRo = &$this->_objPdoRw;
                 }
                 if ($boolRequireWrite == true) {
-                    $this->objPdoRw = new PDO(
-                        $this->arrDsnRw['string'], 
-                        $this->arrDsnRw['user'], 
-                        $this->arrDsnRw['pass'], 
-                        $this->arrDsnRw['init']
+                    $this->_objPdoRw = new PDO(
+                        $this->_arrDsnRw['string'], 
+                        $this->_arrDsnRw['user'], 
+                        $this->_arrDsnRw['pass'], 
+                        $this->_arrDsnRw['init']
                     );
-                    $this->objPdoRw->setAttribute(
+                    $this->_objPdoRw->setAttribute(
                         PDO::ATTR_ERRMODE, 
                         PDO::ERRMODE_EXCEPTION
                     );
-                    return $this->objPdoRw;
+                    return $this->_objPdoRw;
                 } else {
-                    $this->objPdoRo = new PDO(
-                        $this->arrDsnRo['string'], 
-                        $this->arrDsnRo['user'], 
-                        $this->arrDsnRo['pass'], 
-                        $this->arrDsnRo['init']
+                    $this->_objPdoRo = new PDO(
+                        $this->_arrDsnRo['string'], 
+                        $this->_arrDsnRo['user'], 
+                        $this->_arrDsnRo['pass'], 
+                        $this->_arrDsnRo['init']
                     );
-                    $this->objPdoRo->setAttribute(
+                    $this->_objPdoRo->setAttribute(
                         PDO::ATTR_ERRMODE, 
                         PDO::ERRMODE_EXCEPTION
                     );
-                    return $this->objPdoRo;
+                    return $this->_objPdoRo;
                 }
             } catch (PDOException $exceptionPDO) {
                 throw $exceptionPDO;
@@ -81,7 +83,7 @@ class Base_Database
 
     public function getConnectionTypeVar()
     {
-        return $this->strDbType;
+        return $this->_strDbType;
     }
     
     public function getSqlString($arrStrings = array())
@@ -89,8 +91,8 @@ class Base_Database
         if (!is_array($arrStrings) || count($arrStrings) == 0) {
             throw new InvalidArgumentException("This function does not contain any strings");
         }
-        if (isset($arrStrings[$this->strDbType])) {
-            return $arrStrings[$this->strDbType];
+        if (isset($arrStrings[$this->_strDbType])) {
+            return $arrStrings[$this->_strDbType];
         } elseif (isset($arrStrings['sql'])) {
             return $arrStrings['sql'];
         } else {

@@ -24,17 +24,17 @@
 
 class Object_User extends Abstract_GenericObject
 {
-    protected $arrDBItems = array(
-    	'strUserName' => array('type' => 'varchar', 'length' => 255),
+    protected $_arrDBItems = array(
+        'strUserName' => array('type' => 'varchar', 'length' => 255),
         'isWorker' => array('type' => 'tinyint', 'length' => 1),
         'isAdmin' => array('type' => 'tinyint', 'length' => 1),
         'hasAttended' => array('type' => 'tinyint', 'length' => 1),
         'isHere' => array('type' => 'tinyint', 'length' => 1),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "user";
-    protected $strDBKeyCol = "intUserID";
-    protected $onlyCreatorMayModify = true;
+    protected $_strDBTable = "user";
+    protected $_strDBKeyCol = "intUserID";
+    protected $_reqCreatorToMod = true;
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;
@@ -44,7 +44,7 @@ class Object_User extends Abstract_GenericObject
     protected $isHere = false;
     protected $lastChange = false;
     // Temporary storage values
-    public $temp_intUserAuthID = null;
+    public $intUserAuthIDTemp = null;
 
     /**
      * Get the object for the current user.
@@ -54,13 +54,13 @@ class Object_User extends Abstract_GenericObject
     public static function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
-        $this_class_name = get_called_class();
-        $this_class = new $this_class_name(false);
-        if (true === isset($objCache->arrCache[$this_class_name]['current'])
-            && $objCache->arrCache[$this_class_name]['current'] != null
-            && $objCache->arrCache[$this_class_name]['current'] != false
+        $thisClassName = get_called_class();
+        $thisClass = new $thisClassName(false);
+        if (true === isset($objCache->arrCache[$thisClassName]['current'])
+            && $objCache->arrCache[$thisClassName]['current'] != null
+            && $objCache->arrCache[$thisClassName]['current'] != false
         ) {
-            return $objCache->arrCache[$this_class_name]['current'];
+            return $objCache->arrCache[$thisClassName]['current'];
         }
         $user = Object_Userauth::brokerCurrent();
         if ($user !== false) {
@@ -70,12 +70,12 @@ class Object_User extends Abstract_GenericObject
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
+            $sql = "SELECT * FROM {$thisClass->_strDBTable} WHERE {$thisClass->_strDBKeyCol} = ? LIMIT 1";
             $query = $objDatabase->prepare($sql);
             $query->execute(array($intUserID));
-            $result = $query->fetchObject($this_class_name);
-            $objCache->arrCache[$this_class_name]['id'][$intUserID] = $result;
-            $objCache->arrCache[$this_class_name]['current'] = $result;
+            $result = $query->fetchObject($thisClassName);
+            $objCache->arrCache[$thisClassName]['id'][$intUserID] = $result;
+            $objCache->arrCache[$thisClassName]['current'] = $result;
             return $result;
         } catch(PDOException $e) {
             error_log("SQL Error: " . $e->getMessage());
@@ -92,7 +92,7 @@ class Object_User extends Abstract_GenericObject
      */
     function __construct($isCreationAction = false)
     {
-        parent::__construct($isCreationAction);
+        parent::__construct();
         if (! $isCreationAction) {
             return $this;
         }
@@ -103,9 +103,9 @@ class Object_User extends Abstract_GenericObject
                 $this->create();
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
-                $this->temp_intUserAuthID = $objUserAuth->getKey('intUserAuthID');
+                $this->intUserAuthIDTemp = $objUserAuth->getKey('intUserAuthID');
             } else {
-                $this->errorMessageReturn = $objUserAuth;
+                $this->_errorMessageReturn = $objUserAuth;
             }
             return $this;
         } catch (Exception $e) {
@@ -142,17 +142,17 @@ class Object_User extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $self = parent::getSelf();
+        $_self = parent::getSelf();
         if ($this->isFull() == true) {
             $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
             foreach ($arrUserAuth as $key => $value) {
-                $self['arrUserAuth'][$key] = $value->getSelf();
-                if ($self['arrUserAuth'][$key]['lastChange'] > $self['lastChange']) {
-                    $self['lastChange'] = $self['arrUserAuth'][$key]['lastChange'];
+                $_self['arrUserAuth'][$key] = $value->getSelf();
+                if ($_self['arrUserAuth'][$key]['lastChange'] > $_self['lastChange']) {
+                    $_self['lastChange'] = $_self['arrUserAuth'][$key]['lastChange'];
                 }
             }
         }
-        return $self;
+        return $_self;
     }
 }
 
@@ -167,7 +167,7 @@ class Object_User extends Abstract_GenericObject
  */
 class Object_User_Demo extends Object_User
 {
-    protected $arrDemoData = array(
+    protected $_arrDemoData = array(
         array('intUserID' => 1, 'strUserName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
         array('intUserID' => 2, 'strUserName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
         array('intUserID' => 3, 'strUserName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),

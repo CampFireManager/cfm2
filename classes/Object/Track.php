@@ -25,14 +25,14 @@
 class Object_Track extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $arrDBItems = array(
-    	'strTrackName' => array('type' => 'varchar', 'length' => 255),
+    protected $_arrDBItems = array(
+        'strTrackName' => array('type' => 'varchar', 'length' => 255),
         'rgbColour' => array('type' => 'varchar', 'length' => 6),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "track";
-    protected $strDBKeyCol = "intTrackID";
-    protected $mustBeAdminToModify = true;
+    protected $_strDBTable = "track";
+    protected $_strDBKeyCol = "intTrackID";
+    protected $_reqAdminToMod = true;
     // Local Object Requirements
     protected $intTrackID = null;
     protected $strTrackName = null;
@@ -47,20 +47,20 @@ class Object_Track extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $self = parent::getSelf();
-        if ($this->booleanFull) {
+        $_self = parent::getSelf();
+        if ($this->_booleanFull) {
             $arrTalks = Object_Talk::brokerByColumnSearch('intTrackID', $this->intTrackID);
             if ($arrTalks != false) {
                 foreach ($arrTalks as $objTalk) {
                     $arrTalk = $objTalk->getSelf();
-                    $self['arrTalks'][] = $arrTalk;
-                    if ($arrTalk['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $arrTalk['lastChange'];
+                    $_self['arrTalks'][] = $arrTalk;
+                    if ($arrTalk['lastChange'] > $_self['lastChange']) {
+                        $_self['lastChange'] = $arrTalk['lastChange'];
                     }
                 }
             }
         }
-        return $self;
+        return $_self;
     }
 }
 
@@ -76,7 +76,7 @@ class Object_Track extends Abstract_GenericObject
 
 class Object_Track_Demo extends Object_Track
 {
-    protected $arrDemoData = array(
+    protected $_arrDemoData = array(
         array('intTrackID' => 1, 'strTrackName' => 'Coding'),
         array('intTrackID' => 1, 'strTrackName' => 'Novice')
     );

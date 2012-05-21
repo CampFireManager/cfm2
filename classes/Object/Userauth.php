@@ -25,16 +25,16 @@
 class Object_Userauth extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $arrDBItems = array(
+    protected $_arrDBItems = array(
         'intUserID' => array('type' => 'int', 'length' => 11),
-    	'enumAuthType' => array('type' => 'enum', 'options' => array('openid', 'basicauth', 'codeonly', 'onetime'), 'unique' => true),
+        'enumAuthType' => array('type' => 'enum', 'options' => array('openid', 'basicauth', 'codeonly', 'onetime'), 'unique' => true),
         'strAuthValue' => array('type' => 'varchar', 'length' => '255', 'unique' => true),
         'tmpCleartext' => array('type' => 'varchar', 'length' => '255'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $strDBTable = "userauth";
-    protected $strDBKeyCol = "intUserAuthID";
-    protected $onlyCreatorMayModify = true;
+    protected $_strDBTable = "userauth";
+    protected $_strDBKeyCol = "intUserAuthID";
+    protected $_reqCreatorToMod = true;
     // Local Object Requirements
     protected $intUserAuthID = null;
     protected $intUserID = null;
@@ -58,14 +58,14 @@ class Object_Userauth extends Abstract_GenericObject
         case 'enumAuthType':
             if ($value != '' && $this->enumAuthType != $value) {
                 $valid = false;
-                foreach ($this->arrDBItems['enumAuthType']['options'] as $option) {
+                foreach ($this->_arrDBItems['enumAuthType']['options'] as $option) {
                     if ($option == $value) {
                         $valid = true;
                     }
                 }
                 if ($valid == true) {
                     $this->enumAuthType = $value;
-                    $this->arrChanges['enumAuthType'] = true;
+                    $this->_arrChanges['enumAuthType'] = true;
                 }
             }
             break;
@@ -92,8 +92,8 @@ class Object_Userauth extends Abstract_GenericObject
                 if ($set != '' && $this->strAuthValue != $set) {
                     $this->tmpCleartext = $password;
                     $this->strAuthValue = $set;                    
-                    $this->arrChanges['tmpCleartext'] = true;
-                    $this->arrChanges['strAuthValue'] = true;
+                    $this->_arrChanges['tmpCleartext'] = true;
+                    $this->_arrChanges['strAuthValue'] = true;
                 }
             }
             break;
@@ -110,25 +110,25 @@ class Object_Userauth extends Abstract_GenericObject
     function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
-        $this_class_name = get_called_class();
+        $thisClassName = get_called_class();
         $createIfNotExist = false;
-        if (isset($objCache->arrCache[$this_class_name]['current'])
-            && $objCache->arrCache[$this_class_name]['current'] != null
-            && $objCache->arrCache[$this_class_name]['current'] != false
+        if (isset($objCache->arrCache[$thisClassName]['current'])
+            && $objCache->arrCache[$thisClassName]['current'] != null
+            && $objCache->arrCache[$thisClassName]['current'] != false
         ) {
-            return $objCache->arrCache[$this_class_name]['current'];
+            return $objCache->arrCache[$thisClassName]['current'];
         }
         Base_GeneralFunctions::startSession();
-        $arrRequestData = Base_Request::getRequest();
+        $arrRequestData = Container_Request::getRequest();
         if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
             try {
                 $objDatabase = Container_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE intUserAuthID = ? LIMIT 1";
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($_SESSION['intUserAuthID']));
-                $result = $query->fetchObject($this_class_name);
-                $objCache->arrCache[$this_class_name]['id'][$result->getKey('intUserID')] = $result;
-                $objCache->arrCache[$this_class_name]['current'] = $result;
+                $result = $query->fetchObject($thisClassName);
+                $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
+                $objCache->arrCache[$thisClassName]['current'] = $result;
                 return $result;
             } catch (PDOException $e) {
                 error_log("Error in SQL: " . $e->getMessage());
@@ -159,11 +159,11 @@ class Object_Userauth extends Abstract_GenericObject
                 $sql = "SELECT * FROM userauth WHERE enumAuthType = ? and strAuthValue = ? LIMIT 1";
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($key, $value));
-                $result = $query->fetchObject($this_class_name);
+                $result = $query->fetchObject($thisClassName);
                 if ($result != false) {
-                    $objCache->arrCache[$this_class_name]['id'][$result->getKey('intUserID')] = $result;
+                    $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
                     $_SESSION['intUserAuthID'] = $result->getKey('intUserAuthID');
-                    $objCache->arrCache[$this_class_name]['current'] = $result;
+                    $objCache->arrCache[$thisClassName]['current'] = $result;
                     if ($key == 'onetime') {
                         $sql = "DELETE FROM userauth WHERE $key = ? LIMIT 1";
                         $query = $objDatabase->prepare($sql);
@@ -173,8 +173,8 @@ class Object_Userauth extends Abstract_GenericObject
                     if ($createIfNotExist === true) {
                         try {
                             $return = new Object_User(true);
-                            if ($return != false && isset($return->temp_intUserAuthID)) {
-                                $_SESSION['intUserAuthID'] = $return->temp_intUserAuthID;
+                            if ($return != false && isset($return->intUserAuthIDTemp)) {
+                                $_SESSION['intUserAuthID'] = $return->intUserAuthIDTemp;
                             }
                         } catch (Exception $e) {
                             return $e->getMessage();
@@ -203,7 +203,7 @@ class Object_Userauth extends Abstract_GenericObject
      */
     function __construct($isCreationAction = false, $codeonly = false, $onetime = false)
     {
-        parent::__construct($isCreationAction);
+        parent::__construct();
         if (! $isCreationAction) {
             return $this;
         }
@@ -213,8 +213,8 @@ class Object_Userauth extends Abstract_GenericObject
             unset($_SESSION['intUserAuthID']);
         }
         if (isset($_SESSION['OPENID_AUTH'])) {
-            $this_class->setKey('enumAuthType', 'openid');
-            $this_class->setKey('strAuthValue', $arrRequestData['OPENID_AUTH']);
+            $thisClass->setKey('enumAuthType', 'openid');
+            $thisClass->setKey('strAuthValue', $arrRequestData['OPENID_AUTH']);
         } elseif (
             isset($arrRequestData['requestUrlParameters']['username']) 
             && $arrRequestData['requestUrlParameters']['username'] != null 
@@ -261,27 +261,27 @@ class Object_Userauth extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $self = parent::getSelf();
+        $_self = parent::getSelf();
         switch ($this->enumAuthType) {
         case 'basicauth':
             $string = explode(':', $this->strAuthValue);
-            $self['strAuthValue'] = $string[0] . ':' . str_repeat('.', strlen($string[1]));
+            $_self['strAuthValue'] = $string[0] . ':' . str_repeat('.', strlen($string[1]));
             break;
         case 'onetime':
             $string = explode(':', $this->strAuthValue);
-            $self['strAuthValue'] = substr($string[1], 0, 2) . str_repeat('.', strlen($string[1]) - 4) . substr($string[1], -2);
+            $_self['strAuthValue'] = substr($string[1], 0, 2) . str_repeat('.', strlen($string[1]) - 4) . substr($string[1], -2);
             break;
         case 'codeonly':
             $string = explode(':', $this->strAuthValue);
             if (preg_match('/([^@]+)@([^@]+)', $string[0], $matches) > 0) {
-                $self['strAuthValue'] = substr($matches[1], 0, 1) . str_repeat('.', strlen($matches[1]) - 2) . substr($matches[1], -1) . '@' . substr($matches[2], 0, 2) . str_repeat('.', strlen($matches[1]) - 4) . substr($matches[1], -2);
+                $_self['strAuthValue'] = substr($matches[1], 0, 1) . str_repeat('.', strlen($matches[1]) - 2) . substr($matches[1], -1) . '@' . substr($matches[2], 0, 2) . str_repeat('.', strlen($matches[1]) - 4) . substr($matches[1], -2);
             } else {
-                $self['strAuthValue'] = str_repeat('.', strlen($string[0]) - 6) . substr($string[0], -6);
+                $_self['strAuthValue'] = str_repeat('.', strlen($string[0]) - 6) . substr($string[0], -6);
             }
             break;
         }
-        $self['strCleartext'] = $this->getCleartext();
-        return $self;
+        $_self['strCleartext'] = $this->getCleartext();
+        return $_self;
     }
     
     /**
@@ -324,7 +324,7 @@ class Object_Userauth extends Abstract_GenericObject
 
 class Object_Userauth_Demo extends Object_Userauth
 {
-    protected $arrDemoData = array(
+    protected $_arrDemoData = array(
         array('intUserAuthID' => 1, 'intUserID' => 1, 'enumAuthType' => 'onetime', 'strAuthValue' => 'abcd2346ACDE'),
         array('intUserAuthID' => 2, 'intUserID' => 2, 'enumAuthType' => 'openid', 'strAuthValue' => 'http://www.openid.net'),
         array('intUserAuthID' => 3, 'intUserID' => 2, 'enumAuthType' => 'basicauth', 'strAuthValue' => array('username' => 'cfmadmin', 'password' => 'password')),
