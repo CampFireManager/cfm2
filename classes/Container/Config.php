@@ -33,6 +33,10 @@ class Container_Config implements Interface_Object
     protected $isFileLoaded     = false;
     protected $isDatabaseLoaded = false;
     protected $fileModifiedTime = null;
+    // Database Columns
+    protected $key = null;
+    protected $value = null;
+    protected $lastChange = null;
     
     /**
      * This protected function helps make this class a singleton

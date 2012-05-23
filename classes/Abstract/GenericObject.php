@@ -489,8 +489,14 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function getKey($keyname = '')
     {
-        if ((array_key_exists($keyname, $this->arrDBItems) || $keyname == $this->strDBKeyCol) && (isset($this->$keyname) || $this->$keyname != null)) {
-            return $this->$keyname;
+        if (array_key_exists($keyname, $this->arrDBItems) 
+            || $keyname == $this->strDBKeyCol
+        ) {
+            if (isset($this->$keyname) || $this->$keyname == null) {
+                return $this->$keyname;
+            } else {
+                throw new BadFunctionCallException("Although the column '$keyname' exists, there is no corresponding protected value");
+            }
         } else {
             return null;
         }
