@@ -32,6 +32,24 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $data = Object_Attendee::brokerAll();
         $this->assertTrue(count($data) == 3);
         $item = $data[0]->getSelf();
+        $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
+        $this->assertTrue($data[1]->getKey('intAttendeeID') == 2);
+        $this->assertTrue($data[1]->getKey('intUserID') == '3');
+        $this->assertTrue($data[1]->getKey('intTalkID') == '1');
+        $this->assertTrue($data[2]->getKey('intAttendeeID') == 3);
+        $this->assertTrue($data[2]->getKey('intUserID') == '4');
+        $this->assertTrue($data[2]->getKey('intTalkID') == '1');
+    }
+    
+    public function testBrokerByIDAttendeeObjects()
+    {
+        $data = Object_Attendee::brokerByID(1);
+        $this->assertTrue(is_object($data));
+        $item = $data->getSelf();
+        $this->assertTrue($item['intAttendeeID'] == 1);
+        $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
     }
 }
