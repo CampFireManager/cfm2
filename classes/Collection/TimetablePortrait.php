@@ -37,11 +37,11 @@ class Collection_TimetablePortrait extends Collection_Timetable
             $date = date('Y-m-d', strtotime($date));
         }
         if (Object_Room::countAll() > Object_Slot::countAll()) {
-            $_self = new Collection_TimetableBySlotRoom($date);
+            $self = new Collection_TimetableBySlotRoom($date);
         } else {
-            $_self = new Collection_TimetableByRoomSlot($date);
+            $self = new Collection_TimetableByRoomSlot($date);
         }
-        $this->_arrData = $_self->_arrData;
+        $this->arrData = $self->arrData;
         return $this;
     }
 }

@@ -28,13 +28,13 @@
 class Object_Screen extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'strScreenName' => array('type' => 'varchar', 'length' => 255),
         'dtLastSeen' => array('type' => 'datetime'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "screen";
-    protected $_strDBKeyCol = "intScreenID";
+    protected $strDBTable = "screen";
+    protected $strDBKeyCol = "intScreenID";
     // Local Object Requirements
     protected $intScreenID = null;
     protected $strScreenName = null;
@@ -52,22 +52,22 @@ class Object_Screen extends Abstract_GenericObject
      */
     public function __construct($isCreationAction = false)
     {
-        $_self = parent::__construct();
+        $self = parent::__construct();
         if ($isCreationAction == true) {
-            $_self->setKey('strScreenName', $_SERVER['REMOTE_ADDR']);
-            $_self->create();
+            $self->setKey('strScreenName', $_SERVER['REMOTE_ADDR']);
+            $self->create();
             // When creating a new screen, create ScreenDirection objects for 
             // all rooms with a direction of "Unset"
             $arrRoomObjects = Object_Room::brokerAll();
             foreach ($arrRoomObjects as $objRoomObject) {
                 $sd = new Object_ScreenDirection(true);
-                $sd->setKey('intScreenID', $_self->intScreenID);
+                $sd->setKey('intScreenID', $self->intScreenID);
                 $sd->setKey('intRoomID', $objRoomObject->getKey('intRoomID'));
                 $sd->setKey('enumDirection', 'unset');
                 $sd->create();
             }
         }
-        return $_self;
+        return $self;
     }
 
     /**
@@ -78,15 +78,15 @@ class Object_Screen extends Abstract_GenericObject
      */
     public function getSelf()
     {
-        $_self = parent::getSelf();
+        $self = parent::getSelf();
         $arrDirections = Object_ScreenDirection::brokerByColumnSearch('intScreenID', $this->intScreenID);
         if ($arrDirections != false) {
             foreach ($arrDirections as $direction) {
-                $_self['arrDirections'][$direction->getKey('enumDirection')][$direction->getKey('intRoomID')] = $direction;
+                $self['arrDirections'][$direction->getKey('enumDirection')][$direction->getKey('intRoomID')] = $direction;
             }
-            unset($_self['arrDirections']['hidden']);
+            unset($self['arrDirections']['hidden']);
         }
-        return $_self;
+        return $self;
     }
 }
 
@@ -101,7 +101,7 @@ class Object_Screen extends Abstract_GenericObject
  */
 class Object_Screen_Demo extends Object_Screen
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intScreenID' => 1, 'strScreenName' => 'Base of Stairs', 'dtLastSeen' => ''),
         array('intScreenID' => 2, 'strScreenName' => 'Top of Stairs', 'dtLastSeen' => ''),
         array('intScreenID' => 3, 'strScreenName' => 'Outside Room 1', 'dtLastSeen' => ''),

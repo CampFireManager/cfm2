@@ -26,14 +26,14 @@
 class Object_Resource extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'strResourceName' => array('type' => 'varchar', 'length' => 255),
         'decCostToUse' => array('type' => 'decimal', 'length' => '7,3'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "resource";
-    protected $_strDBKeyCol = "intResourceID";
-    protected $_reqAdminToMod = true;
+    protected $strDBTable = "resource";
+    protected $strDBKeyCol = "intResourceID";
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intResourceID = null;
     protected $strResourceName = null;
@@ -52,7 +52,7 @@ class Object_Resource extends Abstract_GenericObject
  */
 class Object_Resource_Demo extends Object_Resource
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intResourceID' => 1, 'strResourceName' => 'Projector', 'decCostToUse' => 0.000),
         array('intResourceID' => 2, 'strResourceName' => 'PA', 'decCostToUse' => 0.500),
         array('intResourceID' => 3, 'strResourceName' => 'Flat Screen TV', 'decCostToUse' => 1.000)

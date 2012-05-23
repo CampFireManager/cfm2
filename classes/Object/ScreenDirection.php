@@ -28,14 +28,14 @@
 class Object_ScreenDirection extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'intScreenID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'intRoomID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'enumDirection' => array('type' => 'enum', 'options' => array('upleft', 'upcentre', 'upright', 'left', 'right', 'downleft', 'downcentre', 'downright', 'inside', 'hidden', 'unset')),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "screendirection";
-    protected $_strDBKeyCol = "intScreenDirectionID";
+    protected $strDBTable = "screendirection";
+    protected $strDBKeyCol = "intScreenDirectionID";
     // Local Object Requirements
     protected $intScreenDirectionID = null;
     protected $intScreenID = null;
@@ -55,7 +55,7 @@ class Object_ScreenDirection extends Abstract_GenericObject
  */
 class Object_ScreenDirection_Demo extends Object_ScreenDirection
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intScreenDirectionID' => 1, 'intScreenID' => 1, 'intRoomID' => 1, 'enumDirection' => 'upcentre'),
         array('intScreenDirectionID' => 2, 'intScreenID' => 1, 'intRoomID' => 2, 'enumDirection' => 'upcentre'),
         array('intScreenDirectionID' => 3, 'intScreenID' => 1, 'intRoomID' => 3, 'enumDirection' => 'left'),

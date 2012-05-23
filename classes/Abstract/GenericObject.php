@@ -36,21 +36,21 @@ abstract class Abstract_GenericObject implements Interface_Object
      * 
      * @var array
      */
-    protected $_arrDBItems = array();
+    protected $arrDBItems = array();
     /**
      * This defines the name of the database table. It is used in subsequent
      * queries.
      * 
      * @var string
      */
-    protected $_strDBTable = "";
+    protected $strDBTable = "";
     /**
      * This is name of the primary key column - it will be an integer, of length
      * 11 that auto increments.
      * 
      * @var string
      */
-    protected $_strDBKeyCol = "";
+    protected $strDBKeyCol = "";
     /**
      * This array is used to compact update requests, by ensuring that only the
      * changes are sent to the database. Each key is processed, and running the
@@ -59,7 +59,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      * 
      * @var array
      */
-    protected $_arrChanges = array();
+    protected $arrChanges = array();
     /**
      * If this is set to true, when running the getSelf() function, it will
      * drill down into the linked tables to derive as much information as
@@ -67,15 +67,15 @@ abstract class Abstract_GenericObject implements Interface_Object
      * 
      * @var boolean
      */
-    protected $_booleanFull = false;
+    protected $booleanFull = false;
     /**
      * Whenever this object is instantiated, it copies all of its values into
-     * the $_old array. This means, we can compare against the old column if
+     * the $old array. This means, we can compare against the old column if
      * needed.
      * 
      * @var array
      */
-    protected $_old = array();
+    protected $old = array();
     /**
      * This variable, if set to true, will require the user making the chage to
      * be considered to be an administator to configure them. This relates to
@@ -84,30 +84,30 @@ abstract class Abstract_GenericObject implements Interface_Object
      * 
      * @var boolean
      */
-    protected $_reqAdminToMod = false;
+    protected $reqAdminToMod = false;
     /**
      * This variable, if set to true, will require the user making the chage to
      * be either an admin to make the change, or the user who created the object.
      * 
      * @var boolean
      */
-    protected $_reqCreatorToMod = false;
+    protected $reqCreatorToMod = false;
     /**
      * This variable contains demonstration data for the extensions to each of
      * the Object_ classes, allowing you to create a full demonstration site
-     * with relative ease. This array goes hand-in-hand with the $_arrDBItems
+     * with relative ease. This array goes hand-in-hand with the $arrDBItems
      * array for initial set-ups.
      * 
      * @var array|null
      */
-    protected $_arrDemoData = null;
+    protected $arrDemoData = null;
     /**
      * Error message hand back. To hand back thrown error messages from new
      * instances of objects where we don't want code to be stopped.
      *
      * @var string|boolean
      */
-    protected $_errorMessageReturn = false;
+    protected $errorMessageReturn = false;
 
     /**
      * Ensure that all database items are backed up before processing.
@@ -121,9 +121,9 @@ abstract class Abstract_GenericObject implements Interface_Object
         if (func_num_args() > 0) {
             throw new BadFunctionCallException("This function does not accept parameters.");
         }
-        if (isset($this->_arrDBItems) and is_array($this->_arrDBItems) and count($this->_arrDBItems) > 0) {
-            foreach ($this->_arrDBItems as $item=>$dummy) {
-                $this->_old[$item] = $this->$item;
+        if (isset($this->arrDBItems) and is_array($this->arrDBItems) and count($this->arrDBItems) > 0) {
+            foreach ($this->arrDBItems as $item=>$dummy) {
+                $this->old[$item] = $this->$item;
             }
         }
         return $this;
@@ -149,7 +149,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $objDatabase = Container_Database::getConnection();
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT * FROM {$thisClass->_strDBTable} WHERE {$thisClass->_strDBKeyCol} = ? LIMIT 1"
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -186,7 +186,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         $thisClassName = get_called_class();
         $thisClass = new $thisClassName(false);
         $process = false;
-        foreach ($thisClass->_arrDBItems as $dbItem => $dummy) {
+        foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             if ($dbItem == $column) {
                 $process = true;
             }
@@ -200,7 +200,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             if ($value == '%') {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT * FROM {$thisClass->_strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->_strDBKeyCol}"
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol}"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -208,7 +208,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             } else {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT * FROM {$thisClass->_strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->_strDBKeyCol}"
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -220,7 +220,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             }
             while ($result != false) {
                 $arrResult[] = $result;
-                $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->_strDBKeyCol)] = $result;
+                $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
                 $result = $query->fetchObject($thisClassName);
             }
             return $arrResult;
@@ -246,7 +246,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         $thisClassName = get_called_class();
         $thisClass = new $thisClassName(false);
         $process = false;
-        foreach ($thisClass->_arrDBItems as $dbItem => $dummy) {
+        foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             if ($dbItem == $column) {
                 $process = true;
             }
@@ -258,7 +258,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "SELECT count({$thisClass->_strDBKeyCol}) FROM {$thisClass->_strDBTable} WHERE {$column} = ?"
+                    'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
                 )
             );
             $query = $objDatabase->prepare($sql);
@@ -287,10 +287,10 @@ abstract class Abstract_GenericObject implements Interface_Object
         $thisClassName = get_called_class();
         $thisClass = new $thisClassName(false);
         $process = false;
-        if (!isset($thisClass->_arrDBItems['lastChange'])) {
+        if (!isset($thisClass->arrDBItems['lastChange'])) {
             return false;
         }
-        foreach ($thisClass->_arrDBItems as $dbItem => $dummy) {
+        foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             if ($dbItem == $column) {
                 $process = true;
             }
@@ -302,7 +302,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "SELECT max(lastChange) FROM {$thisClass->_strDBTable} WHERE {$column} = ?"
+                    'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
                 )
             );
             $query = $objDatabase->prepare($sql);
@@ -327,16 +327,16 @@ abstract class Abstract_GenericObject implements Interface_Object
         $arrResult = array();
         try {
             $objDatabase = Container_Database::getConnection();
-            if ($thisClass->_strDBKeyCol != '') {
+            if ($thisClass->strDBKeyCol != '') {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT * FROM {$thisClass->_strDBTable} ORDER BY {$thisClass->_strDBKeyCol}"
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} ORDER BY {$thisClass->strDBKeyCol}"
                     )
                 );
             } else {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT * FROM {$thisClass->_strDBTable}"
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable}"
                     )
                 );
             }
@@ -345,11 +345,11 @@ abstract class Abstract_GenericObject implements Interface_Object
             $result = $query->fetchObject($thisClassName);
             while ($result != false) {
                 $arrResult[] = $result;
-                if (isset($thisClass->_strDBKeyCol) 
-                    && $thisClass->_strDBKeyCol != '' 
-                    && $thisClass->_strDBKeyCol != null
+                if (isset($thisClass->strDBKeyCol) 
+                    && $thisClass->strDBKeyCol != '' 
+                    && $thisClass->strDBKeyCol != null
                 ) {
-                    $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->_strDBKeyCol)] = $result;
+                    $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
                 } else {
                     $objCache->arrCache[$thisClassName]['id'][$result->getKey('key')] = $result;
                 }
@@ -376,7 +376,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "SELECT max(lastChange) FROM {$thisClass->_strDBTable}"
+                    'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable}"
                 )
             );
             $query = $objDatabase->prepare($sql);
@@ -401,7 +401,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "SELECT count({$thisClass->_strDBKeyCol}) FROM {$thisClass->_strDBTable}"
+                    'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable}"
                 )
             );
             $query = $objDatabase->prepare($sql);
@@ -420,7 +420,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     public function getPrimaryKeyValue()
     {
-        $primaryKey = $this->_strDBKeyCol;
+        $primaryKey = $this->strDBKeyCol;
         return $this->$primaryKey;
     }
     
@@ -434,7 +434,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function setFull($full)
     {
-        $this->_booleanFull = Base_GeneralFunctions::asBoolean($full);
+        $this->booleanFull = Base_GeneralFunctions::asBoolean($full);
     }
 
     /**
@@ -444,7 +444,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function isFull()
     {
-        return (boolean) $this->_booleanFull;
+        return (boolean) $this->booleanFull;
     }
 
     /**
@@ -460,21 +460,21 @@ abstract class Abstract_GenericObject implements Interface_Object
     {
         // Only the create and write functions should set the lastChange value.
         if ($keyname != 'lastChange') {
-            if (array_key_exists($keyname, $this->_arrDBItems) 
-                || $keyname == $this->_strDBKeyCol
+            if (array_key_exists($keyname, $this->arrDBItems) 
+                || $keyname == $this->strDBKeyCol
             ) {
                 if ($value != '' && $this->$keyname != $value) {
                     $this->$keyname = $value;
-                    $this->_arrChanges[$keyname] = true;
+                    $this->arrChanges[$keyname] = true;
                 }
             }
             $protectedkeyname = '_' . $keyname;
-            if (array_key_exists($protectedkeyname, $this->_arrDBItems) 
-                || $protectedkeyname == $this->_strDBKeyCol
+            if (array_key_exists($protectedkeyname, $this->arrDBItems) 
+                || $protectedkeyname == $this->strDBKeyCol
             ) {
                 if ($value != '' && $this->$protectedkeyname != $value) {
                     $this->$protectedkeyname = $value;
-                    $this->_arrChanges[$keyname] = true;
+                    $this->arrChanges[$keyname] = true;
                 }
             }
         }
@@ -489,7 +489,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function getKey($keyname = '')
     {
-        if ((array_key_exists($keyname, $this->_arrDBItems) || $keyname == $this->_strDBKeyCol) && (isset($this->$keyname) || $this->$keyname != null)) {
+        if ((array_key_exists($keyname, $this->arrDBItems) || $keyname == $this->strDBKeyCol) && (isset($this->$keyname) || $this->$keyname != null)) {
             return $this->$keyname;
         } else {
             return null;
@@ -504,15 +504,15 @@ abstract class Abstract_GenericObject implements Interface_Object
     function write()
     {
         try {
-            if ($this->_reqAdminToMod
+            if ($this->reqAdminToMod
                 && ((Object_User::brokerCurrent() != false 
                 && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
                 || Object_User::brokerCurrent() == false)
             ) {
                 return false;
             }
-            if ($this->_reqCreatorToMod
-                && isset($this->_arrDBItems['intUserID'])
+            if ($this->reqCreatorToMod
+                && isset($this->arrDBItems['intUserID'])
                 && ((Object_User::brokerCurrent() != false
                 && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
                 || (Object_User::brokerCurrent() != false
@@ -524,17 +524,17 @@ abstract class Abstract_GenericObject implements Interface_Object
                 return false;
             }
             $this->lastChange = date('Y-m-d H:i:s');
-            $this->_arrChanges['lastChange'] = true;
-            if (count($this->_arrChanges) > 0) {
+            $this->arrChanges['lastChange'] = true;
+            if (count($this->arrChanges) > 0) {
                 $objDatabase = Container_Database::getConnection(true);
                 $sql = '';
                 $where = '';
-                if (isset($this->_strDBKeyCol) and $this->_strDBKeyCol != '') {
-                    $_strDBKeyCol = $this->_strDBKeyCol;
-                    $values[$_strDBKeyCol] = $this->$_strDBKeyCol;
+                if (isset($this->strDBKeyCol) and $this->strDBKeyCol != '') {
+                    $strDBKeyCol = $this->strDBKeyCol;
+                    $values[$strDBKeyCol] = $this->$strDBKeyCol;
                     $where = Container_Database::getSqlString(
                         array(
-                            'sql' => "{$this->_strDBKeyCol} = :{$this->_strDBKeyCol}"
+                            'sql' => "{$this->strDBKeyCol} = :{$this->strDBKeyCol}"
                         )
                     );
                 } elseif (isset($this->arrDBKeyCol) and is_array($this->arrDBKeyCol) and count($this->arrDBKeyCol) > 0) {
@@ -542,7 +542,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                         if ($where != '') {
                             $where .= ' AND ';
                         }
-                        $values["old$keycol"] = $this->_old[$keycol];
+                        $values["old$keycol"] = $this->old[$keycol];
                         $where .= Container_Database::getSqlString(
                             array(
                                 'sql' => "$keycol = :old$keycol"
@@ -550,11 +550,11 @@ abstract class Abstract_GenericObject implements Interface_Object
                         );
                     }
                 } else {
-                    foreach ($this->_arrDBItems as $keycol => $dummy) {
+                    foreach ($this->arrDBItems as $keycol => $dummy) {
                         if ($where != '') {
                             $where .= ' AND ';
                         }
-                        $values["old$keycol"] = $this->_old[$keycol];
+                        $values["old$keycol"] = $this->old[$keycol];
                         $where .= Container_Database::getSqlString(
                             array(
                                 'sql' => "$keycol = :old$keycol"
@@ -562,8 +562,8 @@ abstract class Abstract_GenericObject implements Interface_Object
                         );
                     }
                 }
-                foreach ($this->_arrChanges as $change_key => $change_value) {
-                    if ($change_value == true and isset($this->_arrDBItems[$change_key])) {
+                foreach ($this->arrChanges as $change_key => $change_value) {
+                    if ($change_value == true and isset($this->arrDBItems[$change_key])) {
                         if ($sql != '') {
                             $sql .= ", ";
                         }
@@ -573,7 +573,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 }
                 $full_sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "UPDATE {$this->_strDBTable} SET $sql WHERE $where"
+                        'sql' => "UPDATE {$this->strDBTable} SET $sql WHERE $where"
                     )
                 );
                 $query = $objDatabase->prepare($full_sql);
@@ -595,7 +595,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function create()
     {
-        if ($this->_reqAdminToMod
+        if ($this->reqAdminToMod
             && ((Object_User::brokerCurrent() != false 
             && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
@@ -603,10 +603,10 @@ abstract class Abstract_GenericObject implements Interface_Object
             return false;
         }
         $this->lastChange = date('Y-m-d H:i:s');
-        $this->_arrChanges = array();
+        $this->arrChanges = array();
         $keys = '';
         $key_place = '';
-        foreach ($this->_arrDBItems as $field_name => $dummy) {
+        foreach ($this->arrDBItems as $field_name => $dummy) {
             if ($keys != '') {
                 $keys .= ', ';
                 $key_place .= ', ';
@@ -619,13 +619,13 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection(true);
             $full_sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "INSERT INTO {$this->_strDBTable} ($keys) VALUES ($key_place)"
+                    'sql' => "INSERT INTO {$this->strDBTable} ($keys) VALUES ($key_place)"
                 )
             );
             $query = $objDatabase->prepare($full_sql);
             $query->execute($values);
-            if ($this->_strDBKeyCol != '') {
-                $key = $this->_strDBKeyCol;
+            if ($this->strDBKeyCol != '') {
+                $key = $this->strDBKeyCol;
                 $this->$key = $objDatabase->lastInsertId();
             }
             $this->sql = $full_sql;
@@ -644,15 +644,15 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function delete()
     {
-        if ($this->_reqAdminToMod
+        if ($this->reqAdminToMod
             && ((Object_User::brokerCurrent() != false 
             && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
         ) {
             return false;
         }
-        if ($this->_reqCreatorToMod
-            && isset($this->_arrDBItems['intUserID'])
+        if ($this->reqCreatorToMod
+            && isset($this->arrDBItems['intUserID'])
             && ((Object_User::brokerCurrent() != false
             && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
             || (Object_User::brokerCurrent() != false
@@ -665,11 +665,11 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection(true);
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "DELETE FROM {$this->_strDBTable} WHERE {$this->_strDBKeyCol} = ?"
+                    'sql' => "DELETE FROM {$this->strDBTable} WHERE {$this->strDBKeyCol} = ?"
                 )
             );
             $query = $objDatabase->prepare($sql);
-            $key = $this->_strDBKeyCol;
+            $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
             $this->sql = $sql;
             $this->sql_value = $this->$key;
@@ -692,19 +692,19 @@ abstract class Abstract_GenericObject implements Interface_Object
             $unique_key = '';
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "CREATE TABLE IF NOT EXISTS `{$this->_strDBTable}` ("
+                    'sql' => "CREATE TABLE IF NOT EXISTS `{$this->strDBTable}` ("
                 )
             );
             $field_data = '';
-            if ($this->_strDBKeyCol != '') {
+            if ($this->strDBKeyCol != '') {
                 $field_data .= Container_Database::getSqlString(
                     array(
-                        'sql' => "`{$this->_strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT",
-                        'sqlite' => "`{$this->_strDBKeyCol}` int(11) PRIMARY KEY"
+                        'sql' => "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT",
+                        'sqlite' => "`{$this->strDBKeyCol}` int(11) PRIMARY KEY"
                     )
                 );
             }
-            foreach ($this->_arrDBItems as $field_name => $settings) {
+            foreach ($this->arrDBItems as $field_name => $settings) {
                 if ($field_data != '') {
                     $field_data .= ', ';
                 }
@@ -757,10 +757,10 @@ abstract class Abstract_GenericObject implements Interface_Object
                 }
             }
             $sql .= $field_data;
-            if ($this->_strDBKeyCol != '') {
+            if ($this->strDBKeyCol != '') {
                 $sql .= Container_Database::getSqlString(
                     array(
-                        'sql' => ", PRIMARY KEY (`{$this->_strDBKeyCol}`)",
+                        'sql' => ", PRIMARY KEY (`{$this->strDBKeyCol}`)",
                         'sqlite' => ''
                     )
                 );
@@ -797,20 +797,20 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase = Container_Database::getConnection(true);
             $sql = Container_Database::getSqlString(
                 array(
-                    'sql' => "DROP TABLE IF EXISTS `{$this->_strDBTable}`"
+                    'sql' => "DROP TABLE IF EXISTS `{$this->strDBTable}`"
                 )
             );
             $objDatabase->exec($sql);
 
             $this->initialize();
-            if ($this->_arrDemoData == null || !is_array($this->_arrDemoData) || count($this->_arrDemoData) == 0) {
+            if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
                 return false;
             }
             $className = get_called_class();
-            foreach ($this->_arrDemoData as $entry) {
+            foreach ($this->arrDemoData as $entry) {
                 $object = new $className();
-                $object->_reqAdminToMod = false;
-                $object->_reqCreatorToMod = false;
+                $object->reqAdminToMod = false;
+                $object->reqCreatorToMod = false;
                 foreach ($entry as $key => $value) {
                     $object->setKey($key, $value);
                 }
@@ -829,22 +829,22 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function getSelf()
     {
-        if ($this->_strDBKeyCol != '') {
-            $key = $this->_strDBKeyCol;
+        if ($this->strDBKeyCol != '') {
+            $key = $this->strDBKeyCol;
             $return[$key] = $this->$key;
         }
-        foreach ($this->_arrDBItems as $key => $dummy) {
+        foreach ($this->arrDBItems as $key => $dummy) {
             $return[$key] = $this->$key;
         }
-        if ($this->_booleanFull) {
-            if ($this->_reqAdminToMod
+        if ($this->booleanFull) {
+            if ($this->reqAdminToMod
                 && ((Object_User::brokerCurrent() != false 
                 && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
                 || Object_User::brokerCurrent() == false)
             ) {
                 $return['isEditable'] = array();
-            } elseif ($this->_reqCreatorToMod
-                && isset($this->_arrDBItems['intUserID'])
+            } elseif ($this->reqCreatorToMod
+                && isset($this->arrDBItems['intUserID'])
                 && ((Object_User::brokerCurrent() != false
                 && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
                 || (Object_User::brokerCurrent() != false
@@ -855,7 +855,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             ) {
                 $return['isEditable'] = array();
             } else {
-                foreach ($this->_arrDBItems as $key=>$value) {
+                foreach ($this->arrDBItems as $key=>$value) {
                     $return['isEditable'][$key] = $value['type'];
                 }
             }
@@ -872,6 +872,6 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function getErrorMessage()
     {
-        return $this->_errorMessageReturn;
+        return $this->errorMessageReturn;
     }
 }

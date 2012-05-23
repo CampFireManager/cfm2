@@ -27,13 +27,13 @@
 class Object_SecureConfig extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'key' => array('type' => 'varchar', 'length' => 255),
         'value' => array('type' => 'text'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "secureconfig";
-    protected $_reqAdminToMod = true;
+    protected $strDBTable = "secureconfig";
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $key = null;
     protected $value = null;
@@ -77,7 +77,7 @@ class Object_SecureConfig extends Abstract_GenericObject
  */
 class Object_SecureConfig_Demo extends Object_SecureConfig
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('key' => 'Twitter API Key', 'value' => 'Not Yet Set'),
         array('key' => 'Twitter API Secret', 'value' => 'Not Yet Set'),
     );

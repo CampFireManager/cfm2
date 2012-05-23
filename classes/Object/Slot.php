@@ -25,7 +25,7 @@
 class Object_Slot extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'dateStart' => array('type' => 'date'),
         'timeStart' => array('type' => 'time'),
         'dateEnd' => array('type' => 'date'),
@@ -33,9 +33,9 @@ class Object_Slot extends Abstract_GenericObject
         'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "slot";
-    protected $_strDBKeyCol = "intSlotID";
-    protected $_reqAdminToMod = true;
+    protected $strDBTable = "slot";
+    protected $strDBKeyCol = "intSlotID";
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intSlotID = null;
     protected $dateStart = null;
@@ -54,33 +54,33 @@ class Object_Slot extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $_self = parent::getSelf();
+        $self = parent::getSelf();
         if ((string) $this->dateStart == '') {
-            $_self['dateStart'] = date('Y-m-d');
+            $self['dateStart'] = date('Y-m-d');
             if ((string) $this->dateEnd == '') {
                 if ($this->timeStart > $this->timeEnd) {
-                    $_self['dateEnd'] = date('Y-m-d', strtotime("tomorrow"));
+                    $self['dateEnd'] = date('Y-m-d', strtotime("tomorrow"));
                 } else {
-                    $_self['dateEnd'] = date('Y-m-d');
+                    $self['dateEnd'] = date('Y-m-d');
                 }
             }
         }
-        $_self['datetimeStart'] = $_self['dateStart'] . 'T' . $_self['timeStart'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
-        $_self['datetimeEnd'] = $_self['dateEnd'] . 'T' . $_self['timeEnd'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
-        $_self['datetimeDuration'] = $_self['datetimeStart'] . '/' . $_self['datetimeEnd'];
+        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
+        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
+        $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         
         if ($this->isFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
                 if (is_object($objDefaultSlotType)) {
-                    $_self['arrDefaultSlotType'] = $objDefaultSlotType->getSelf();
-                    if ($_self['arrDefaultSlotType']['lastChange'] > $_self['lastChange']) {
-                        $_self['lastChange'] = $_self['arrDefaultSlotType']['lastChange'];
+                    $self['arrDefaultSlotType'] = $objDefaultSlotType->getSelf();
+                    if ($self['arrDefaultSlotType']['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $self['arrDefaultSlotType']['lastChange'];
                     }
                 }
             }
         }
-        return $_self;
+        return $self;
     }
 
     /**
@@ -125,7 +125,7 @@ class Object_Slot extends Abstract_GenericObject
 
 class Object_Slot_Demo extends Object_Slot
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intSlotID' => 1, 'dateStart' => '', 'timeStart' => '09:00', 'dateEnd' => '', 'timeEnd' => '09:45', 'intDefaultSlotTypeID' => 1),
         array('intSlotID' => 2, 'dateStart' => '', 'timeStart' => '10:00', 'dateEnd' => '', 'timeEnd' => '10:45', 'intDefaultSlotTypeID' => null),
         array('intSlotID' => 3, 'dateStart' => '', 'timeStart' => '11:00', 'dateEnd' => '', 'timeEnd' => '11:45', 'intDefaultSlotTypeID' => null),

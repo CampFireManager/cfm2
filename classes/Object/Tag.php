@@ -25,16 +25,16 @@
 class Object_Tag extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
         'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "tag";
-    protected $_strDBKeyCol = "intTagID";
-    protected $_reqAdminToMod = false;
-    protected $_reqCreatorToMod = false;
+    protected $strDBTable = "tag";
+    protected $strDBKeyCol = "intTagID";
+    protected $reqAdminToMod = false;
+    protected $reqCreatorToMod = false;
     // Local Object Requirements
     protected $intTagID = null;
     protected $strTagName = null;
@@ -50,8 +50,8 @@ class Object_Tag extends Abstract_GenericObject
      */
     function __construct()
     {
-        $this->_reqAdminToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
-        $this->_reqCreatorToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
+        $this->reqAdminToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
+        $this->reqCreatorToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
         return parent::__construct();
     }
 }
@@ -68,7 +68,7 @@ class Object_Tag extends Abstract_GenericObject
 
 class Object_Tag_Demo extends Object_Tag
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intTagID' => 1, 'strTagName' => 'Developers ^ 3', 'intTalkID' => 1, 'intUserID' => 2),
         array('intTagID' => 2, 'strTagName' => 'Open Source', 'intTalkID' => 2, 'intUserID' => 2),
         array('intTagID' => 3, 'strTagName' => 'Events', 'intTalkID' => 2, 'intUserID' => 2),

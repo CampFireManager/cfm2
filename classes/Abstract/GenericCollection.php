@@ -25,7 +25,7 @@
 
 abstract class Abstract_GenericCollection implements Interface_Object
 {
-    protected $_arrData = array();
+    protected $arrData = array();
     
     /**
      * An internal function to make this a singleton. This should only be used 
@@ -60,7 +60,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public function getSelf()
     {
-        return $this->_arrData;
+        return $this->arrData;
     }
 
     /**
@@ -115,8 +115,8 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public function getKey($key = '')
     {
-        if (isset($this->_arrData[$key])) {
-            return $this->_arrData[$key];
+        if (isset($this->arrData[$key])) {
+            return $this->arrData[$key];
         } else {
             return false;
         }

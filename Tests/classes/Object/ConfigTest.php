@@ -7,6 +7,13 @@ class Object_ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_object($objConfig));
     }
     
+    public function testCreateLocalObject()
+    {
+        $objConfig = new Object_Config(array('key' => 'Demo', 'value' => true));
+        $this->assertTrue('Demo' == $objConfig->getKey('key'));
+        $this->assertTrue($objConfig->getKey('value'));
+    }
+
     public function testSetAndGetKeys()
     {
         $objConfig = new Object_Config();

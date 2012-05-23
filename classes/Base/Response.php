@@ -25,7 +25,7 @@
 
 class Base_Response
 {
-    protected static $_httpStatusCodes = Array(
+    protected static $httpStatusCodes = Array(
     100 => 'Continue',
     101 => 'Switching Protocols',
     200 => 'OK',
@@ -139,10 +139,10 @@ class Base_Response
 ' .                     '<html>
 ' .                     '  <head>
 ' .                     '    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-' .                     '    <title>' . $status . ' ' . static::$_httpStatusCodes[$status] . '</title>
+' .                     '    <title>' . $status . ' ' . static::$httpStatusCodes[$status] . '</title>
 ' .                     '  </head>
 ' .                     '  <body>
-' .                     '    <h1>' . static::$_httpStatusCodes[$status] . '</h1>
+' .                     '    <h1>' . static::$httpStatusCodes[$status] . '</h1>
 ' .                     '    ' . $messageContent . '
 ' .                     '  </body>
 ' .                     '</html>';
@@ -168,13 +168,13 @@ class Base_Response
         header("ETag: \"$thisetag\"");
         foreach ($arrRequestData['If-None-Match'] as $etag) {
             if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
-                header('HTTP/1.1 304 ' . static::$_httpStatusCodes[304]);
+                header('HTTP/1.1 304 ' . static::$httpStatusCodes[304]);
                 exit(0);
             }
         }
         
         // Send the relevant headers for this type of response
-        header('HTTP/1.1 ' . $status . ' ' . static::$_httpStatusCodes[$status]);
+        header('HTTP/1.1 ' . $status . ' ' . static::$httpStatusCodes[$status]);
         header('Content-type: ' . $contentType);
         echo $body;
         exit(0);
@@ -202,8 +202,8 @@ class Base_Response
      */
     public static function returnHttpResponseString($status = 200)
     {
-        if (isset(self::$_httpStatusCodes[$status])) {
-            return self::$_httpStatusCodes[$status];
+        if (isset(self::$httpStatusCodes[$status])) {
+            return self::$httpStatusCodes[$status];
         } else {
             return false;
         }

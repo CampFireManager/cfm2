@@ -25,7 +25,7 @@
 
 class Base_Request
 {
-    protected $_arrMediaTypes = array(
+    protected $arrMediaTypes = array(
         'application/json' => array(
             'media' => false, 'rest' => true, 'site' => false
         ),
@@ -136,23 +136,23 @@ class Base_Request
         )
     );
 
-    protected $_arrRequestUrl      = null;
-    protected $_requestUrlFull     = null;
-    protected $_requestUrlExParams = null;
-    protected $_strUsername        = null;
-    protected $_strPassword        = null;
-    protected $_strRequestMethod   = null;
-    protected $_hasIfModifiedSince = null;
-    protected $_hasIfNoneMatch     = null;
-    protected $_arrRqstParameters  = null;
-    protected $_strPathSite        = null;
-    protected $_strPathRouter      = null;
-    protected $_arrPathItems       = null;
-    protected $_strPathFormat      = null;
-    protected $_strPrefAcceptType  = null;
-    protected $_arrAcceptTypes     = null;
-    protected $_strBasePath        = null;
-    protected $_strUserAgent       = null;
+    protected $arrRequestUrl      = null;
+    protected $requestUrlFull     = null;
+    protected $requestUrlExParams = null;
+    protected $strUsername        = null;
+    protected $strPassword        = null;
+    protected $strRequestMethod   = null;
+    protected $hasIfModifiedSince = null;
+    protected $hasIfNoneMatch     = null;
+    protected $arrRqstParameters  = null;
+    protected $strPathSite        = null;
+    protected $strPathRouter      = null;
+    protected $arrPathItems       = null;
+    protected $strPathFormat      = null;
+    protected $strPrefAcceptType  = null;
+    protected $arrAcceptTypes     = null;
+    protected $strBasePath        = null;
+    protected $strUserAgent       = null;
     
     /**
      * This function reads the $arrMediaTypes array above, and returns whether 
@@ -171,14 +171,14 @@ class Base_Request
     public function hasMediaType($category = 'site', $mediaType = null)
     {
         if ($mediaType == null) {
-            $mediaType = $this->_strPrefAcceptType;
+            $mediaType = $this->strPrefAcceptType;
         }
-        if (isset($this->_arrMediaTypes[$mediaType])) {
+        if (isset($this->arrMediaTypes[$mediaType])) {
             switch ($category) {
             case 'media':
             case 'rest':
             case 'site':
-                return $this->_arrMediaTypes[$mediaType][$category];
+                return $this->arrMediaTypes[$mediaType][$category];
                 break;
             default:
                 return false;
@@ -251,7 +251,7 @@ class Base_Request
                     $data[$part] = '';
                 }
             }
-            $this->_strRequestMethod = 'file';
+            $this->strRequestMethod = 'file';
         } else {
             $url = "http";
             if (isset($arrServer['HTTPS'])) {
@@ -263,18 +263,18 @@ class Base_Request
 
             if (isset($arrServer['HTTP_AUTHORIZATION'])) {
                 $arrAuthParams = explode(":", base64_decode(substr($arrServer['HTTP_AUTHORIZATION'], 6)));
-                $this->_strUsername = $arrAuthParams[0];
+                $this->strUsername = $arrAuthParams[0];
                 unset($arrAuthParams[0]);
-                $this->_strPassword = implode('', $arrAuthParams);
+                $this->strPassword = implode('', $arrAuthParams);
             } elseif (isset($arrServer['PHP_AUTH_USER']) and isset($arrServer['PHP_AUTH_PW'])) {
-                $this->_strUsername = $arrServer['PHP_AUTH_USER'];
-                $this->_strPassword = $arrServer['PHP_AUTH_PW'];
+                $this->strUsername = $arrServer['PHP_AUTH_USER'];
+                $this->strPassword = $arrServer['PHP_AUTH_PW'];
             }
 
-            if ($this->_strUsername != null) {
-                $url .= $this->_strUsername;
-                if ($this->_strPassword != null) {
-                    $url .= ':' . $this->_strPassword;
+            if ($this->strUsername != null) {
+                $url .= $this->strUsername;
+                if ($this->strPassword != null) {
+                    $url .= ':' . $this->strPassword;
                 }
                 $url .= '@';
             }
@@ -292,27 +292,27 @@ class Base_Request
             switch(strtolower($arrServer['REQUEST_METHOD'])) {
             case 'head':
                 // Typically a request to see if this has changed since the last time
-                $this->_strRequestMethod = 'head';
+                $this->strRequestMethod = 'head';
                 $data = $arrRequest;
                 break;
             case 'get':
-                $this->_strRequestMethod = 'get';
+                $this->strRequestMethod = 'get';
                 $data = $arrGet;
                 break;
             case 'post':
-                $this->_strRequestMethod = 'post';
+                $this->strRequestMethod = 'post';
                 $data = $arrPost;
                 if (isset($arrFiles) and is_array($arrFiles)) {
                     $data['_FILES'] = $arrFiles;
                 }
                 break;
             case 'put':
-                $this->_strRequestMethod = 'put';
+                $this->strRequestMethod = 'put';
                 parse_str($strInput, $arrPut);
                 $data = $arrPut;
                 break;
             case 'delete':
-                $this->_strRequestMethod = 'delete';
+                $this->strRequestMethod = 'delete';
                 $data = $arrRequest;
                 break;
             }
@@ -321,14 +321,14 @@ class Base_Request
 
         // Next, parse the URL or script name we just received, and store it.
 
-        $this->_arrRequestUrl = parse_url($url);
-        $this->_requestUrlFull = $url;
+        $this->arrRequestUrl = parse_url($url);
+        $this->requestUrlFull = $url;
 
         // Take off any parameters, if they've been kept
 
-        if (strlen(trim($this->_requestUrlFull)) > 0) {
-            $match = preg_match('/^([^\?]+)/', $this->_requestUrlFull, $matches);
-            $this->_requestUrlExParams = $matches[1];
+        if (strlen(trim($this->requestUrlFull)) > 0) {
+            $match = preg_match('/^([^\?]+)/', $this->requestUrlFull, $matches);
+            $this->requestUrlExParams = $matches[1];
         }
         
         // Store any of the parameters we aquired before. Add an "if-modified-since" parameter too.
@@ -336,7 +336,7 @@ class Base_Request
         if (isset($arrServer['HTTP_IF_MODIFIED_SINCE'])) {
             // Taken from http://www.justsoftwaresolutions.co.uk/webdesign ... 
             // /provide-last-modified-headers-and-handle-if-modified-since-in-php.html
-            $this->_hasIfModifiedSince = preg_replace('/;.*$/', '', $arrServer["HTTP_IF_MODIFIED_SINCE"]);
+            $this->hasIfModifiedSince = preg_replace('/;.*$/', '', $arrServer["HTTP_IF_MODIFIED_SINCE"]);
         }
         
         if (isset($arrServer['HTTP_IF_NONE_MATCH'])) {
@@ -346,26 +346,26 @@ class Base_Request
                 foreach ($hasIfNoneMatch as $tempIfNoneMatch) {
                     if (is_array($tempIfNoneMatch)) {
                         foreach ($tempIfNoneMatch as $value) {
-                            $this->_hasIfNoneMatch[] = $value;
+                            $this->hasIfNoneMatch[] = $value;
                         }
                     }
                 }
             }
         }
 
-        $this->_arrRqstParameters = $data;
+        $this->arrRqstParameters = $data;
 
         // Remove the trailing slash from the path, if there is one
 
-        if (substr($this->_arrRequestUrl['path'], -1) == '/') {
-            $this->_arrRequestUrl['path'] = substr($this->_arrRequestUrl['path'], 0, -1);
+        if (substr($this->arrRequestUrl['path'], -1) == '/') {
+            $this->arrRequestUrl['path'] = substr($this->arrRequestUrl['path'], 0, -1);
         }
 
         // If the path is just / then keep it, otherwise remove the leading slash from the path
 
-        $match = preg_match('/\/(.*)/', $this->_arrRequestUrl['path'], $matches);
+        $match = preg_match('/\/(.*)/', $this->arrRequestUrl['path'], $matches);
         if ($match > 0) {
-            $this->_arrRequestUrl['path'] = $matches[1];
+            $this->arrRequestUrl['path'] = $matches[1];
         }
 
         // We need to find where the start of the site is (for example, 
@@ -374,8 +374,8 @@ class Base_Request
         // Assume the start is at the end of http://servername/ and that the 
         // router path is everything from there out.
 
-        $this->_strPathSite = '';
-        $this->_strPathRouter = $this->_arrRequestUrl['path'];
+        $this->strPathSite = '';
+        $this->strPathRouter = $this->arrRequestUrl['path'];
 
         // Next make sure that we have a script name, and that this is not just a CLI script.
 
@@ -383,7 +383,7 @@ class Base_Request
 
             // Separate out the individual characters of the URL path we received and the script path
 
-            $arrPathElements = str_split($this->_arrRequestUrl['path']);
+            $arrPathElements = str_split($this->arrRequestUrl['path']);
             $match = preg_match('/\/(.*)$/', $arrServer['SCRIPT_NAME'], $matches);
             $arrScriptElements = str_split($matches[1]);
 
@@ -400,34 +400,34 @@ class Base_Request
 
             // Use that information to build the pathSite (the base URL for the site) and the routed path (/my/action)
 
-            $this->_strPathSite = substr($this->_arrRequestUrl['path'], 0, $char);
-            $this->_strPathRouter = substr($this->_arrRequestUrl['path'], $char);
+            $this->strPathSite = substr($this->arrRequestUrl['path'], 0, $char);
+            $this->strPathRouter = substr($this->arrRequestUrl['path'], $char);
         }
 
         // To ensure the first character of the pathRouter isn't '/', check for it and trim it.
         // I can't actually figure out why this went in here, but I don't seem to be able to test it!
         
-        if (substr($this->_strPathRouter, 0, 1) == '/') {
-            $this->_strPathRouter = substr($this->_strPathRouter, 1);
+        if (substr($this->strPathRouter, 0, 1) == '/') {
+            $this->strPathRouter = substr($this->strPathRouter, 1);
         }
         
         // And ensure the last character of the site path isn't '/', check for that and trim it.
-        if (substr($this->_strPathSite, -1) == '/') {
-            $this->_strPathSite = substr($this->_strPathSite, 0, -1);
+        if (substr($this->strPathSite, -1) == '/') {
+            $this->strPathSite = substr($this->strPathSite, 0, -1);
         }
 
         // Get the routed path as it's slash-delimited values into an array
 
-        $this->_arrPathItems = explode('/', $this->_strPathRouter);
+        $this->arrPathItems = explode('/', $this->strPathRouter);
 
         // Let's talk about the format to return data as, or rather, the preferred (Internet Media) accepted-type
         // This was inserted after reading this comment:
         // http://www.lornajane.net/posts/2012/building-a-restful-php-server-understanding-the-request#comment-3218
 
-        $this->_strPathFormat = '';
+        $this->strPathFormat = '';
         $this->intPrefAcceptType = 0;
-        $this->_strPrefAcceptType = 'text/html';
-        $this->_arrAcceptTypes = array();
+        $this->strPrefAcceptType = 'text/html';
+        $this->arrAcceptTypes = array();
         $arrDenyTypes = array();
 
         // This is based on http://stackoverflow.com/questions/1049401/how-to-select-content-type-from-http-accept-header-in-php
@@ -452,10 +452,10 @@ class Base_Request
                 // Also, IE has a bad habit of saying it accepts everything. Ignore that case.
 
                 if ($q > 0 && $acceptItem != '*/*') {
-                    $this->_arrAcceptTypes[$acceptItem] = $q;
+                    $this->arrAcceptTypes[$acceptItem] = $q;
                     if ($q > $this->intPrefAcceptType) {
                         $this->intPrefAcceptType = $q;
-                        $this->_strPrefAcceptType = $acceptItem;
+                        $this->strPrefAcceptType = $acceptItem;
                     }
                 } else {
                     $arrDenyTypes[$acceptItem] = true;
@@ -465,12 +465,12 @@ class Base_Request
             // If the last item contains a dot, for example file.json, then we can suspect the user is specifying the file format to prefer.
             // So, let's look at the last chunk of the requested URL. Does it contain a dot in it?
 
-            $arrLastUrlItem = explode('.', $this->_arrPathItems[count($this->_arrPathItems)-1]);
+            $arrLastUrlItem = explode('.', $this->arrPathItems[count($this->arrPathItems)-1]);
             if (count($arrLastUrlItem) > 1) {
 
                 // First we clear down the last path item, as we're going to be re-creating it without the format tag
 
-                $this->_arrPathItems[count($this->_arrPathItems)-1] = '';
+                $this->arrPathItems[count($this->arrPathItems)-1] = '';
 
                 // Next we step through each part of that last chunk, looking for the bit after the last dot.
 
@@ -479,16 +479,16 @@ class Base_Request
                     // If it's the last part, this is the format we'll be using, otherwise rebuild that last item
 
                     if ($key + 1 == count($arrLastUrlItem)) {
-                        $this->_strPathFormat = $urlItem;
+                        $this->strPathFormat = $urlItem;
 
                         // Remove the pathFormat from the pathRouter, and the "."
 
-                        $this->_strPathRouter = substr($this->_strPathRouter, 0, - (1 + strlen($this->_strPathFormat)));
+                        $this->strPathRouter = substr($this->strPathRouter, 0, - (1 + strlen($this->strPathFormat)));
 
                         // Now let's try and mark the format up as something we can use as an accept type. Here are the common ones
                         // you're likely to see (from http://en.wikipedia.org/wiki/Internet_media_type)
 
-                        switch (strtolower($this->_strPathFormat)) {
+                        switch (strtolower($this->strPathFormat)) {
 
                         // Application types
 
@@ -733,15 +733,15 @@ class Base_Request
 
                         default:
                             $this->setAcceptType(
-                                'unknown/' . $this->_strPathFormat,
+                                'unknown/' . $this->strPathFormat,
                                 $arrDenyTypes
                             );
                         }
                     } else {
-                        if ($this->_arrPathItems[count($this->_arrPathItems)-1] != '') {
-                            $this->_arrPathItems[count($this->_arrPathItems)-1] .= '.';
+                        if ($this->arrPathItems[count($this->arrPathItems)-1] != '') {
+                            $this->arrPathItems[count($this->arrPathItems)-1] .= '.';
                         }
-                        $this->_arrPathItems[count($this->_arrPathItems)-1] .= $urlItem;
+                        $this->arrPathItems[count($this->arrPathItems)-1] .= $urlItem;
                     }
                 }
             }
@@ -750,24 +750,24 @@ class Base_Request
         // Next let's build the "basePath" - this is the URL which refers to base of the script and is used in the HTML to point back to
         // resources within this service.
 
-        $this->_strBasePath = $this->_arrRequestUrl['scheme'] . "://";
-        if (isset($this->_arrRequestUrl['host'])) {
-            $this->_strBasePath .= $this->_arrRequestUrl['host'];
+        $this->strBasePath = $this->arrRequestUrl['scheme'] . "://";
+        if (isset($this->arrRequestUrl['host'])) {
+            $this->strBasePath .= $this->arrRequestUrl['host'];
         }
-        if (isset($this->_arrRequestUrl['port']) and $this->_arrRequestUrl['port'] != '') {
-            $this->_strBasePath .= ':' . $this->_arrRequestUrl['port'];
+        if (isset($this->arrRequestUrl['port']) and $this->arrRequestUrl['port'] != '') {
+            $this->strBasePath .= ':' . $this->arrRequestUrl['port'];
         }
-        if (isset($this->_strPathSite) and $this->_strPathSite != '') {
-            $this->_strBasePath .= '/' . $this->_strPathSite;
+        if (isset($this->strPathSite) and $this->strPathSite != '') {
+            $this->strBasePath .= '/' . $this->strPathSite;
         }
-        $this->_strBasePath .=  '/';
+        $this->strBasePath .=  '/';
 
         // Let's get the user agent - it's just for a giggle in most cases, as it's not authorititive, but it might help if you're
         // getting site stats, or trying not to track people with cookies.
 
         if (isset($arrServer['HTTP_USER_AGENT'])) {
             // Remember, this isn't guaranteed to be accurate
-            $this->_strUserAgent = $arrServer['HTTP_USER_AGENT'];
+            $this->strUserAgent = $arrServer['HTTP_USER_AGENT'];
         }
     }
 
@@ -785,82 +785,82 @@ class Base_Request
     )
     {
         if (! isset($arrDenyTypes[$strAcceptType])) {
-            $this->_arrAcceptTypes[$strAcceptType] = 2;
+            $this->arrAcceptTypes[$strAcceptType] = 2;
         }
         if (2 > $this->intPrefAcceptType) {
             $this->intPrefAcceptType = 2;
-            $this->_strPrefAcceptType = $strAcceptType;
+            $this->strPrefAcceptType = $strAcceptType;
         }
         return $this->intPrefAcceptType;
     }
     
     public function get_arrRequestUrl()
     {
-        return $this->_arrRequestUrl;
+        return $this->arrRequestUrl;
     }
     public function get_requestUrlFull()
     {
-        return $this->_requestUrlFull;
+        return $this->requestUrlFull;
     }
     public function get_requestUrlExParams()
     {
-        return $this->_requestUrlExParams;
+        return $this->requestUrlExParams;
     }
     public function get_strUsername()
     {
-        return $this->_strUsername;
+        return $this->strUsername;
     }
     public function get_strPassword()
     {
-        return $this->_strPassword;
+        return $this->strPassword;
     }
     public function get_strRequestMethod()
     {
-        return $this->_strRequestMethod;
+        return $this->strRequestMethod;
     }
     public function get_hasIfModifiedSince()
     {
-        return $this->_hasIfModifiedSince;
+        return $this->hasIfModifiedSince;
     }
     public function get_hasIfNoneMatch()
     {
-        return $this->_hasIfNoneMatch;
+        return $this->hasIfNoneMatch;
     }
     public function get_arrRqstParameters()
     {
-        return $this->_arrRqstParameters;
+        return $this->arrRqstParameters;
     }
     public function get_strPathSite()
     {
-        return $this->_strPathSite;
+        return $this->strPathSite;
     }
     public function get_strPathRouter()
     {
-        return $this->_strPathRouter;
+        return $this->strPathRouter;
     }
     public function get_arrPathItems()
     {
-        return $this->_arrPathItems;
+        return $this->arrPathItems;
     }
     public function get_strPathFormat()
     {
-        return $this->_strPathFormat;
+        return $this->strPathFormat;
     }
     public function get_strPrefAcceptType()
     {
-        return $this->_strPrefAcceptType;
+        return $this->strPrefAcceptType;
     }
     public function get_arrAcceptTypes()
     {
-        return $this->_arrAcceptTypes;
+        return $this->arrAcceptTypes;
     }
     public function get_strBasePath()
     {
-        return $this->_strBasePath;
+        return $this->strBasePath;
     }
     public function get_strUserAgent()
     {
-        return $this->_strUserAgent;
+        return $this->strUserAgent;
     }
 
 }

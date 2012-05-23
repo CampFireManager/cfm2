@@ -7,6 +7,13 @@ class Object_SecureConfigTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_object($objSecureConfig));
     }
     
+    public function testCreateLocalObject()
+    {
+        $objSecureConfig = new Object_SecureConfig(array('key' => 'Demo', 'value' => true));
+        $this->assertTrue('Demo' == $objSecureConfig->getKey('key'));
+        $this->assertTrue($objSecureConfig->getKey('value'));
+    }
+    
     public function testSetAndGetKeys()
     {
         $objSecureConfig = new Object_SecureConfig();

@@ -24,7 +24,7 @@
 
 class Object_User extends Abstract_GenericObject
 {
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'strUserName' => array('type' => 'varchar', 'length' => 255),
         'isWorker' => array('type' => 'tinyint', 'length' => 1),
         'isAdmin' => array('type' => 'tinyint', 'length' => 1),
@@ -32,9 +32,9 @@ class Object_User extends Abstract_GenericObject
         'isHere' => array('type' => 'tinyint', 'length' => 1),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "user";
-    protected $_strDBKeyCol = "intUserID";
-    protected $_reqCreatorToMod = true;
+    protected $strDBTable = "user";
+    protected $strDBKeyCol = "intUserID";
+    protected $reqCreatorToMod = true;
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;
@@ -70,7 +70,7 @@ class Object_User extends Abstract_GenericObject
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT * FROM {$thisClass->_strDBTable} WHERE {$thisClass->_strDBKeyCol} = ? LIMIT 1";
+            $sql = "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1";
             $query = $objDatabase->prepare($sql);
             $query->execute(array($intUserID));
             $result = $query->fetchObject($thisClassName);
@@ -105,7 +105,7 @@ class Object_User extends Abstract_GenericObject
                 $objUserAuth->write();
                 $this->intUserAuthIDTemp = $objUserAuth->getKey('intUserAuthID');
             } else {
-                $this->_errorMessageReturn = $objUserAuth;
+                $this->errorMessageReturn = $objUserAuth;
             }
             return $this;
         } catch (Exception $e) {
@@ -122,11 +122,11 @@ class Object_User extends Abstract_GenericObject
     {
         Base_GeneralFunctions::startSession();
         $arrRequestData = Base_Request::getRequest();
-        if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
-            unset($_SESSION['intUserAuthID']);
+        if (isset($SESSION['intUserAuthID']) && $SESSION['intUserAuthID'] != '') {
+            unset($SESSION['intUserAuthID']);
         }
-        if (isset($_SESSION['OPENID_AUTH']) && $_SESSION['OPENID_AUTH'] != '') {
-            unset($_SESSION['OPENID_AUTH']);
+        if (isset($SESSION['OPENID_AUTH']) && $SESSION['OPENID_AUTH'] != '') {
+            unset($SESSION['OPENID_AUTH']);
         }
         if (isset($arrRequestData['username']) && $arrRequestData['username'] != '') {
             Base_Response::sendHttpResponse(401);
@@ -142,17 +142,17 @@ class Object_User extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $_self = parent::getSelf();
+        $self = parent::getSelf();
         if ($this->isFull() == true) {
             $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
             foreach ($arrUserAuth as $key => $value) {
-                $_self['arrUserAuth'][$key] = $value->getSelf();
-                if ($_self['arrUserAuth'][$key]['lastChange'] > $_self['lastChange']) {
-                    $_self['lastChange'] = $_self['arrUserAuth'][$key]['lastChange'];
+                $self['arrUserAuth'][$key] = $value->getSelf();
+                if ($self['arrUserAuth'][$key]['lastChange'] > $self['lastChange']) {
+                    $self['lastChange'] = $self['arrUserAuth'][$key]['lastChange'];
                 }
             }
         }
-        return $_self;
+        return $self;
     }
 }
 
@@ -167,7 +167,7 @@ class Object_User extends Abstract_GenericObject
  */
 class Object_User_Demo extends Object_User
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intUserID' => 1, 'strUserName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
         array('intUserID' => 2, 'strUserName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
         array('intUserID' => 3, 'strUserName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),

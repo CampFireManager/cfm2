@@ -27,13 +27,13 @@
 class Object_Config extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'key' => array('type' => 'varchar', 'length' => 255),
         'value' => array('type' => 'text'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "config";
-    protected $_reqAdminToMod = true;
+    protected $strDBTable = "config";
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $key = null;
     protected $value = null;
@@ -77,7 +77,7 @@ class Object_Config extends Abstract_GenericObject
  */
 class Object_Config_Demo extends Object_Config
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('key' => 'Site Name', 'value' => 'A Demo Site'),
     );
 }

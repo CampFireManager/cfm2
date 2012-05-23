@@ -37,11 +37,11 @@ class Collection_Timetable extends Abstract_GenericCollection
             $date = date('Y-m-d', strtotime($date));
         }
         if (Object_Room::countAll() < Object_Slot::countAll()) {
-            $_self = new Collection_TimetableBySlotRoom($date);
+            $self = new Collection_TimetableBySlotRoom($date);
         } else {
-            $_self = new Collection_TimetableByRoomSlot($date);
+            $self = new Collection_TimetableByRoomSlot($date);
         }
-        $this->_arrData = $_self->_arrData;
+        $this->arrData = $self->arrData;
         return $this;
     }
 }
@@ -67,15 +67,15 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
      */
     public function __construct($date = null)
     {
-        $this->_arrData['x_axis'] = 'room';
-        $this->_arrData['y_axis'] = 'slot';
+        $this->arrData['x_axis'] = 'room';
+        $this->arrData['y_axis'] = 'slot';
         $arrRoomObjects = Object_Room::brokerAll();
         foreach ($arrRoomObjects as $objRoom) {
-            $this->_arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
+            $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
         }
         $arrSlotObjects = Object_Slot::brokerAll();
         foreach ($arrSlotObjects as $objSlot) {
-            $this->_arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
+            $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
         }
         $arrTalkObjects = Object_Talk::brokerAll();
         $arrDefSlotTypeObj = Object_DefaultSlotType::brokerAll();
@@ -89,7 +89,7 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
                 foreach ($arrRoomObjects as $objRoom) {
                     $objRoom->setFull(true);
                     if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
-                        $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                             'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
                             'arrRoom' => $objRoom->getSelf(),
@@ -98,7 +98,7 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
                             'isNext' => false
                         );
                     } else {
-                        $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => '', 
                             'isLocked' => 'none',
                             'arrRoom' => $objRoom->getSelf(),
@@ -108,9 +108,9 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
                         );
                     }
                     if ($objSlot->getKey('intSlotID') == $now) {
-                        $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNow'] = true;
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNow'] = true;
                     } elseif ($objSlot->getKey('intSlotID') == $next) {
-                        $this->_arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNext'] = true;
+                        $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')]['isNext'] = true;
                     }
                 }
             }
@@ -121,16 +121,16 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
                 $objTalk->setFull(true);
                 for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
                     if ($date == null || $objSlot->getKey('startDate') == $date) {
-                        $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID] = $objTalk->getSelf();
+                        $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID] = $objTalk->getSelf();
                         if ($objTalk->getKey('isSlotLocked') == 1) {
-                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'hardlock';
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'hardlock';
                         } else {
-                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'none';
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isLocked'] = 'none';
                         }
                         if ($intSlotID == $now) {
-                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNow'] = true;
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNow'] = true;
                         } elseif ($intSlotID == $next) {
-                            $this->_arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNext'] = true;
+                            $this->arrData['arrTimetable']['room_' . $objTalk->getKey('intRoomID')]['slot_' . $intSlotID]['isNext'] = true;
                         }
                     }
                 }
@@ -162,15 +162,15 @@ class Collection_TimetableBySlotRoom extends Collection_TimetableByRoomSlot
      */
     public function __construct($date = null)
     {
-        $_self = parent::__construct($date);
-        $this->_arrData['x_axis'] = 'slot';
-        $this->_arrData['y_axis'] = 'room';
-        foreach ($_self->_arrData['arrTimetable'] as $roomid => $arrslot) {
+        $self = parent::__construct($date);
+        $this->arrData['x_axis'] = 'slot';
+        $this->arrData['y_axis'] = 'room';
+        foreach ($self->arrData['arrTimetable'] as $roomid => $arrslot) {
             foreach ($arrslot as $slotid => $use) {
                 $tmpTimetable[$slotid][$roomid] = $use;
             }
         }
-        $_self->_arrData['arrTimetable'] = $tmpTimetable;
-        return $_self;
+        $self->arrData['arrTimetable'] = $tmpTimetable;
+        return $self;
     }
 }

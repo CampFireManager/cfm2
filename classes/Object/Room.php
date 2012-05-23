@@ -25,14 +25,14 @@
 class Object_Room extends Abstract_GenericObject
 {
     // Generic Object Requirements
-    protected $_arrDBItems = array(
+    protected $arrDBItems = array(
         'strRoomName' => array('type' => 'varchar', 'length' => 255),
         'jsonResourceList' => array('type' => 'text'),
         'lastChange' => array('type' => 'datetime')
     );
-    protected $_strDBTable = "room";
-    protected $_strDBKeyCol = "intRoomID";
-    protected $_reqAdminToMod = true;
+    protected $strDBTable = "room";
+    protected $strDBKeyCol = "intRoomID";
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intRoomID = null;
     protected $strRoomName = null;
@@ -47,21 +47,21 @@ class Object_Room extends Abstract_GenericObject
      */
     function getSelf()
     {
-        $_self = parent::getSelf();
+        $self = parent::getSelf();
         if ($this->isFull() == true) {
             $resources = (array) json_decode($this->jsonResourceList);
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {
                     $arrResource = $objResource->getSelf();
-                    $_self['arrResources'][] = $arrResource;
-                    if ($arrResource['lastChange'] > $_self['lastChange']) {
-                        $_self['lastChange'] = $arrResource['lastChange'];
+                    $self['arrResources'][] = $arrResource;
+                    if ($arrResource['lastChange'] > $self['lastChange']) {
+                        $self['lastChange'] = $arrResource['lastChange'];
                     }
                 }
             }
         }
-        return $_self;
+        return $self;
     }
 }
 
@@ -76,7 +76,7 @@ class Object_Room extends Abstract_GenericObject
  */
 class Object_Room_Demo extends Object_Room
 {
-    protected $_arrDemoData = array(
+    protected $arrDemoData = array(
         array('intRoomID' => 1, 'strRoomName' => 'Room A', 'jsonResourceList' => '[1,2]'),
         array('intRoomID' => 2, 'strRoomName' => 'Room B', 'jsonResourceList' => '[2,3]'),
         array('intRoomID' => 3, 'strRoomName' => 'Room C', 'jsonResourceList' => '[3]')
