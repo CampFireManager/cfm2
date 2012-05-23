@@ -52,8 +52,8 @@ class Object_Attendee extends Abstract_GenericObject
 class Object_Attendee_Demo extends Object_Attendee
 {
     protected $arrDemoData = array(
-        array('intAttendeeID' => 1, 'intUserID' => '2', 'intTalkID' => '1'),
-        array('intAttendeeID' => 2, 'intUserID' => '3', 'intTalkID' => '1'),
-        array('intAttendeeID' => 3, 'intUserID' => '4', 'intTalkID' => '1')
+        array('intUserID' => '2', 'intTalkID' => '1'),
+        array('intUserID' => '3', 'intTalkID' => '1'),
+        array('intUserID' => '4', 'intTalkID' => '1')
     );
 }

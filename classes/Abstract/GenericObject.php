@@ -612,6 +612,10 @@ abstract class Abstract_GenericObject implements Interface_Object
         $this->arrChanges = array();
         $keys = '';
         $key_place = '';
+        if (isset($this->strDBKeyCol) && $this->strDBKeyCol != '') {
+            $keys = $this->strDBKeyCol;
+            $key_place = 'NULL';
+        }
         foreach ($this->arrDBItems as $field_name => $dummy) {
             if ($keys != '') {
                 $keys .= ', ';
@@ -706,7 +710,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $field_data .= Container_Database::getSqlString(
                     array(
                         'sql' => "`{$this->strDBKeyCol}` int(11) NOT NULL AUTO_INCREMENT",
-                        'sqlite' => "`{$this->strDBKeyCol}` int(11) PRIMARY KEY"
+                        'sqlite' => "`{$this->strDBKeyCol}` integer PRIMARY KEY"
                     )
                 );
             }
@@ -745,7 +749,8 @@ abstract class Abstract_GenericObject implements Interface_Object
                 } elseif (isset($settings['length'])) {
                     $field_data .= Container_Database::getSqlString(
                         array(
-                            'sql' => "`{$field_name}` {$settings['type']}({$settings['length']})  $isNull"
+                            'sql' => "`{$field_name}` {$settings['type']}({$settings['length']})  $isNull",
+                            'sqlite' => "`{$field_name}` {$settings['type']} $isNull"
                         )
                     );
                 } else {
