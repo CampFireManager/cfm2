@@ -140,7 +140,7 @@ abstract class Abstract_GenericObject implements Interface_Object
     {
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName(false);
+        $thisClass = new $thisClassName();
         if ((integer) $intID > 0) {
             if (isset($objCache->arrCache[$thisClassName]['id'][(string) $intID])) {
                 return $objCache->arrCache[$thisClassName]['id'][(string) $intID];
@@ -158,7 +158,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 if ($result == false) {
                     return false;
                 } else {
-                    $objCache->arrCache[$thisClassName]['id'][$intID] = $result;
+                    $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
                     return $result;
                 }
             } catch(Exception $e) {
