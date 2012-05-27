@@ -180,11 +180,11 @@ abstract class Abstract_GenericObject implements Interface_Object
     static function brokerByColumnSearch($column = null, $value = null)
     {
         if ($column == null) {
-            return false;
+            throw new OutOfBoundsException('No column name');
         }
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName(false);
+        $thisClass = new $thisClassName();
         $process = false;
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             if ($dbItem == $column) {
@@ -192,7 +192,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             }
         }
         if ($process == false) {
-            return false;
+            throw new OutOfBoundsException('Not a valid column name');
         }
         $arrResult = array();
         try {
@@ -201,6 +201,14 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol}"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } elseif ($value == null) {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL ORDER BY {$thisClass->strDBKeyCol}"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -240,11 +248,11 @@ abstract class Abstract_GenericObject implements Interface_Object
     static function countByColumnSearch($column = null, $value = null)
     {
         if ($column == null) {
-            return false;
+            throw new OutOfBoundsException('Not a valid column name');
         }
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName(false);
+        $thisClass = new $thisClassName();
         $process = false;
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             if ($dbItem == $column) {
@@ -252,17 +260,35 @@ abstract class Abstract_GenericObject implements Interface_Object
             }
         }
         if ($process == false) {
-            return false;
+            throw new OutOfBoundsException('Not a valid column name');
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = Container_Database::getSqlString(
-                array(
-                    'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
-                )
-            );
-            $query = $objDatabase->prepare($sql);
-            $query->execute(array($value));
+            if ($value == '%') {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } elseif ($value == null) {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } else {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute(array($value));
+            }
             $result = $query->fetchColumn();
             return $result;
         } catch(Exception $e) {
@@ -281,14 +307,14 @@ abstract class Abstract_GenericObject implements Interface_Object
     static function lastChangeByColumnSearch($column = null, $value = null)
     {
         if ($column == null) {
-            return false;
+            throw new OutOfBoundsException('Not a valid column name');
         }
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName(false);
+        $thisClass = new $thisClassName();
         $process = false;
         if (!isset($thisClass->arrDBItems['lastChange'])) {
-            return false;
+            throw new OutOfBoundsException('Does not store Last Change data');
         }
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             if ($dbItem == $column) {
@@ -296,17 +322,35 @@ abstract class Abstract_GenericObject implements Interface_Object
             }
         }
         if ($process == false) {
-            return false;
+            throw new OutOfBoundsException('Not a valid column name');
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = Container_Database::getSqlString(
-                array(
-                    'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
-                )
-            );
-            $query = $objDatabase->prepare($sql);
-            $query->execute(array($value));
+            if ($value == '%') {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } elseif ($value == null) {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } else {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute(array($value));
+            }
             $result = $query->fetchColumn();
             return $result;
         } catch(Exception $e) {
@@ -370,8 +414,10 @@ abstract class Abstract_GenericObject implements Interface_Object
     {
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName(false);
-        $arrResult = array();
+        $thisClass = new $thisClassName();
+        if (!isset($thisClass->arrDBItems['lastChange'])) {
+            throw new OutOfBoundsException('Does not store Last Change data');
+        }
         try {
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
@@ -382,7 +428,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $query = $objDatabase->prepare($sql);
             $query->execute();
             $result = $query->fetchColumn();
-            return $arrResult;
+            return $result;
         } catch(Exception $e) {
             throw $e;
         }
@@ -396,7 +442,7 @@ abstract class Abstract_GenericObject implements Interface_Object
     static function countAll()
     {
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName(false);
+        $thisClass = new $thisClassName();
         try {
             $objDatabase = Container_Database::getConnection();
             $sql = Container_Database::getSqlString(
@@ -465,15 +511,6 @@ abstract class Abstract_GenericObject implements Interface_Object
             ) {
                 if ($value != '' && $this->$keyname != $value) {
                     $this->$keyname = $value;
-                    $this->arrChanges[$keyname] = true;
-                }
-            }
-            $protectedkeyname = '_' . $keyname;
-            if (array_key_exists($protectedkeyname, $this->arrDBItems) 
-                || $protectedkeyname == $this->strDBKeyCol
-            ) {
-                if ($value != '' && $this->$protectedkeyname != $value) {
-                    $this->$protectedkeyname = $value;
                     $this->arrChanges[$keyname] = true;
                 }
             }
@@ -743,7 +780,8 @@ abstract class Abstract_GenericObject implements Interface_Object
                     }
                     $field_data .= Container_Database::getSqlString(
                         array(
-                            'sql' => "`{$field_name}` enum({$options}) $isNull"
+                            'sql' => "`{$field_name}` enum({$options}) $isNull",
+                            'sqlite' => "{$field_name} text $isNull" // SQLite doesn't do enums :(
                         )
                     );
                 } elseif (isset($settings['length'])) {

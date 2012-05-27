@@ -51,8 +51,7 @@ class Base_GeneralFunctions
         $needle = null, 
         $default = false, 
         $emptyisfalse = true
-    )
-    {
+    ) {
         if ($haystack != null && $needle !== null) {
             if (is_array($haystack) 
                 && count($haystack) > 0 
@@ -249,7 +248,7 @@ class Base_GeneralFunctions
     public static function sizeJson($strJson = '')
     {
         $arrJson = (array) json_decode($strJson);
-        if (count($arrJson == 0)) {
+        if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
         return count($arrJson);
@@ -297,6 +296,7 @@ class Base_GeneralFunctions
             foreach ($arrJson as $value) {
                 if ($value == $strNewValue) {
                     $set = true;
+                    $arrTemp[$intKey++] = $value;
                 } else {
                     $arrTemp[$intKey++] = $value;
                 }
@@ -376,7 +376,7 @@ class Base_GeneralFunctions
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
-        $arrJson = $this->deobjectifyArray($arrJson);
+        $arrJson = self::deobjectifyArray($arrJson);
         return $arrJson;
     }
 
@@ -391,7 +391,7 @@ class Base_GeneralFunctions
     {
         foreach ((array) $process as $key => $value) {
             if (is_object($value)) {
-                $return[$key] = deobjectifyArray($value);
+                $return[$key] = self::deobjectifyArray($value);
             } else {
                 $return[$key] = $value;
             }

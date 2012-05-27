@@ -153,6 +153,7 @@ class Base_Request
     protected $arrAcceptTypes     = null;
     protected $strBasePath        = null;
     protected $strUserAgent       = null;
+    protected $arrSession         = null;
     
     /**
      * This function reads the $arrMediaTypes array above, and returns whether 
@@ -198,6 +199,7 @@ class Base_Request
      * @param array  $arrPost    A dependency injection entry for $_POST
      * @param array  $arrFiles   A dependency injection entry for $_FILES
      * @param string $strInput   A dependency injection entry for php://input
+     * @param array  $arrSession A dependency injection entry for $_SESSION
      *
      * @return array The compiled data
      */
@@ -208,9 +210,9 @@ class Base_Request
         $arrGet = null,
         $arrPost = null,
         $arrFiles = null,
-        $strInput = null
-    )
-    {
+        $strInput = null,
+        $arrSession = null
+    ) {
         if ($arrGlobals == null) {
             $arrGlobals = $GLOBALS;
         }
@@ -231,6 +233,9 @@ class Base_Request
         }
         if ($strInput == null) {
             $strInput = file_get_contents('php://input');
+        }
+        if ($arrSession == null && isset($_SESSION)) {
+            $arrSession = $_SESSION;
         }
 
         // First, get the script name or URL, and any parameters received
@@ -769,6 +774,9 @@ class Base_Request
             // Remember, this isn't guaranteed to be accurate
             $this->strUserAgent = $arrServer['HTTP_USER_AGENT'];
         }
+        
+        // Add the Session data to the collected data
+        $this->arrSession = $arrSession;
     }
 
     /**
@@ -862,5 +870,8 @@ class Base_Request
     {
         return $this->strUserAgent;
     }
-
+    public function get_arrSession()
+    {
+        return $this->arrSession;
+    }
 }

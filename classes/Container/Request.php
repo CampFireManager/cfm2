@@ -24,7 +24,8 @@ class Container_Request
         $arrGet = null,
         $arrPost = null,
         $arrFiles = null,
-        $strInput = null
+        $strInput = null,
+        $arrSession = null
     ) {
         $request = self::GetHandler();
         $request->parse(
@@ -34,7 +35,8 @@ class Container_Request
             $arrGet,
             $arrPost,
             $arrFiles,
-            $strInput
+            $strInput,
+            $arrSession
         );
     }
 }

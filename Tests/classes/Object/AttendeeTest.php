@@ -26,6 +26,86 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data['lastChange'] == null);
         $this->assertTrue($objAttendee->getKey('intAttendeeID') == null);
     }
+
+    public function testBrokerByIDAttendeeObjects()
+    {
+        $data = Object_Attendee::brokerByID(1);
+        $this->assertTrue(is_object($data));
+        $item = $data->getSelf();
+        $this->assertTrue($item['intAttendeeID'] == 1);
+        $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
+        $this->assertFalse(Object_Attendee::brokerByID(0));
+        $data = Object_Attendee::brokerByID(1);
+        $this->assertTrue(is_object($data));
+        $item = $data->getSelf();
+        $this->assertTrue($item['intAttendeeID'] == 1);
+        $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
+    }          
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function testFailBrokerByColumnSearchNoColumn()
+    {
+        @Object_Attendee::brokerByColumnSearch();
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function testFailBrokerByColumnSearch()
+    {
+        @Object_Attendee::brokerByColumnSearch('dummy', '1');
+    }
+    
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function testFailCountByColumnSearchNoColumn()
+    {
+        @Object_Attendee::countByColumnSearch();
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function testFailCountByColumnSearch()
+    {
+        @Object_Attendee::countByColumnSearch('dummy', '1');
+    }
+
+    public function testCountCommands()
+    {
+        $this->assertTrue(3 == Object_Attendee::countAll());
+        $this->assertTrue(0 == Object_Attendee::countByColumnSearch('intTalkID'));
+        $this->assertTrue(0 == Object_Attendee::countByColumnSearch('intTalkID', '0'));
+        $this->assertTrue(3 == Object_Attendee::countByColumnSearch('intTalkID', '1'));
+        $this->assertTrue(3 == Object_Attendee::countByColumnSearch('intTalkID', '%'));
+    }
+    
+    public function testBrokerByColumnSearchAttendeeObjects()
+    {
+        $data = Object_Attendee::brokerByColumnSearch('intTalkID');
+        $this->assertTrue(is_array($data));
+        $this->assertTrue(count($data) == 0);
+        $data = Object_Attendee::brokerByColumnSearch('intTalkID', '0');
+        $this->assertTrue(is_array($data));
+        $this->assertTrue(count($data) == 0);
+        $data = Object_Attendee::brokerByColumnSearch('intTalkID', '1');
+        $this->assertTrue(count($data) == 3);
+        $item = $data[0]->getSelf();
+        $this->assertTrue($item['intAttendeeID'] == 1);
+        $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
+        $data = Object_Attendee::brokerByColumnSearch('intTalkID', '%');
+        $this->assertTrue(count($data) == 3);
+        $item = $data[0]->getSelf();
+        $this->assertTrue($item['intAttendeeID'] == 1);
+        $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
+    }
     
     public function testBrokerAllAttendeeObjects()
     {
@@ -42,14 +122,39 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data[2]->getKey('intUserID') == '4');
         $this->assertTrue($data[2]->getKey('intTalkID') == '1');
     }
+
+    public function testLastModified()
+    {
+        $this->assertTrue(preg_match('/\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d/', Object_Attendee::lastChangeAll()) == 1);
+        $this->assertNull($data = Object_Attendee::lastChangeByColumnSearch('intTalkID'));
+        $this->assertNull($data = Object_Attendee::lastChangeByColumnSearch('intTalkID', '0'));
+        $this->assertTrue(preg_match('/\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d/', Object_Attendee::lastChangeByColumnSearch('intTalkID', '1')) == 1);
+        $this->assertTrue(preg_match('/\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d/', Object_Attendee::lastChangeByColumnSearch('intTalkID', '%')) == 1);
+    }
     
-    public function testBrokerByIDAttendeeObjects()
+    public function testGetSelf()
     {
         $data = Object_Attendee::brokerByID(1);
-        $this->assertTrue(is_object($data));
+        $this->assertFalse($data->isFull());
         $item = $data->getSelf();
+        $this->assertTrue(count($item) == 4);
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
+        $this->assertTrue(preg_match('/\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d/', $item['lastChange']) == 1);
+        $data->setFull(true);
+        $this->assertTrue($data->isFull());
+        $item = $data->getSelf();
+        $this->assertTrue(count($item) == 5);
+        $this->assertTrue($item['intAttendeeID'] == 1);
+        $this->assertTrue($item['intUserID'] == '2');
+        $this->assertTrue($item['intTalkID'] == '1');
+        $this->assertTrue(preg_match('/\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d/', $item['lastChange']) == 1);
+        $this->assertTrue(is_array($item['isEditable']));
+        $this->assertTrue(count($item['isEditable']) == 0);
+        $objUser = new Object_User_Demo();
+        $objUser->initializeDemo();
+        $objUserauth = new Object_Userauth_Demo();
+        $objUserauth->initializeDemo();
     }
 }

@@ -130,9 +130,8 @@ class Object_Userauth extends Abstract_GenericObject
                 $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
                 $objCache->arrCache[$thisClassName]['current'] = $result;
                 return $result;
-            } catch (PDOException $e) {
-                error_log("Error in SQL: " . $e->getMessage());
-                return false;
+            } catch (Exception $e) {
+                throw $e;
             }
         } elseif (isset($SESSION['OPENID_AUTH']) AND $SESSION['OPENID_AUTH'] != false) {
             $key = 'openid';
@@ -182,9 +181,8 @@ class Object_Userauth extends Abstract_GenericObject
                     }
                 }
                 return $result;
-            } catch (PDOException $e) {
-                error_log("Error in SQL: " . $e->getMessage());
-                return false;
+            } catch (Exception $e) {
+                throw $e;
             }
         } else {
             return false;
@@ -208,7 +206,7 @@ class Object_Userauth extends Abstract_GenericObject
             return $this;
         }
         Base_GeneralFunctions::startSession();
-        $arrRequestData = Base_Request::getRequest();
+        $arrRequestData = Container_Request::getRequest();
         if (isset($SESSION['intUserAuthID'])) {
             unset($SESSION['intUserAuthID']);
         }
