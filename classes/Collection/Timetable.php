@@ -44,6 +44,28 @@ class Collection_Timetable extends Abstract_GenericCollection
         $this->arrData = $self->arrData;
         return $this;
     }
+    
+    public static function lastChangeByColumnSearch($column, $value)
+    {
+        return self::lastChangeAll();
+    }
+    
+    public static function lastChangeAll()
+    {
+        $intRoom = strtotime(Object_Room::lastChangeAll());
+        $intSlot = strtotime(Object_Slot::lastChangeAll());
+        $intTalk = strtotime(Object_Talk::lastChangeAll());
+        if ($intRoom >= $intSlot && $intRoom >= $intTalk) {
+            return date('Y-m-d H:i:s', $intRoom);
+        }
+        if ($intSlot >= $intRoom && $intSlot >= $intTalk) {
+            return date('Y-m-d H:i:s', $intSlot);
+        }
+        if ($intTalk >= $intRoom && $intTalk >= $intSlot) {
+            return date('Y-m-d H:i:s', $intTalk);
+        }
+
+    }
 }
 
 /**
