@@ -235,7 +235,7 @@ class Base_Request
             $strInput = file_get_contents('php://input');
         }
         if ($arrSession == null && isset($_SESSION)) {
-            $arrSession = $_SESSION;
+            $arrSession = &$_SESSION;
         }
 
         // First, get the script name or URL, and any parameters received

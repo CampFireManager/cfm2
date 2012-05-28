@@ -38,5 +38,6 @@ class Container_Request
             $strInput,
             $arrSession
         );
+        return $request;
     }
 }

@@ -21,8 +21,8 @@ require_once dirname(__FILE__) . '/classes/autoloader.php';
 Container_Config::LoadConfig();
 
 
-$arrRequestData = Container_Request::getRequest();
-$arrMediaType = explode('/', $arrRequestData['strPreferredAcceptType']);
+$objRequest = Container_Request::getRequest();
+$arrMediaType = explode('/', $objRequest->get_strPrefAcceptType());
 
 if (isset($arrRequestData['requestUrlParameters']['logout'])) {
     Object_User::logout();
@@ -33,38 +33,50 @@ if (isset($arrRequestData['requestUrlParameters']['logout'])) {
 $rest = false;
 $media = false;
 
-if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0) {
-    if ($arrRequestData['pathItems'][0] == 'media') {
-        unset($arrRequestData['pathItems'][0]);
+if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathItems()) > 0) {
+    $arrPathItems = $objRequest->get_arrPathItems();
+    if ($arrPathItems[0] == 'media') {
+        unset($arrPathItems[0]);
         $tmpPathItems = array();
-        foreach ($arrRequestData['pathItems'] as $data) {
+        foreach ($arrPathItems as $data) {
             $tmpPathItems[] = $data;
         }
-        $arrRequestData['pathItems'] = $tmpPathItems;
-        $media = Base_Request::hasMediaType('media');
+        $arrPathItems = $tmpPathItems;
+        $media = $objRequest->hasMediaType('media');
         if (! $media) {
-            Base_Response::sendHttpResponse(404, null, $arrRequestData['strPreferredAcceptType']);
+            Base_Response::sendHttpResponse(404, null, $objRequest->get_strPrefAcceptType());
         }
         $file = Container_Config::brokerByID('strMediaPath', dirname(__FILE__) . '/Media')->getKey('value');
-        foreach ($arrRequestData['pathItems'] as $key => $pathItem) {
+        foreach ($arrPathItems as $key => $pathItem) {
             if ($pathItem == '..') {
-                Base_Response::sendHttpResponse(403, null, $arrRequestData['strPreferredAcceptType']);
+                Base_Response::sendHttpResponse(403, null, $objRequest->get_strPrefAcceptType());
             }
             $file .= '/' . $pathItem;
         }
-        if (isset($arrRequestData['pathFormat']) && $arrRequestData['pathFormat'] != '') {
-            $file .= '.' . $arrRequestData['pathFormat'];
+        if ($objRequest->get_strPathFormat() != '') {
+            $file .= '.' . $objRequest->get_strPathFormat();
         }
         if (is_file($file)) {
-            Base_Response::sendResumableFile($file, TRUE, $arrRequestData['strPreferredAcceptType']);
+            Base_Response::sendResumableFile($file, TRUE, $objRequest->get_strPrefAcceptType());
         }
     }
-    if ($arrRequestData['pathItems'][0] == 'openid') {
-        if (isset($_POST['id'])) {
-            Base_OpenID::request($_POST['id'], $arrRequestData['basePath'] . $arrRequestData['pathSite'] . 'openid', $arrRequestData['basePath'] . $arrRequestData['pathSite'], $arrRequestData['basePath'] . $arrRequestData['pathSite']);
-        } elseif (isset($_REQUEST['return'])) {
-            Base_OpenID::response($arrRequestData['basePath'] . $arrRequestData['pathSite'] . 'openid');
-        } elseif (isset($_GET['logout'])) {
+    if ($arrPathItems[0] == 'openid') {
+        if ($objRequest->get_strRequestMethod() == 'post' 
+        && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id')
+        ) {
+            Base_OpenID::request(
+                Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id'), 
+                $objRequest->get_strBasePath() . 'openid', 
+                $objRequest->get_strBasePath(), 
+                $objRequest->get_strBasePath()
+            );
+        } elseif (Base_GeneralFunctions::getValue(
+            $objRequest->get_arrRqstParameters(), 'return')
+        ) {
+            Base_OpenID::response($objRequest->get_strBasePath() . 'openid');
+        } elseif ($objRequest->get_strRequestMethod() == 'get' 
+        && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'logout')
+        ) {
             if ($arrObjects['Object_User']['current'] != false) {
                 if (isset($arrRequestData['requestUrlParameters']['logout'])) {
                     $arrObjects['Object_User']['current']->logout();
@@ -75,17 +87,17 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             Base_Response::redirectTo('timetable');
         }
     }
-    if ($arrRequestData['pathItems'][0] == 'rest' && Base_Request::hasMediaType('rest')) {
-        unset($arrRequestData['pathItems'][0]);
+    if ($arrPathItems[0] == 'rest' && Base_Request::hasMediaType('rest')) {
+        unset($arrPathItems[0]);
         $tmpPathItems = array();
-        foreach ($arrRequestData['pathItems'] as $data) {
+        foreach ($arrPathItems as $data) {
             $tmpPathItems[] = $data;
         }
-        $arrRequestData['pathItems'] = $tmpPathItems;
+        $arrPathItems = $tmpPathItems;
         $rest = true;
     }
 }
-    
+
 // What type of objects can we request
 $arrValidObjects = array('config' => 'Base_Config');
 
@@ -132,8 +144,8 @@ $renderPage = null;
 
 $arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
 
-if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']) > 0 && $arrRequestData['pathItems'][0] != '') {
-    foreach ($arrRequestData['pathItems'] as $pathItem) {
+if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '') {
+    foreach ($arrPathItems as $pathItem) {
         if (isset($arrValidObjects[$pathItem])) {
             if ($renderPage == null) {
                 $useObjects[$arrValidObjects[$pathItem]] = null;
@@ -150,7 +162,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
 
     foreach ($useObjects as $object => $item) {
         if ($item == null) {
-            switch ($arrRequestData['method']) {
+            switch ($objRequest->get_strRequestMethod()) {
             case 'head':
             case 'get':
                 $arrObjects[$object] = $object::brokerAll();
@@ -158,14 +170,14 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             case 'post':
             case 'put':
                 $newobject = new $object(false);
-                foreach ($arrRequestData['requestUrlParameters'] as $key => $value) {
+                foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
                     $newobject->setKey($key, $value);
                 }
                 try {
                     $newobject->create();
                     $key = $newobject->getPrimaryKeyValue();
                     if ($key == '') {
-                        throw new Exception("Although the object was created, we didn't receive a primary key for it. Values are: " . print_r($newobject->getSelf()));
+                        throw new Exception("Although the object was created, we didn't receive a primary key for it. Values are: " . print_r($newobject->getSelf(), true));
                     } else {
                         $arrType = explode('_', $object);
                         $object_type = strtolower($arrType[1]);
@@ -181,7 +193,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
             }
         } else {
             $requestedobject = $object::brokerByID($item);
-            switch ($arrRequestData['method']) {
+            switch ($objRequest->get_strRequestMethod()) {
             case 'head':
             case 'get':
                 $arrObjects[$object][$item] = $requestedobject;
@@ -191,7 +203,7 @@ if (is_array($arrRequestData['pathItems']) && count($arrRequestData['pathItems']
                 if ($requestedobject == false) {
                     Base_Response::sendHttpResponse(404);
                 } else {
-                    foreach ($arrRequestData['requestUrlParameters'] as $key => $value) {
+                    foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
                         $requestedobject->setKey($key, $value);
                     }
                     try {
@@ -236,18 +248,18 @@ foreach ($arrObjects as $object_group => $data) {
 }
 
 if ($rest) {
-    switch ($arrRequestData['strPreferredAcceptType']) {
+    switch ($objRequest->get_strPrefAcceptType()) {
     case 'application/json':
-        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8json($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8json($arrObjectsData), $objRequest->get_strPrefAcceptType());
         break;
     case 'text/xml':
-        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8xml($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8xml($arrObjectsData), $objRequest->get_strPrefAcceptType());
         break;
     case 'text/html':
-        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8html($arrObjectsData), $arrRequestData['strPreferredAcceptType']);
+        Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8html($arrObjectsData), $objRequest->get_strPrefAcceptType());
         break;
     // I'd like to add RDFa or TTL files here, but I need to work out how to set the data up for that.
     }
 } else {
-    Base_TemplateLoader::render($renderPage, $arrObjectsData);
+    Base_Response::render($renderPage, $arrObjectsData);
 }

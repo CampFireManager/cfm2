@@ -81,8 +81,8 @@ class Base_Response
     */
     public static function requireAuth()
     {
-        $arrRequestData = Base_Request::getRequest();
-        if ($arrRequestData['username'] == null) {
+        $objRequest = Container_Request::getRequest();
+        if ($objRequest->get_strUsername() == null) {
             Base_Response::sendHttpResponse(401);
         }
     }
@@ -163,7 +163,7 @@ class Base_Response
         // I might need to turn this off, given some of the comments on the SO site!
         
         
-        $arrRequestData = Base_Request::getRequest();
+        $arrRequestData = Container_Request::getRequest();
         $thisetag = sha1($arrRequestData['requestUrlExcludingParameters'] . $body);
         header("ETag: \"$thisetag\"");
         foreach ($arrRequestData['If-None-Match'] as $etag) {
@@ -313,14 +313,15 @@ class Base_Response
     */
     public static function redirectTo($newPage = '')
     {
-        $arrRequestData = Base_Request::getRequest();
+        $objRequest = Container_Request::getRequest();
+        $redirectUrl = $objRequest->get_strBasePath();
+        if (substr($redirectUrl, -1) == '/') {
+            $redirectUrl = substr($redirectUrl, 0, -1);
+        }
         if (substr($newPage, 0, 1) != '/') {
-            $newPage = '/' . $newPage;
+            $redirectUrl .= '/';
         }
-        if (substr($arrRequestData['pathSite'], -1) == '/') {
-            $arrRequestData['pathSite'] = substr($arrRequestData['pathSite'], 0, -1);
-        }
-        $redirectUrl = $arrRequestData['basePath'] . $arrRequestData['pathSite'] . $newPage;
+        $redirectUrl .= $newPage;
         header("Location: $redirectUrl");
         exit(0);
     }
@@ -357,19 +358,28 @@ class Base_Response
                 $objSmarty->assign($key, $value);
             }
         }
-        foreach (Container_Config::brokerAll() as $key=>$value) {
-            $config[$key] = $value['value'];
+        foreach (Container_Config::brokerAll() as $key=>$object) {
+            switch ($key) {
+                case 'RW_DSN':
+                case 'RW_User':
+                case 'RW_Pass':
+                case 'RO_DSN':
+                case 'RO_User':
+                case 'RO_Pass':
+                case 'DatabaseType':
+                    break;
+                default:
+                    $config[$key] = $object->getKey('value');
+            }
+            
         }
-        $arrRequestData = Base_Request::getRequest();
-        $config['baseurl'] = $arrRequestData['basePath'] . $arrRequestData['pathSite'];
-        if (substr($config['baseurl'], -1) != '/') {
-            $config['baseurl'] .= '/';
-        }
+        $objRequest = Container_Request::getRequest();
+        $config['baseurl'] = $objRequest->get_strBasePath();
         $objSmarty->assign('SiteConfig', $config);
-        if (file_exists($baseSmarty . 'Source/' . $template . '.html')) {
-            $objSmarty->display($template . '.html');
+        if (file_exists($baseSmarty . 'Source/' . $template . '.html.tpl')) {
+            $objSmarty->display($template . '.html.tpl');
         } else {
-            $objSmarty->display('Generic_Object.html');
+            $objSmarty->display('Generic_Object.html.tpl');
         }
     }
 }

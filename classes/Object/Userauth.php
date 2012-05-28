@@ -119,13 +119,13 @@ class Object_Userauth extends Abstract_GenericObject
             return $objCache->arrCache[$thisClassName]['current'];
         }
         Base_GeneralFunctions::startSession();
-        $arrRequestData = Container_Request::getRequest();
-        if (isset($SESSION['intUserAuthID']) && $SESSION['intUserAuthID'] != '') {
+        $objRequest = Container_Request::getRequest();
+        if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID', false, true)) {
             try {
                 $objDatabase = Container_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE intUserAuthID = ? LIMIT 1";
                 $query = $objDatabase->prepare($sql);
-                $query->execute(array($SESSION['intUserAuthID']));
+                $query->execute(array(Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID')));
                 $result = $query->fetchObject($thisClassName);
                 $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
                 $objCache->arrCache[$thisClassName]['current'] = $result;
@@ -133,21 +133,21 @@ class Object_Userauth extends Abstract_GenericObject
             } catch (Exception $e) {
                 throw $e;
             }
-        } elseif (isset($SESSION['OPENID_AUTH']) AND $SESSION['OPENID_AUTH'] != false) {
+        } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH', false, true)) {
             $key = 'openid';
-            $value = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['OPENID_AUTH']);
+            $value = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH'));
             $createIfNotExist = true;
-        } elseif (isset($arrRequestData['username']) && $arrRequestData['username'] != null && isset($arrRequestData['password']) && $arrRequestData['password'] != null) {
+        } elseif ($objRequest->get_strUsername() != null && $objRequest->get_strPassword() != null) {
             $key = 'basicauth';
-            $value = $arrRequestData['username'] . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['password']);
-        } elseif (isset($arrRequestData['requestUrlParameters']['code']) && $arrRequestData['requestUrlParameters']['code'] != null) {
+            $value = $objRequest->get_strUsername() . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $objRequest->get_strPassword());
+        } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code', false, true)) {
             $key = 'codeonly';
-            $value = '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['requestUrlParameters']['code']);
-        } elseif (isset($arrRequestData['requestUrlParameters']['username']) 
-                && isset($arrRequestData['requestUrlParameters']['password'])
+            $value = '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code'));
+        } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username', false, true)
+                && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true)
                 ) {
             $key = 'basicauth';
-            $value = $arrRequestData['requestUrlParameters']['username'] . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrRequestData['requestUrlParameters']['password']);
+            $value = Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username') . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password'));
             if (isset($arrRequestData['requestUrlParameters']['register'])) {
                 $createIfNotExist = true;
             }
@@ -161,7 +161,7 @@ class Object_Userauth extends Abstract_GenericObject
                 $result = $query->fetchObject($thisClassName);
                 if ($result != false) {
                     $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
-                    $SESSION['intUserAuthID'] = $result->getKey('intUserAuthID');
+                    $_SESSION['intUserAuthID'] = $result->getKey('intUserAuthID');
                     $objCache->arrCache[$thisClassName]['current'] = $result;
                     if ($key == 'onetime') {
                         $sql = "DELETE FROM userauth WHERE $key = ? LIMIT 1";
@@ -173,7 +173,7 @@ class Object_Userauth extends Abstract_GenericObject
                         try {
                             $return = new Object_User(true);
                             if ($return != false && isset($return->intUserAuthIDTemp)) {
-                                $SESSION['intUserAuthID'] = $return->intUserAuthIDTemp;
+                                $_SESSION['intUserAuthID'] = $return->intUserAuthIDTemp;
                             }
                         } catch (Exception $e) {
                             return $e->getMessage();
@@ -207,23 +207,21 @@ class Object_Userauth extends Abstract_GenericObject
         }
         Base_GeneralFunctions::startSession();
         $arrRequestData = Container_Request::getRequest();
-        if (isset($SESSION['intUserAuthID'])) {
-            unset($SESSION['intUserAuthID']);
+        if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID', false, true)) {
+            unset($_SESSION['intUserAuthID']);
         }
-        if (isset($SESSION['OPENID_AUTH'])) {
+        if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH', false, true)) {
             $thisClass->setKey('enumAuthType', 'openid');
-            $thisClass->setKey('strAuthValue', $arrRequestData['OPENID_AUTH']);
+            $thisClass->setKey('strAuthValue', Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH'));
         } elseif (
-            isset($arrRequestData['requestUrlParameters']['username']) 
-            && $arrRequestData['requestUrlParameters']['username'] != null 
-            && isset($arrRequestData['requestUrlParameters']['password']) 
-            && $arrRequestData['requestUrlParameters']['password'] != null
+            Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username', false, true)
+            && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true)
         ) {
-            if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', $arrRequestData['requestUrlParameters']['username'] . ':%')) > 0) {
+            if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username') . ':%')) > 0) {
                 throw new Exception("This username already exists, please select another");
             }
             $this->setKey('enumAuthType', 'basicauth');
-            $this->setKey('strAuthValue', array('password' => $arrRequestData['requestUrlParameters']['password'], 'username' => $arrRequestData['requestUrlParameters']['username']));
+            $this->setKey('strAuthValue', array('password' => Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password'), 'username' => Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username')));
         } elseif ($codeonly != false) {
             $this->setKey('enumAuthType', 'codeonly');
             $authString = '';
@@ -266,13 +264,18 @@ class Object_Userauth extends Abstract_GenericObject
             $self['strAuthValue'] = $string[0] . ':' . str_repeat('.', strlen($string[1]));
             break;
         case 'onetime':
-            $string = explode(':', $this->strAuthValue);
-            $self['strAuthValue'] = substr($string[1], 0, 2) . str_repeat('.', strlen($string[1]) - 4) . substr($string[1], -2);
+            $self['strAuthValue'] = substr($this->strAuthValue, 0, 2) . str_repeat('.', strlen($this->strAuthValue) - 4) . substr($this->strAuthValue, -2);
             break;
         case 'codeonly':
             $string = explode(':', $this->strAuthValue);
-            if (preg_match('/([^@]+)@([^@]+)', $string[0], $matches) > 0) {
-                $self['strAuthValue'] = substr($matches[1], 0, 1) . str_repeat('.', strlen($matches[1]) - 2) . substr($matches[1], -1) . '@' . substr($matches[2], 0, 2) . str_repeat('.', strlen($matches[1]) - 4) . substr($matches[1], -2);
+            if (preg_match('/([^@]+)@([^@]+)/', $string[0], $matches) > 0) {
+                $self['strAuthValue'] = substr($matches[1], 0, 1)
+                    . str_repeat('.', strlen($matches[1]) - 2)
+                    . substr($matches[1], -1)
+                    . '@' 
+                    . substr($matches[2], 0, 2) 
+                    . str_repeat('.', strlen($matches[2]) - 4) 
+                    . substr($matches[2], -2);
             } else {
                 $self['strAuthValue'] = str_repeat('.', strlen($string[0]) - 6) . substr($string[0], -6);
             }

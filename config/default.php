@@ -93,13 +93,6 @@ $RO_USER = '';
 $RO_PASS = '';
 
 /**
- * These values store local application specific values - usually for programs
- * which exist locally.
- * @var array An array of application specific values.
- */
-$APPCONFIG = array();
-
-/**
  * This is the local timezone indicator
  * @var string
  */
@@ -112,20 +105,19 @@ if (file_exists(dirname(__FILE__) . "/local.php")) {
     include dirname(__FILE__) . "/local.php";
 }
 
-if ($RW_DSN == '') {
-    $RW_DSN = array(
-        'string' => "$RW_TYPE:host=$RW_HOST;port=$RW_PORT;dbname=$RW_BASE",
-        'user' => $RW_USER,
-        'pass' => $RW_PASS
-    );
-}
+$this->set('DatabaseType', $RW_TYPE);
+$this->set('RO_DSN', null);
+$this->set('RO_User', null);
+$this->set('RO_Pass', null);
 
-if ($RO_DSN == '' && $SPLIT_RO_RW == true) {
-    $RO_DSN = array(
-        'string' => "$RO_TYPE:host=$RO_HOST;port=$RO_PORT;dbname=$RO_BASE",
-        'user' => $RO_USER,
-        'pass' => $RO_PASS
-    );
+$this->set('RW_DSN', "host=$RW_HOST;port=$RW_PORT;dbname=$RW_BASE");
+$this->set('RW_User', $RW_USER);
+$this->set('RW_Pass', $RW_PASS);
+
+if ($SPLIT_RO_RW == true) {
+    $this->set('RO_DSN', "host=$RO_HOST;port=$RO_PORT;dbname=$RO_BASE");
+    $this->set('RO_User', $RO_USER);
+    $this->set('RO_Pass', $RO_PASS);
 }
 
 date_default_timezone_set($TZ);
@@ -141,4 +133,4 @@ if (date_default_timezone_get() == 'UTC') {
     $offsetMinutes = round((abs($offset) - $offsetHours * 3600) / 60);
     $offsetString = ($offset < 0 ? '-' : '+') . ($offsetHours < 10 ? '0' : '') . $offsetHours . ':' . ($offsetMinutes < 10 ? '0' : '') . $offsetMinutes;
 }
-$APPCONFIG['TZ_Offset'] = $offsetString;
+$this->set('TZ', $offsetString);
