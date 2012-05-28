@@ -22,8 +22,7 @@ class Container_Database
         $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
-    )
-    {
+    ) {
         $self = self::GetHandler();
         $self->objDatabase = new Base_Database();
         $self->objDatabase->setConnectionVars($strDbType, $arrDsnRo, $arrDsnRw);
