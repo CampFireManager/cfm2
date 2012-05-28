@@ -23,17 +23,17 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Resource extends Base_GenericObject
+class Object_Resource extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-    	'strResourceName' => array('type' => 'varchar', 'length' => 255),
+        'strResourceName' => array('type' => 'varchar', 'length' => 255),
         'decCostToUse' => array('type' => 'decimal', 'length' => '7,3'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "resource";
     protected $strDBKeyCol = "intResourceID";
-    protected $mustBeAdminToModify = true;
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intResourceID = null;
     protected $strResourceName = null;

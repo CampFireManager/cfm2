@@ -22,10 +22,10 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_User extends Base_GenericObject
+class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-    	'strUserName' => array('type' => 'varchar', 'length' => 255),
+        'strUserName' => array('type' => 'varchar', 'length' => 255),
         'isWorker' => array('type' => 'tinyint', 'length' => 1),
         'isAdmin' => array('type' => 'tinyint', 'length' => 1),
         'hasAttended' => array('type' => 'tinyint', 'length' => 1),
@@ -34,7 +34,7 @@ class Object_User extends Base_GenericObject
     );
     protected $strDBTable = "user";
     protected $strDBKeyCol = "intUserID";
-    protected $mustBeCreatorToModify = true;
+    protected $reqCreatorToMod = true;
     // Local Object Requirements
     protected $intUserID = null;
     protected $strUserName = null;
@@ -44,29 +44,23 @@ class Object_User extends Base_GenericObject
     protected $isHere = false;
     protected $lastChange = false;
     // Temporary storage values
-    public $temp_intUserAuthID = null;
+    public $intUserAuthIDTemp = null;
 
     /**
      * Get the object for the current user.
      * 
-     * @todo Use the getDependency() function to load the database, rather
-     * than Base_Database::getConnection
-     * 
-     * @todo Use the getDependency() function to get the userauth object, 
-     * rather than Object_Userauth::brokerCurrent()
-     *
      * @return object UserObject for intUserID
      */
     public static function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
-        $this_class_name = get_called_class();
-        $this_class = new $this_class_name(false);
-        if (true === isset($objCache->arrCache[$this_class_name]['current'])
-            && $objCache->arrCache[$this_class_name]['current'] != null
-            && $objCache->arrCache[$this_class_name]['current'] != false
+        $thisClassName = get_called_class();
+        $thisClass = new $thisClassName(false);
+        if (true === isset($objCache->arrCache[$thisClassName]['current'])
+            && $objCache->arrCache[$thisClassName]['current'] != null
+            && $objCache->arrCache[$thisClassName]['current'] != false
         ) {
-            return $objCache->arrCache[$this_class_name]['current'];
+            return $objCache->arrCache[$thisClassName]['current'];
         }
         $user = Object_Userauth::brokerCurrent();
         if ($user !== false) {
@@ -75,13 +69,13 @@ class Object_User extends Base_GenericObject
             return false;
         }
         try {
-            $db = Base_Database::getConnection();
-            $sql = "SELECT * FROM {$this_class->strDBTable} WHERE {$this_class->strDBKeyCol} = ? LIMIT 1";
-            $query = $db->prepare($sql);
+            $objDatabase = Container_Database::getConnection();
+            $sql = "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1";
+            $query = $objDatabase->prepare($sql);
             $query->execute(array($intUserID));
-            $result = $query->fetchObject($this_class_name);
-            $objCache->arrCache[$this_class_name]['id'][$intUserID] = $result;
-            $objCache->arrCache[$this_class_name]['current'] = $result;
+            $result = $query->fetchObject($thisClassName);
+            $objCache->arrCache[$thisClassName]['id'][$intUserID] = $result;
+            $objCache->arrCache[$thisClassName]['current'] = $result;
             return $result;
         } catch(PDOException $e) {
             error_log("SQL Error: " . $e->getMessage());
@@ -98,7 +92,7 @@ class Object_User extends Base_GenericObject
      */
     function __construct($isCreationAction = false)
     {
-        parent::__construct($isCreationAction);
+        parent::__construct();
         if (! $isCreationAction) {
             return $this;
         }
@@ -109,7 +103,7 @@ class Object_User extends Base_GenericObject
                 $this->create();
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
-                $this->temp_intUserAuthID = $objUserAuth->getKey('intUserAuthID');
+                $this->intUserAuthIDTemp = $objUserAuth->getKey('intUserAuthID');
             } else {
                 $this->errorMessageReturn = $objUserAuth;
             }
@@ -128,11 +122,11 @@ class Object_User extends Base_GenericObject
     {
         Base_GeneralFunctions::startSession();
         $arrRequestData = Base_Request::getRequest();
-        if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
-            unset($_SESSION['intUserAuthID']);
+        if (isset($SESSION['intUserAuthID']) && $SESSION['intUserAuthID'] != '') {
+            unset($SESSION['intUserAuthID']);
         }
-        if (isset($_SESSION['OPENID_AUTH']) && $_SESSION['OPENID_AUTH'] != '') {
-            unset($_SESSION['OPENID_AUTH']);
+        if (isset($SESSION['OPENID_AUTH']) && $SESSION['OPENID_AUTH'] != '') {
+            unset($SESSION['OPENID_AUTH']);
         }
         if (isset($arrRequestData['username']) && $arrRequestData['username'] != '') {
             Base_Response::sendHttpResponse(401);
@@ -149,7 +143,7 @@ class Object_User extends Base_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
-        if ($this->getFull() == true) {
+        if ($this->isFull() == true) {
             $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
             foreach ($arrUserAuth as $key => $value) {
                 $self['arrUserAuth'][$key] = $value->getSelf();

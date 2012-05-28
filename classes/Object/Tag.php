@@ -22,19 +22,19 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Tag extends Base_GenericObject
+class Object_Tag extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-    	'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
+        'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
         'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "tag";
     protected $strDBKeyCol = "intTagID";
-    protected $mustBeAdminToModify = false;
-    protected $mustBeCreatorToModify = false;
+    protected $reqAdminToMod = false;
+    protected $reqCreatorToMod = false;
     // Local Object Requirements
     protected $intTagID = null;
     protected $strTagName = null;
@@ -46,15 +46,13 @@ class Object_Tag extends Base_GenericObject
      * This function overloads the normal construction function to ensure that
      * Tag modifications are set as per the config file.
      *
-     * @param boolean $isCreationAction Pass this variable on to the parent class
-     * 
      * @return object
      */
-    function __construct($isCreationAction = false)
+    function __construct()
     {
-        $this->mustBeAdminToModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyAdminsCanTagTalks', 'false'));
-        $this->mustBeCreatorToModify = Base_GeneralFunctions::asBoolean(Base_Config::getConfig('OnlyTagCreatorsCanEditTalkTags', 'false'));
-        return parent::__construct($isCreationAction);
+        $this->reqAdminToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
+        $this->reqCreatorToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
+        return parent::__construct();
     }
 }
 
