@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_NowAndNext extends Base_GenericCollection
+class Collection_NowAndNext extends Abstract_GenericCollection
 {
     /**
      * Collect the data for this collection
@@ -42,8 +42,8 @@ class Collection_NowAndNext extends Base_GenericCollection
             $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
         }
         $arrTalkObjects = Object_Talk::brokerAll();
-        $arrDefaultSlotTypeObjects = Object_DefaultSlotType::brokerAll();
-        foreach ($arrDefaultSlotTypeObjects as $objDefaultSlotType) {
+        $arrDefSlotTypeObj = Object_DefaultSlotType::brokerAll();
+        foreach ($arrDefSlotTypeObj as $objDefaultSlotType) {
             $arrDefaultSlotTypes[$objDefaultSlotType->getKey('intDefaultSlotTypeID')] = $objDefaultSlotType->getSelf();
         }
 
@@ -51,7 +51,6 @@ class Collection_NowAndNext extends Base_GenericCollection
         foreach ($arrSlotObjects as $objSlot) {
             $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
             if ($objSlot->getKey('intSlotID') == $now || $objSlot->getKey('intSlotID') == $next) {
-                $arrSlot = $objSlot->getSelf();
                 foreach ($arrRoomObjects as $objRoom) {
                     $this->arrData['arrRooms']['room_' . $objRoom->getKey('intRoomID')] = $objRoom->getSelf();
                     if ($room == null || $objRoom->getKey('intRoomID') == $room) {

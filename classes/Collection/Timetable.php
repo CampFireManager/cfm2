@@ -22,7 +22,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_Timetable extends Base_GenericCollection
+class Collection_Timetable extends Abstract_GenericCollection
 {
     /**
      * A mock up of the Object_ style of broker functions
@@ -43,6 +43,28 @@ class Collection_Timetable extends Base_GenericCollection
         }
         $this->arrData = $self->arrData;
         return $this;
+    }
+    
+    public static function lastChangeByColumnSearch($column, $value)
+    {
+        return self::lastChangeAll();
+    }
+    
+    public static function lastChangeAll()
+    {
+        $intRoom = strtotime(Object_Room::lastChangeAll());
+        $intSlot = strtotime(Object_Slot::lastChangeAll());
+        $intTalk = strtotime(Object_Talk::lastChangeAll());
+        if ($intRoom >= $intSlot && $intRoom >= $intTalk) {
+            return date('Y-m-d H:i:s', $intRoom);
+        }
+        if ($intSlot >= $intRoom && $intSlot >= $intTalk) {
+            return date('Y-m-d H:i:s', $intSlot);
+        }
+        if ($intTalk >= $intRoom && $intTalk >= $intSlot) {
+            return date('Y-m-d H:i:s', $intTalk);
+        }
+
     }
 }
 
@@ -78,8 +100,8 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
             $this->arrData['arrSlots']['slot_' . $objSlot->getKey('intSlotID')] = $objSlot->getSelf();
         }
         $arrTalkObjects = Object_Talk::brokerAll();
-        $arrDefaultSlotTypeObjects = Object_DefaultSlotType::brokerAll();
-        foreach ($arrDefaultSlotTypeObjects as $objDefaultSlotType) {
+        $arrDefSlotTypeObj = Object_DefaultSlotType::brokerAll();
+        foreach ($arrDefSlotTypeObj as $objDefaultSlotType) {
             $arrDefaultSlotTypes[$objDefaultSlotType->getKey('intDefaultSlotTypeID')] = $objDefaultSlotType->getSelf();
         }
 

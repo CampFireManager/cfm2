@@ -22,11 +22,11 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Talk extends Base_GenericObject
+class Object_Talk extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-    	'strTalkTitle' => array('type' => 'varchar', 'length' => 255),
+        'strTalkTitle' => array('type' => 'varchar', 'length' => 255),
         'strTalkSummary' => array('type' => 'text'),
         'intUserID' => array('type' => 'int', 'length' => 11),
         'intRoomID' => array('type' => 'int', 'length' => 11),
@@ -42,7 +42,7 @@ class Object_Talk extends Base_GenericObject
     );
     protected $strDBTable = "talk";
     protected $strDBKeyCol = "intTalkID";
-    protected $mustBeCreatorToModify = true;
+    protected $reqCreatorToMod = true;
     // Local Object Requirements
     protected $intTalkID = null;
     protected $strTalkTitle = null;
@@ -68,7 +68,7 @@ class Object_Talk extends Base_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
-        if ($this->getFull() == true) {
+        if ($this->isFull() == true) {
             if ($this->intUserID != null && $this->intUserID > 0) {
                 $objUser = Object_User::brokerByID($this->intUserID);
                 if (is_object($objUser)) {

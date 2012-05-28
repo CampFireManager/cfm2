@@ -22,11 +22,11 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Slot extends Base_GenericObject
+class Object_Slot extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-    	'dateStart' => array('type' => 'date'),
+        'dateStart' => array('type' => 'date'),
         'timeStart' => array('type' => 'time'),
         'dateEnd' => array('type' => 'date'),
         'timeEnd' => array('type' => 'time'),
@@ -35,7 +35,7 @@ class Object_Slot extends Base_GenericObject
     );
     protected $strDBTable = "slot";
     protected $strDBKeyCol = "intSlotID";
-    protected $mustBeAdminToModify = true;
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intSlotID = null;
     protected $dateStart = null;
@@ -65,11 +65,11 @@ class Object_Slot extends Base_GenericObject
                 }
             }
         }
-        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
-        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Base_Config::getConfigLocal('TZ_Offset', 'Z');
+        $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
+        $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         
-        if ($this->getFull() == true) {
+        if ($this->isFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
                 if (is_object($objDefaultSlotType)) {

@@ -25,7 +25,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_DefaultSlotType extends Base_GenericObject
+class Object_DefaultSlotType extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -35,7 +35,7 @@ class Object_DefaultSlotType extends Base_GenericObject
     );
     protected $strDBTable = "defaultslottype";
     protected $strDBKeyCol = "intDefaultSlotTypeID";
-    protected $mustBeAdminToModify = true;
+    protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intDefaultSlotTypeID = null;
     protected $strDefaultSlotType = null;

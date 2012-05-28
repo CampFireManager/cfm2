@@ -25,7 +25,7 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Screen extends Base_GenericObject
+class Object_Screen extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
@@ -52,7 +52,7 @@ class Object_Screen extends Base_GenericObject
      */
     public function __construct($isCreationAction = false)
     {
-        $self = parent::__construct($isCreationAction);
+        $self = parent::__construct();
         if ($isCreationAction == true) {
             $self->setKey('strScreenName', $_SERVER['REMOTE_ADDR']);
             $self->create();

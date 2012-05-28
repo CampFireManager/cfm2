@@ -1,84 +1,102 @@
 <?php
-/**
- * CampFire Manager is a scheduling tool predominently used at BarCamps to 
- * schedule talks based, mainly, on the number of people attending each talk
- * receives.
- *
- * PHP version 5
- *
- * @category Default
- * @package  CampFireManager2
- * @author   Jon Spriggs <jon@sprig.gs>
- * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
- */
-/**
- * This singleton class initializes the connection to the database (whether 
- * read-write or read-only) and returns a handler for that to the rest of the
- * code.
- *
- * @category Base_Database
- * @package  CampFireManager2
- * @author   Jon Spriggs <jon@sprig.gs>
- * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
- */
 
 class Base_Database
 {
-    protected static $db_handler = null;
-    protected $rw_db = null;
-    protected $ro_db = null;
+    protected $arrDsnRw = null;
+    protected $arrDsnRo = null;
+    protected $objPdoRw = null;
+    protected $objPdoRo = null;
+    protected $strDbType = null;
 
-    /**
-     * This function creates or returns an instance of this class.
-     *
-     * @return object The Handler object
-     */
-    private static function getHandler()
+    public function setConnectionVars(
+        $strDbType = null,
+        $arrDsnRo = null, 
+        $arrDsnRw = null
+    )
     {
-        if (self::$db_handler == null) {
-            self::$db_handler = new self();
+        if ($strDbType != null) {
+            $this->strDbType = $strDbType;
         }
-        return self::$db_handler;
+        if ($arrDsnRo != null) {
+            $this->arrDsnRo = $arrDsnRo;
+        }
+        if ($arrDsnRw != null) {
+            $this->arrDsnRw = $arrDsnRw;
+        }
     }
-
-    /**
-     * This creates or returns the database object - depending on RO/RW requirements.
-     *
-     * @param boolean $RequireWrite Does this connection require write access?
-     *
-     * @return object A PDO instance for the query.
-     */
-    public function getConnection($RequireWrite = false)
+    
+    public function getConnection(
+        $boolRequireWrite = false,
+        $strDbType = null,
+        $arrDsnRo = null, 
+        $arrDsnRw = null
+    )
     {
-        $self = self::getHandler();
-        if (($RequireWrite == true AND $self->rw_db != null) OR ($RequireWrite == false AND $self->ro_db != null)) {
-            if ($RequireWrite == true) {
-                return $self->rw_db;
+        $this->setConnectionVars($strDbType, $arrDsnRo, $arrDsnRw);
+        if (($boolRequireWrite == true && $this->objPdoRw != null) 
+            || ($boolRequireWrite == false && $this->objPdoRo != null)
+        ) {
+            if ($boolRequireWrite == true) {
+                return $this->objPdoRw;
             } else {
-                return $self->ro_db;
+                return $this->objPdoRo;
             }
         } else {
-            include dirname(__FILE__) . '/../../config/default.php';
             try {
-                if ($RO_DSN == '') {
-                    $RequireWrite = true;
-                    $self->ro_db = &$self->rw_db;
+                if ($arrDsnRo == null 
+                    || count($arrDsnRo) == 0 
+                    || !isset($arrDsnRo['string'])
+                ) {
+                    $boolRequireWrite = true;
+                    $this->objPdoRo = &$this->objPdoRw;
                 }
-                if ($RequireWrite == true) {
-                    $self->rw_db = new PDO($RW_DSN['string'], $RW_DSN['user'], $RW_DSN['pass'], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-                    $self->rw_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    return $self->rw_db;
+                if ($boolRequireWrite == true) {
+                    $this->objPdoRw = new PDO(
+                        $this->arrDsnRw['string'], 
+                        $this->arrDsnRw['user'], 
+                        $this->arrDsnRw['pass'], 
+                        $this->arrDsnRw['init']
+                    );
+                    $this->objPdoRw->setAttribute(
+                        PDO::ATTR_ERRMODE, 
+                        PDO::ERRMODE_EXCEPTION
+                    );
+                    return $this->objPdoRw;
                 } else {
-                    $self->ro_db = new PDO($RO_DSN['string'], $RO_DSN['user'], $RO_DSN['pass'], array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-                    $self->ro_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    return $self->ro_db;
+                    $this->objPdoRo = new PDO(
+                        $this->arrDsnRo['string'], 
+                        $this->arrDsnRo['user'], 
+                        $this->arrDsnRo['pass'], 
+                        $this->arrDsnRo['init']
+                    );
+                    $this->objPdoRo->setAttribute(
+                        PDO::ATTR_ERRMODE, 
+                        PDO::ERRMODE_EXCEPTION
+                    );
+                    return $this->objPdoRo;
                 }
-            } catch (PDOException $e) {
-                echo "Error connecting: " . $e->getMessage();
-                die();
+            } catch (PDOException $exceptionPDO) {
+                throw $exceptionPDO;
             }
+        }
+    }
+
+    public function getConnectionTypeVar()
+    {
+        return $this->strDbType;
+    }
+    
+    public function getSqlString($arrStrings = array())
+    {
+        if (!is_array($arrStrings) || count($arrStrings) == 0) {
+            throw new InvalidArgumentException("This function does not contain any strings");
+        }
+        if (isset($arrStrings[$this->strDbType])) {
+            return $arrStrings[$this->strDbType];
+        } elseif (isset($arrStrings['sql'])) {
+            return $arrStrings['sql'];
+        } else {
+            throw new InvalidArgumentException("The strings you passed did not include a valid string for your database type.");
         }
     }
 }

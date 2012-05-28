@@ -22,17 +22,17 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Object_Attendee extends Base_GenericObject
+class Object_Attendee extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-    	'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
+        'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
         'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "attendee";
     protected $strDBKeyCol = "intAttendeeID";
-    protected $mustBeCreatorToModify = true;
+    protected $reqCreatorToMod = true;
     // Local Object Requirements
     protected $intAttendeeID = null;
     protected $intUserID = null;
@@ -52,8 +52,8 @@ class Object_Attendee extends Base_GenericObject
 class Object_Attendee_Demo extends Object_Attendee
 {
     protected $arrDemoData = array(
-        array('intAttendeeID' => 1, 'intUserID' => '2', 'intTalkID' => '1'),
-        array('intAttendeeID' => 2, 'intUserID' => '3', 'intTalkID' => '1'),
-        array('intAttendeeID' => 3, 'intUserID' => '4', 'intTalkID' => '1')
+        array('intUserID' => '2', 'intTalkID' => '1'),
+        array('intUserID' => '3', 'intTalkID' => '1'),
+        array('intUserID' => '4', 'intTalkID' => '1')
     );
 }

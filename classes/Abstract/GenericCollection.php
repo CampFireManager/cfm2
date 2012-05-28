@@ -16,40 +16,40 @@
  * This class provides all the collection specific functions used throughout the
  * site. It is used as the basis for every object.
  *
- * @category Base_GenericCollection
+ * @category Abstract_GenericCollection
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Base_GenericCollection
+abstract class Abstract_GenericCollection implements Interface_Object
 {
     protected $arrData = array();
     
     /**
-     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
+     * An internal function to make this a singleton. This should only be used 
+     * when being used to find objects of itself.
      *
      * @return object This class by itself.
      */
-    public static function getHandler()
+    public function getHandler()
     {
-        $this_class_name = get_called_class();
-        return new $this_class_name(false);
+        $thisClassName = get_called_class();
+        return new $thisClassName(false);
     }
 
     /**
      * A standard constructor method, which may be extended for specific 
      * collections.
      * 
-     * @param boolean $isCreationAction Used to determine whether to process the response 
-     * further. Not used in this class but may be used in derived classes. Here 
-     * for safety sake.
-     * 
      * @return object This class.
      */
-    protected function __construct($isCreationAction = false)
+    protected function __construct()
     {
+        if (func_num_args() > 0) {
+            throw new BadFunctionCallException("Too many arguments. This constructor does not accept parameters.");
+        }
         return $this;
     }
     
@@ -71,7 +71,7 @@ class Base_GenericCollection
      * 
      * @return boolean 
      */
-    public function setFull($dummy = false)
+    public static function setFull($dummy = false)
     {
         return $dummy;
     }
@@ -81,7 +81,7 @@ class Base_GenericCollection
      *
      * @return boolean
      */
-    public function delete()
+    public static function delete()
     {
         return false;
     }
@@ -91,7 +91,7 @@ class Base_GenericCollection
      *
      * @return boolean
      */
-    public function create()
+    public static function create()
     {
         return false;
     }
@@ -101,7 +101,7 @@ class Base_GenericCollection
      *
      * @return boolean
      */
-    public function write()
+    public static function write()
     {
         return false;
     }
@@ -113,7 +113,7 @@ class Base_GenericCollection
      *
      * @return mixed
      */
-    public function getKey($key = '')
+    public static function getKey($key = '')
     {
         if (isset($this->arrData[$key])) {
             return $this->arrData[$key];
@@ -130,7 +130,7 @@ class Base_GenericCollection
      * 
      * @return boolean
      */
-    public function setKey($key = '', $value = '')       
+    public static function setKey($key = '', $value = '')       
     {
         return false;
     }
@@ -140,7 +140,7 @@ class Base_GenericCollection
      *
      * @return boolean
      */
-    public function getFull()
+    public static function isFull()
     {
         return false;
     }
@@ -153,7 +153,7 @@ class Base_GenericCollection
      * 
      * @return boolean
      */
-    public function countByColumnSearch($column = '', $value = '')
+    public static function countByColumnSearch($column = '', $value = '')
     {
         return false;
     }
@@ -173,17 +173,17 @@ class Base_GenericCollection
     /**
      * Return a specific aspect of the class
      *
-     * @param string $id The collection ID to retrieve. Leave blank for all of 
+     * @param string $intID The collection ID to retrieve. Leave blank for all of 
      * those collection objects.
      * 
      * @return array
      */
-    public static function brokerByID($id = null)
+    public static function brokerByID($intID = null)
     {
-        $this_class_name = get_called_class();
-        $this_class = new $this_class_name($id);
-        if (is_object($this_class)) {
-            return $this_class;
+        $thisClassName = get_called_class();
+        $thisClass = new $thisClassName($intID);
+        if (is_object($thisClass)) {
+            return $thisClass;
         } else {
             return false;
         }
@@ -194,7 +194,7 @@ class Base_GenericCollection
      *
      * @return integer There will only ever be one collection at a time
      */
-    static public function countAll()
+    public static function countAll()
     {
         return 1;
     }
@@ -216,7 +216,7 @@ class Base_GenericCollection
      *
      * @return integer
      */
-    public function getPrimaryKeyValue()
+    public static function getPrimaryKeyValue()
     {
         return 0;
     }

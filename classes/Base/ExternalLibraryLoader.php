@@ -27,7 +27,7 @@ class Base_ExternalLibraryLoader
     protected $libs = array();
     protected $externalsDir = null;
 
-    protected static $externallibraryloader_handler = null;
+    protected static $self = null;
 
     /**
      * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
@@ -36,10 +36,10 @@ class Base_ExternalLibraryLoader
      */
     public static function getHandler()
     {
-        if (self::$externallibraryloader_handler == null) {
-            self::$externallibraryloader_handler = new self();
+        if (self::$self == null) {
+            self::$self = new self();
         }
-        return self::$externallibraryloader_handler;
+        return self::$self;
     }
 
     /**
@@ -88,7 +88,7 @@ class Base_ExternalLibraryLoader
                 unlink($self->externalsDir . '/libraries.json');
             }
             $self->libs = array();
-            $self->__construct();
+            $self->_construct();
             if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
                 return $self->externalsDir . '/' . $library . '/' . $self->libs[$library];
             } else {
