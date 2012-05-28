@@ -33,7 +33,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return object This class by itself.
      */
-    public static function getHandler()
+    public function getHandler()
     {
         $thisClassName = get_called_class();
         return new $thisClassName(false);
@@ -71,7 +71,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      * 
      * @return boolean 
      */
-    public function setFull($dummy = false)
+    public static function setFull($dummy = false)
     {
         return $dummy;
     }
@@ -81,7 +81,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return boolean
      */
-    public function delete()
+    public static function delete()
     {
         return false;
     }
@@ -91,7 +91,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return boolean
      */
-    public function create()
+    public static function create()
     {
         return false;
     }
@@ -101,7 +101,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return boolean
      */
-    public function write()
+    public static function write()
     {
         return false;
     }
@@ -113,7 +113,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return mixed
      */
-    public function getKey($key = '')
+    public static function getKey($key = '')
     {
         if (isset($this->arrData[$key])) {
             return $this->arrData[$key];
@@ -130,7 +130,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      * 
      * @return boolean
      */
-    public function setKey($key = '', $value = '')       
+    public static function setKey($key = '', $value = '')       
     {
         return false;
     }
@@ -140,7 +140,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return boolean
      */
-    public function isFull()
+    public static function isFull()
     {
         return false;
     }
@@ -153,7 +153,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      * 
      * @return boolean
      */
-    public function countByColumnSearch($column = '', $value = '')
+    public static function countByColumnSearch($column = '', $value = '')
     {
         return false;
     }
@@ -194,7 +194,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return integer There will only ever be one collection at a time
      */
-    static public function countAll()
+    public static function countAll()
     {
         return 1;
     }
@@ -216,7 +216,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @return integer
      */
-    public function getPrimaryKeyValue()
+    public static function getPrimaryKeyValue()
     {
         return 0;
     }
