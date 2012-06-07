@@ -173,10 +173,10 @@ class Base_Response
         // I might need to turn this off, given some of the comments on the SO site!
         
         
-        $arrRequestData = Container_Request::getRequest();
-        $thisetag = sha1($arrRequestData['requestUrlExcludingParameters'] . $body);
+        $objRequest = Container_Request::getRequest();
+        $thisetag = sha1($objRequest->get_requestUrlExParams() . $body);
         header("ETag: \"$thisetag\"");
-        foreach ($arrRequestData['If-None-Match'] as $etag) {
+        foreach ($objRequest->get_hasIfNoneMatch() as $etag) {
             if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
                 header('HTTP/1.1 304 ' . static::$httpStatusCodes[304]);
                 exit(0);

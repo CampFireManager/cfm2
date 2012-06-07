@@ -86,7 +86,7 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
             Base_Response::redirectTo('timetable');
         }
     }
-    if ($arrPathItems[0] == 'rest' && Base_Request::hasMediaType('rest')) {
+    if ($arrPathItems[0] == 'rest' && $objRequest->hasMediaType('rest')) {
         unset($arrPathItems[0]);
         $tmpPathItems = array();
         foreach ($arrPathItems as $data) {

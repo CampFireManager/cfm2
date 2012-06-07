@@ -148,7 +148,7 @@ class Object_Userauth extends Abstract_GenericObject
                 ) {
             $key = 'basicauth';
             $value = Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username') . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password'));
-            if (isset($arrRequestData['requestUrlParameters']['register'])) {
+            if (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'register', false, true)) {
                 $createIfNotExist = true;
             }
         }
@@ -206,7 +206,7 @@ class Object_Userauth extends Abstract_GenericObject
             return $this;
         }
         Base_GeneralFunctions::startSession();
-        $arrRequestData = Container_Request::getRequest();
+        $objRequest = Container_Request::getRequest();
         if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID', false, true)) {
             unset($_SESSION['intUserAuthID']);
         }
