@@ -13,13 +13,12 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-$generator = microtime(true);
 /**
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
+Base_Response::setGenerationTime();
 Container_Config::LoadConfig();
-
 
 $objRequest = Container_Request::getRequest();
 $arrMediaType = explode('/', $objRequest->get_strPrefAcceptType());
@@ -248,6 +247,7 @@ foreach ($arrObjects as $object_group => $data) {
 }
 
 if ($rest) {
+    $arrObjectsData['GenerationTime'] = Base_Response::getGenerationTime();
     switch ($objRequest->get_strPrefAcceptType()) {
     case 'application/json':
         Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8json($arrObjectsData), $objRequest->get_strPrefAcceptType());

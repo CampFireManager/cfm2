@@ -68,10 +68,20 @@ class Base_Response
     504 => 'Gateway Timeout',
     505 => 'HTTP Version Not Supported'
     );
-
-    public function __construct()
+    protected static $handler = null;
+    protected $intGenerationTime = null;
+    
+    /**
+     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
+     *
+     * @return object This class by itself.
+     */
+    protected static function getHandler()
     {
-        throw new BadMethodCallException("Do not instantiate this class.");
+        if (self::$handler == null) {
+            self::$handler = new self();
+        }
+        return self::$handler;
     }
     
     /**
@@ -326,6 +336,30 @@ class Base_Response
         exit(0);
     }
     
+    public static function getGenerationTime($intStopTime = null)
+    {
+        if ($intStopTime == null) {
+            $intStopTime = microtime(true);
+        }
+        $handler = self::getHandler();
+        if ($handler->intGenerationTime == null) {
+            throw new LogicException("Generation Time not started.");
+        }
+        return $intStopTime - $handler->intGenerationTime;
+    }
+    
+    public static function setGenerationTime($intStartTime = null)
+    {
+        if ($intStartTime == null) {
+            $intStartTime = microtime(true);
+        }
+        $handler = self::getHandler();
+        if ($handler->intGenerationTime != null) {
+            throw new LogicException("Generation Time already started.");
+        }
+        $handler->intGenerationTime = $intStartTime;
+    }
+    
     /**
      * This function ensures we've got the Smarty library loaded, and then
      * starts the template associated to it.
@@ -376,6 +410,7 @@ class Base_Response
         $objRequest = Container_Request::getRequest();
         $config['baseurl'] = $objRequest->get_strBasePath();
         $objSmarty->assign('SiteConfig', $config);
+        $objSmarty->assign('PageGenerationTime', self::getGenerationTime());
         if (file_exists($baseSmarty . 'Source/' . $template . '.html.tpl')) {
             $objSmarty->display($template . '.html.tpl');
         } else {
