@@ -77,8 +77,7 @@ class Container_Config implements Interface_Object
         $strFileName = null, 
         $doReloadDatabase = false, 
         $doReloadFile = false
-    )
-    {
+    ) {
         $self = self::GetHandler();
         if (! $self->isFileLoaded || $doReloadFile == true) {
             try {

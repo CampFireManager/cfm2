@@ -108,8 +108,7 @@ class Base_OpenID
         $base = '', 
         $success = '', 
         $fail = ''
-    )
-    {
+    ) {
         $handler = self::getHandler();
         $auth = $handler->consumer->begin($strOpenID);
         if (!$auth) {

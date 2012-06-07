@@ -100,10 +100,10 @@ class Base_Response
     /**
      * Send a correctly formatted HTTP response to a request
      *
-     * @param integer $status       HTTP response code
-     * @param string  $body         Message to be sent
+     * @param integer $status      HTTP response code
+     * @param string  $body        Message to be sent
      * @param string  $contentType MIME type to send
-     * @param string  $extra        Additional information beyond the routine HTTP status message
+     * @param string  $extra       Additional information beyond the routine HTTP status message
      *
      * @return void
      */
@@ -222,9 +222,9 @@ class Base_Response
     /**
      * Provide a downloadable file and exit the script
      *
-     * @param string  $file       File to send
-     * @param boolean $isResumable  Can we supply headers to make this file resumable?
-     * @param string  $mediaType The Internet Media Type for this media. If unset, force the download in browsers.
+     * @param string  $file        File to send
+     * @param boolean $isResumable Can we supply headers to make this file resumable?
+     * @param string  $mediaType   The Internet Media Type for this media. If unset, force the download in browsers.
      *
      * @return void
      *
@@ -377,10 +377,9 @@ class Base_Response
         }
         $libSmarty .= '/libs/Smarty.class.php';
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
-        $enableSmartyDebugging = (Container_Config::brokerByID('smarty_debug', 'true')->getKey('value'));
         include_once $libSmarty;
         $objSmarty = new Smarty();
-        if ($enableSmartyDebugging) {
+        if (Container_Config::brokerByID('smarty_debug', 'true')->getKey('value')) {
             $objSmarty->debugging = true;
         }
         $objSmarty->setTemplateDir($baseSmarty . 'Source');
@@ -394,16 +393,16 @@ class Base_Response
         }
         foreach (Container_Config::brokerAll() as $key=>$object) {
             switch ($key) {
-                case 'RW_DSN':
-                case 'RW_User':
-                case 'RW_Pass':
-                case 'RO_DSN':
-                case 'RO_User':
-                case 'RO_Pass':
-                case 'DatabaseType':
-                    break;
-                default:
-                    $config[$key] = $object->getKey('value');
+            case 'RW_DSN':
+            case 'RW_User':
+            case 'RW_Pass':
+            case 'RO_DSN':
+            case 'RO_User':
+            case 'RO_Pass':
+            case 'DatabaseType':
+                break;
+            default:
+                $config[$key] = $object->getKey('value');
             }
             
         }

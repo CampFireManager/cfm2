@@ -12,8 +12,7 @@ class Base_Database
         $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
-    )
-    {
+    ) {
         if ($strDbType != null) {
             $this->strDbType = $strDbType;
         }
@@ -30,8 +29,7 @@ class Base_Database
         $strDbType = null,
         $arrDsnRo = null, 
         $arrDsnRw = null
-    )
-    {
+    ) {
         $this->setConnectionVars($strDbType, $arrDsnRo, $arrDsnRw);
         if (($boolRequireWrite == true && $this->objPdoRw != null) 
             || ($boolRequireWrite == false && $this->objPdoRo != null)

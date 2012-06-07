@@ -61,7 +61,7 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
     }
     if ($arrPathItems[0] == 'openid') {
         if ($objRequest->get_strRequestMethod() == 'post' 
-        && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id')
+            && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id')
         ) {
             Base_OpenID::request(
                 Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id'), 
@@ -70,8 +70,9 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
                 $objRequest->get_strBasePath()
             );
         } elseif (Base_GeneralFunctions::getValue(
-            $objRequest->get_arrRqstParameters(), 'return')
-        ) {
+            $objRequest->get_arrRqstParameters(),
+            'return'
+        )) {
             Base_OpenID::response($objRequest->get_strBasePath() . 'openid');
         } elseif ($objRequest->get_strRequestMethod() == 'get' 
         && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'logout')

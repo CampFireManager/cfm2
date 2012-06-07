@@ -106,8 +106,7 @@ class Base_GeneralFunctions
         $alphaUpper = true, 
         $num = true, 
         $batch = 1
-    )
-    {
+    ) {
         $alphaLowerArray = array(
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 
             'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
@@ -269,8 +268,7 @@ class Base_GeneralFunctions
         $strJson = '', 
         $strNewValue = '', 
         $preferred = false
-    )
-    {
+    ) {
         $set = false;
         $arrJson = (array) json_decode($strJson);
         if (count($arrJson) == 0 and $strJson != '') {

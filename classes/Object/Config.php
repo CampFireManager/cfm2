@@ -62,6 +62,7 @@ class Object_Config extends Abstract_GenericObject
             foreach ($values as $key => $value) {
                 $this->setKey($key, $value);
             }
+            $this->setKey('lastChange', $lastChange);
         }
     }
 }

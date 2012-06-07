@@ -790,8 +790,7 @@ class Base_Request
     function setAcceptType(
         $strAcceptType = '', 
         $arrDenyTypes = array()
-    )
-    {
+    ) {
         if (! isset($arrDenyTypes[$strAcceptType])) {
             $this->arrAcceptTypes[$strAcceptType] = 2;
         }
