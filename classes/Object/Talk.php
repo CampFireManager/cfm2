@@ -28,6 +28,7 @@ class Object_Talk extends Abstract_GenericObject
     protected $arrDBItems = array(
         'strTalkTitle' => array('type' => 'varchar', 'length' => 255),
         'strTalkSummary' => array('type' => 'text'),
+        'hasPGContent' =>array('type' => 'tinyint', 'length' => 1),
         'intUserID' => array('type' => 'int', 'length' => 11),
         'intRoomID' => array('type' => 'int', 'length' => 11),
         'intSlotID' => array('type' => 'int', 'length' => 11),
@@ -46,6 +47,7 @@ class Object_Talk extends Abstract_GenericObject
     // Local Object Requirements
     protected $intTalkID = null;
     protected $strTalkTitle = null;
+    protected $hasPGContent = null;
     protected $strTalkSummary = null;
     protected $intUserID = null;
     protected $intRoomID = null;
