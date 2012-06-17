@@ -23,6 +23,9 @@ function __autoload($className)
 {
     $arrClass = explode('_', $className);
     $class_path  = dirname(__FILE__);
+    if ($arrClass[count($arrClass) - 1] == 'Testable') {
+        $class_path .= '/../Tests/classes';
+    }
     foreach ($arrClass as $class_point) {
         if ($class_point != 'Demo' && $class_point != 'Testable') {
             $class_path .= '/' . $class_point;
@@ -30,6 +33,9 @@ function __autoload($className)
     }
     if ($arrClass[0] == 'Plugin') {
         $class_path .= '/hook_loader';
+    }
+    if ($arrClass[count($arrClass) - 1] == 'Testable') {
+        $class_path .= 'Test';
     }
     if (is_file($class_path . '.php')) {
         include_once $class_path . '.php';
