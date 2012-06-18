@@ -216,7 +216,7 @@ class Base_GeneralFunctions
      */
     public static function preferredJson($strJson = '')
     {
-        $arrJson = (array) json_decode($strJson);
+        $arrJson = json_decode($strJson, true);
         if (count($arrJson) > 1) {
             foreach ($arrJson as $key=>$value) {
                 if ($key == 'preferred') {
@@ -246,7 +246,7 @@ class Base_GeneralFunctions
      */
     public static function sizeJson($strJson = '')
     {
-        $arrJson = (array) json_decode($strJson);
+        $arrJson = json_decode($strJson, true);
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
@@ -270,7 +270,7 @@ class Base_GeneralFunctions
         $preferred = false
     ) {
         $set = false;
-        $arrJson = (array) json_decode($strJson);
+        $arrJson = json_decode($strJson, true);
         if (count($arrJson) == 0 and $strJson != '') {
             $arrJson[] = $strJson;
         } elseif ($strJson == '') {
@@ -318,7 +318,7 @@ class Base_GeneralFunctions
      */
     public static function delJson($strJson = '', $strValueToRemove = '')
     {
-        $arrJson = (array) json_decode($strJson);
+        $arrJson = json_decode($strJson, true);
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
@@ -349,7 +349,7 @@ class Base_GeneralFunctions
      */
     public static function inJson($strJson = '', $strValueToFind = '')
     {
-        $arrJson = (array) json_decode($strJson);
+        $arrJson = json_decode($strJson, true);
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
@@ -370,7 +370,7 @@ class Base_GeneralFunctions
      */
     public static function getJson($strJson = '')
     {
-        $arrJson = (array) json_decode($strJson);
+        $arrJson = json_decode($strJson, true);
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }

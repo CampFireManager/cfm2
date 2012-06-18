@@ -49,7 +49,7 @@ class Object_Room extends Abstract_GenericObject
     {
         $self = parent::getSelf();
         if ($this->isFull() == true) {
-            $resources = (array) json_decode($this->jsonResourceList);
+            $resources = json_decode($this->jsonResourceList, true);
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {

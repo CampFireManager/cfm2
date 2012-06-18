@@ -52,7 +52,7 @@ class Base_ExternalLibraryLoader
         $this->externalsDir = dirname(__FILE__) . '/../../ExternalLibraries';
         $result = array();
         if (file_exists("{$this->externalsDir}/libraries.json")) {
-            $this->libs = (array) json_decode(file_get_contents("{$this->externalsDir}/libraries.json"));
+            $this->libs = json_decode(file_get_contents("{$this->externalsDir}/libraries.json"), true);
         } else {
             $arrTree = self::recurse_dir($this->externalsDir, 0, 2);
             foreach ($arrTree as $path) {

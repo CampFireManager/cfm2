@@ -120,8 +120,8 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
-            $self['arrLinks'] = (array) json_decode($this->jsonLinks);
-            $resources = (array) json_decode($this->jsonResources);
+            $self['arrLinks'] = json_decode($this->jsonLinks, true);
+            $resources = json_decode($this->jsonResources, true);
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {
@@ -132,7 +132,7 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
-            $presenters = (array) json_decode($this->jsonOtherPresenters);
+            $presenters = json_decode($this->jsonOtherPresenters, true);
             foreach ($presenters as $presenter) {
                 $objPresenter = Object_User::brokerByID($presenter);
                 if (is_object($objPresenter)) {
