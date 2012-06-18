@@ -205,10 +205,10 @@ abstract class Abstract_GenericObject implements Interface_Object
                 );
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
-            } elseif ($value == null) {
+            } elseif ($value == null || $value == '') {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL ORDER BY {$thisClass->strDBKeyCol}"
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol}"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
