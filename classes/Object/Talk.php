@@ -30,6 +30,8 @@ class Object_Talk extends Abstract_GenericObject
         'strTalkSummary' => array('type' => 'text'),
         'hasPGContent' =>array('type' => 'tinyint', 'length' => 1),
         'intUserID' => array('type' => 'int', 'length' => 11),
+        'intRequestedRoomID' => array('type' => 'int', 'length' => 11),
+        'intRequestedSlotID' => array('type' => 'int', 'length' => 11),
         'intRoomID' => array('type' => 'int', 'length' => 11),
         'intSlotID' => array('type' => 'int', 'length' => 11),
         'intTrackID' => array('type' => 'int', 'length' => 11),
@@ -50,6 +52,8 @@ class Object_Talk extends Abstract_GenericObject
     protected $hasPGContent = null;
     protected $strTalkSummary = null;
     protected $intUserID = null;
+    protected $intRequestedRoomID = null;
+    protected $intRequestedSlotID = null;
     protected $intRoomID = null;
     protected $intSlotID = null;
     protected $intTrackID = null;
