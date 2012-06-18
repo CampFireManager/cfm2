@@ -54,6 +54,8 @@ class Object_Attendee_Demo extends Object_Attendee
     protected $arrDemoData = array(
         array('intUserID' => '2', 'intTalkID' => '1'),
         array('intUserID' => '3', 'intTalkID' => '1'),
-        array('intUserID' => '4', 'intTalkID' => '1')
+        array('intUserID' => '4', 'intTalkID' => '1'),
+        array('intUserID' => '1', 'intTalkID' => '2'),
+        array('intUserID' => '4', 'intTalkID' => '2')
     );
 }
