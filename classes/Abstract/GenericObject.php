@@ -553,7 +553,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
                 || Object_User::brokerCurrent() == false)
             ) {
-                return false;
+                throw new BadMethodCallException("You need to be an admin to perform this operation");
             }
             if ($this->reqCreatorToMod
                 && Object_User::isSystem() == false
@@ -566,7 +566,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 && Object_User::brokerCurrent()->getKey('isAdmin') == false)
                 || Object_User::brokerCurrent() == false)
             ) {
-                return false;
+                throw new BadMethodCallException("You need to be the object creator to perform this operation");
             }
             $this->lastChange = date('Y-m-d H:i:s');
             $this->arrChanges['lastChange'] = true;
@@ -645,7 +645,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
         ) {
-            return false;
+            throw new BadMethodCallException("You need to be an admin to perform this operation");
         }
         $this->lastChange = date('Y-m-d H:i:s');
         $this->arrChanges = array();
@@ -698,7 +698,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
             || Object_User::brokerCurrent() == false)
         ) {
-            return false;
+            throw new BadMethodCallException("You need to be an admin to perform this operation");
         }
         if ($this->reqCreatorToMod
             && isset($this->arrDBItems['intUserID'])
@@ -708,7 +708,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             && Object_User::brokerCurrent()->getKey('isAdmin') == false)
             || Object_User::brokerCurrent() == false)
         ) {
-            return false;
+            throw new BadMethodCallException("You need to be the object creator to perform this operation");
         }
         try {
             $objDatabase = Container_Database::getConnection(true);
@@ -852,7 +852,6 @@ abstract class Abstract_GenericObject implements Interface_Object
                 )
             );
             $objDatabase->exec($sql);
-
             $this->initialize();
             if ($this->arrDemoData == null || !is_array($this->arrDemoData) || count($this->arrDemoData) == 0) {
                 return false;
