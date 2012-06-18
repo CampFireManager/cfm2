@@ -46,6 +46,22 @@ class Object_User extends Abstract_GenericObject
     // Temporary storage values
     public $intUserAuthIDTemp = null;
 
+    public static function isSystem($isSystem = null)
+    {
+        $objCache = Base_Cache::getHandler();
+        if ($isSystem === false && isset($objCache->arrCache['Object_User']['isSystem'])) {
+            unset($objCache->arrCache['Object_User']['isSystem']);
+        }
+        if ($isSystem != null && $isSystem != false) {
+            $objCache->arrCache['Object_User']['isSystem'] = (boolean) $isSystem;
+        }
+        if (isset($objCache->arrCache['Object_User']['isSystem'])) {
+            return $objCache->arrCache['Object_User']['isSystem'];
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Get the object for the current user.
      * 

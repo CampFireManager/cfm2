@@ -548,6 +548,7 @@ abstract class Abstract_GenericObject implements Interface_Object
     {
         try {
             if ($this->reqAdminToMod
+                && Object_User::isSystem() == false
                 && ((Object_User::brokerCurrent() != false 
                 && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
                 || Object_User::brokerCurrent() == false)
@@ -555,6 +556,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 return false;
             }
             if ($this->reqCreatorToMod
+                && Object_User::isSystem() == false
                 && isset($this->arrDBItems['intUserID'])
                 && ((Object_User::brokerCurrent() != false
                 && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
