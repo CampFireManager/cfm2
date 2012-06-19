@@ -86,30 +86,35 @@ class Object_Slot extends Abstract_GenericObject
     /**
      * Get the intSlotID's of the "Now slot" and "Next slot"
      * 
-     * @todo Edge case - outside of this slot, before next slot ... no "Now" or "Next"
+     * @param string $strNow The value to use when searching for the now/next values
      *
+     * @todo Edge case - outside of this slot, before next slot ... no "Now" or "Next"
+     * 
      * @return array
      */
-    public static function getNowAndNext()
+    public static function getNowAndNext($strNow = null)
     {
         $arrSlots = self::brokerAll();
-        $now = null;
-        $next = null;
+        if ($strNow == null) {
+            $strNow = '+0 minutes';
+        }
+        $intNowSlot = null;
+        $intNextSlot = null;
         foreach ($arrSlots as $objSlot) {
             $slot = $objSlot->getSelf();
-            if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi')
-                && date('YmdHi', strtotime($slot['dateEnd'] . ' ' . $slot['timeEnd'])) >= date('YmdHi')
-                || ($now == null && date('YmdHi') <= date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])))
-                || ($now != null && $next == null)
+            if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi', strtotime($strNow))
+                && date('YmdHi', strtotime($slot['dateEnd'] . ' ' . $slot['timeEnd'])) >= date('YmdHi', strtotime($strNow))
+                || ($intNowSlot == null && date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart']) >= date('YmdHi', strtotime($strNow))))
+                || ($intNowSlot != null && $intNextSlot == null)
             ) {
-                if ($now == null) {
-                    $now = $slot['intSlotID'];
+                if ($intNowSlot == null) {
+                    $intNowSlot = $slot['intSlotID'];
                 } else {
-                    $next = $slot['intSlotID'];
+                    $intNextSlot = $slot['intSlotID'];
                 }
             }
         }
-        return array($now, $next);
+        return array($intNowSlot, $intNextSlot);
     }
 }
 

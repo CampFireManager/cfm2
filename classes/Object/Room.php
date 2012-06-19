@@ -28,6 +28,7 @@ class Object_Room extends Abstract_GenericObject
     protected $arrDBItems = array(
         'strRoomName' => array('type' => 'varchar', 'length' => 255),
         'jsonResourceList' => array('type' => 'text'),
+        'isLocked' => array('type' => 'tinyint', 'length' => 1),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "room";
@@ -37,6 +38,7 @@ class Object_Room extends Abstract_GenericObject
     protected $intRoomID = null;
     protected $strRoomName = null;
     protected $jsonResourceList = null;
+    protected $isLocked = false;
     protected $lastChange = null;
     
     /**
@@ -77,7 +79,7 @@ class Object_Room extends Abstract_GenericObject
 class Object_Room_Demo extends Object_Room
 {
     protected $arrDemoData = array(
-        array('intRoomID' => 1, 'strRoomName' => 'Room A', 'jsonResourceList' => '[1,2]'),
+        array('intRoomID' => 1, 'strRoomName' => 'Room A', 'isLocked' => 1, 'jsonResourceList' => '[1,2]'),
         array('intRoomID' => 2, 'strRoomName' => 'Room B', 'jsonResourceList' => '[2,3]'),
         array('intRoomID' => 3, 'strRoomName' => 'Room C', 'jsonResourceList' => '[3]')
     );
