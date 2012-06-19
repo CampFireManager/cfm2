@@ -46,13 +46,19 @@ class Object_User extends Abstract_GenericObject
     // Temporary storage values
     public $intUserAuthIDTemp = null;
 
+    /**
+     * This function should only be used by system activites - such as room sorting
+     *
+     * @param boolean $isSystem Optionally set whether this is a system call or not
+     * 
+     * @return boolean Whether this is acting as a system request or not.
+     */
     public static function isSystem($isSystem = null)
     {
         $objCache = Base_Cache::getHandler();
         if ($isSystem === false && isset($objCache->arrCache['Object_User']['isSystem'])) {
             unset($objCache->arrCache['Object_User']['isSystem']);
-        }
-        if ($isSystem != null && $isSystem != false) {
+        } elseif ($isSystem != null && $isSystem != false) {
             $objCache->arrCache['Object_User']['isSystem'] = (boolean) $isSystem;
         }
         if (isset($objCache->arrCache['Object_User']['isSystem'])) {
@@ -60,6 +66,52 @@ class Object_User extends Abstract_GenericObject
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Calculate whether the user is an admin
+     * 
+     * @param integer $intUserID The UserID to check whether they're an admin.
+     *
+     * @return boolean 
+     */
+    public static function isAdmin($intUserID = null)
+    {
+        if ($intUserID == null) {
+            $self = self::brokerCurrent();
+        } else {
+            $self = self::brokerByID($intUserID);
+        }
+        if ($self != false && $self->getKey('isAdmin') == 1) {
+            return true;
+        }
+        return self::isSystem();
+    }
+    
+    /**
+     * Calculate whether the user is the creator (or admin, or system)
+     *
+     * @param integer $intUserID The user who created the object
+     * 
+     * @return boolean 
+     */
+    public static function isCreator($intUserID = null, $thisUserID = null)
+    {
+        if ($thisUserID == null) {
+            $self = self::brokerCurrent();
+        } else {
+            $self = self::brokerByID($thisUserID);
+        }
+        if ($self != false && $self->getKey('intUserID') == $intUserID) {
+            return true;
+        }
+        if ($self != false && $self->getKey('isAdmin') == 1) {
+            return true;
+        }
+        if ($self != false && $self->getKey('isWorker') == 1) {
+            return true;
+        }
+        return self::isSystem();
     }
     
     /**
@@ -78,9 +130,9 @@ class Object_User extends Abstract_GenericObject
         ) {
             return $objCache->arrCache[$thisClassName]['current'];
         }
-        $user = Object_Userauth::brokerCurrent();
-        if ($user !== false) {
-            $intUserID = $user->getKey('intUserID');
+        $objUserAuth = Object_Userauth::brokerCurrent();
+        if ($objUserAuth !== false) {
+            $intUserID = $objUserAuth->getKey('intUserID');
         } else {
             return false;
         }

@@ -172,12 +172,13 @@ abstract class Abstract_GenericObject implements Interface_Object
     /**
      * Get all objects by a particular search field
      *
-     * @param string $column The column to search
-     * @param string $value  The value to look for.
+     * @param string  $column  The column to search
+     * @param string  $value   The value to look for.
+     * @param boolean $inverse Look for anything but this value
      * 
      * @return array The array of objects matching this search
      */
-    static function brokerByColumnSearch($column = null, $value = null)
+    static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
     {
         if ($column == null) {
             throw new OutOfBoundsException('No column name');
@@ -197,15 +198,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         $arrResult = array();
         try {
             $objDatabase = Container_Database::getConnection();
-            if ($value == '%') {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol}"
-                    )
-                );
-                $query = $objDatabase->prepare($sql);
-                $query->execute();
-            } elseif ($value == null || $value == '') {
+            if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol}"
@@ -213,10 +206,26 @@ abstract class Abstract_GenericObject implements Interface_Object
                 );
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
-            } else {
+            } elseif ($value == '%') {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol}"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } elseif ($inverse == false) {
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute(array($value));
+            } else {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} != ? ORDER BY {$thisClass->strDBKeyCol}"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -240,12 +249,13 @@ abstract class Abstract_GenericObject implements Interface_Object
     /**
      * Get a tally of the number of objects by a particular search field
      *
-     * @param string $column The column to search
-     * @param string $value  The value to look for.
+     * @param string  $column  The column to search
+     * @param string  $value   The value to look for.
+     * @param boolean $inverse Look for everything but the content you've specified
      * 
      * @return integer The number of rows matching the search criteria
      */
-    static function countByColumnSearch($column = null, $value = null)
+    static function countByColumnSearch($column = null, $value = null, $inverse = false)
     {
         if ($column == null) {
             throw new OutOfBoundsException('Not a valid column name');
@@ -264,7 +274,15 @@ abstract class Abstract_GenericObject implements Interface_Object
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            if ($value == '%') {
+            if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == ''"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } elseif ($value == '%') {
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL"
@@ -272,18 +290,18 @@ abstract class Abstract_GenericObject implements Interface_Object
                 );
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
-            } elseif ($value == null) {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL"
-                    )
-                );
-                $query = $objDatabase->prepare($sql);
-                $query->execute();
-            } else {
+            } elseif ($inverse == false) {
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute(array($value));
+            } else {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} != ?"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -467,7 +485,11 @@ abstract class Abstract_GenericObject implements Interface_Object
     public function getPrimaryKeyValue()
     {
         $primaryKey = $this->strDBKeyCol;
-        return $this->$primaryKey;
+        if ($primaryKey != '') {
+            return $this->$primaryKey;
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -504,12 +526,19 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function setKey($keyname = '', $value = '')
     {
+        if (! Object_User::isAdmin() && $keyname == 'intUserID') {
+            $temp = Object_User::brokerCurrent();
+            if ($temp == false) {
+                return false;
+            }
+            $value = $temp->getKey('intUserID');
+        }
         // Only the create and write functions should set the lastChange value.
         if ($keyname != 'lastChange') {
             if (array_key_exists($keyname, $this->arrDBItems) 
                 || $keyname == $this->strDBKeyCol
             ) {
-                if ($value != '' && $this->$keyname != $value) {
+                if ($this->$keyname != $value) {
                     $this->$keyname = $value;
                     $this->arrChanges[$keyname] = true;
                 }
@@ -547,25 +576,10 @@ abstract class Abstract_GenericObject implements Interface_Object
     function write()
     {
         try {
-            if ($this->reqAdminToMod
-                && Object_User::isSystem() == false
-                && ((Object_User::brokerCurrent() != false 
-                && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
-                || Object_User::brokerCurrent() == false)
-            ) {
+            if ($this->reqAdminToMod && ! Object_User::isAdmin() == false) {
                 throw new BadMethodCallException("You need to be an admin to perform this operation");
             }
-            if ($this->reqCreatorToMod
-                && Object_User::isSystem() == false
-                && isset($this->arrDBItems['intUserID'])
-                && ((Object_User::brokerCurrent() != false
-                && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
-                || (Object_User::brokerCurrent() != false
-                && Object_User::brokerCurrent()->getKey('isWorker') == false)
-                || (Object_User::brokerCurrent() != false
-                && Object_User::brokerCurrent()->getKey('isAdmin') == false)
-                || Object_User::brokerCurrent() == false)
-            ) {
+            if ($this->reqCreatorToMod && isset($this->arrDBItems['intUserID']) && ! Object_User::isCreator($this->intUserID)) {
                 throw new BadMethodCallException("You need to be the object creator to perform this operation");
             }
             $this->lastChange = date('Y-m-d H:i:s');
@@ -640,11 +654,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function create()
     {
-        if ($this->reqAdminToMod
-            && ((Object_User::brokerCurrent() != false 
-            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
-            || Object_User::brokerCurrent() == false)
-        ) {
+        if ($this->reqAdminToMod && ! Object_User::isAdmin()) {
             throw new BadMethodCallException("You need to be an admin to perform this operation");
         }
         $this->lastChange = date('Y-m-d H:i:s');
@@ -693,21 +703,10 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function delete()
     {
-        if ($this->reqAdminToMod
-            && ((Object_User::brokerCurrent() != false 
-            && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
-            || Object_User::brokerCurrent() == false)
-        ) {
+        if ($this->reqAdminToMod && ! Object_User::isAdmin()) {
             throw new BadMethodCallException("You need to be an admin to perform this operation");
         }
-        if ($this->reqCreatorToMod
-            && isset($this->arrDBItems['intUserID'])
-            && ((Object_User::brokerCurrent() != false
-            && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
-            || (Object_User::brokerCurrent() != false
-            && Object_User::brokerCurrent()->getKey('isAdmin') == false)
-            || Object_User::brokerCurrent() == false)
-        ) {
+        if ($this->reqCreatorToMod && isset($this->arrDBItems['intUserID']) && ! Object_User::isCreator($this->intUserID)) {
             throw new BadMethodCallException("You need to be the object creator to perform this operation");
         }
         try {
@@ -844,6 +843,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function initializeDemo()
     {
+        Object_User::isSystem(true);
         try {
             $objDatabase = Container_Database::getConnection(true);
             $sql = Container_Database::getSqlString(
@@ -869,6 +869,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         } catch (Exception $e) {
             throw $e;
         }
+        Object_User::isSystem(false);
     }
 
     
@@ -887,21 +888,11 @@ abstract class Abstract_GenericObject implements Interface_Object
             $return[$key] = $this->$key;
         }
         if ($this->booleanFull) {
-            if ($this->reqAdminToMod
-                && ((Object_User::brokerCurrent() != false 
-                && Object_User::brokerCurrent()->getKey('isAdmin') == false) 
-                || Object_User::brokerCurrent() == false)
-            ) {
+            if ($this->reqAdminToMod && ! Object_User::isAdmin()) {
                 $return['isEditable'] = array();
-            } elseif ($this->reqCreatorToMod
-                && isset($this->arrDBItems['intUserID'])
-                && ((Object_User::brokerCurrent() != false
-                && Object_User::brokerCurrent()->getKey('intUserID') != $this->intUserID)
-                || (Object_User::brokerCurrent() != false
-                && Object_User::brokerCurrent()->getKey('isWorker') == false)
-                || (Object_User::brokerCurrent() != false
-                && Object_User::brokerCurrent()->getKey('isAdmin') == false)
-                || Object_User::brokerCurrent() == false)
+            } elseif ($this->reqCreatorToMod 
+                && isset($this->arrDBItems['intUserID']) 
+                && ! Object_User::isCreator($this->intUserID)
             ) {
                 $return['isEditable'] = array();
             } else {
