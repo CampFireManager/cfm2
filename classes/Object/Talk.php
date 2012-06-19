@@ -32,6 +32,7 @@ class Object_Talk extends Abstract_GenericObject
         'intUserID' => array('type' => 'int', 'length' => 11),
         'intRequestedRoomID' => array('type' => 'int', 'length' => 11),
         'intRequestedSlotID' => array('type' => 'int', 'length' => 11),
+        'intAllocatedSlotID' => array('type' => 'int', 'length' => 11),
         'intRoomID' => array('type' => 'int', 'length' => 11),
         'intSlotID' => array('type' => 'int', 'length' => 11),
         'intTrackID' => array('type' => 'int', 'length' => 11),
@@ -39,6 +40,7 @@ class Object_Talk extends Abstract_GenericObject
         'jsonLinks' => array('type' => 'text'),
         'isRoomLocked' => array('type' => 'tinyint', 'length' => 1),
         'isSlotLocked' => array('type' => 'tinyint', 'length' => 1),
+        'isLocked' => array('type' => 'tinyint', 'length' => 1),
         'jsonResources' => array('type' => 'text'),
         'jsonOtherPresenters' => array('type' => 'text'),
         'lastChange' => array('type' => 'datetime')
@@ -54,13 +56,15 @@ class Object_Talk extends Abstract_GenericObject
     protected $intUserID = null;
     protected $intRequestedRoomID = null;
     protected $intRequestedSlotID = null;
+    protected $intAllocatedSlotID = null;
     protected $intRoomID = null;
     protected $intSlotID = null;
     protected $intTrackID = null;
     protected $intLength = null;
     protected $jsonLinks = null;
-    protected $isRoomLocked = false;
-    protected $isSlotLocked = false;
+    protected $isRoomLocked = 0;
+    protected $isSlotLocked = 0;
+    protected $isLocked = 0;
     protected $jsonResources = null;
     protected $jsonOtherPresenters = null;
     protected $lastChange = null;
@@ -156,6 +160,76 @@ class Object_Talk extends Abstract_GenericObject
         }
         return $self;
     }
+    
+    /**
+     * This function sets the Room and Slot IDs to special "-1" indicators 
+     * (unset), it also sets the "Allocated Slot ID" to null, and unlocks the
+     * talk.
+     * 
+     * @return void
+     */
+    public function unschedule()
+    {
+        $this->setKey('intRoomID', -1);
+        $this->setKey('intSlotID', -1);
+        $this->setKey('intAllocatedSlotID', null);
+        $this->setKey('isLocked', 0);
+        $this->setKey('isRoomLocked', 0);
+        $this->setKey('isSlotLocked', 0);
+        $this->write();
+    }
+    
+    /**
+     * This function sets the lock attributes for the talk, the room and the
+     * slot. It then triggers the "Fixed Talk" hook.
+     * 
+     * @return void
+     */
+    public function fixTalk()
+    {
+        $this->setKey('isLocked', 1);
+        $this->setKey('isRoomLocked', 1);
+        $this->setKey('isSlotLocked', 1);
+        $this->write();
+        $hook = new Base_Hook();
+        $hook->triggerHook('fixTalk', $this);
+    }
+    
+    /**
+     * This overloaded function ensures that the user is an admin before setting
+     * certain key flags. It also automatically triggers the setting of keys when
+     * requesting room and slots if you are not an admin.
+     *
+     * @param string $key   The column name to set the value for
+     * @param mixed  $value The value to set
+     * 
+     * @return mixed 
+     */
+    public function setKey($key, $value, $debug = false)
+    {
+        switch ($key) {
+        case 'isLocked':
+        case 'isRoomLocked':
+        case 'isSlotLocked':
+        case 'intAssignedSlotID':
+            if (! Object_User::isAdmin()) {
+                return false;
+            }
+            break;
+        case 'intRoomID':
+            if (! Object_User::isAdmin()) {
+                $this->setKey('intRequestedRoomID', $value);
+            }
+            break;
+        case 'intSlotID':
+            if (! Object_User::isAdmin()) {
+                $this->setKey('intRequestedSlotID', $value);
+            }
+            break;
+        }
+        return parent::setKey($key, $value);
+    }
+    
 }
 
 /**

@@ -23,6 +23,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $objSlot->initializeDemo();
         $objTalk = new Object_Talk_Demo();
         $objTalk->initializeDemo();
+        Base_Cache::flush();
     }
 
     public function testObjectTalkCreation()
@@ -72,5 +73,18 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($json_data) == 1);
         $json_data = json_decode($data['jsonOtherPresenters'], true);
         $this->assertTrue(count($json_data) == 0);
+    }
+    
+    public function testUnscheduleATalk()
+    {
+        Object_User::isSystem(true);
+        $objTalk = Object_Talk::brokerByID(1);
+        $this->assertTrue(is_object($objTalk));
+        $objTalk->unschedule();
+        $data = $objTalk->getSelf();
+        $this->assertTrue($data['intRoomID'] == -1);
+        $this->assertTrue($data['intSlotID'] == -1);
+        $this->assertTrue($data['isLocked'] == 0);
+        Object_User::isSystem(false);
     }
 }
