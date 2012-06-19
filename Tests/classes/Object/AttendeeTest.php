@@ -78,11 +78,11 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
 
     public function testCountCommands()
     {
-        $this->assertTrue(3 == Object_Attendee::countAll());
+        $this->assertTrue(5 == Object_Attendee::countAll());
         $this->assertTrue(0 == Object_Attendee::countByColumnSearch('intTalkID'));
         $this->assertTrue(0 == Object_Attendee::countByColumnSearch('intTalkID', '0'));
         $this->assertTrue(3 == Object_Attendee::countByColumnSearch('intTalkID', '1'));
-        $this->assertTrue(3 == Object_Attendee::countByColumnSearch('intTalkID', '%'));
+        $this->assertTrue(5 == Object_Attendee::countByColumnSearch('intTalkID', '%'));
     }
     
     public function testBrokerByColumnSearchAttendeeObjects()
@@ -100,7 +100,7 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
         $data = Object_Attendee::brokerByColumnSearch('intTalkID', '%');
-        $this->assertTrue(count($data) == 3);
+        $this->assertTrue(count($data) == 5);
         $item = $data[0]->getSelf();
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
@@ -110,7 +110,7 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
     public function testBrokerAllAttendeeObjects()
     {
         $data = Object_Attendee::brokerAll();
-        $this->assertTrue(count($data) == 3);
+        $this->assertTrue(count($data) == 5);
         $item = $data[0]->getSelf();
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
