@@ -41,4 +41,10 @@ class Base_Cache
         return self::$cache_handler;
     }
 
+    public static function flush()
+    {
+        if (self::$cache_handler != null) {
+            self::$cache_handler = null;
+        }
+    }
 }
