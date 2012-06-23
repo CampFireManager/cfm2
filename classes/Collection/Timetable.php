@@ -47,6 +47,8 @@ class Collection_Timetable extends Abstract_GenericCollection
     
     public static function lastChangeByColumnSearch($column, $value)
     {
+        $column = null;
+        $value = null;
         return self::lastChangeAll();
     }
     
@@ -113,7 +115,7 @@ class Collection_TimetableByRoomSlot extends Collection_Timetable
                     if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
                         $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                             'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
-                            'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
+                            'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['lockSlot'],
                             'arrRoom' => $objRoom->getSelf(),
                             'arrSlot' => $objSlot->getSelf(),
                             'isNow' => false,

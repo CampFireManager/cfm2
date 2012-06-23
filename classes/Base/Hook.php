@@ -158,7 +158,8 @@ class Base_Hook
     {
         if (is_object($objHook)) {
             $boolTriggerSet = false;
-            foreach ($this->arrTriggers as $strTrigger => $dummyValue) {
+            foreach ($this->arrTriggers as $strTrigger => $dummy) {
+                $dummy = null;
                 if (method_exists($objHook, 'hook_' . $strTrigger)) {
                     $this->arrHooks[$strTrigger][] = $objHook;
                     $boolTriggerSet = true;
@@ -187,7 +188,8 @@ class Base_Hook
             throw new InvalidArgumentException('No hooks triggered', 0);
         } else {
             $activeHook = false;
-            foreach ($this->arrTriggers as $strTrigger => $dummyValue) {
+            foreach ($this->arrTriggers as $strTrigger => $dummy) {
+                $dummy = null;
                 if ($strAction == $strTrigger) {
                     $activeHook = true;
                 }

@@ -94,7 +94,7 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                         if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
                             $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
                                 'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
-                                'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['locksSlot'],
+                                'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['lockSlot'],
                                 'arrDirection' => $objRoom->getSelf(),
                                 'arrRoom' => $arrRooms[$objRoom->getKey('intRoomID')],
                                 'arrSlot' => $objSlot->getSelf(),

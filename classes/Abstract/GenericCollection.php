@@ -132,6 +132,8 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public static function setKey($key = '', $value = '')       
     {
+        $key = null;
+        $value = null;
         return false;
     }
     
@@ -155,6 +157,8 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public static function countByColumnSearch($column = '', $value = '')
     {
+        $column = null;
+        $value = null;
         return false;
     }
 
@@ -168,6 +172,8 @@ abstract class Abstract_GenericCollection implements Interface_Object
      */
     public static function brokerByColumnSearch($column = '', $value = '')
     {
+        $column = null;
+        $value = null;
         return false;
     }
     /**

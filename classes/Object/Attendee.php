@@ -55,7 +55,7 @@ class Object_Attendee_Demo extends Object_Attendee
         array('intUserID' => '2', 'intTalkID' => '1'),
         array('intUserID' => '3', 'intTalkID' => '1'),
         array('intUserID' => '4', 'intTalkID' => '1'),
-        array('intUserID' => '1', 'intTalkID' => '2'),
-        array('intUserID' => '4', 'intTalkID' => '2')
+        array('intUserID' => '1', 'intTalkID' => '3'),
+        array('intUserID' => '4', 'intTalkID' => '3')
     );
 }

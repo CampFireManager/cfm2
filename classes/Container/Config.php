@@ -413,5 +413,4 @@ class Container_Config implements Interface_Object
             return $self->arrSecureConfig[$key];
         }
     }
-    
 }
