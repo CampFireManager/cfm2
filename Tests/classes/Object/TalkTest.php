@@ -87,4 +87,50 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data['isLocked'] == 0);
         Object_User::isSystem(false);
     }
+    
+    public function testFixATalk()
+    {
+        Object_User::isSystem(true);
+        $objTalk = Object_Talk::brokerByID(2);
+        $this->assertTrue(is_object($objTalk));
+        $data = $objTalk->getSelf();
+        $this->assertTrue($data['isLocked'] == 0);
+        $this->assertTrue($data['isRoomLocked'] == 0);
+        $this->assertTrue($data['isSlotLocked'] == 0);
+        $objTalk->fixTalk();
+        $data = $objTalk->getSelf();
+        $this->assertTrue($data['isLocked'] == 1);
+        $this->assertTrue($data['isRoomLocked'] == 1);
+        $this->assertTrue($data['isSlotLocked'] == 1);
+        Object_User::isSystem(false);
+    }
+    
+    public function testTalksSort()
+    {
+        $arrTalks = Object_Talk::brokerAll();
+        $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 2);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+
+        Object_User::isSystem(true);
+        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::sortAndPlaceTalksByAttendees();
+        Object_User::isSystem(false);
+
+        $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+    }
 }

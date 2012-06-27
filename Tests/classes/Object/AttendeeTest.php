@@ -95,13 +95,13 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($data) == 0);
         $data = Object_Attendee::brokerByColumnSearch('intTalkID', '1');
         $this->assertTrue(count($data) == 3);
-        $item = $data[0]->getSelf();
+        $item = $data[1]->getSelf();
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
         $data = Object_Attendee::brokerByColumnSearch('intTalkID', '%');
         $this->assertTrue(count($data) == 5);
-        $item = $data[0]->getSelf();
+        $item = $data[1]->getSelf();
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
@@ -111,16 +111,16 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
     {
         $data = Object_Attendee::brokerAll();
         $this->assertTrue(count($data) == 5);
-        $item = $data[0]->getSelf();
+        $item = $data[1]->getSelf();
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
-        $this->assertTrue($data[1]->getKey('intAttendeeID') == 2);
-        $this->assertTrue($data[1]->getKey('intUserID') == '3');
-        $this->assertTrue($data[1]->getKey('intTalkID') == '1');
-        $this->assertTrue($data[2]->getKey('intAttendeeID') == 3);
-        $this->assertTrue($data[2]->getKey('intUserID') == '4');
+        $this->assertTrue($data[2]->getKey('intAttendeeID') == 2);
+        $this->assertTrue($data[2]->getKey('intUserID') == '3');
         $this->assertTrue($data[2]->getKey('intTalkID') == '1');
+        $this->assertTrue($data[3]->getKey('intAttendeeID') == 3);
+        $this->assertTrue($data[3]->getKey('intUserID') == '4');
+        $this->assertTrue($data[3]->getKey('intTalkID') == '1');
     }
 
     public function testLastModified()

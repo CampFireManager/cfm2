@@ -33,15 +33,11 @@ class Plugin_LimboTalks
     function hook_cronTick()
     {
         Object_User::isSystem(true);
-        $talks = Object_Talk::brokerByColumnSearch('isLocked', null);
-        $sort_array = array();
-        $min_votes = Container_Config::brokerByID('LimboMinimumVotes', 1)->getKey('value');
-        foreach ($talks as $talk) {
-            $talk->setFull(true);
-            $data = $talk->getSelf();
-            if ($min_votes > $data['intAttendees']) {
-                $talk->unschedule();
-            }
+        $intMinAttendees = Container_Config::brokerByID('LimboMinimumVotes')->getKey('value');
+        if (! is_numeric($intMinAttendees) || 0 + $intMinAttendees < 0) {
+            $intMinAttendees = 2;
         }
+        Object_Talk::unscheduleBasedOnAttendees(Object_Talk::brokerAll(), $intMinAttendees);
+        Object_Talk::sortAndPlaceTalksByAttendees();
     }
 }

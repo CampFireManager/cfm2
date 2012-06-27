@@ -28,6 +28,7 @@ class Object_Room extends Abstract_GenericObject
     protected $arrDBItems = array(
         'strRoomName' => array('type' => 'varchar', 'length' => 255),
         'jsonResourceList' => array('type' => 'text'),
+        'intCapacity' => array('type' => 'integer', 'length' => 4),
         'isLocked' => array('type' => 'tinyint', 'length' => 1),
         'lastChange' => array('type' => 'datetime')
     );
@@ -38,6 +39,7 @@ class Object_Room extends Abstract_GenericObject
     protected $intRoomID = null;
     protected $strRoomName = null;
     protected $jsonResourceList = null;
+    protected $intCapacity = null;
     protected $isLocked = false;
     protected $lastChange = null;
     
@@ -65,6 +67,22 @@ class Object_Room extends Abstract_GenericObject
         }
         return $self;
     }
+    
+    public static function brokerAllByRoomSize()
+    {
+        $arrRooms = Object_Room::brokerAll();
+        $arrRoomsBySizeInCapacity = array();
+        // Sort out the room sizes
+        foreach ($arrRooms as $objRoom) {
+            $arrRoomsBySizeInCapacity[$objRoom->getKey('intCapacity') - ($objRoom->getKey('intRoomID') / 1000)] = $objRoom;
+        }
+        krsort($arrRoomsBySizeInCapacity);
+        $roomsize = 0;
+        foreach ($arrRoomsBySizeInCapacity as $objRoom) {
+            $arrRoomsBySize[$roomsize++] = $objRoom;
+        }
+        return $arrRoomsBySize;
+    }
 }
 
 /**
@@ -79,8 +97,8 @@ class Object_Room extends Abstract_GenericObject
 class Object_Room_Demo extends Object_Room
 {
     protected $arrDemoData = array(
-        array('intRoomID' => 1, 'strRoomName' => 'Room A', 'isLocked' => 1, 'jsonResourceList' => '[1,2]'),
-        array('intRoomID' => 2, 'strRoomName' => 'Room B', 'jsonResourceList' => '[2,3]'),
-        array('intRoomID' => 3, 'strRoomName' => 'Room C', 'jsonResourceList' => '[3]')
+        array('intRoomID' => 1, 'strRoomName' => 'Room A', 'intCapacity' => 100, 'isLocked' => 1, 'jsonResourceList' => '[1,2]'),
+        array('intRoomID' => 2, 'strRoomName' => 'Room B', 'intCapacity' => 50, 'jsonResourceList' => '[2,3]'),
+        array('intRoomID' => 3, 'strRoomName' => 'Room C', 'intCapacity' => 75, 'jsonResourceList' => '[3]')
     );
 }

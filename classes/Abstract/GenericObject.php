@@ -122,8 +122,9 @@ abstract class Abstract_GenericObject implements Interface_Object
             throw new BadFunctionCallException("This function does not accept parameters.");
         }
         if (isset($this->arrDBItems) and is_array($this->arrDBItems) and count($this->arrDBItems) > 0) {
-            foreach ($this->arrDBItems as $item=>$dummy) {
+            foreach ($this->arrDBItems as $item => $dummy) {
                 $this->old[$item] = $this->$item;
+                $dummy = null;
             }
         }
         return $this;
@@ -188,6 +189,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         $thisClass = new $thisClassName();
         $process = false;
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
+            $dummy = null;
             if ($dbItem == $column) {
                 $process = true;
             }
@@ -231,13 +233,22 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($value));
             }
+            $arrResult = array();
             $result = $query->fetchObject($thisClassName);
-            if ($result == false) {
-                return array();
-            }
             while ($result != false) {
-                $arrResult[] = $result;
-                $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
+                if (isset($thisClass->strDBKeyCol) 
+                    && $thisClass->strDBKeyCol != '' 
+                    && $thisClass->strDBKeyCol != null
+                ) {
+                    if (isset($objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)])) {
+                        $arrResult[$result->getKey($thisClass->strDBKeyCol)] = $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)];
+                    } else {
+                        $arrResult[$result->getKey($thisClass->strDBKeyCol)] = $result;
+                        $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
+                    }
+                } else {
+                    $arrResult[] = $result;
+                }
                 $result = $query->fetchObject($thisClassName);
             }
             return $arrResult;
@@ -260,11 +271,11 @@ abstract class Abstract_GenericObject implements Interface_Object
         if ($column == null) {
             throw new OutOfBoundsException('Not a valid column name');
         }
-        $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
         $thisClass = new $thisClassName();
         $process = false;
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
+            $dummy = null;
             if ($dbItem == $column) {
                 $process = true;
             }
@@ -327,7 +338,6 @@ abstract class Abstract_GenericObject implements Interface_Object
         if ($column == null) {
             throw new OutOfBoundsException('Not a valid column name');
         }
-        $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
         $thisClass = new $thisClassName();
         $process = false;
@@ -335,6 +345,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             throw new OutOfBoundsException('Does not store Last Change data');
         }
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
+            $dummy = null;
             if ($dbItem == $column) {
                 $process = true;
             }
@@ -406,14 +417,18 @@ abstract class Abstract_GenericObject implements Interface_Object
             $query->execute();
             $result = $query->fetchObject($thisClassName);
             while ($result != false) {
-                $arrResult[] = $result;
                 if (isset($thisClass->strDBKeyCol) 
                     && $thisClass->strDBKeyCol != '' 
                     && $thisClass->strDBKeyCol != null
                 ) {
-                    $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
+                    if (isset($objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)])) {
+                        $arrResult[$result->getKey($thisClass->strDBKeyCol)] = $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)];
+                    } else {
+                        $arrResult[$result->getKey($thisClass->strDBKeyCol)] = $result;
+                        $objCache->arrCache[$thisClassName]['id'][$result->getKey($thisClass->strDBKeyCol)] = $result;
+                    }
                 } else {
-                    $objCache->arrCache[$thisClassName]['id'][$result->getKey('key')] = $result;
+                    $arrResult[] = $result;
                 }
                 $result = $query->fetchObject($thisClassName);
             }
@@ -430,7 +445,6 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     static function lastChangeAll()
     {
-        $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
         $thisClass = new $thisClassName();
         if (!isset($thisClass->arrDBItems['lastChange'])) {
@@ -553,18 +567,16 @@ abstract class Abstract_GenericObject implements Interface_Object
      * 
      * @return any The value from the object
      */
-    function getKey($keyname = '')
+    function getKey($keyname = null)
     {
-        if (array_key_exists($keyname, $this->arrDBItems) 
-            || $keyname == $this->strDBKeyCol
+        if ((array_key_exists($keyname, $this->arrDBItems) 
+            || $keyname == $this->strDBKeyCol) 
+            && (isset($this->$keyname) 
+            || $this->$keyname == null)
         ) {
-            if (isset($this->$keyname) || $this->$keyname == null) {
-                return $this->$keyname;
-            } else {
-                throw new BadFunctionCallException("Although the column '$keyname' exists, there is no corresponding protected value");
-            }
+            return $this->$keyname;
         } else {
-            return null;
+            throw new BadFunctionCallException("Although the column '$keyname' exists, there is no corresponding protected value");
         }
     }
 
@@ -666,6 +678,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $key_place = 'NULL';
         }
         foreach ($this->arrDBItems as $field_name => $dummy) {
+            $dummy = null;
             if ($keys != '') {
                 $keys .= ', ';
                 $key_place .= ', ';
@@ -885,6 +898,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $return[$key] = $this->$key;
         }
         foreach ($this->arrDBItems as $key => $dummy) {
+            $dummy = null;
             $return[$key] = $this->$key;
         }
         if ($this->booleanFull) {
