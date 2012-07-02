@@ -247,8 +247,25 @@ foreach ($arrObjects as $object_group => $data) {
     }
 }
 
+$arrObjectsData['PageGenerationTime'] = Base_Response::getGenerationTime();
+foreach (Container_Config::brokerAll() as $key=>$object) {
+    switch ($key) {
+    case 'RW_DSN':
+    case 'RW_User':
+    case 'RW_Pass':
+    case 'RO_DSN':
+    case 'RO_User':
+    case 'RO_Pass':
+    case 'DatabaseType':
+        break;
+    default:
+        $arrObjectsData['SiteConfig'][$key] = $object->getKey('value');
+    }
+}
+$objRequest = Container_Request::getRequest();
+$arrObjectsData['SiteConfig']['baseurl'] = $objRequest->get_strBasePath();
+
 if ($rest) {
-    $arrObjectsData['GenerationTime'] = Base_Response::getGenerationTime();
     switch ($objRequest->get_strPrefAcceptType()) {
     case 'application/json':
         Base_Response::sendHttpResponse(200, Base_GeneralFunctions::utf8json($arrObjectsData), $objRequest->get_strPrefAcceptType());

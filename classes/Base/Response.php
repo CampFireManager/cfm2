@@ -391,25 +391,6 @@ class Base_Response
                 $objSmarty->assign($key, $value);
             }
         }
-        foreach (Container_Config::brokerAll() as $key=>$object) {
-            switch ($key) {
-            case 'RW_DSN':
-            case 'RW_User':
-            case 'RW_Pass':
-            case 'RO_DSN':
-            case 'RO_User':
-            case 'RO_Pass':
-            case 'DatabaseType':
-                break;
-            default:
-                $config[$key] = $object->getKey('value');
-            }
-            
-        }
-        $objRequest = Container_Request::getRequest();
-        $config['baseurl'] = $objRequest->get_strBasePath();
-        $objSmarty->assign('SiteConfig', $config);
-        $objSmarty->assign('PageGenerationTime', self::getGenerationTime());
         if (file_exists($baseSmarty . 'Source/' . $template . '.html.tpl')) {
             $objSmarty->display($template . '.html.tpl');
         } else {
