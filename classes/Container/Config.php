@@ -414,3 +414,13 @@ class Container_Config implements Interface_Object
         }
     }
 }
+
+class Container_Config_Demo extends Container_Config
+{
+    public static function initializeDemo()
+    {
+        $self = parent::GetHandler();
+        $self->LoadFile('default.php');
+        $self->SetUpDatabaseConnection();
+    }
+}
