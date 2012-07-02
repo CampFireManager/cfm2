@@ -249,6 +249,7 @@ class Base_Request
             $url = 'file://' . $filename;
             $args = $arrGlobals['argv'];
             unset($args[0]);
+            $data = array();
             foreach ($args as $key => $part) {
                 if (preg_match('/^([^=]+)=(.*)$/', $part, $matches)) {
                     $data[$matches[1]] = $matches[2];
