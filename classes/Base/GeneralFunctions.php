@@ -488,11 +488,11 @@ class Base_GeneralFunctions
      * Return utf8 encoded XML with an optional root element name
      *
      * @param Array|object $array Incoming data
-     * @param string       $root  The root element name - default to "row"
+     * @param string       $root  The root element name - default to "root"
      *
      * @return string UTF8 encoded XML string
      */
-    public static function utf8xml($array = array(), $root = 'row')
+    public static function utf8xml($array = array(), $root = 'root')
     {
         return Base_GeneralFunctions::xml_encode(
             array(
@@ -527,9 +527,12 @@ class Base_GeneralFunctions
             $key = str_replace("'", '[squote]', $key);
             $return .= str_repeat(' ', $depth) . '<' . $key . ">";
             if (is_array($item)) {
+            if (is_array($item) && count($item) > 0) {
                 $return .= "\r\n" 
                         . Base_GeneralFunctions::xml_encode($item, $depth + 4) 
                         . str_repeat(' ', $depth);
+            } elseif (is_array($item)) {
+                // Don't do anything with an empty array
             } else {
                 $return .= $item;
             }
