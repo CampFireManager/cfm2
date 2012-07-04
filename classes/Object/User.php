@@ -91,7 +91,8 @@ class Object_User extends Abstract_GenericObject
     /**
      * Calculate whether the user is the creator (or admin, or system)
      *
-     * @param integer $intUserID The user who created the object
+     * @param integer $intUserID  The user who created the object
+     * @param integer $thisUserID The user we are checking against in the function
      * 
      * @return boolean 
      */

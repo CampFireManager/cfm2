@@ -68,17 +68,23 @@ class Object_Room extends Abstract_GenericObject
         return $self;
     }
     
+    /**
+     * This function returns the array of rooms, sorted by the capacity of the
+     * room.
+     *
+     * @return array 
+     */
     public static function brokerAllByRoomSize()
     {
         $arrRooms = Object_Room::brokerAll();
-        $arrRoomsBySizeInCapacity = array();
+        $arrRoomsByCapacity = array();
         // Sort out the room sizes
         foreach ($arrRooms as $objRoom) {
-            $arrRoomsBySizeInCapacity[$objRoom->getKey('intCapacity') - ($objRoom->getKey('intRoomID') / 1000)] = $objRoom;
+            $arrRoomsByCapacity[$objRoom->getKey('intCapacity') - ($objRoom->getKey('intRoomID') / 1000)] = $objRoom;
         }
-        krsort($arrRoomsBySizeInCapacity);
+        krsort($arrRoomsByCapacity);
         $roomsize = 0;
-        foreach ($arrRoomsBySizeInCapacity as $objRoom) {
+        foreach ($arrRoomsByCapacity as $objRoom) {
             $arrRoomsBySize[$roomsize++] = $objRoom;
         }
         return $arrRoomsBySize;

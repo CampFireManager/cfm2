@@ -279,7 +279,6 @@ class Object_Talk extends Abstract_GenericObject
      */
     public static function sortAndPlaceTalksByAttendees()
     {
-        $arrIgnoreTalk = array();
         $arrSortItems = array();
         $arrNowNext = Object_Slot::getNowAndNext();
         $intNowSlot = $arrNowNext[0];
@@ -319,9 +318,9 @@ class Object_Talk extends Abstract_GenericObject
             if ($intSlotID > 0) {
                 krsort($arrSlotSpaces);
                 $room = 0;
-                foreach ($arrSlotSpaces as $intAttendees => $arrTalk) {
+                foreach ($arrSlotSpaces as $arrTalk) {
                     ksort($arrTalk);
-                    foreach ($arrTalk as $intTalkID => $objTalk) {
+                    foreach ($arrTalk as $objTalk) {
                         if ($room++ >= count($arrRooms)) {
                             $arrSortItems[0][] = $objTalk;
                         } else {
@@ -344,7 +343,7 @@ class Object_Talk extends Abstract_GenericObject
             }
         }
         if (isset($arrSortItems[0]) && Container_Config::brokerByID('Schedule talks in the next available slot when this slot is full')->getKey('value', 0) == 1) {
-            foreach($arrSortItems[0] as $talk) {
+            foreach ($arrSortItems[0] as $talk) {
                 $arrSlotSpaces = array();
                 foreach ($arrSlotItems as $arrTalkData) {
                     $arrSlotSpaces[$arrTalkData['array']['intAttendees'] - ($arrTalkData['array']['intTalkID']/10000)] = $arrTalkData;
@@ -352,7 +351,7 @@ class Object_Talk extends Abstract_GenericObject
                 unset($arrSlotItems);
                 krsort($arrSlotSpaces);
                 $assigned = false;
-                foreach($arrGrid as $intSlotID => $arrSlots) {
+                foreach ($arrGrid as $intSlotID => $arrSlots) {
                     if ($intSlotID > $intNowSlot && !isset($arrSlots['isLocked'])) {
                         foreach ($arrSlots as $room => $arrSlot) {
                             if (is_integer($room)) {
@@ -370,7 +369,7 @@ class Object_Talk extends Abstract_GenericObject
             }
         } else {
             if (isset($arrSortItems[0])) {
-                foreach($arrSortItems[0] as $talk) {
+                foreach ($arrSortItems[0] as $talk) {
                     $talk['object']->unschedule();
                 }
             }
@@ -393,6 +392,16 @@ class Object_Talk extends Abstract_GenericObject
         }
     }
     
+    /**
+     * This function unschedules talks based on the number of people attending
+     * the talk (calculated), ensuring the minimum number of attendees have 
+     * expressed they will be attending that talk.
+     *
+     * @param array   $talks           The talks to be checked
+     * @param integer $intMinAttendees The minimum number of attendees
+     * 
+     * @return void
+     */
     public static function unscheduleBasedOnAttendees($talks, $intMinAttendees = 0)
     {
         foreach ($talks as $talk) {

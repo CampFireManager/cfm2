@@ -527,18 +527,19 @@ class Base_GeneralFunctions
             $key = str_replace("'", '[squote]', $key);
             $return .= str_repeat(' ', $depth) . '<' . $key . ">";
             if (is_array($item)) {
-            if (is_array($item) && count($item) > 0) {
-                $return .= "\r\n" 
-                        . Base_GeneralFunctions::xml_encode($item, $depth + 4) 
-                        . str_repeat(' ', $depth);
-            } elseif (is_array($item)) {
-                // Don't do anything with an empty array
-            } else {
-                $return .= $item;
+                if (is_array($item) && count($item) > 0) {
+                    $return .= "\r\n" 
+                            . Base_GeneralFunctions::xml_encode($item, $depth + 4) 
+                            . str_repeat(' ', $depth);
+                } elseif (is_array($item)) {
+                    // Don't do anything with an empty array
+                } else {
+                    $return .= $item;
+                }
+                $return .= '</' . $key . ">\r\n";
             }
-            $return .= '</' . $key . ">\r\n";
+            return $return;
         }
-        return $return;
     }
     
     /**

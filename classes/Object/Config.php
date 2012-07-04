@@ -40,6 +40,12 @@ class Object_Config extends Abstract_GenericObject
     protected $isLocal = false;
     protected $lastChange = null;
     
+    /**
+     * This function overloads the parent write function - ensuring the value
+     * is not locally stored first before performing the write action.
+     * 
+     * @return void
+     */
     public function write()
     {
         if (! $this->isLocal) {
@@ -47,13 +53,30 @@ class Object_Config extends Abstract_GenericObject
         }
     }
     
+    /**
+     * This function overloads the parent create function - ensuring the value
+     * is not locally stored first before performing the create action.
+     * 
+     * @return void
+     */
     public function create()
     {
         if (! $this->isLocal) {
             parent::create();
         }
     }
-    
+
+    /**
+     * This constructor permits the insertion of data into the object, for
+     * locally stored (i.e. configuration rather than database) values.
+     *
+     * @param array  $values     The optional values to insert into the object
+     * @param string $lastChange The optional date this value was created. For
+     * config file based values, this will be the date the config file was last
+     * amended.
+     * 
+     * @return object
+     */
     public function __construct($values = null, $lastChange = null)
     {
         parent::__construct();
