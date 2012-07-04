@@ -69,7 +69,7 @@ class Base_Response
     505 => 'HTTP Version Not Supported'
     );
     protected static $handler = null;
-    protected $intGenerationTime = null;
+    protected $floatGenerationTime = null;
     
     /**
      * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
@@ -336,28 +336,44 @@ class Base_Response
         exit(0);
     }
     
-    public static function getGenerationTime($intStopTime = null)
+    /**
+     * Return the calculated value for the page generation
+     *
+     * @param integer $floatStopTime The time the page generation counter is
+     * stopped - usually as the last action on the page.
+     * 
+     * @return float 
+     */
+    public static function getGenerationTime($floatStopTime = null)
     {
-        if ($intStopTime == null) {
-            $intStopTime = microtime(true);
+        if ($floatStopTime == null) {
+            $floatStopTime = microtime(true);
         }
         $handler = self::getHandler();
-        if ($handler->intGenerationTime == null) {
+        if ($handler->floatGenerationTime == null) {
             throw new LogicException("Generation Time not started.");
         }
-        return $intStopTime - $handler->intGenerationTime;
+        return $floatStopTime - $handler->floatGenerationTime;
     }
     
-    public static function setGenerationTime($intStartTime = null)
+    /**
+     * Start the page generation timer. Usually at the beginning of the page
+     * rendering.
+     *
+     * @param float $floatStartTime The timer start time.
+     * 
+     * @return void
+     */
+    public static function setGenerationTime($floatStartTime = null)
     {
-        if ($intStartTime == null) {
-            $intStartTime = microtime(true);
+        if ($floatStartTime == null) {
+            $floatStartTime = microtime(true);
         }
         $handler = self::getHandler();
-        if ($handler->intGenerationTime != null) {
+        if ($handler->floatGenerationTime != null) {
             throw new LogicException("Generation Time already started.");
         }
-        $handler->intGenerationTime = $intStartTime;
+        $handler->floatGenerationTime = $floatStartTime;
     }
     
     /**
