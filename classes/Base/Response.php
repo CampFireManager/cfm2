@@ -373,7 +373,7 @@ class Base_Response
     {
         $libSmarty = Base_ExternalLibraryLoader::loadLibrary("Smarty");
         if ($libSmarty == false) {
-            die("Failed to load Smarty");
+            throw new LogicException("Failed to load Smarty");
         }
         $libSmarty .= '/libs/Smarty.class.php';
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
