@@ -802,74 +802,188 @@ class Base_Request
         return $this->intPrefAcceptType;
     }
     
+    /**
+     * Return the exploded Request URL array
+     *
+     * @return array 
+     */
     public function get_arrRequestUrl()
     {
         return $this->arrRequestUrl;
     }
+    
+    /**
+     * Return the full Request URL
+     *
+     * @return string
+     */
     public function get_requestUrlFull()
     {
         return $this->requestUrlFull;
     }
+    
+    /**
+     * Return the full Request URL excluding GET parameters
+     *
+     * @return string 
+     */
     public function get_requestUrlExParams()
     {
         return $this->requestUrlExParams;
     }
+    
+    /**
+     * Return the Username from the request
+     *
+     * @return string 
+     */
     public function get_strUsername()
     {
         return $this->strUsername;
     }
+
+    /**
+     * Return the Password from the request
+     *
+     * @return string 
+     */
     public function get_strPassword()
     {
         return $this->strPassword;
     }
+
+    /**
+     * Return the request method (PUT, GET, POST, DELETE, HEAD, etc) from the 
+     * request
+     *
+     * @return string 
+     */
     public function get_strRequestMethod()
     {
         return $this->strRequestMethod;
     }
+    
+    /**
+     * If set, return the "Has-If-Modified-Since" value
+     *
+     * @return null|datetime 
+     */
     public function get_hasIfModifiedSince()
     {
         return $this->hasIfModifiedSince;
     }
+    
+    /**
+     * If set, return the "If-None-Match" value (for etags associated to a page)
+     *
+     * @return null|string 
+     */
     public function get_hasIfNoneMatch()
     {
         return $this->hasIfNoneMatch;
     }
+    
+    /**
+     * Return the array of all the parameters supplied by the request.
+     *
+     * @return array 
+     */
     public function get_arrRqstParameters()
     {
         return $this->arrRqstParameters;
     }
+    
+    /**
+     * Return the path of everything in the URL past the router
+     *
+     * @return string
+     */
     public function get_strPathSite()
     {
         return $this->strPathSite;
     }
+    
+    /**
+     * Return the path of everything up to the Router.
+     *
+     * @return string
+     */
     public function get_strPathRouter()
     {
         return $this->strPathRouter;
     }
+    
+    /**
+     * Return the array of "path items" - basically, everything after the router
+     * comes into play.
+     *
+     * @return array 
+     */
     public function get_arrPathItems()
     {
         return $this->arrPathItems;
     }
+    
+    /**
+     * If we've forced the Internet Type by providing a file extension, return
+     * that value.
+     *
+     * @return string 
+     */
     public function get_strPathFormat()
     {
         return $this->strPathFormat;
     }
+    
+    /**
+     * Return the preferred (highest valued) accepted Internet Type (Mime Type),
+     * where, if supplied, your browser can force it's preferred Internet Type
+     * by supplying a known file extension.
+     *
+     * @return string 
+     */
     public function get_strPrefAcceptType()
     {
         return $this->strPrefAcceptType;
     }
+    
+    /**
+     * Return the array of Internet Types (Mime Types) your browser will accept, 
+     * or, where forced by supplying a known file extension, that value as the top response.
+     *
+     * @return array 
+     */
     public function get_arrAcceptTypes()
     {
         return $this->arrAcceptTypes;
     }
+    
+    /**
+     * Return the base path of the URL, up to the point where the router takes
+     * over.
+     *
+     * @return string
+     */
     public function get_strBasePath()
     {
         return $this->strBasePath;
     }
+    
+    /**
+     * Return the user agent string
+     *
+     * @return string
+     */
     public function get_strUserAgent()
     {
         return $this->strUserAgent;
     }
+    
+    /**
+     * Return the content of the $_SESSION array.
+     *
+     * @return array 
+     */
     public function get_arrSession()
     {
         return $this->arrSession;

@@ -29,7 +29,8 @@ class Base_Cache
     protected static $cache_handler = null;
 
     /**
-     * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
+     * An internal function to make this a singleton. This should only be used 
+     * when being used to find objects of itself.
      *
      * @return object This class by itself.
      */
@@ -41,6 +42,11 @@ class Base_Cache
         return self::$cache_handler;
     }
 
+    /**
+     * Empty the handler - used in unit testing only.
+     * 
+     * @return void
+     */
     public static function flush()
     {
         if (self::$cache_handler != null) {

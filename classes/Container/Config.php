@@ -1,5 +1,4 @@
 <?php
-
 /**
  * CampFire Manager is a scheduling tool predominently used at BarCamps to 
  * schedule talks based, mainly, on the number of people attending each talk
@@ -254,6 +253,12 @@ class Container_Config implements Interface_Object
         }
     }
     
+    /**
+     * This function returns all the configuration values - locally configured
+     * and stored in the database.
+     * 
+     * @return array
+     */
     public static function brokerAll()
     {
         $self = self::GetHandler();
@@ -266,6 +271,18 @@ class Container_Config implements Interface_Object
         return array();
     }
 
+    /**
+     * This function searches for all config values which match a value in a 
+     * column search. Nulls and '' are treated equally as a null value or an 
+     * empty string, % means "anything", and you can invert a search by setting
+     * $inverse to true.
+     * 
+     * @param string  $column  The column name in the table to search for
+     * @param string  $value   The value to look for in that column
+     * @param boolean $inverse Reverse the search
+     * 
+     * @return array
+     */
     public static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $self = self::GetHandler();
@@ -312,6 +329,16 @@ class Container_Config implements Interface_Object
         return false;
     }
     
+    /**
+     * This function will return the number of rows which matches a particular 
+     * column search.
+     *
+     * @param string  $column  The column name in the table to search for
+     * @param string  $value   The value to look for in that column
+     * @param boolean $inverse Reverse the search
+     * 
+     * @return integer
+     */    
     public static function countByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $self = self::GetHandler();
@@ -338,6 +365,16 @@ class Container_Config implements Interface_Object
         return $counter;
     }
     
+    /**
+     * This function will return the most recent Last Modified value for a
+     * particular column search.
+     *
+     * @param string  $column  The column name in the table to search for
+     * @param string  $value   The value to look for in that column
+     * @param boolean $inverse Reverse the search
+     * 
+     * @return datetime
+     */
     public static function lastChangeByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $self = self::GetHandler();
@@ -386,6 +423,12 @@ class Container_Config implements Interface_Object
         return false;
     }
     
+    /**
+     * This function will return the last modified date of the most recently 
+     * edited row in this table.
+     * 
+     * @return datetime
+     */
     public static function lastChangeAll()
     {
         $self = self::GetHandler();
@@ -404,6 +447,11 @@ class Container_Config implements Interface_Object
         return $lastChange;
     }
     
+    /**
+     * This function will count the number of rows in this table.
+     * 
+     * @return integer
+     */
     public static function countAll()
     {
         $self = self::GetHandler();
@@ -443,8 +491,23 @@ class Container_Config implements Interface_Object
     }
 }
 
+/**
+ * This class defines how to initialize the database table.
+ * 
+ * @category Container_Config
+ * @package  CampFireManager2
+ * @author   Jon Spriggs <jon@sprig.gs>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
+ * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ */
+
 class Container_Config_Demo extends Container_Config
 {
+    /**
+     * This function starts up the database, and does nothing else.
+     * 
+     * @return void
+     */
     public static function initializeDemo()
     {
         $self = parent::GetHandler();

@@ -45,13 +45,28 @@ class Collection_Timetable extends Abstract_GenericCollection
         return $this;
     }
     
-    public static function lastChangeByColumnSearch($column, $value)
+    /**
+     * Get the most recent lastChange in the grid
+     *
+     * @param string  $column  Unused
+     * @param string  $value   Unused
+     * @param boolean $inverse Unused
+     * 
+     * @return datetime
+     */
+    public static function lastChangeByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $column = null;
         $value = null;
+        $inverse = null;
         return self::lastChangeAll();
     }
     
+    /**
+     * Return the most recent lastChange in the grid
+     *
+     * @return datetime
+     */
     public static function lastChangeAll()
     {
         $intRoom = strtotime(Object_Room::lastChangeAll());
