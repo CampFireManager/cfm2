@@ -152,13 +152,15 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @param mixed $column Dummy value
      * @param mixed $value  Dummy value
+     * @param mixed $invert Dummy value
      * 
      * @return boolean
      */
-    public static function countByColumnSearch($column = '', $value = '')
+    public static function countByColumnSearch($column = '', $value = '', $invert = false)
     {
         $column = null;
         $value = null;
+        $invert = null;
         return false;
     }
 
@@ -167,13 +169,15 @@ abstract class Abstract_GenericCollection implements Interface_Object
      *
      * @param mixed $column Dummy value
      * @param mixed $value  Dummy value
+     * @param mixed $invert Dummy value
      * 
      * @return boolean
      */
-    public static function brokerByColumnSearch($column = '', $value = '')
+    public static function brokerByColumnSearch($column = '', $value = '', $invert = false)
     {
         $column = null;
         $value = null;
+        $invert = null;
         return false;
     }
     /**
