@@ -266,9 +266,11 @@ class Container_Config implements Interface_Object
         return array();
     }
 
-    public static function brokerByColumnSearch($column = null, $value = null)
+    public static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $self = self::GetHandler();
+        $return = array();
+
         if ($column == null) {
             return false;
         } elseif (!isset($self->arrConfig) 
@@ -280,27 +282,37 @@ class Container_Config implements Interface_Object
             return false;
         }
         if ($column == 'key') {
-            if (isset($self->arrConfig[$key])) {
-                return $self->arrConfig[$key];
+            if ($inverse == false && isset($self->arrConfig[$key])) {
+                return array($key => $self->arrConfig[$key]);
             }
             foreach ($self->arrConfig as $key => $object) {
-                if (strstr($object->getKey('key'), $value)) {
-                    return $object;
+                if (($inverse == false 
+                    && strstr($object->getKey('key'), $value)) 
+                    || ($inverse == true 
+                    && ! strstr($object->getKey('key'), $value))
+                ) {
+                    $return[$object->getKey('key')] = $object;
                 }
             }
+            return $return;
         } else {
             foreach ($self->arrConfig as $key => $object) {
-                if ($object->getKey('value') == $value) {
-                    return $object;
-                } elseif (strstr($object->getKey('value'), $value)) {
-                    return $object;
+                if ($inverse == false && $object->getKey('value') == $value) {
+                    return array($key => $object);
+                } elseif ($inverse == false && strstr($object->getKey('value'), $value)) {
+                    return array($key => $object);
+                } elseif ($inverse == true && $object->getKey('value') != $value) {
+                    $return[$key] = $object;
+                } elseif ($inverse == true && ! strstr($object->getKey('value'), $value)) {
+                    $return[$key] = $object;
                 }
             }
+            return $return;
         }
         return false;
     }
     
-    public static function countByColumnSearch($column = null, $value = null)
+    public static function countByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $self = self::GetHandler();
         if ($column == null) {
@@ -315,8 +327,10 @@ class Container_Config implements Interface_Object
         }
         $counter = 0;
         foreach ($self->arrConfig as $object) {
-            if ($object->getKey($column) == $value 
-                || strstr($object->getKey($column), $value)
+            if (($inverse == false 
+                && strstr($object->getKey($column), $value)) 
+                || ($inverse == true 
+                && ! strstr($object->getKey($column), $value))
             ) {
                 $counter++;
             }
@@ -324,7 +338,7 @@ class Container_Config implements Interface_Object
         return $counter;
     }
     
-    public static function lastChangeByColumnSearch($column = null, $value = null)
+    public static function lastChangeByColumnSearch($column = null, $value = null, $inverse = false)
     {
         $self = self::GetHandler();
         if ($column == null) {
@@ -337,23 +351,37 @@ class Container_Config implements Interface_Object
         } elseif ($column != 'key' && $column != 'value') {
             return false;
         }
+        $return = false;
         if ($column == 'key') {
-            if (isset($self->arrConfig[$key])) {
+            if ($inverse == false && isset($self->arrConfig[$key])) {
                 return $self->arrConfig[$key]->getKey('lastChange');
             }
             foreach ($self->arrConfig as $key => $object) {
-                if (strstr($object->getKey('key'), $value)) {
-                    return $object->getKey('lastChange');
+                if ($object->getKey('lastChange') > $return 
+                    && ($inverse == false 
+                    && strstr($object->getKey('key'), $value)) 
+                    || ($inverse == true 
+                    && ! strstr($object->getKey('key'), $value))
+                ) {
+                    $return = $object->getKey('lastChange');
                 }
             }
+            return $return;
         } else {
             foreach ($self->arrConfig as $key => $object) {
-                if ($object->getKey('value') == $value) {
-                    return $object->getKey('lastChange');
-                } elseif (strstr($object->getKey('value'), $value)) {
-                    return $object->getKey('lastChange');
+                if ($object->getKey('lastChange') > $return) {
+                    if ($inverse == false && $object->getKey('value') == $value) {
+                        $return = $object->getKey('lastChange');
+                    } elseif ($inverse == false && strstr($object->getKey('value'), $value)) {
+                        $return = $object->getKey('lastChange');
+                    } elseif ($inverse == true && $object->getKey('value') != $value) {
+                        $return = $object->getKey('lastChange');
+                    } elseif ($inverse == true && ! strstr($object->getKey('value'), $value)) {
+                        $return = $object->getKey('lastChange');
+                    }
                 }
             }
+            return $return;
         }
         return false;
     }

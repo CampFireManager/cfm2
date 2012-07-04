@@ -328,12 +328,13 @@ abstract class Abstract_GenericObject implements Interface_Object
     /**
      * Get the most recent lastChange date based on the column to search
      *
-     * @param string $column The column to search
-     * @param string $value  The value to look for.
+     * @param string  $column  The column to search
+     * @param string  $value   The value to look for.
+     * @param boolean $inverse Instruct the search to be reversed
      * 
      * @return datetime The most recent datetime string matching the search criteria
      */
-    static function lastChangeByColumnSearch($column = null, $value = null)
+    static function lastChangeByColumnSearch($column = null, $value = null, $inverse = false)
     {
         if ($column == null) {
             throw new OutOfBoundsException('Not a valid column name');
@@ -355,7 +356,15 @@ abstract class Abstract_GenericObject implements Interface_Object
         }
         try {
             $objDatabase = Container_Database::getConnection();
-            if ($value == '%') {
+            if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == ''"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute();
+            } elseif ($value == '%') {
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL"
@@ -363,18 +372,18 @@ abstract class Abstract_GenericObject implements Interface_Object
                 );
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
-            } elseif ($value == null) {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL"
-                    )
-                );
-                $query = $objDatabase->prepare($sql);
-                $query->execute();
-            } else {
+            } elseif ($inverse == false) {
                 $sql = Container_Database::getSqlString(
                     array(
                         'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} = ?"
+                    )
+                );
+                $query = $objDatabase->prepare($sql);
+                $query->execute(array($value));
+            } else {
+                $sql = Container_Database::getSqlString(
+                    array(
+                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} != ?"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
