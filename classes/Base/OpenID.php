@@ -29,7 +29,7 @@ class Base_OpenID
     protected static $self = null;
 
     protected $nickname     = FALSE;
-    protected $email        = TRUE;
+    protected $email        = FALSE;
     protected $realname     = FALSE;
     protected $language     = FALSE;
     protected $dateofbirth  = FALSE;
@@ -73,6 +73,9 @@ class Base_OpenID
     {
         // start session (needed for YADIS)
         Base_GeneralFunctions::startSession();
+        if (isset($_SESSION['OPENID_STATUS'])) {
+            unset($_SESSION['OPENID_STATUS']);
+        }
 
         $libOpenID = Base_ExternalLibraryLoader::loadLibrary("PHP_OpenID");
         if ($libOpenID == false) {
@@ -112,13 +115,13 @@ class Base_OpenID
         $handler = self::getHandler();
         $auth = $handler->consumer->begin($strOpenID);
         if (!$auth) {
-            $SESSION['OPENID_AUTH'] = false;
-            $SESSION['OPENID_FAILED_REASON'] = 0;
+            $_SESSION['OPENID_AUTH'] = false;
+            $_SESSION['OPENID_FAILED_REASON'] = 0;
             header("Location: $fail");
         }
 
-        $SESSION['OPENID_SUCCESS'] = $success;
-        $SESSION['OPENID_FAILED'] = $fail;
+        $_SESSION['OPENID_SUCCESS'] = $success;
+        $_SESSION['OPENID_FAILED'] = $fail;
 
         if (isset($handler->nickname) and $handler->nickname == TRUE) {
             $handler->attributeAx[] = Auth_OpenID_AX_AttrInfo::make('http://axschema.org/namePerson/friendly', 1, 1, 'friendly');
@@ -310,7 +313,7 @@ class Base_OpenID
                     }
                 }
             }
-            $SESSION['OPENID_AUTH'] = array('url' => $openid_url,
+            $_SESSION['OPENID_AUTH'] = array('url' => $openid_url,
                                              'fullname' => $name_full,
                                              'nickname' => $name_alias,
                                              'email' => $email,
@@ -321,12 +324,13 @@ class Base_OpenID
                                              'country' => $country,
                                              'timezone' => $timezone);
         } else {
-            $SESSION['OPENID_AUTH'] = false;
-            header("Location: {$SESSION['OPENID_FAILED']}");
+            $_SESSION['OPENID_STATUS'] = $response->message;
+            $_SESSION['OPENID_AUTH'] = false;
+            header("Location: {$_SESSION['OPENID_FAILED']}");
         }
 
         // redirect to restricted application page
-        header("Location: {$SESSION['OPENID_SUCCESS']}");
+        header("Location: {$_SESSION['OPENID_SUCCESS']}");
     }
 
     /**
