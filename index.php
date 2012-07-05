@@ -60,22 +60,20 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
         }
     }
     if ($arrPathItems[0] == 'openid') {
+        $arrParameters = $objRequest->get_arrRqstParameters();
         if ($objRequest->get_strRequestMethod() == 'post' 
-            && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id')
+            && Base_GeneralFunctions::getValue($arrParameters, 'id')
         ) {
             Base_OpenID::request(
-                Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'id'), 
+                Base_GeneralFunctions::getValue($arrParameters, 'id'), 
                 $objRequest->get_strBasePath() . 'openid', 
                 $objRequest->get_strBasePath(), 
                 $objRequest->get_strBasePath()
             );
-        } elseif (Base_GeneralFunctions::getValue(
-            $objRequest->get_arrRqstParameters(),
-            'return'
-        )) {
+        } elseif (isset($arrParameters['return'])) {
             Base_OpenID::response($objRequest->get_strBasePath() . 'openid');
         } elseif ($objRequest->get_strRequestMethod() == 'get' 
-        && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'logout')
+        && isset($arrParameters['logout'])
         ) {
             if ($arrObjects['Object_User']['current'] != false) {
                 if (isset($arrRequestData['requestUrlParameters']['logout'])) {
@@ -142,6 +140,8 @@ $arrObjectsData = array();
  */
 $renderPage = null;
 
+$objRequest = Container_Request::getRequest();
+$arrObjectsData['SiteConfig']['baseurl'] = $objRequest->get_strBasePath();
 $arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
 
 if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '') {
@@ -262,8 +262,6 @@ foreach (Container_Config::brokerAll() as $key=>$object) {
         $arrObjectsData['SiteConfig'][$key] = $object->getKey('value');
     }
 }
-$objRequest = Container_Request::getRequest();
-$arrObjectsData['SiteConfig']['baseurl'] = $objRequest->get_strBasePath();
 
 if ($rest) {
     switch ($objRequest->get_strPrefAcceptType()) {
