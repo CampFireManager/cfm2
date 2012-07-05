@@ -549,7 +549,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function setKey($keyname = '', $value = '')
     {
-        if (! Object_User::isAdmin() && $keyname == 'intUserID') {
+        if ($keyname == 'intUserID' && ! Object_User::isAdmin()) {
             $temp = Object_User::brokerCurrent();
             if ($temp == false) {
                 return false;
