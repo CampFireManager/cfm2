@@ -154,6 +154,7 @@ class Base_Request
     protected $strBasePath        = null;
     protected $strUserAgent       = null;
     protected $arrSession         = null;
+    protected $isParsed           = false;
     
     /**
      * This function reads the $arrMediaTypes array above, and returns whether 
@@ -213,6 +214,11 @@ class Base_Request
         $strInput = null,
         $arrSession = null
     ) {
+        if ($this->isParsed) {
+            return true;
+        } else {
+            $this->isParsed = true;
+        }
         if ($arrGlobals == null) {
             $arrGlobals = $GLOBALS;
         }
@@ -234,7 +240,8 @@ class Base_Request
         if ($strInput == null) {
             $strInput = file_get_contents('php://input');
         }
-        if ($arrSession == null && isset($_SESSION)) {
+        if ($arrSession == null && isset($_COOKIE['PHPSESSID'])) {
+            Base_GeneralFunctions::startSession();
             $arrSession = &$_SESSION;
         }
 
