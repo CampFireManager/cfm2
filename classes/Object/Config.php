@@ -79,13 +79,14 @@ class Object_Config extends Abstract_GenericObject
      */
     public function __construct($values = null, $lastChange = null)
     {
-        parent::__construct();
         if ($values != null && is_array($values) && count($values) > 0) {
             $this->isLocal = true;
             foreach ($values as $key => $value) {
                 $this->setKey($key, $value);
             }
             $this->setKey('lastChange', $lastChange);
+        } else {
+            parent::__construct();
         }
     }
 }
