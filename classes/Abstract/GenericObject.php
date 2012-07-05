@@ -614,7 +614,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                     $values[$strDBKeyCol] = $this->$strDBKeyCol;
                     $where = Container_Database::getSqlString(
                         array(
-                            'sql' => "{$this->strDBKeyCol} = :{$this->strDBKeyCol}"
+                            'sql' => '`' . $this->strDBKeyCol . '`' . " = :{$this->strDBKeyCol}"
                         )
                     );
                 } elseif (isset($this->arrDBKeyCol) and is_array($this->arrDBKeyCol) and count($this->arrDBKeyCol) > 0) {
@@ -625,7 +625,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                         $values["old$keycol"] = $this->old[$keycol];
                         $where .= Container_Database::getSqlString(
                             array(
-                                'sql' => "$keycol = :old$keycol"
+                                'sql' => '`' . $keycol . `'` . " = :old$keycol"
                             )
                         );
                     }
@@ -637,7 +637,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                         $values["old$keycol"] = $this->old[$keycol];
                         $where .= Container_Database::getSqlString(
                             array(
-                                'sql' => "$keycol = :old$keycol"
+                                'sql' => '`' . $keycol . '`' . " = :old$keycol"
                             )
                         );
                     }
@@ -647,7 +647,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                         if ($sql != '') {
                             $sql .= ", ";
                         }
-                        $sql .= "$change_key = :$change_key";
+                        $sql .= '`' . $change_key .'`' . " = :$change_key";
                         $values[$change_key] = $this->$change_key;
                     }
                 }
@@ -664,6 +664,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 return true;
             }
         } catch(Exception $e) {
+            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
             throw $e;
         }
     }
@@ -683,7 +684,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         $keys = '';
         $key_place = '';
         if (isset($this->strDBKeyCol) && $this->strDBKeyCol != '') {
-            $keys = $this->strDBKeyCol;
+            $keys = '`' . $this->strDBKeyCol . '`';
             $key_place = 'NULL';
         }
         foreach ($this->arrDBItems as $field_name => $dummy) {
@@ -692,7 +693,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $keys .= ', ';
                 $key_place .= ', ';
             }
-            $keys .= $field_name;
+            $keys .= '`' . $field_name . '`';
             $key_place .= ":$field_name";
             $values[$field_name] = $this->$field_name;
         }
@@ -714,6 +715,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             Container_Hook::Load()->triggerHook('createRecord', $this);
             return true;
         } catch (Exception $e) {
+            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
             throw $e;
         }
     }
@@ -746,6 +748,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             Container_Hook::Load()->triggerHook('deleteRecord', $this);
             return true;
         } catch (Exception $e) {
+            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
             throw $e;
         }
     }
@@ -854,6 +857,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase->exec($sql);
             return true;
         } catch (Exception $e) {
+            error_log("SQL error: " . $e->getMessage() . " SQL: $sql");
             throw $e;
         }
     }
@@ -889,6 +893,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $object->create();
             }
         } catch (Exception $e) {
+            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
             throw $e;
         }
         Object_User::isSystem(false);
