@@ -132,22 +132,23 @@ class Object_User extends Abstract_GenericObject
             return $objCache->arrCache[$thisClassName]['current'];
         }
         $objUserAuth = Object_Userauth::brokerCurrent();
-        if ($objUserAuth !== false) {
-            $intUserID = $objUserAuth->getKey('intUserID');
-        } else {
+        if (!is_object($objUserAuth)) {
             return false;
         }
         try {
             $objDatabase = Container_Database::getConnection();
             $sql = "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1";
             $query = $objDatabase->prepare($sql);
-            $query->execute(array($intUserID));
+            $values = array($objUserAuth->getKey('intUserAuthID'));
+            $query->execute($values);
             $result = $query->fetchObject($thisClassName);
-            $objCache->arrCache[$thisClassName]['id'][$intUserID] = $result;
-            $objCache->arrCache[$thisClassName]['current'] = $result;
+            if ($result != false) {
+                $objCache->arrCache[$thisClassName]['id'][$intUserID] = $result;
+                $objCache->arrCache[$thisClassName]['current'] = $result;
+            }
             return $result;
         } catch(PDOException $e) {
-            error_log("SQL Error: " . $e->getMessage());
+            error_log("SQL Error: " . $e->getMessage() . " in SQL: $sql with values " . print_r($values, true));
             return false;
         }
     }
@@ -168,17 +169,20 @@ class Object_User extends Abstract_GenericObject
         try {
             $objUserAuth = new Object_Userauth(true);
             if (is_object($objUserAuth)) {
-                $this->setKey('strUserName', Base_GeneralFunctions::getValue(Base_Request::getRequest(), 'strUsername', 'An Anonymous User'));
+                $objRequest = Container_Request::getRequest();
+                $this->setKey('strUserName', $objRequest->get_strUsername());
                 $this->create();
+                Object_User::isSystem(true);
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
+                Object_User::isSystem(false);
                 $this->intUserAuthIDTemp = $objUserAuth->getKey('intUserAuthID');
             } else {
                 $this->errorMessageReturn = $objUserAuth;
             }
             return $this;
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw $e;
         }
     }
 

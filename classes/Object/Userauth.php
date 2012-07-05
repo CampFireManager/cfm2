@@ -118,24 +118,28 @@ class Object_Userauth extends Abstract_GenericObject
         ) {
             return $objCache->arrCache[$thisClassName]['current'];
         }
-        Base_GeneralFunctions::startSession();
         $objRequest = Container_Request::getRequest();
-        if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID', false, true)) {
+        $arrSession = $objRequest->get_arrSession();
+        if (isset($arrSession['intUserAuthID'])) {
             try {
                 $objDatabase = Container_Database::getConnection();
                 $sql = "SELECT * FROM userauth WHERE intUserAuthID = ? LIMIT 1";
                 $query = $objDatabase->prepare($sql);
-                $query->execute(array(Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID')));
+                $query->execute(array($arrSession['intUserAuthID']));
                 $result = $query->fetchObject($thisClassName);
-                $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
-                $objCache->arrCache[$thisClassName]['current'] = $result;
+                if ($result != false) {
+                    $objCache->arrCache[$thisClassName]['id'][$result->getKey('intUserID')] = $result;
+                    $objCache->arrCache[$thisClassName]['current'] = $result;
+                } else {
+                    unset($_SESSION['intUserAuthID']);
+                }
                 return $result;
             } catch (Exception $e) {
                 throw $e;
             }
-        } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH', false, true)) {
+        } elseif (isset($arrSession['OPENID_AUTH'])) {
             $key = 'openid';
-            $value = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH'));
+            $value = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $arrSession['OPENID_AUTH']['url']);
             $createIfNotExist = true;
         } elseif ($objRequest->get_strUsername() != null && $objRequest->get_strPassword() != null) {
             $key = 'basicauth';
@@ -205,17 +209,18 @@ class Object_Userauth extends Abstract_GenericObject
         if (! $isCreationAction) {
             return $this;
         }
-        Base_GeneralFunctions::startSession();
         $objRequest = Container_Request::getRequest();
+        $arrSession = $objRequest->get_arrSession();
+        $this->reqCreatorToMod = false;
         if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'intUserAuthID', false, true)) {
             unset($_SESSION['intUserAuthID']);
         }
-        if (Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH', false, true)) {
-            $thisClass->setKey('enumAuthType', 'openid');
-            $thisClass->setKey('strAuthValue', Base_GeneralFunctions::getValue($objRequest->get_arrSession(), 'OPENID_AUTH'));
+        if (isset($arrSession['OPENID_AUTH']['url'])) {
+            $this->setKey('enumAuthType', 'openid');
+            $this->setKey('strAuthValue', $arrSession['OPENID_AUTH']['url']);
         } elseif (
-            Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username', false, true)
-            && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true)
+            Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username', false, true) != false
+            && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true) != false
         ) {
             if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username') . ':%')) > 0) {
                 throw new Exception("This username already exists, please select another");
