@@ -45,6 +45,7 @@ class Container_RequestTest extends PHPUnit_Framework_TestCase
     
     public function testInitialize()
     {
+        Container_Request_Testable::reset();
         $request = Container_Request_Testable::GetHandler();
         $this->assertTrue(get_class($request) == 'Base_Request');
         $request->parse(
@@ -71,7 +72,6 @@ class Container_RequestTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($arrParameters) == 0);
         $this->assertTrue($request->get_strBasePath() == 'https://localhost:1443/service/');
         $this->assertTrue($request->hasMediaType());
-
     }
 }
 
