@@ -25,26 +25,28 @@
 class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-        'strUserName' => array('type' => 'varchar', 'length' => 255),
-        'isWorker' => array('type' => 'tinyint', 'length' => 1),
-        'isAdmin' => array('type' => 'tinyint', 'length' => 1),
+        'strName'     => array('type' => 'varchar', 'length' => 255),
+        'jsonLinks'   => array('type' => 'text'),
+        'isWorker'    => array('type' => 'tinyint', 'length' => 1),
+        'isAdmin'     => array('type' => 'tinyint', 'length' => 1),
         'hasAttended' => array('type' => 'tinyint', 'length' => 1),
-        'isHere' => array('type' => 'tinyint', 'length' => 1),
-        'lastChange' => array('type' => 'datetime')
+        'isHere'      => array('type' => 'tinyint', 'length' => 1),
+        'lastChange'  => array('type' => 'datetime')
     );
-    protected $strDBTable = "user";
-    protected $strDBKeyCol = "intUserID";
+    protected $strDBTable      = "user";
+    protected $strDBKeyCol     = "intUserID";
     protected $reqCreatorToMod = true;
     // Local Object Requirements
-    protected $intUserID = null;
-    protected $strUserName = null;
-    protected $isWorker = false;
-    protected $isAdmin = false;
-    protected $hasAttended = false;
-    protected $isHere = false;
-    protected $lastChange = false;
+    protected $intUserID       = null;
+    protected $strName         = null;
+    protected $jsonLinks       = null;
+    protected $isWorker        = false;
+    protected $isAdmin         = false;
+    protected $hasAttended     = false;
+    protected $isHere          = false;
+    protected $lastChange      = false;
     // Temporary storage values
-    public $intUserAuthIDTemp = null;
+    public $objUserAuthTemp    = null;
 
     /**
      * This function should only be used by system activites - such as room sorting
@@ -139,11 +141,11 @@ class Object_User extends Abstract_GenericObject
             $objDatabase = Container_Database::getConnection();
             $sql = "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1";
             $query = $objDatabase->prepare($sql);
-            $values = array($objUserAuth->getKey('intUserAuthID'));
+            $values = array($objUserAuth->getKey('intUserID'));
             $query->execute($values);
             $result = $query->fetchObject($thisClassName);
             if ($result != false) {
-                $objCache->arrCache[$thisClassName]['id'][$intUserID] = $result;
+                $objCache->arrCache[$thisClassName]['id'][$objUserAuth->getKey('intUserID')] = $result;
                 $objCache->arrCache[$thisClassName]['current'] = $result;
             }
             return $result;
@@ -176,11 +178,10 @@ class Object_User extends Abstract_GenericObject
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
                 Object_User::isSystem(false);
-                $this->intUserAuthIDTemp = $objUserAuth->getKey('intUserAuthID');
+                $this->objUserAuthTemp = $objUserAuth;
             } else {
                 $this->errorMessageReturn = $objUserAuth;
             }
-            return $this;
         } catch (Exception $e) {
             throw $e;
         }
@@ -194,14 +195,14 @@ class Object_User extends Abstract_GenericObject
     static function logout()
     {
         Base_GeneralFunctions::startSession();
-        $arrRequestData = Base_Request::getRequest();
-        if (isset($SESSION['intUserAuthID']) && $SESSION['intUserAuthID'] != '') {
-            unset($SESSION['intUserAuthID']);
+        $objRequest = Container_Request::getRequest();
+        if (isset($_SESSION['intUserAuthID']) && $_SESSION['intUserAuthID'] != '') {
+            unset($_SESSION['intUserAuthID']);
         }
-        if (isset($SESSION['OPENID_AUTH']) && $SESSION['OPENID_AUTH'] != '') {
-            unset($SESSION['OPENID_AUTH']);
+        if (isset($_SESSION['OPENID_AUTH']) && $_SESSION['OPENID_AUTH'] != '') {
+            unset($_SESSION['OPENID_AUTH']);
         }
-        if (isset($arrRequestData['username']) && $arrRequestData['username'] != '') {
+        if ($objRequest->get_strUsername() != '') {
             Base_Response::sendHttpResponse(401);
         }
     }
@@ -241,9 +242,9 @@ class Object_User extends Abstract_GenericObject
 class Object_User_Demo extends Object_User
 {
     protected $arrDemoData = array(
-        array('intUserID' => 1, 'strUserName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 2, 'strUserName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 3, 'strUserName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 4, 'strUserName' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
+        array('intUserID' => 1, 'strName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 2, 'strName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 3, 'strName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 4, 'strName' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
     );
 }

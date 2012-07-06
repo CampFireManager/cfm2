@@ -159,7 +159,7 @@ class Object_Userauth extends Abstract_GenericObject
         if (isset($key)) {
             try {
                 $objDatabase = Container_Database::getConnection();
-                $sql = "SELECT * FROM userauth WHERE enumAuthType = ? and strAuthValue = ? LIMIT 1";
+                $sql = "SELECT * FROM userauth WHERE enumAuthType = ? and strAuthValue like ? LIMIT 1";
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($key, $value));
                 $result = $query->fetchObject($thisClassName);
@@ -174,14 +174,12 @@ class Object_Userauth extends Abstract_GenericObject
                     }
                 } else {
                     if ($createIfNotExist === true) {
-                        try {
-                            $return = new Object_User(true);
-                            if ($return != false && isset($return->intUserAuthIDTemp)) {
-                                $_SESSION['intUserAuthID'] = $return->intUserAuthIDTemp;
-                            }
-                        } catch (Exception $e) {
-                            return $e->getMessage();
+                        $result = new Object_User(true);
+                        if ($result != false && isset($result->objUserAuthTemp)) {
+                            Base_GeneralFunctions::startSession();
+                            $_SESSION['intUserAuthID'] = $result->objUserAuthTemp->getKey('intUserAuthID');
                         }
+                        return $result->objUserAuthTemp;
                     }
                 }
                 return $result;
