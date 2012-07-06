@@ -8,7 +8,7 @@
     <body>
         <div>
             <div id="header">
-                <h1>{$SiteConfig['Site Name']}</h1>
+                <h1>{$SiteConfig['Site_Name']}</h1>
             </div>
             <div id="useractions">
 {if isset($Object_User.current.strUserName)}

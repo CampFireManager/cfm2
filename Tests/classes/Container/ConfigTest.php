@@ -28,11 +28,11 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
         $objSecureConfig->initializeDemo();
         $config->LoadDatabaseConfig();
         $data = $config->brokerAll();
-        $item = Container_Config_Testable::brokerByID('Site Name');
+        $item = Container_Config_Testable::brokerByID('Site_Name');
         $this->assertTrue($item->getKey('value') == 'A Demo Site');
         $item->setKey('value', 'Some Demo Data');
         $item->write();
-        $item = Container_Config_Testable::brokerByID('Site Name');
+        $item = Container_Config_Testable::brokerByID('Site_Name');
         $this->assertTrue($item->getKey('value') == 'Some Demo Data');
     }
     

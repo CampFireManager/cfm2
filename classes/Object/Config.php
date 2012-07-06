@@ -103,6 +103,6 @@ class Object_Config extends Abstract_GenericObject
 class Object_Config_Demo extends Object_Config
 {
     protected $arrDemoData = array(
-        array('key' => 'Site Name', 'value' => 'A Demo Site'),
+        array('key' => 'Site_Name', 'value' => 'A Demo Site'),
     );
 }
