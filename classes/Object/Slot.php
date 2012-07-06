@@ -102,16 +102,12 @@ class Object_Slot extends Abstract_GenericObject
         $intNextSlot = null;
         foreach ($arrSlots as $objSlot) {
             $slot = $objSlot->getSelf();
-            if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi', strtotime($strNow))
-                && date('YmdHi', strtotime($slot['dateEnd'] . ' ' . $slot['timeEnd'])) >= date('YmdHi', strtotime($strNow))
-                || ($intNowSlot == null && date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart']) >= date('YmdHi', strtotime($strNow))))
-                || ($intNowSlot != null && $intNextSlot == null)
-            ) {
-                if ($intNowSlot == null) {
-                    $intNowSlot = $slot['intSlotID'];
-                } else {
-                    $intNextSlot = $slot['intSlotID'];
-                }
+            if ($intNextSlot == null) {
+                $intNowSlot = $slot['intSlotID'];
+            }
+            if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi', strtotime($strNow))) {
+                $intNowSlot = $slot['intSlotID'];
+                $intNextSlot = null;
             }
         }
         return array($intNowSlot, $intNextSlot);
