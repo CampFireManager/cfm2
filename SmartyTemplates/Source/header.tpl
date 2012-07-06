@@ -11,9 +11,9 @@
                 <h1>{$SiteConfig['Site_Name']}</h1>
             </div>
             <div id="useractions">
-{if isset($Object_User.current.strUserName)}
-                [ <a href="{$SiteConfig.baseurl}?logout">Logout</a>
-                | <a href="{$SiteConfig.baseurl}user/{$User_Object.current.intUserID}">Edit my settings</a>]
+{if isset($Object_User.current.intUserID)}
+                [ <a href="{$SiteConfig.baseurl}?logout=true">Logout</a>
+                | <a href="{$SiteConfig.baseurl}user/{$Object_User.current.intUserID}">Edit my settings</a>]
 {else}
                 [ OpenID Login/Register: 
                     <form method="post" action="{$SiteConfig.baseurl}openid/">
