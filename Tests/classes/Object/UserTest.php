@@ -4,7 +4,7 @@ class Object_UserTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $config = Container_Config_Testable::GetHandler();
-        $config->LoadFile('democonfig.php');
+        $config->LoadFile('unittest.php');
         $config->SetUpDatabaseConnection();
         $objConfig = new Object_Config_Demo();
         $objConfig->initializeDemo();

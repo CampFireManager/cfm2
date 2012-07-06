@@ -4,8 +4,8 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         Container_Config_Testable::reset();
-        if (file_exists(dirname(__FILE__) . '/../../../../config/demo.sqlite')) {
-            unlink(dirname(__FILE__) . '/../../../../config/demo.sqlite');
+        if (file_exists(dirname(__FILE__) . '/../../../../config/unittest.sqlite')) {
+            unlink(dirname(__FILE__) . '/../../../../config/unittest.sqlite');
         }
     }
     
@@ -19,7 +19,7 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     public function testInitializeConfigLoader()
     {
         $config = Container_Config_Testable::GetHandler();
-        $config->LoadFile('democonfig.php');
+        $config->LoadFile('unittest.php');
         $this->assertTrue(Container_Config_Testable::brokerByID('demo', 0)->getKey('value') == 1);
         $config->SetUpDatabaseConnection();
         $objConfig = new Object_Config_Demo();
@@ -73,7 +73,7 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     public function testSettingDsn()
     {
         $config = Container_Config_Testable::GetHandler();
-        $config->LoadFile('democonfig.php');
+        $config->LoadFile('unittest.php');
         $config->set('RO_DSN', ':memory:');
         $config->LoadDatabaseConfig();
     }
