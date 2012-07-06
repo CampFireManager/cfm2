@@ -33,25 +33,39 @@ class Plugin_Twitter
      */
     function hook_talkStart($object)
     {
-        $objCache = Base_Cache::getHandler();
-        if (! isset($objCache->arrCache['twitterManager'])) {
-            include dirname(__FILE__) . '/ExternalLibraries/twitterManager.php';
-            $objConfig = new Base_Config();
-            $objCache->arrCache['TwitterManager'] = new TwitterManager(
-                $objConfig->getSecureConfig('TwitterConsumerKey'), 
-                $objConfig->getSecureConfig('TwitterConsumerSecret'),
-                $objConfig->getSecureConfig('TwitterUserKey'),
-                $objConfig->getSecureConfig('TwitterUserSecret')
-            );
-        }
-        $objTwitterManager = $objCache->arrCache['TwitterManager'];
-
-        $object->setFull(true);
-        $arrTalk = $object->getSelf();
-        $objTwitterManager->post($arrTalk['strTalkName'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoomName']);
-        if ($objTwitterManager->errno() != 200) {
-            error_log('TwitterManager: ' . $objTwitterManager->error());
+        try {
+            $objTwitterManager = $this->initializeTwitterHandler();
+            $object->setFull(true);
+            $arrTalk = $object->getSelf();
+            $objTwitterManager->post($arrTalk['strTalkName'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoomName']);
+            if ($objTwitterManager->errno() != 200) {
+                throw new Exception('TwitterManager: ' . $objTwitterManager->error());
+            }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
         }
     }
 
+    /**
+     * This function initializes the Twitter Manager code.
+     *
+     * @return object
+     */
+    protected function initializeTwitterHandler()
+    {
+        $objCache = Base_Cache::getHandler();
+        if (! isset($objCache->arrCache['twitterManager'])) {
+            include dirname(__FILE__) . '/ExternalLibraries/twitterManager.php';
+            Container_Config::LoadConfig();
+            $cfgCK = Object_SecureConfig::brokerByID('TwitterConsumerKey', false)->getKey('value');
+            $cfgCS = Object_SecureConfig::brokerByID('TwitterConsumerSecret', false)->getKey('value');
+            $cfgUK = Object_SecureConfig::brokerByID('TwitterUserKey', false)->getKey('value');
+            $cfgUS = Object_SecureConfig::brokerByID('TwitterUserSecret', false)->getKey('value');
+            if ($cfgCK == false || $cfgCS == false || $cfgUK == false || $cfgUS == false) {
+                throw new Exception('TwitterManager: Missing config values');
+            } 
+            $objCache->arrCache['TwitterManager'] = new TwitterManager($cfgCK, $cfgCS, $cfgUK, $cfgUS);
+        }
+        return $objCache->arrCache['TwitterManager'];
+    }
 }
