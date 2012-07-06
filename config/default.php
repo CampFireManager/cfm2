@@ -110,9 +110,16 @@ $this->set('RO_DSN', null);
 $this->set('RO_User', null);
 $this->set('RO_Pass', null);
 
-$this->set('RW_DSN', "host=$RW_HOST;port=$RW_PORT;dbname=$RW_BASE");
-$this->set('RW_User', $RW_USER);
-$this->set('RW_Pass', $RW_PASS);
+if ($RW_TYPE != 'sqlite') {
+    $this->set('RW_DSN', "host=$RW_HOST;port=$RW_PORT;dbname=$RW_BASE");
+    $this->set('RW_User', $RW_USER);
+    $this->set('RW_Pass', $RW_PASS);
+} else {
+    $this->set('RW_DSN', dirname(__FILE__) . '/' . $RW_BASE . '.sqlite');
+    $this->set('RW_User', null);
+    $this->set('RW_Pass', null);
+    $SPLIT_RO_RW = false;
+}
 
 if ($SPLIT_RO_RW == true) {
     $this->set('RO_DSN', "host=$RO_HOST;port=$RO_PORT;dbname=$RO_BASE");
