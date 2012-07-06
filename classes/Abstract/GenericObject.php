@@ -748,7 +748,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             Container_Hook::Load()->triggerHook('deleteRecord', $this);
             return true;
         } catch (Exception $e) {
-            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
+            error_log("SQL error: " . $e->getMessage() . " SQL: $sql (Value: {$this->$key})");
             throw $e;
         }
     }
@@ -893,7 +893,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $object->create();
             }
         } catch (Exception $e) {
-            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
+            error_log("SQL error: " . $e->getMessage() . " SQL: $sql");
             throw $e;
         }
         Object_User::isSystem(false);
