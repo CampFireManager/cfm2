@@ -395,7 +395,7 @@ class Base_Response
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
         include_once $libSmarty;
         $objSmarty = new Smarty();
-        if (Container_Config::brokerByID('smarty_debug', 'true')->getKey('value') != 'false') {
+        if (Container_Config::brokerByID('smarty_debug', 'false')->getKey('value') != 'false') {
             $objSmarty->debugging = true;
         }
         $objSmarty->setTemplateDir($baseSmarty . 'Source');
