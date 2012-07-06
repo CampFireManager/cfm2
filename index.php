@@ -23,7 +23,7 @@ Container_Config::LoadConfig();
 $objRequest = Container_Request::getRequest();
 $arrMediaType = explode('/', $objRequest->get_strPrefAcceptType());
 
-if (isset($arrRequestData['requestUrlParameters']['logout'])) {
+if (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'logout', false, false) != false) {
     Object_User::logout();
     Base_Response::redirectTo('timetable');
 }
@@ -72,15 +72,6 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
             );
         } elseif (isset($arrParameters['return'])) {
             Base_OpenID::response($objRequest->get_strBasePath() . 'openid');
-        } elseif ($objRequest->get_strRequestMethod() == 'get' 
-        && isset($arrParameters['logout'])
-        ) {
-            if ($arrObjects['Object_User']['current'] != false) {
-                if (isset($arrRequestData['requestUrlParameters']['logout'])) {
-                    $arrObjects['Object_User']['current']->logout();
-                    Base_Response::redirectTo('timetable');
-                }
-            }
         } else {
             Base_Response::redirectTo('timetable');
         }
