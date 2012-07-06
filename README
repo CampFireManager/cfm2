@@ -5,3 +5,45 @@ to contribute to the project. Please feel free to have a dig about in here
 and ask me any questions.
 
 mailto:jon@sprig.gs?subject=CFM2
+
+= INSTALLATION GUIDE =
+======================
+
+== REQUIREMENTS ==
+==================
+
+Install:
+Apache (recommended - other HTTPd's not tested)
+PHP >= 5.3
+PHP5-gmp (Required for OpenID Logins)
+PHP5-mysql or PHP5-sqlite (either will work, mysql is faster)
+MySQL-Server (if you're using the MySQL plugin)
+git
+
+== ACTIONS ==
+=============
+
+* Clone the git repository into a known directory (e.g. /var/www/)
+* From the root of your git clone, do this command:
+        git submodule update --recursive
+* Get the latest stable version of smarty from here: http://www.smarty.net/download
+* Unpack that to /path/to/cfm2/ExternalLibraries/Smarty/Smarty-v.e.r/  
+    * note; v.e.r should be the version number you've downloaded, and should be 
+    a minimum of the version number listed in 
+    /path/to/cfm2/ExternalLibraries/libraries.json. It will have the directories 
+    lib and demo in that path.
+* If you're using MySQL, create the database, user and password.
+* Copy /path/to/cfm2/config/local.dist.php to /path/to/cfm2/config/local.php and
+amend this file. Key lines to set are $RW_TYPE, $RW_BASE. If you're using MySQL
+then you should also set $RW_USER and $RW_PASS.
+* Copy or symlink /path/to/cfm2/_htaccess to /path/to/cfm2/.htaccess
+* Now run
+
+php /path/to/cfm2/initialize.php 
+
+OR if you need demo data (for example you plan on running the unit tests or just
+want some sample data to work with), you should run instead 
+
+php /path/to/cfm2/initialize_with_demo_data.php 
+
+You should be good to go now!
