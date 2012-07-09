@@ -96,7 +96,7 @@ $RO_PASS = '';
  * This is the local timezone indicator
  * @var string
  */
-$TZ = 'UTC';
+$TZ = 'Europe/London';
 
 if (file_exists(dirname(__FILE__) . "/local.php")) {
     /**

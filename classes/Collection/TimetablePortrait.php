@@ -33,15 +33,16 @@ class Collection_TimetablePortrait extends Collection_Timetable
      */
     public function __construct($date = null)
     {
-        if ($date != null) {
-            $date = date('Y-m-d', strtotime($date));
+        parent::__construct($date);
+        foreach ($this->arrData['arrTimetable'] as $x_id => $y_axis) {
+            foreach ($y_axis as $y_id => $data) {
+                $tmpTimetable[$y_id][$x_id] = $data;
+            }
         }
-        if (Object_Room::countAll() > Object_Slot::countAll()) {
-            $self = new Collection_TimetableBySlotRoom($date);
-        } else {
-            $self = new Collection_TimetableByRoomSlot($date);
-        }
-        $this->arrData = $self->arrData;
-        return $this;
+        $this->arrData['arrTimetable'] = $tmpTimetable;
+        $x_id = $this->arrData['x_axis'];
+        $y_id = $this->arrData['y_axis'];
+        $this->arrData['x_axis'] = $y_id;
+        $this->arrData['y_axis'] = $x_id;
     }
 }

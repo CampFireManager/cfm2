@@ -45,6 +45,9 @@ class Object_Slot extends Abstract_GenericObject
     protected $intDefaultSlotTypeID = null;
     protected $isAvailable = true;
     protected $lastChange = true;
+    // Calculated Values
+    protected $isNow = null;
+    protected $isNext = null;
 
     /**
      * This overloaded function returns the data from the PDO object and adds
@@ -57,18 +60,23 @@ class Object_Slot extends Abstract_GenericObject
         $self = parent::getSelf();
         if ((string) $this->dateStart == '') {
             $self['dateStart'] = date('Y-m-d');
-            if ((string) $this->dateEnd == '') {
-                if ($this->timeStart > $this->timeEnd) {
-                    $self['dateEnd'] = date('Y-m-d', strtotime("tomorrow"));
-                } else {
-                    $self['dateEnd'] = date('Y-m-d');
-                }
+            $this->setKey('dateStart', date('Y-m-d'));
+        }
+        if ((string) $this->dateEnd == '') {
+            if ($this->timeStart > $this->timeEnd) {
+                $self['dateEnd'] = date('Y-m-d', strtotime("tomorrow"));
+                $this->setKey('dateEnd', date('Y-m-d', strtotime("tomorrow")));
+            } else {
+                $self['dateEnd'] = date('Y-m-d');
+                $this->setKey('dateEnd', date('Y-m-d'));
             }
         }
         $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
         $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
-        
+        $self['isNow'] = $this->isNow;
+        $self['isNext'] = $this->isNext;
+
         if ($this->isFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
@@ -88,13 +96,11 @@ class Object_Slot extends Abstract_GenericObject
      * 
      * @param string $strNow The value to use when searching for the now/next values
      *
-     * @todo Edge case - outside of this slot, before next slot ... no "Now" or "Next"
-     * 
      * @return array
      */
     public static function getNowAndNext($strNow = null)
     {
-        $arrSlots = self::brokerAll();
+        $arrSlots = self::brokerAll(false);
         if ($strNow == null) {
             $strNow = '+0 minutes';
         }
@@ -103,14 +109,37 @@ class Object_Slot extends Abstract_GenericObject
         foreach ($arrSlots as $objSlot) {
             $slot = $objSlot->getSelf();
             if ($intNextSlot == null) {
-                $intNowSlot = $slot['intSlotID'];
+                $intNextSlot = $slot['intSlotID'];
             }
             if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi', strtotime($strNow))) {
                 $intNowSlot = $slot['intSlotID'];
                 $intNextSlot = null;
             }
         }
+        foreach ($arrSlots as $objSlot) {
+            if ($objSlot->getKey('intSlotID') == $intNowSlot) {
+                $objSlot->isNow = true;
+            } elseif ($objSlot->getKey('intSlotID') == $intNextSlot) {
+                $objSlot->isNext = true;
+            }
+        }
         return array($intNowSlot, $intNextSlot);
+    }
+    
+    /**
+     * Overloaded brokerAll to add the now and next time
+     *
+     * @param boolean $getNowNext Add the Now/Next time
+     * @param string  $strNow     Time to add
+     * 
+     * @return array
+     */
+    public static function brokerAll($getNowNext = true, $strNow = '+0 minutes')
+    {
+        if ($getNowNext == true) {
+            self::getNowAndNext($strNow);
+        }
+        return parent::brokerAll();
     }
 }
 
