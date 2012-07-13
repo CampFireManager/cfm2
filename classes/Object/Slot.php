@@ -72,7 +72,9 @@ class Object_Slot extends Abstract_GenericObject
             }
         }
         $self['datetimeStart'] = $self['dateStart'] . 'T' . $self['timeStart'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
+        $self['epochStart'] = strtotime($self['datetimeStart']);
         $self['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ_Offset', 'Z')->getKey('value');
+        $self['epochEnd'] = strtotime($self['datetimeEnd']);
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         $self['isNow'] = $this->isNow;
         $self['isNext'] = $this->isNext;
