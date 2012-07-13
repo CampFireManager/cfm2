@@ -89,6 +89,7 @@ class Object_Talk extends Abstract_GenericObject
                 $objUser = Object_User::brokerByID($this->intUserID);
                 if (is_object($objUser)) {
                     $self['arrUser'] = $objUser->getSelf();
+                    $self['arrPresenters'][] = $objUser->getSelf();
                     if ($self['arrUser']['lastChange'] > $self['lastChange']) {
                         $self['lastChange'] = $self['arrUser']['lastChange'];
                     }
