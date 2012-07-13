@@ -185,6 +185,7 @@ class Base_OpenID
         // redirect to OpenID provider for authentication
         $url = $auth->redirectURL($base, $base . '?return');
         header('Location: ' . $url);
+        exit(0);
     }
 
 
@@ -327,10 +328,12 @@ class Base_OpenID
             $_SESSION['OPENID_STATUS'] = $response->message;
             $_SESSION['OPENID_AUTH'] = false;
             header("Location: {$_SESSION['OPENID_FAILED']}");
+            exit(0);
         }
 
         // redirect to restricted application page
         header("Location: {$_SESSION['OPENID_SUCCESS']}");
+        exit(0);
     }
 
     /**

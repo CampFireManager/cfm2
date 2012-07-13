@@ -66,12 +66,12 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
         ) {
             Base_OpenID::request(
                 Base_GeneralFunctions::getValue($arrParameters, 'id'), 
-                $objRequest->get_strBasePath() . 'openid', 
+                $objRequest->get_strBasePath() . 'openid/', 
                 $objRequest->get_strBasePath(), 
                 $objRequest->get_strBasePath()
             );
         } elseif (isset($arrParameters['return'])) {
-            Base_OpenID::response($objRequest->get_strBasePath() . 'openid');
+            Base_OpenID::response($objRequest->get_strBasePath() . 'openid/');
         } else {
             Base_Response::redirectTo('timetable');
         }

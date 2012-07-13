@@ -176,10 +176,13 @@ class Base_Response
         $objRequest = Container_Request::getRequest();
         $thisetag = sha1($objRequest->get_requestUrlExParams() . $body);
         header("ETag: \"$thisetag\"");
-        foreach ($objRequest->get_hasIfNoneMatch() as $etag) {
-            if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
-                header('HTTP/1.1 304 ' . static::$httpStatusCodes[304]);
-                exit(0);
+        $arrETag = $objRequest->get_hasIfNoneMatch();
+        if (is_array($arrETag)) {
+            foreach ($arrETag as $etag) {
+                if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
+                    header('HTTP/1.1 304 ' . static::$httpStatusCodes[304]);
+                    exit(0);
+                }
             }
         }
         
@@ -408,9 +411,9 @@ class Base_Response
             }
         }
         if (file_exists($baseSmarty . 'Source/' . $template . '.html.tpl')) {
-            $objSmarty->display($template . '.html.tpl');
+            self::sendHttpResponse(200, $objSmarty->fetch($template . '.html.tpl'));
         } else {
-            $objSmarty->display('Generic_Object.html.tpl');
+            self::sendHttpResponse(200, $objSmarty->fetch('Generic_Object.html.tpl'));
         }
     }
 }
