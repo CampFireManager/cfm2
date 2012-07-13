@@ -79,7 +79,9 @@ class Object_User extends Abstract_GenericObject
      */
     public static function isAdmin($intUserID = null)
     {
-        if ($intUserID == null) {
+        if (self::isSystem()) {
+            return true;
+        } elseif ($intUserID == null) {
             $self = self::brokerCurrent();
         } else {
             $self = self::brokerByID($intUserID);
@@ -87,7 +89,7 @@ class Object_User extends Abstract_GenericObject
         if ($self != false && $self->getKey('isAdmin') == 1) {
             return true;
         }
-        return self::isSystem();
+        return false;
     }
     
     /**
