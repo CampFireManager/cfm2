@@ -84,7 +84,7 @@ class Object_Slot extends Abstract_GenericObject
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
                 if (is_object($objDefaultSlotType)) {
                     $self['arrDefaultSlotType'] = $objDefaultSlotType->getSelf();
-                    if ($self['arrDefaultSlotType']['lastChange'] > $self['lastChange']) {
+                    if (strtotime($self['arrDefaultSlotType']['lastChange']) > strtotime($self['lastChange'])) {
                         $self['lastChange'] = $self['arrDefaultSlotType']['lastChange'];
                     }
                 }
