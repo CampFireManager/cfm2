@@ -70,6 +70,7 @@ class Base_Response
     );
     protected static $handler = null;
     protected $floatGenerationTime = null;
+    protected $lastModifiedTime = null;
     
     /**
      * An internal function to make this a singleton. This should only be used when being used to find objects of itself.
@@ -82,6 +83,44 @@ class Base_Response
             self::$handler = new self();
         }
         return self::$handler;
+    }
+    
+    /**
+     * An internal function to return the last modified time for the page.
+     *
+     * @return integer|epoch
+     */
+    protected static function getLastModified()
+    {
+        $self = self::getHandler();
+        if ($self->lastModifiedTime == null) {
+            return strtotime('now');
+        } else {
+            return $self->lastModifiedTime;
+        }
+    }
+    
+    /**
+     * A function to accumulate the last modified time for the page
+     *
+     * @param mixed $time The time string or integer to 
+     * 
+     * @return void
+     */
+    public static function setLastModifiedTime($time)
+    {
+        $self = self::getHandler();
+        if (preg_match('/\d+-\d+-\d+ \d+:\d+:\d+/', $time) > 0
+            || preg_match('/\d+-\d+-\d+ \d+:\d+/', $time) > 0
+            || preg_match('/\d+-\d+-\d+/', $time) > 0
+            || preg_match('/\d+:\d+:\d+ \d+-\d+-\d+/', $time) > 0
+            || preg_match('/\d+:\d+ \d+-\d+-\d+/', $time) > 0
+        ) {
+            $time = strtotime($time);
+        }
+        if ($self->lastModifiedTime > $time) {
+            $self->lastModifiedTime = $time;
+        }
     }
     
     /**
@@ -175,6 +214,7 @@ class Base_Response
         
         $objRequest = Container_Request::getRequest();
         $thisetag = sha1($objRequest->get_requestUrlExParams() . $body);
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s", self::getLastModified()) . " GMT");
         header("ETag: \"$thisetag\"");
         $arrETag = $objRequest->get_hasIfNoneMatch();
         if (is_array($arrETag)) {

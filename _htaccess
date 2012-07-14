@@ -4,6 +4,10 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^(.*)$ index.php [L]
+
   # These two lines were added as per http://stackoverflow.com/a/8554171/5738
   RewriteRule .* - [E=HTTP_IF_MODIFIED_SINCE:%{HTTP:If-Modified-Since}]
   RewriteRule .* - [E=HTTP_IF_NONE_MATCH:%{HTTP:If-None-Match}]
@@ -11,7 +15,4 @@
   RewriteCond %{HTTP:Authorization} ^(.*)
   RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(.*)$ index.php [L]
 </IfModule>
