@@ -223,11 +223,13 @@ class Object_User extends Abstract_GenericObject
             $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
             foreach ($arrUserAuth as $key => $value) {
                 $self['arrUserAuth'][$key] = $value->getSelf();
-                if ($self['arrUserAuth'][$key]['lastChange'] > $self['lastChange']) {
-                    $self['lastChange'] = $self['arrUserAuth'][$key]['lastChange'];
+                if ($self['arrUserAuth'][$key]['epochLastChange'] > $self['epochLastChange']) {
+                    $self['epochLastChange'] = $self['arrUserAuth'][$key]['epochLastChange'];
                 }
             }
         }
+        Base_Response::setLastModifiedTime($self['epochLastChange']);
+        $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
     }
 }

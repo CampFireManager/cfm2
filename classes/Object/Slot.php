@@ -84,12 +84,14 @@ class Object_Slot extends Abstract_GenericObject
                 $objDefaultSlotType = Object_DefaultSlotType::brokerByID($this->intDefaultSlotTypeID);
                 if (is_object($objDefaultSlotType)) {
                     $self['arrDefaultSlotType'] = $objDefaultSlotType->getSelf();
-                    if (strtotime($self['arrDefaultSlotType']['lastChange']) > strtotime($self['lastChange'])) {
-                        $self['lastChange'] = $self['arrDefaultSlotType']['lastChange'];
+                    if ($self['arrDefaultSlotType']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrDefaultSlotType']['epochLastChange'];
                     }
                 }
             }
         }
+        Base_Response::setLastModifiedTime($self['epochLastChange']);
+        $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
     }
 

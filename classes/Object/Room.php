@@ -59,12 +59,14 @@ class Object_Room extends Abstract_GenericObject
                 if (is_object($objResource)) {
                     $arrResource = $objResource->getSelf();
                     $self['arrResources'][] = $arrResource;
-                    if ($arrResource['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $arrResource['lastChange'];
+                    if ($arrResource['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $arrResource['epochLastChange'];
                     }
                 }
             }
         }
+        Base_Response::setLastModifiedTime($self['epochLastChange']);
+        $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
     }
     

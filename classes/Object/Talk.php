@@ -78,16 +78,16 @@ class Object_Talk extends Abstract_GenericObject
         $self = parent::getSelf();
         if ($this->isFull() == true) {
             $self['intAttendees'] = Object_Attendee::countByColumnSearch('intTalkID', $this->intTalkID);
-            if (Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID) > $self['lastChange']) {
-                $self['lastChange'] = Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID);
+            if (strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID)) > $self['epochLastChange']) {
+                $self['epochLastChange'] = strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID));
             }
             if ($this->intUserID != null && $this->intUserID > 0) {
                 $objUser = Object_User::brokerByID($this->intUserID);
                 if (is_object($objUser)) {
                     $self['arrUser'] = $objUser->getSelf();
                     $self['arrPresenters'][] = $objUser->getSelf();
-                    if ($self['arrUser']['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $self['arrUser']['lastChange'];
+                    if ($self['arrUser']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrUser']['epochLastChange'];
                     }
                 }
             }
@@ -100,8 +100,8 @@ class Object_Talk extends Abstract_GenericObject
                     }
                     $objRoom->setFull(true);
                     $self['arrRoom'] = $objRoom->getSelf();
-                    if ($self['arrRoom']['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $self['arrRoom']['lastChange'];
+                    if ($self['arrRoom']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrRoom']['epochLastChange'];
                     }
                 }
             }
@@ -110,8 +110,8 @@ class Object_Talk extends Abstract_GenericObject
                 if (is_object($objSlot)) {
                     $objSlot->setFull(true);
                     $self['arrSlot_start'] = $objSlot->getSelf();
-                    if ($self['arrSlot_start']['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $self['arrSlot_start']['lastChange'];
+                    if ($self['arrSlot_start']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrSlot_start']['epochLastChange'];
                     }
                     $self['arrSlot_stop'] = $objSlot->getSelf();
                 }
@@ -120,6 +120,9 @@ class Object_Talk extends Abstract_GenericObject
                     if (is_object($objSlot)) {
                         $objSlot->setFull(true);
                         $self['arrSlot_stop'] = $objSlot->getSelf();
+                        if ($self['arrSlot_stop']['epochLastChange'] > $self['epochLastChange']) {
+                            $self['epochLastChange'] = $self['arrSlot_stop']['epochLastChange'];
+                        }
                         if ($self['arrSlot_stop']['lastChange'] > $self['lastChange']) {
                             $self['lastChange'] = $self['arrSlot_stop']['lastChange'];
                         }
@@ -130,8 +133,8 @@ class Object_Talk extends Abstract_GenericObject
                 $objTrack = Object_Track::brokerByID($this->intTrackID);
                 if (is_object($objTrack)) {
                     $self['arrTrack'] = $objTrack->getSelf();
-                    if ($self['arrTrack']['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $self['arrTrack']['lastChange'];
+                    if ($self['arrTrack']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrTrack']['epochLastChange'];
                     }
                 }
             }
@@ -142,8 +145,8 @@ class Object_Talk extends Abstract_GenericObject
                 if (is_object($objResource)) {
                     $arrResource = $objResource->getSelf();
                     $self['arrResources'][] = $arrResource;
-                    if ($arrResource['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $arrResource['lastChange'];
+                    if ($arrResource['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $arrResource['epochLastChange'];
                     }
                 }
             }
@@ -153,14 +156,16 @@ class Object_Talk extends Abstract_GenericObject
                 if (is_object($objPresenter)) {
                     $arrPresenter = $objPresenter->getSelf();
                     $self['arrPresenters'][] = $arrPresenter;
-                    if ($arrPresenter['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $arrPresenter['lastChange'];
+                    if ($arrPresenter['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $arrPresenter['epochLastChange'];
                     }
                 }
             }
             $self['strSlotID'] = 'slot_' . $this->intSlotID;
             $self['strRoomID'] = 'room_' . $this->intRoomID;
         }
+        Base_Response::setLastModifiedTime($self['epochLastChange']);
+        $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
     }
     

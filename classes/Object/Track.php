@@ -54,12 +54,14 @@ class Object_Track extends Abstract_GenericObject
                 foreach ($arrTalks as $objTalk) {
                     $arrTalk = $objTalk->getSelf();
                     $self['arrTalks'][] = $arrTalk;
-                    if ($arrTalk['lastChange'] > $self['lastChange']) {
-                        $self['lastChange'] = $arrTalk['lastChange'];
+                    if ($arrTalk['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $arrTalk['epochLastChange'];
                     }
                 }
             }
         }
+        Base_Response::setLastModifiedTime($self['epochLastChange']);
+        $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
     }
 }
