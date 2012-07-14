@@ -928,8 +928,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                     $return['isEditable'][$key] = $value['type'];
                 }
             }
+            if (isset($return['isEditable']['intUserID']) 
+                && ! Object_User::isAdmin()
+            ) {
+                unset($return['isEditable']['intUserID']);
+            }
+            unset($return['isEditable']['lastChange']);
         }
-
         if (isset($this->lastChange)) {
             $return['epochLastChange'] = strtotime($this->lastChange);
         } else {

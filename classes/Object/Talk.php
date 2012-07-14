@@ -76,6 +76,26 @@ class Object_Talk extends Abstract_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
+        if (isset($self['isEditable']['intRequestedRoomID']) 
+            && ! Object_User::isAdmin()
+        ) {
+            unset($self['isEditable']['intRequestedRoomID']);
+        }
+        if (isset($self['isEditable']['intRequestedSlotID']) 
+            && ! Object_User::isAdmin()
+        ) {
+            unset($self['isEditable']['intRequestedSlotID']);
+        }
+        if (isset($self['isEditable']['isRoomLocked']) 
+            && ! Object_User::isAdmin()
+        ) {
+            unset($self['isEditable']['isRoomLocked']);
+        }
+        if (isset($self['isEditable']['isLocked']) 
+            && ! Object_User::isAdmin()
+        ) {
+            unset($self['isEditable']['isLocked']);
+        }
         if ($this->isFull() == true) {
             $self['intAttendees'] = Object_Attendee::countByColumnSearch('intTalkID', $this->intTalkID);
             if (strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID)) > $self['epochLastChange']) {
