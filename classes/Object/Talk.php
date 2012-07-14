@@ -32,8 +32,6 @@ class Object_Talk extends Abstract_GenericObject
         'intUserID' => array('type' => 'int', 'length' => 11),
         'intRequestedRoomID' => array('type' => 'int', 'length' => 11),
         'intRequestedSlotID' => array('type' => 'int', 'length' => 11),
-        'intAllocatedRoomID' => array('type' => 'int', 'length' => 11),
-        'intAllocatedSlotID' => array('type' => 'int', 'length' => 11),
         'intRoomID' => array('type' => 'int', 'length' => 11),
         'intSlotID' => array('type' => 'int', 'length' => 11),
         'intTrackID' => array('type' => 'int', 'length' => 11),
@@ -57,8 +55,6 @@ class Object_Talk extends Abstract_GenericObject
     protected $intUserID = null;
     protected $intRequestedRoomID = null;
     protected $intRequestedSlotID = null;
-    protected $intAllocatedRoomID = null;
-    protected $intAllocatedSlotID = null;
     protected $intRoomID = null;
     protected $intSlotID = null;
     protected $intTrackID = null;
@@ -179,7 +175,6 @@ class Object_Talk extends Abstract_GenericObject
     {
         $this->setKey('intRoomID', -1);
         $this->setKey('intSlotID', -1);
-        $this->setKey('intAllocatedSlotID', null);
         $this->setKey('isLocked', 0);
         $this->setKey('isRoomLocked', 0);
         $this->setKey('isSlotLocked', 0);
@@ -300,11 +295,8 @@ class Object_Talk extends Abstract_GenericObject
             } elseif ($objTalk->getKey('intRoomID') != '-1') {
                 $objTalk->setFull(true);
                 $arrTalk = $objTalk->getSelf();
-                if ($objTalk->getKey('intAllocatedSlotID') != null) {
-                    // If the slot has been forced upon the talk - leave it there
-                    $intUseSlot = $objTalk->getKey('intAllocatedSlotID');
-                } elseif ($objTalk->getKey('intRequestedSlotID') < $intNowSlot) {
-                    // Or if the talk was requested for before now but wasn't given
+                if ($objTalk->getKey('intRequestedSlotID') < $intNowSlot) {
+                    // If the talk was requested for before now but wasn't given
                     // a chance to be presented, put it in the "reschedule" group.
                     $intUseSlot = 0;
                 } else {
@@ -384,9 +376,6 @@ class Object_Talk extends Abstract_GenericObject
                 if (0 + $intRoomID > 0 && is_object($objTalk)) {
                     $objTalk->setKey('intRoomID', $intRoomID);
                     $objTalk->setKey('intSlotID', $intSlotID);
-                    if ($objTalk->getKey('intRequestedSlotID') != $intSlotID) {
-                        $objTalk->setKey('intAllocatedSlotID', $intSlotID);
-                    }
                     $objTalk->write();
                 }
             }
