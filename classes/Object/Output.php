@@ -106,6 +106,28 @@ class Object_Output extends Abstract_GenericObject
             parent::__construct();
         }
     }
+    
+    /**
+     * A function to wrapper responding to Object_Input messages
+     *
+     * @param Object $objInput   The Input data to process
+     * @param String $strMessage The message to reply with
+     * 
+     * @return void
+     */
+    public static function replyToInput($objInput, $strMessage)
+    {
+        if (is_object($objInput) 
+            && get_class($objInput) == 'Object_Input' 
+            && $strMessage != ''
+        ) {
+            $objOutput = new Object_Output();
+            $objOutput->setKey('strReceiver', $objInput->getKey('strSender'));
+            $objOutput->setKey('strInterface', $objInput->getKey('strInterface'));
+            $objOutput->setKey('textMessage', $strMessage);
+            $objOutput->create();
+        }
+    }
 }
 
 /**
