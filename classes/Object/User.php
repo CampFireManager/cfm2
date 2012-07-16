@@ -181,6 +181,20 @@ class Object_User extends Abstract_GenericObject
                 $objUserAuth->write();
                 Object_User::isSystem(false);
                 $this->objUserAuthTemp = $objUserAuth;
+                if ($objUserAuth->getKey('enumAuthType') == 'openid'
+                    || $objUserAuth->getKey('enumAuthType') == 'basicauth'
+                ) {
+                    $objUserAuth_codeonly = new Object_Userauth(false);
+                    $objUserAuth_codeonly->setKey('enumAuthType', 'codeonly');
+                    $authString = '';
+                    while ($authString == '') {
+                        $authString = Base_GeneralFunctions::genRandStr(5, 9);
+                        if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $authString))) > 0) {
+                            $authString == '';
+                        }
+                    }
+                    $objUserAuth_codeonly->setKey('strAuthValue', array('password' => $authString, 'username' => 'codeonly_' . $objUserAuth->getKey('enumAuthType') . '_' . $objUserAuth->getKey('intUserAuthID')));
+                }
             } else {
                 $this->errorMessageReturn = $objUserAuth;
             }
