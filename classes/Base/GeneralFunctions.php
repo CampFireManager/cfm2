@@ -206,38 +206,6 @@ class Base_GeneralFunctions
     }
 
     /**
-     * Return the value marked as being "preferred", or failing that, the first 
-     * entry in the array, or the only entry.
-     *
-     * @param JSON $strJson A JSON encoded string, containing an array of data, 
-     * or just a simple string.
-     *
-     * @return string The preferred value.
-     */
-    public static function preferredJson($strJson = '')
-    {
-        $arrJson = json_decode($strJson, true);
-        if (count($arrJson) > 1) {
-            foreach ($arrJson as $key=>$value) {
-                if ($key == 'preferred') {
-                    return $value;
-                }
-            }
-            // We didn't find a preferred value, so just return the first one as 
-            // being "preferred"
-            foreach ($arrJson as $value) {
-                return $value;
-            }
-        } elseif (is_array($arrJson) and count($arrJson) == 1) {
-            foreach ($arrJson as $value) {
-                return $value;
-            }
-        } else {
-            return $strJson;
-        }
-    }
-
-    /**
      * Return the size of the JSON array
      *
      * @param JSON $strJson A JSON encoded array
@@ -254,20 +222,18 @@ class Base_GeneralFunctions
     }
 
     /**
-     * Add a new string to an existing JSON array, or promote one value to being 
-     * "preferred"
+     * Add a new string to an existing JSON array.
      *
-     * @param JSON    $strJson     The existing JSON array.
-     * @param string  $strNewValue The value to add, or prefer.
-     * @param boolean $preferred   Optional. Set to true to make this value 
-     * preferred.
+     * @param JSON   $strJson     The existing JSON array.
+     * @param string $strNewKey   The key to add
+     * @param string $strNewValue The value to add
      *
      * @return JSON The resulting JSON array.
      */
     public static function addJson(
         $strJson = '', 
-        $strNewValue = '', 
-        $preferred = false
+        $strNewKey = '',
+        $strNewValue = ''
     ) {
         $set = false;
         $arrJson = json_decode($strJson, true);
@@ -278,37 +244,20 @@ class Base_GeneralFunctions
         }
         $arrTemp = array();
         $intKey = 0;
-        if ($preferred == true) {
-            foreach ($arrJson as $value) {
-                if ($value == $strNewValue) {
-                    $arrTemp['preferred'] = $value;
-                    $set = true;
-                } else {
-                    $arrTemp[$intKey++] = $value;
-                }
+        foreach ($arrJson as $key => $value) {
+            if ($value == $strNewValue) {
+                $set = true;
             }
-            if ($set == false) {
-                $arrTemp['preferred'] = $strNewValue;
-            }
-        } else {
-            foreach ($arrJson as $value) {
-                if ($value == $strNewValue) {
-                    $set = true;
-                    $arrTemp[$intKey++] = $value;
-                } else {
-                    $arrTemp[$intKey++] = $value;
-                }
-            }
-            if ($set == false) {
-                $arrTemp[$intKey++] = $strNewValue;
-            }
+            $arrTemp[$key] = $value;
+        }
+        if ($set == false) {
+            $arrTemp[$strNewKey] = $strNewValue;
         }
         return json_encode($arrTemp);
     }
 
     /**
-     * This function removes a value from the JSON array, preserving the 
-     * "preferred" key, where appropriate.
+     * This function removes a value from the JSON array.
      *
      * @param JSON   $strJson          The JSON array to operate on
      * @param string $strValueToRemove The value to remove from the array
@@ -322,18 +271,11 @@ class Base_GeneralFunctions
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
-        if (count($arrJson) <= 1) {
-            return $strJson;
-        }
         $arrTemp = array();
         $intKey = 0;
         foreach ($arrJson as $key=>$value) {
             if ($value != $strValueToRemove) {
-                if ($key == 'preferred') {
-                    $arrTemp['preferred'] = $value;
-                } else {
-                    $arrTemp[$intKey++] = $value;
-                }
+                $arrTemp[$key] = $value;
             }
         }
         return json_encode($arrTemp);
@@ -374,29 +316,9 @@ class Base_GeneralFunctions
         if (count($arrJson) == 0) {
             $arrJson[] = $strJson;
         }
-        $arrJson = self::deobjectifyArray($arrJson);
         return $arrJson;
     }
 
-    /**
-     * Return an array of data when presented with an object
-     *
-     * @param array|object $process Values to be processed
-     *
-     * @return array Processed array
-     */
-    public static function deobjectifyArray($process)
-    {
-        foreach ((array) $process as $key => $value) {
-            if (is_object($value)) {
-                $return[$key] = self::deobjectifyArray($value);
-            } else {
-                $return[$key] = $value;
-            }
-        }
-        return $return;
-    }
-    
     /**
      * Return UTF8 encoded array
      *
