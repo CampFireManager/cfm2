@@ -182,6 +182,8 @@ class Object_User extends Abstract_GenericObject
             } else {
                 $objUser = Object_User::brokerByID($intUserID);
             }
+            $objCache = Base_Cache::getHandler();
+            $objCache->arrCache['Object_User']['current'] = $objUser;
             return $objUser;
         } else {
             return false;
@@ -219,8 +221,8 @@ class Object_User extends Abstract_GenericObject
                 if ($objUserAuth->getKey('enumAuthType') == 'openid'
                     || $objUserAuth->getKey('enumAuthType') == 'basicauth'
                 ) {
-                    $objUserAuth_codeonly = new Object_Userauth(false);
-                    $objUserAuth_codeonly->setKey('enumAuthType', 'codeonly');
+                    $this->objUserAuthTemp = new Object_Userauth(false);
+                    $this->objUserAuthTemp->setKey('enumAuthType', 'codeonly');
                     $authString = '';
                     while ($authString == '') {
                         $authString = Base_GeneralFunctions::genRandStr(5, 9);
@@ -228,7 +230,7 @@ class Object_User extends Abstract_GenericObject
                             $authString == '';
                         }
                     }
-                    $objUserAuth_codeonly->setKey('strAuthValue', array('password' => $authString, 'username' => 'codeonly_' . $objUserAuth->getKey('enumAuthType') . '_' . $objUserAuth->getKey('intUserAuthID')));
+                    $this->objUserAuthTemp->setKey('strAuthValue', array('password' => $authString, 'username' => 'codeonly_' . $objUserAuth->getKey('enumAuthType') . '_' . $objUserAuth->getKey('intUserAuthID')));
                 }
             } else {
                 $this->errorMessageReturn = $objUserAuth;
