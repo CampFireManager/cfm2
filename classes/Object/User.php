@@ -156,22 +156,57 @@ class Object_User extends Abstract_GenericObject
             return false;
         }
     }
+    
+    /**
+     * Get the intUserID for the input received.
+     *
+     * @param object $objInput The Object_Input object to process
+     * 
+     * @return object 
+     */
+    public static function brokerByCodeOnly($objInput = null)
+    {
+        if (is_object($objInput) && get_class($objInput) == 'Object_Input') {
+            $strCodeOnly = $objInput->getKey('strInterface') . '++' . $objInput->getKey('strSender');
+            $arrUserAuth = Object_Userauth::brokerByColumnSearch('strAuthValue', $strCodeOnly . ':%');
+            $intUserID = null;
+            foreach ($arrUserAuth as $objUserAuth) {
+                if ($intUserID == null 
+                    && $objUserAuth->getKey('enumAuthType') == 'codeonly'
+                ) {
+                    $intUserID = $objUserAuth->getKey('intUserID');
+                }
+            }
+            if ($intUserID == null) {
+                $objUser = new Object_User(true, $strCodeOnly);
+            } else {
+                $objUser = Object_User::brokerByID($intUserID);
+            }
+            return $objUser;
+        } else {
+            return false;
+        }
+    }
+
 
     /**
      * Create a new User object, or post-process the PDO data
      *
-     * @param boolean $isCreationAction Perform Creation Actions (default false)
+     * @param boolean        $isCreationAction Perform Creation Actions (default
+     * false)
+     * @param string|boolean $strCodeOnly      CodeOnly string to pass to the 
+     * UserAuth object
      *
      * @return object This object
      */
-    function __construct($isCreationAction = false)
+    function __construct($isCreationAction = false, $strCodeOnly = false)
     {
         parent::__construct();
         if (! $isCreationAction) {
             return $this;
         }
         try {
-            $objUserAuth = new Object_Userauth(true);
+            $objUserAuth = new Object_Userauth(true, $strCodeOnly);
             if (is_object($objUserAuth)) {
                 $objRequest = Container_Request::getRequest();
                 $this->setKey('strUserName', $objRequest->get_strUsername());
