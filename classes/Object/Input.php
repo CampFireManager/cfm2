@@ -43,6 +43,11 @@ class Object_Input extends Abstract_GenericObject
     protected $isActioned = false;
     protected $lastChange = null;
     
+    /**
+     * Get all objects in this table
+     * 
+     * @return array The array of objects matching this search
+     */
     public static function brokerAll()
     {
         if (Object_User::isSystem()) {
@@ -52,6 +57,13 @@ class Object_Input extends Abstract_GenericObject
         }
     }
     
+    /**
+     * Get the object for the ID associated with a particular row
+     *
+     * @param integer $intID The Object ID to search for
+     *
+     * @return object UserObject for intUserID
+     */
     public static function brokerByID($intID)
     {
         if (Object_User::isSystem()) {
@@ -61,6 +73,15 @@ class Object_Input extends Abstract_GenericObject
         }
     }
     
+    /**
+     * Get all objects by a particular search field
+     *
+     * @param string  $column  The column to search
+     * @param string  $value   The value to look for.
+     * @param boolean $inverse Look for anything but this value
+     * 
+     * @return array The array of objects matching this search
+     */
     public static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
     {
         if (Object_User::isSystem()) {
@@ -70,6 +91,13 @@ class Object_Input extends Abstract_GenericObject
         }
     }
     
+    /**
+     * Ensure that all database items are backed up before processing.
+     *
+     * This is our usual construct method for all extended classes.
+     *
+     * @return object This class.
+     */
     public static function __construct()
     {
         if (! Object_User::isSystem()) {
