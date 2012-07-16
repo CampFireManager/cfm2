@@ -104,5 +104,6 @@ class Object_Config_Demo extends Object_Config
 {
     protected $arrDemoData = array(
         array('key' => 'Site_Name', 'value' => 'A Demo Site'),
+        array('key' => 'Public_Url', 'value' => 'http://jontheniceguy.pagekite.me/cfm2/')
     );
 }
