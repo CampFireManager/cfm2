@@ -388,7 +388,15 @@ class Object_Talk extends Abstract_GenericObject
         } else {
             if (isset($arrSortItems[0])) {
                 foreach ($arrSortItems[0] as $talk) {
-                    $talk['object']->unschedule();
+                    if (is_object($talk)) {
+                        $talk->unschedule();
+                    } elseif (is_array($talk)) {
+                        foreach ($talk as $objTalk) {
+                            $objTalk->unschedule();
+                        }
+                    } else {
+                        throw new Exception("Not an object or an array");
+                    }
                 }
             }
         }

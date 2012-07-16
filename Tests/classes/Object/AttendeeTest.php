@@ -23,7 +23,6 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data['intAttendeeID'] == null);
         $this->assertTrue($data['intUserID'] == null);
         $this->assertTrue($data['intTalkID'] == null);
-        $this->assertTrue($data['lastChange'] == null);
         $this->assertTrue($objAttendee->getKey('intAttendeeID') == null);
     }
 
@@ -137,7 +136,7 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $data = Object_Attendee::brokerByID(1);
         $this->assertFalse($data->isFull());
         $item = $data->getSelf();
-        $this->assertTrue(count($item) == 4);
+        $this->assertTrue(count($item) == 5);
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
@@ -145,7 +144,7 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $data->setFull(true);
         $this->assertTrue($data->isFull());
         $item = $data->getSelf();
-        $this->assertTrue(count($item) == 5);
+        $this->assertTrue(count($item) == 6);
         $this->assertTrue($item['intAttendeeID'] == 1);
         $this->assertTrue($item['intUserID'] == '2');
         $this->assertTrue($item['intTalkID'] == '1');
