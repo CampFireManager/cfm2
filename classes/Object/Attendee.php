@@ -38,6 +38,29 @@ class Object_Attendee extends Abstract_GenericObject
     protected $intUserID = null;
     protected $intTalkID = null;
     protected $lastChange = null;
+    
+    /**
+     * Check to see whether the specified user is attending the talk.
+     *
+     * @param integer $intTalkID The talkID
+     * @param integer $intUserID (optional) The userID. If this is null, broker
+     * for the current user.
+     * 
+     * @return boolean|object
+     */
+    public static function isAttending($intTalkID, $intUserID = null)
+    {
+        if ($intUserID == null) {
+            $intUserID = Object_User::brokerCurrent()->getKey('intUserID');
+        }
+        $arrAttending = self::brokerByColumnSearch('intUserID', $intUserID);
+        foreach ($arrAttending as $objAttending) {
+            if ($objAttending->getKey('intTalkID') == $intTalkID) {
+                return $objAttending;
+            }
+        }
+        return false;
+    }
 }
 
 /**
