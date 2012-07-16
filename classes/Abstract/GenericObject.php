@@ -941,7 +941,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             $return['epochLastChange'] = strtotime('now');
         }
         Base_Response::setLastModifiedTime($return['epochLastChange']);
-        $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
+        $return['lastChange'] = date('Y-m-d H:i:s', $return['epochLastChange']);
         return $return;
     }
     
