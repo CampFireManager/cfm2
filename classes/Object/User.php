@@ -260,7 +260,6 @@ class Object_User extends Abstract_GenericObject
         }
     }
     
-    
     /**
      * This overloaded function returns the data from the PDO object and adds
      * supplimental data based on linked tables
@@ -282,6 +281,55 @@ class Object_User extends Abstract_GenericObject
         Base_Response::setLastModifiedTime($self['epochLastChange']);
         $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
+    }
+    
+    public function merge($objUser)
+    {
+        if (!is_object($objUser)
+            || get_class($objUser) != 'Object_User'
+            || $objUser->getKey('intUserID') == $this->getKey('intUserID')
+        ) {
+            return false;
+        }
+        if ($objUser->getKey('intUserID') > $this->getKey('intUserID')) {
+            $to = $this;
+            $from = $objUser;
+        } else {
+            $to = $objUser;
+            $from = $this;
+        }
+        if ($to->getKey('strName') == '' && $from->getKey('strName') != '') {
+            $to->setKey('strName', $from->getKey('strName'));
+            $to->write();
+        }
+        $arrAttendee = Object_Attendee::brokerByColumnSearch('intUserID', $from->getKey('intUserID'));
+        $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $from->getKey('intUserID'));
+        $arrTalk = Object_Talk::brokerByColumnSearch('intUserID', $from->getKey('intUserID'));
+        $arrTalkPresenters = Object_Talk::brokerByColumnSearch('jsonOtherPresenters', $from->getKey('intUserID'), false, true);
+        foreach ($arrAttendee as $objAttendee) {
+            $objAttendee->setKey('intUserID', $to->getKey('intUserID'));
+            $objAttendee->write();
+        }
+        foreach ($arrUserAuth as $objUserAuth) {
+            $objUserAuth->setKey('intUserID', $to->getKey('intUserID'));
+            $objUserAuth->write();
+        }
+        foreach ($arrTalk as $objTalk) {
+            $objTalk->setKey('intUserID', $to->getKey('intUserID'));
+            $objTalk->write();
+        }
+        foreach ($arrTalkPresenters as $objTalk) {
+            $arrPresenters = json_decode($objTalk->getKey('jsonOtherPresenters'), true);
+            foreach($arrPresenters as $intPresenterID) {
+                if ($intPresenterID != $from->getKey('intUserID')) {
+                    $arrNewPresenters[] = $intPresenterID;
+                }
+            }
+            $arrNewPresenters[] = $to->getKey('intUserID');
+            $objTalk->setKey('jsonOtherPresenters', json_encode($arrNewPresenters));
+            $objTalk->write();
+        }
+        $from->delete();
     }
 }
 
