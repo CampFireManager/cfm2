@@ -176,10 +176,11 @@ abstract class Abstract_GenericObject implements Interface_Object
      * @param string  $column  The column to search
      * @param string  $value   The value to look for.
      * @param boolean $inverse Look for anything but this value
+     * @param boolean $json    Look for a JSON encoded string
      * 
      * @return array The array of objects matching this search
      */
-    static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
+    static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false)
     {
         if ($column == null) {
             throw new OutOfBoundsException('No column name');
@@ -217,13 +218,23 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
             } elseif ($inverse == false) {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
-                    )
-                );
-                $query = $objDatabase->prepare($sql);
-                $query->execute(array($value));
+                if ($json == true) {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
+                        )
+                    );
+                    $query = $objDatabase->prepare($sql);
+                    $query->execute(array("[$value]", "%\"$value\"%", "[$value,%", "%,$value,%", "%,$value]"));
+                } else {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
+                        )
+                    );
+                    $query = $objDatabase->prepare($sql);
+                    $query->execute(array($value));
+                }
             } else {
                 $sql = Container_Database::getSqlString(
                     array(
