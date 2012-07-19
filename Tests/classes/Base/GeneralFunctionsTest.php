@@ -42,34 +42,27 @@ class Base_GeneralFunctionsTest extends PHPUnit_Framework_TestCase
     
     public function testJsonAdding()
     {
-        $json = Base_GeneralFunctions::addJson('Some Data', 'More Data');
-        $this->assertTrue($json == '["Some Data","More Data"]');        
-        $json = Base_GeneralFunctions::addJson('', 'Some Data');
-        $this->assertTrue($json == '["Some Data"]');
-        $json = Base_GeneralFunctions::addJson($json, 'More Data');
-        $this->assertTrue($json == '["Some Data","More Data"]');
-        $json = Base_GeneralFunctions::addJson($json, 'More Data');
-        $this->assertTrue($json == '["Some Data","More Data"]');
-        $json = Base_GeneralFunctions::addJson($json, 'More Data', true);
-        $this->assertTrue($json == '{"0":"Some Data","preferred":"More Data"}');
-        $json = Base_GeneralFunctions::addJson($json, 'Even More Data', true);
-        $this->assertTrue($json == '{"0":"Some Data","1":"More Data","preferred":"Even More Data"}');
+        $json = Base_GeneralFunctions::addJson('', 'Data', 'Data');
+        $this->assertTrue($json == '{"Data":"Data"}');
+        $json = Base_GeneralFunctions::addJson($json, 'More Data', 'More Data');
+        $this->assertTrue($json == '{"Data":"Data","More Data":"More Data"}');
+        $json = Base_GeneralFunctions::addJson($json, 'More Data', 'Some More Data');
+        $this->assertTrue($json == '{"Data":"Data","More Data":"Some More Data"}');
     }
     
     public function testJsonDeleting()
     {
-        $json = Base_GeneralFunctions::delJson('Some Data', 'Some Data');
-        $this->assertTrue($json == 'Some Data');
-        $json = '{"0":"Some Data","1":"More Data","preferred":"Even More Data"}';
-        $json = Base_GeneralFunctions::delJson($json, 'Some Data');
-        $this->assertTrue($json == '{"0":"More Data","preferred":"Even More Data"}');
+        $json = Base_GeneralFunctions::delJson('{"Data":"Data"}', 'Data');
+        $this->assertTrue($json == '[]');
+        $json = Base_GeneralFunctions::delJson('{"Data":"Data","More Data":"More Data"}', 'Data');
+        $this->assertTrue($json == '{"More Data":"More Data"}');
     }
     
     public function testGetJson()
     {
         $this->assertTrue(Base_GeneralFunctions::getJson('Not Actually JSON') == array(0 => 'Not Actually JSON'));
-        $json = json_encode(array('Some Data' => 'Stuff'));
-        $this->assertTrue(Base_GeneralFunctions::getJson($json) == array('Some Data' => 'Stuff'));
+        $json = '{"Data":"Data"}';
+        $this->assertTrue(Base_GeneralFunctions::getJson($json) == array('Data' => 'Data'));
         $json = json_encode(array('Some Data' => array('Stuff' => 'More Stuff')));
         $this->assertTrue(Base_GeneralFunctions::getJson($json) == array('Some Data' => array('Stuff' => 'More Stuff')));
     }
