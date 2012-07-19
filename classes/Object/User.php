@@ -282,7 +282,14 @@ class Object_User extends Abstract_GenericObject
         $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
     }
-    
+
+    /**
+     * This function will merge the content of two user accounts, as well as 
+     *
+     * @param object $objUser The user object to merge into this user account
+     * 
+     * @return type 
+     */
     public function merge($objUser)
     {
         if (!is_object($objUser)
@@ -292,44 +299,56 @@ class Object_User extends Abstract_GenericObject
             return false;
         }
         if ($objUser->getKey('intUserID') > $this->getKey('intUserID')) {
-            $to = $this;
-            $from = $objUser;
+            $objToUser = $this;
+            $objFromUser = $objUser;
         } else {
-            $to = $objUser;
-            $from = $this;
+            $objToUser = $objUser;
+            $objFromUser = $this;
         }
-        if ($to->getKey('strName') == '' && $from->getKey('strName') != '') {
-            $to->setKey('strName', $from->getKey('strName'));
-            $to->write();
+        if ($objToUser->getKey('strName') == '' && $objFromUser->getKey('strName') != '') {
+            $objToUser->setKey('strName', $objFromUser->getKey('strName'));
+            $objToUser->write();
         }
-        $arrAttendee = Object_Attendee::brokerByColumnSearch('intUserID', $from->getKey('intUserID'));
-        $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $from->getKey('intUserID'));
-        $arrTalk = Object_Talk::brokerByColumnSearch('intUserID', $from->getKey('intUserID'));
-        $arrTalkPresenters = Object_Talk::brokerByColumnSearch('jsonOtherPresenters', $from->getKey('intUserID'), false, true);
+        if ($objFromUser->getKey('isWorker') == 1 && $objToUser->getKey('isWorker') != 1) {
+            $objToUser->setKey('isWorker', 1);
+        }
+        if ($objFromUser->getKey('isAdmin') == 1 && $objToUser->getKey('isAdmin') != 1) {
+            $objToUser->setKey('isAdmin', 1);
+        }
+        if ($objFromUser->getKey('hasAttended') == 1 && $objToUser->getKey('hasAttended') != 1) {
+            $objToUser->setKey('hasAttended', 1);
+        }
+        if ($objFromUser->getKey('isHere') == 1 && $objToUser->getKey('isHere') != 1) {
+            $objToUser->setKey('isHere', 1);
+        }
+        $arrAttendee = Object_Attendee::brokerByColumnSearch('intUserID', $objFromUser->getKey('intUserID'));
+        $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $objFromUser->getKey('intUserID'));
+        $arrTalk = Object_Talk::brokerByColumnSearch('intUserID', $objFromUser->getKey('intUserID'));
+        $arrTalkPresenters = Object_Talk::brokerByColumnSearch('jsonOtherPresenters', $objFromUser->getKey('intUserID'), false, true);
         foreach ($arrAttendee as $objAttendee) {
-            $objAttendee->setKey('intUserID', $to->getKey('intUserID'));
+            $objAttendee->setKey('intUserID', $objToUser->getKey('intUserID'));
             $objAttendee->write();
         }
         foreach ($arrUserAuth as $objUserAuth) {
-            $objUserAuth->setKey('intUserID', $to->getKey('intUserID'));
+            $objUserAuth->setKey('intUserID', $objToUser->getKey('intUserID'));
             $objUserAuth->write();
         }
         foreach ($arrTalk as $objTalk) {
-            $objTalk->setKey('intUserID', $to->getKey('intUserID'));
+            $objTalk->setKey('intUserID', $objToUser->getKey('intUserID'));
             $objTalk->write();
         }
         foreach ($arrTalkPresenters as $objTalk) {
             $arrPresenters = json_decode($objTalk->getKey('jsonOtherPresenters'), true);
-            foreach($arrPresenters as $intPresenterID) {
-                if ($intPresenterID != $from->getKey('intUserID')) {
+            foreach ($arrPresenters as $intPresenterID) {
+                if ($intPresenterID != $objFromUser->getKey('intUserID')) {
                     $arrNewPresenters[] = $intPresenterID;
                 }
             }
-            $arrNewPresenters[] = $to->getKey('intUserID');
+            $arrNewPresenters[] = $objToUser->getKey('intUserID');
             $objTalk->setKey('jsonOtherPresenters', json_encode($arrNewPresenters));
             $objTalk->write();
         }
-        $from->delete();
+        $objFromUser->delete();
     }
 }
 

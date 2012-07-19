@@ -27,6 +27,12 @@
 
 class Plugin_InputParser
 {
+    /**
+     * This function performs all the input parsing requests from text-only 
+     * services.
+     * 
+     * @return void
+     */
     function hook_cronTick()
     {
         try {
@@ -115,7 +121,7 @@ class Plugin_InputParser
                     foreach ($arrUserAuth as $objUserAuth) {
                         if ($objUserAuth->getKey('enumAuthType') == 'codeonly') {
                             $objUser->merge($objUserAuth);
-                            Object_Output::replyToInput('OK, you can now act as ' . $objUser->getKey('strName') . ' from this device.', $strMessage);
+                            Object_Output::replyToInput($objInput, 'OK, you can now act as ' . $objUser->getKey('strName') . ' from this device.', $strMessage);
                         }
                     }
                     break;
@@ -183,9 +189,9 @@ class Plugin_InputParser
                     break;
                 default:
                     if ($strMessage != '') {
-                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W', and identify yourself with 'I Your Name your@email.com'." . $strMessage);
+                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'." . $strMessage);
                     } else {
-                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W', and identify yourself with 'I Your Name your@email.com'. If you want get involved using your web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
+                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'. If you want get involved using your web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
                     }
                 }
             }
