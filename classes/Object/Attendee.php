@@ -61,6 +61,23 @@ class Object_Attendee extends Abstract_GenericObject
         }
         return false;
     }
+    
+    /**
+     * An overloaded function getting the attendee of a talk, as well as, when
+     * requested, the details of associated talks for a user.
+     *
+     * @return array 
+     */
+    public function getSelf()
+    {
+        $return = parent::getSelf();
+        if ($this->isFull() == true) {
+            $objTalk = Object_Talk::brokerByID($this->intTalkID);
+            $objTalk->setFull(true);
+            $return['arrTalk'] = $objTalk->getSelf();
+        }
+        return $return;
+    }
 }
 
 /**

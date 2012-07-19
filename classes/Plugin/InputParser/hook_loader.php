@@ -136,8 +136,50 @@ class Plugin_InputParser
                 case preg_match('/^([Nn][Ee][Xx][Tt])$/', $objInput->getKey('textMessage')):
                 case preg_match('/^([Ww])$/', $objInput->getKey('textMessage')):
                 case preg_match('/^([Nn])$/', $objInput->getKey('textMessage')):
-                    $arrNowAndNextCollection = Collection_NowAndNext::brokerAll();
-                    // TODO: Return NaN data
+                    $arrNextTalks = Collection_NowAndNext::brokerAll();
+                    $return = '';
+                    foreach ($arrNextTalks as $objTalk) {
+                        $objTalk->setFull(true);
+                        $arrTalk = $objTalk->getSelf();
+                        if ($arrTalk['isNext'] == true) {
+                            if ($return != '') {
+                                $return .= ', ';
+                            }
+                            $return .= '"' . substr($arrTalk['strTalkTitle'], 0, 15);
+                            if (strlen($arrTalk['strTalkTitle']) > 15) {
+                                $return .= '... ';
+                            }
+                            $return .=  '" in ' . $arrTalk['arrRoom']['strRoomName'];
+                        }
+                    }
+                    Object_Output::replyToInput($objInput, 'On next: ' . $return);
+                    break;
+                case preg_match('/^([Mm])$/', $objInput->getKey('textMessage')):
+                    $arrAttend = Object_Attendee::brokerByColumnSearch('intUserID', $objUser->getKey('intUserID'));
+                    $return = '';
+                    $counter = 0;
+                    $next = false;
+                    foreach ($arrAttend as $objAttendee) {
+                        $objAttendee->setFull(true);
+                        $arrAttendee = $objAttendee->getSelf();
+                        $arrTalk[$arrAttendee['arrTalk']['intSlotID']] = $arrAttendee['arrTalk'];
+                    }
+                    ksort($arrTalk);
+                    foreach ($arrTalk as $arrTalkInfo) {
+                        if ($arrTalkInfo['isNext'] == true || $next == true || $counter < 4) {
+                            $next = true;
+                            $counter++;
+                            if ($return != '') {
+                                $return .= ', ';
+                            }
+                            $return .= '"' . substr($arrTalkInfo['strTalkTitle'], 0, 15);
+                            if (strlen($arrTalkInfo['strTalkTitle']) > 15) {
+                                $return .= '... ';
+                            }
+                            $return .=  '" at ' . substr($arrTalkInfo['arrSlot_start']['timeStart'], 0, 5);
+                        }
+                    }
+                    Object_Output::replyToInput($objInput, "Next three talks I'm attending: $return");
                     break;
                 default:
                     if ($strMessage != '') {
