@@ -80,14 +80,20 @@ class Object_Userauth extends Abstract_GenericObject
                         $password = $value;
                     }
                     $set = sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $password);
-                } elseif (($this->enumAuthType == 'basicauth'
-                    || $this->enumAuthType == 'codeonly')
+                } elseif ($this->enumAuthType == 'basicauth'
                     && is_array($value) 
                     && isset($value['username']) 
                     && isset($value['password'])
                 ) {
                     $password = $value['password'];
                     $set = $value['username'] . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $value['password']);
+                } elseif ($this->enumAuthType == 'codeonly'
+                    && is_array($value) 
+                    && isset($value['username']) 
+                    && isset($value['password'])                        
+                ) {
+                    $password = $value['password'];
+                    $set = $value['username'] . ':' . $value['password'];
                 }
                 if ($set != '' && $this->strAuthValue != $set) {
                     $this->tmpCleartext = $password;
@@ -144,9 +150,11 @@ class Object_Userauth extends Abstract_GenericObject
         } elseif ($objRequest->get_strUsername() != null && $objRequest->get_strPassword() != null) {
             $key = 'basicauth';
             $value = $objRequest->get_strUsername() . ':' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $objRequest->get_strPassword());
-        } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code', false, true)) {
+        } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code', false, true) 
+            && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code') != '%'
+        ) {
             $key = 'codeonly';
-            $value = '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code'));
+            $value = '%:' . Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'code');
         } elseif (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username', false, true)
                 && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true)
                 ) {
@@ -242,7 +250,7 @@ class Object_Userauth extends Abstract_GenericObject
             $authString = '';
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(8, 12);
-                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $authString))) > 0) {
+                if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . $authString)) > 0) {
                     $authString == '';
                 }
             }
@@ -269,7 +277,7 @@ class Object_Userauth extends Abstract_GenericObject
             $self['strAuthValue'] = $string[0] . ':' . str_repeat('.', strlen($string[1]));
             break;
         case 'onetime':
-            $self['strAuthValue'] = substr($this->strAuthValue, 0, 2) . str_repeat('.', strlen($this->strAuthValue) - 4) . substr($this->strAuthValue, -2);
+            $self['strAuthValue'] = substr($this->strAuthValue, 0, 1) . str_repeat('.', strlen($this->strAuthValue) - 2) . substr($this->strAuthValue, -1);
             break;
         case 'codeonly':
             $string = explode(':', $this->strAuthValue);
@@ -287,6 +295,14 @@ class Object_Userauth extends Abstract_GenericObject
             break;
         }
         $self['strCleartext'] = $this->getCleartext();
+        $thisUser = Object_User::brokerCurrent();
+        if ($this->enumAuthType == 'codeonly' 
+            && $thisUser != false 
+            && $this->intUserID == $thisUser->getKey('intUserID')
+        ) {
+            $string = explode(':', $this->strAuthValue);
+            $self['strCleartext'] = $string[1];
+        }
         return $self;
     }
     
@@ -311,6 +327,14 @@ class Object_Userauth extends Abstract_GenericObject
             $this->setKey('tmpCleartext', '');
             $this->write();
             $this->tmpCleartext = $tmpCleartext;
+        } elseif ($this->enumAuthType != 'codeonly'
+            && $this->tmpCleartext == ''
+            && ($user != false 
+            && $user->getKey('intUserID') == $this->intUserID)
+            || strtotime($this->lastChange) < strtotime("2 minutes ago")
+        ) {
+            $string = explode(':', $this->strAuthValue);
+            $this->tmpCleartext = $string[1];
         } else {
             $this->tmpCleartext = '';
         }
