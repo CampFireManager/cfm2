@@ -181,7 +181,7 @@ class Object_Userauth extends Abstract_GenericObject
                         }
                         return $result->objUserAuthTemp;
                     } else {
-                        throw new Authentication_Failed_Exception('User does not exist or password is incorrect.');
+                        throw new Exception_AuthenticationFailed('User does not exist or password is incorrect.');
                     }
                 }
                 return $result;
@@ -223,7 +223,7 @@ class Object_Userauth extends Abstract_GenericObject
             && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true) != false
         ) {
             if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username') . ':%')) > 0) {
-                throw new Exception("This username already exists, please select another");
+                throw new Exception_AuthenticationFailed("This username already exists, please select another");
             }
             $this->setKey('enumAuthType', 'basicauth');
             $this->setKey('strAuthValue', array('password' => Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password'), 'username' => Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username')));
@@ -338,8 +338,4 @@ class Object_Userauth_Demo extends Object_Userauth
         array('intUserAuthID' => 5, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => array('username' => 'user@gmail.com', 'password' => 'email')),
         array('intUserAuthID' => 6, 'intUserID' => 4, 'enumAuthType' => 'openid', 'strAuthValue' => 'http://www.google.com/accounts/o8/id')
     );    
-}
-
-class Authentication_Failed_Exception extends Exception
-{
 }

@@ -136,7 +136,7 @@ $arrObjectsData['SiteConfig']['baseurl'] = $objRequest->get_strBasePath();
 $arrObjectsData['SiteConfig']['thisurl'] = $objRequest->get_requestUrlExParams();
 try {
     $arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
-} catch (Authentication_Failed_Exception $e) {
+} catch (Exception_AuthenticationFailed $e) {
     $_SESSION['authentication_failure'] = $e->getMessage();
 } catch (Exception $e) {
     error_log("Unable to authenticate due to error: " . $e->getMessage());
