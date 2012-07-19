@@ -243,7 +243,6 @@ class Base_GeneralFunctions
             $arrJson = array();
         }
         $arrTemp = array();
-        $intKey = 0;
         foreach ($arrJson as $key => $value) {
             if ($value == $strNewValue) {
                 $set = true;
@@ -272,7 +271,6 @@ class Base_GeneralFunctions
             $arrJson[] = $strJson;
         }
         $arrTemp = array();
-        $intKey = 0;
         foreach ($arrJson as $key=>$value) {
             if ($value != $strValueToRemove) {
                 $arrTemp[$key] = $value;
