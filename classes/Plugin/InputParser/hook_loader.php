@@ -18,18 +18,19 @@
  * to run, and then return the result into the table Output with the message
  * to reply.
  *
- * @category Plugin_TextOnlyInterface
+ * @category Plugin_InputParser
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Plugin_TextOnlyInterface
+class Plugin_InputParser
 {
     function hook_cronTick()
     {
         try {
+            Base_Cache::flush();
             Object_User::isSystem(true);
             $arrInput = Object_Input::brokerByColumnSearch('isActioned', '0');
             foreach ($arrInput as $objInput) {
@@ -142,7 +143,7 @@ class Plugin_TextOnlyInterface
                     if ($strMessage != '') {
                         Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W', and identify yourself with 'I Your Name your@email.com'." . $strMessage);
                     } else {
-                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W', and identify yourself with 'I Your Name your@email.com'. If you want get involved in a web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
+                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W', and identify yourself with 'I Your Name your@email.com'. If you want get involved using your web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
                     }
                 }
             }
@@ -152,9 +153,4 @@ class Plugin_TextOnlyInterface
             error_log($e->getMessage());
         }
     }
-}
-
-class Plugin_TextOnlyInterface_Demo
-{
-    
 }
