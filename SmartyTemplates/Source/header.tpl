@@ -10,6 +10,11 @@
             <div id="header">
                 <h1>{$SiteConfig['Site_Name']}</h1>
             </div>
+{if isset($Object_User.Failure)}
+            <div id="loginfailure">
+                Please note; authentication failed, with the following message: "{$Object_User.Failure}". Please try again.
+            </div>
+{/if}
             <div id="useractions">
 {if isset($Object_User.current.intUserID)}
                 [ <a href="{$SiteConfig.baseurl}?logout=true">Logout</a>
@@ -38,7 +43,7 @@
                     Register? <input type="checkbox" value="true" name="register" />
                     <input type="submit" value="Login" />
                 </form>
-                | <form method="post" action="{$SiteConfig.baseurl}user">
+                | <form method="post" action="{$SiteConfig.baseurl}">
                     Auth Code: <input type="text" size="10" name="code" value="" /> 
                     <input type="submit" value="Login" />
                 </form> ]

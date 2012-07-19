@@ -133,7 +133,15 @@ $renderPage = null;
 
 $objRequest = Container_Request::getRequest();
 $arrObjectsData['SiteConfig']['baseurl'] = $objRequest->get_strBasePath();
-$arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
+$arrObjectsData['SiteConfig']['thisurl'] = $objRequest->get_requestUrlExParams();
+try {
+    $arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
+} catch (Authentication_Failed_Exception $e) {
+    $_SESSION['authentication_failure'] = $e->getMessage();
+} catch (Exception $e) {
+    error_log("Unable to authenticate due to error: " . $e->getMessage());
+    Base_Response::sendHttpResponse(500);
+}
 
 if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '') {
     foreach ($arrPathItems as $pathItem) {
@@ -252,6 +260,11 @@ foreach (Container_Config::brokerAll() as $key=>$object) {
     default:
         $arrObjectsData['SiteConfig'][$key] = $object->getKey('value');
     }
+}
+
+if (isset($_SESSION['authentication_failure'])) {
+    $arrObjectsData['Object_User']['Failure'] = $_SESSION['authentication_failure'];
+    unset($_SESSION['authentication_failure']);
 }
 
 if ($rest) {

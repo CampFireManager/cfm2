@@ -188,7 +188,6 @@ class Base_OpenID
         exit(0);
     }
 
-
     /**
      * Act on the response from the OpenID Provider. Then redirect back to the completed authentication path.
      *
@@ -326,6 +325,7 @@ class Base_OpenID
                                              'timezone' => $timezone);
         } else {
             $_SESSION['OPENID_STATUS'] = $response->message;
+            $_SESSION['authentication_failure'] = $response->message;
             $_SESSION['OPENID_AUTH'] = false;
             header("Location: {$_SESSION['OPENID_FAILED']}");
             exit(0);

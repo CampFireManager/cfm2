@@ -180,6 +180,8 @@ class Object_Userauth extends Abstract_GenericObject
                             $_SESSION['intUserAuthID'] = $result->objUserAuthTemp->getKey('intUserAuthID');
                         }
                         return $result->objUserAuthTemp;
+                    } else {
+                        throw new Authentication_Failed_Exception('User does not exist or password is incorrect.');
                     }
                 }
                 return $result;
@@ -336,4 +338,8 @@ class Object_Userauth_Demo extends Object_Userauth
         array('intUserAuthID' => 5, 'intUserID' => 3, 'enumAuthType' => 'codeonly', 'strAuthValue' => array('username' => 'user@gmail.com', 'password' => 'email')),
         array('intUserAuthID' => 6, 'intUserID' => 4, 'enumAuthType' => 'openid', 'strAuthValue' => 'http://www.google.com/accounts/o8/id')
     );    
+}
+
+class Authentication_Failed_Exception extends Exception
+{
 }
