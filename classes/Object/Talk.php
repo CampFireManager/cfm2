@@ -336,16 +336,16 @@ class Object_Talk extends Abstract_GenericObject
             if ($intSlotID > 0) {
                 krsort($arrSlotSpaces);
                 $room = 0;
-                foreach ($arrSlotSpaces as $arrTalk) {
+                foreach ($arrSlotSpaces as $intAttendees => $arrTalk) {
                     ksort($arrTalk);
-                    foreach ($arrTalk as $objTalk) {
+                    foreach ($arrTalk as $intTalkID => $objTalk) {
                         if ($room++ >= count($arrRooms)) {
-                            $arrSortItems[0][] = $objTalk;
+                            $arrSortItems[0][$intAttendees][$intTalkID] = $objTalk;
                         } else {
                             // TODO: This doesn't cope with locked rooms later in the grid when this talk is longer than one slot
                             while (isset($arrGrid[$intSlotID][$room]['isLocked'])) {
                                 if ($room++ >= count($arrRooms)) {
-                                    $arrSortItems[0][] = $objTalk;
+                                    $arrSortItems[0][$intAttendees][$intTalkID] = $objTalk;
                                     continue 2;
                                 }
                             }
@@ -433,7 +433,7 @@ class Object_Talk extends Abstract_GenericObject
             } else {
                 $talk->setFull(true);
                 $data = $talk->getSelf();
-                if ($intMinAttendees > $data['intAttendees']) {
+                if (0 + $intMinAttendees > 0 + $data['intAttendees']) {
                     $talk->unschedule();
                 }
             }

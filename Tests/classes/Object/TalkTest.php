@@ -46,7 +46,6 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data['isLocked'] == false);
         $this->assertTrue($data['jsonResources'] == null);
         $this->assertTrue($data['jsonOtherPresenters'] == null);
-        $this->assertTrue($data['lastChange'] == null);
         $this->assertTrue($objTalk->getKey('intTalkID') == null);
     }
     
