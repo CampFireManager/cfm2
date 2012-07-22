@@ -159,7 +159,13 @@ class Object_Talk extends Abstract_GenericObject
                 }
             }
             $self['arrLinks'] = json_decode($this->jsonLinks, true);
+            if (! is_array($self['arrLinks'])) {
+                $self['arrLinks'] = array();
+            }
             $resources = json_decode($this->jsonResources, true);
+            if (! is_array($resources)) {
+                $resources = array();
+            }
             foreach ($resources as $resource) {
                 $objResource = Object_Resource::brokerByID($resource);
                 if (is_object($objResource)) {
@@ -171,6 +177,9 @@ class Object_Talk extends Abstract_GenericObject
                 }
             }
             $presenters = json_decode($this->jsonOtherPresenters, true);
+            if (!is_array($presenters)) {
+                $presenters = array();
+            }
             foreach ($presenters as $presenter) {
                 $objPresenter = Object_User::brokerByID($presenter);
                 if (is_object($objPresenter)) {
@@ -456,6 +465,7 @@ class Object_Talk_Demo extends Object_Talk
     protected $arrDemoData = array(
         array('intTalkID' => 1, 'strTalkTitle' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intTrackID' => null, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isLocked' => 1, 'jsonResources' => '[1]', 'jsonOtherPresenters' => '[]'),
         array('intTalkID' => 2, 'strTalkTitle' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => 1, 'intSlotID' => 2, 'intTrackID' => 1, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isLocked' => '0', 'jsonResources' => '[]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 3, 'strTalkTitle' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRequestedRoomID' => 2, 'intRequestedSlotID' => 2, 'intRoomID' => 2, 'intSlotID' => 2, 'intTrackID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isLocked' => '0', 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]')
+        array('intTalkID' => 3, 'strTalkTitle' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRequestedRoomID' => 2, 'intRequestedSlotID' => 2, 'intRoomID' => 2, 'intSlotID' => 2, 'intTrackID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isLocked' => '0', 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]'),
+        array('intTalkID' => 4, 'strTalkTitle' => 'A talk in limbo', 'strTalkSummary' => 'This talk should be rendered as an unscheduled talk', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => -1, 'intSlotID' => -1, 'intTrackID' => null, 'intLength' => 1),
     );
 }
