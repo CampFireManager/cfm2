@@ -38,6 +38,9 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
 
         $plugin = new Plugin_LimboTalks();
         $plugin->hook_cronTick();
@@ -51,5 +54,8 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 1);
         $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
     }
 }
