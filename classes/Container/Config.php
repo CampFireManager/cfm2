@@ -241,16 +241,15 @@ class Container_Config implements Interface_Object
     {
         $self = self::GetHandler();
         if (! isset($self->arrConfig[$key])) {
-            return new Object_Config(
+            $self->arrConfig[$key] = new Object_Config(
                 array(
                     'key' => $key,
                     'value' => $mixedDefaultValue
                 ),
                 date('Y-m-d H:i:s')
             );
-        } else {
-            return $self->arrConfig[$key];
         }
+        return $self->arrConfig[$key];
     }
     
     /**
