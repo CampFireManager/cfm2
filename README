@@ -31,7 +31,7 @@ git
     * note; v.e.r should be the version number you've downloaded, and should be 
     a minimum of the version number listed in 
     /path/to/cfm2/ExternalLibraries/libraries.json. It will have the directories 
-    lib and demo in that path.
+    libs and demo in that path.
 * If you're using MySQL, create the database, user and password.
 * Copy /path/to/cfm2/config/local.dist.php to /path/to/cfm2/config/local.php and
 amend this file. Key lines to set are $RW_TYPE, $RW_BASE. If you're using MySQL
