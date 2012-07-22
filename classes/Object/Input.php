@@ -98,7 +98,7 @@ class Object_Input extends Abstract_GenericObject
      *
      * @return object This class.
      */
-    public static function __construct()
+    public function __construct()
     {
         if (! Object_User::isSystem()) {
             throw new Exception('It is not permitted to directly create input actions');
