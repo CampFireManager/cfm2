@@ -868,7 +868,11 @@ abstract class Abstract_GenericObject implements Interface_Object
             $objDatabase->exec($sql);
             return true;
         } catch (Exception $e) {
-            error_log("SQL error: " . $e->getMessage() . " SQL: $sql");
+            if (isset($sql)) {
+                error_log("SQL error: " . $e->getMessage() . " SQL: $sql");
+            } else {
+                error_log("Error performing SQL actions. " . $e->getMessage());
+            }
             throw $e;
         }
     }
