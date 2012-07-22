@@ -17,11 +17,15 @@
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
-Base_Config::initialize();
+Object_User::isSystem(true);
+Container_Config_Demo::initializeDemo();
+
 foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) {
     if ($file->isDir() || $file->isDot()) continue;
     if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
         $classname = 'Object_' . $file->getBasename('.php');
+        echo "Initializing $classname\r\n";
+        Object_User::isSystem(true);
         $class = new $classname();
         $class->initialize();
     }

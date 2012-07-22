@@ -17,6 +17,7 @@
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
+Object_User::isSystem(true);
 $class = new Container_Config_Demo();
 $class->initializeDemo();
 
@@ -24,6 +25,7 @@ foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) 
     if (! $file->isDir() && ! $file->isDot() && $file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
         $classname = 'Object_' . $file->getBasename('.php') . '_Demo';
         echo "Initializing $classname\r\n";
+        Object_User::isSystem(true);
         $class = new $classname();
         $class->initializeDemo();
     }
