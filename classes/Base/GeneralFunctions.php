@@ -250,7 +250,11 @@ class Base_GeneralFunctions
             $arrTemp[$key] = $value;
         }
         if ($set == false) {
-            $arrTemp[$strNewKey] = $strNewValue;
+            if ($strNewKey == null) {
+                $arrTemp[] = $strNewValue;
+            } else {
+                $arrTemp[$strNewKey] = $strNewValue;
+            }
         }
         return json_encode($arrTemp);
     }
