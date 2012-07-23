@@ -175,7 +175,24 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
             case 'put':
                 $newobject = new $object(false);
                 foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
-                    $newobject->setKey($key, $value);
+                    if (is_array($value)) {
+                        foreach ($value as $newvalue) {
+                            $arrNewValue = explode(':', $newvalue, 2);
+                            if (substr($newvalue, 0, 7) == 'http://'
+                                || substr($newvalue, 0, 8) == 'https://'
+                                || substr($newvalue, 0, 7) == 'mailto:'
+                                || substr($newvalue, 0, 4) == 'sip:'
+                            ) {
+                                $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                            } elseif (count($arrNewValue) > 1) {
+                                $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), $arrNewValue[0], $arrNewValue[1]));
+                            } else {
+                                $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                            }
+                        }
+                    } else {
+                        $newobject->setKey($key, $value);
+                    }
                 }
                 try {
                     $newobject->create();
@@ -211,7 +228,40 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                     Base_Response::sendHttpResponse(404);
                 } else {
                     foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
-                        $requestedobject->setKey($key, $value);
+                        if (is_array($value)) {
+                            foreach ($value as $newvalue) {
+                                if (substr($newvalue, 0, 4) == 'del_') {
+                                    $newvalue = substr($newvalue, 4);
+                                    $arrNewValue = explode(':', $newvalue, 2);
+                                    if (substr($newvalue, 0, 7) == 'http://'
+                                        || substr($newvalue, 0, 8) == 'https://'
+                                        || substr($newvalue, 0, 7) == 'mailto:'
+                                        || substr($newvalue, 0, 4) == 'sip:'
+                                    ) {
+                                        $newobject->setKey($key, Base_GeneralFunctions::delJson($newobject->getKey($key), $newvalue));
+                                    } elseif (count($arrNewValue) > 1) {
+                                        $newobject->setKey($key, Base_GeneralFunctions::delJson($newobject->getKey($key), $arrNewValue[1]));
+                                    } else {
+                                        $newobject->setKey($key, Base_GeneralFunctions::delJson($newobject->getKey($key), $newvalue));
+                                    }
+                                } else {
+                                    $arrNewValue = explode(':', $newvalue, 2);
+                                    if (substr($newvalue, 0, 7) == 'http://'
+                                        || substr($newvalue, 0, 8) == 'https://'
+                                        || substr($newvalue, 0, 7) == 'mailto:'
+                                        || substr($newvalue, 0, 4) == 'sip:'
+                                    ) {
+                                        $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                                    } elseif (count($arrNewValue) > 1) {
+                                        $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), $arrNewValue[0], $arrNewValue[1]));
+                                    } else {
+                                        $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                                    }
+                                }
+                            }
+                        } else {
+                            $newobject->setKey($key, $value);
+                        }
                     }
                     try {
                         $requestedobject->write();
