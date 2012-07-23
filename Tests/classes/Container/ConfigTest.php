@@ -81,7 +81,7 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     public function testGetUnconfiguredValue()
     {
         $this->assertTrue(Container_Config_Testable::brokerByID('UnconfiguredValue', true)->getKey('value'));
-        $this->assertTrue(Container_Config_Testable::brokerByID('UnconfiguredValue')->getKey('value') == null);
+        $this->assertTrue(Container_Config_Testable::brokerByID('UnconfiguredValue')->getKey('value'));
     }
 }
 
