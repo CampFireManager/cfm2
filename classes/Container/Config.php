@@ -497,11 +497,7 @@ class Container_Config implements Interface_Object
      */
     public static function listKeys()
     {
-        if (Object_User::isAdmin()) {
-            return array('required' => array('key' => array(), 'value' => array()));
-        } else {
-            return array();
-        }
+        return array();
     }
 }
 
