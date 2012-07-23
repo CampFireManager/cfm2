@@ -28,8 +28,8 @@ class Object_Config extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'key' => array('type' => 'varchar', 'length' => 255),
-        'value' => array('type' => 'text'),
+        'key' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'value' => array('type' => 'text', 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "config";

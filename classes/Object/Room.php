@@ -26,10 +26,10 @@ class Object_Room extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strRoomName' => array('type' => 'varchar', 'length' => 255),
-        'jsonResourceList' => array('type' => 'text'),
-        'intCapacity' => array('type' => 'integer', 'length' => 4),
-        'isLocked' => array('type' => 'tinyint', 'length' => 1),
+        'strRoomName' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'jsonResourceList' => array('type' => 'text', 'optional' => 'admin', 'source' => 'Resource', 'array' => 1),
+        'intCapacity' => array('type' => 'integer', 'length' => 4, 'required' => 'admin'),
+        'isLocked' => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin', 'default_value' => 0),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "room";

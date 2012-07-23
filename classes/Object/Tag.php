@@ -26,9 +26,9 @@ class Object_Tag extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true),
-        'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true),
-        'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true),
+        'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true, 'required' => 'user'),
+        'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true, 'required' => 'user', 'source' => 'Talk'),
+        'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true, 'optional' => 'worker'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "tag";
@@ -51,7 +51,7 @@ class Object_Tag extends Abstract_GenericObject
     function __construct()
     {
         $this->reqAdminToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyAdminsCanTagTalks', 'false')->getKey('value'));
-        $this->reqCreatorToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'false')->getKey('value'));
+        $this->reqCreatorToMod = Base_GeneralFunctions::asBoolean(Container_Config::brokerByID('OnlyTagCreatorsCanEditTalkTags', 'true')->getKey('value'));
         return parent::__construct();
     }
 }

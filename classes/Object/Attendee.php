@@ -26,8 +26,8 @@ class Object_Attendee extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
-        'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true),
+        'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true, 'optional' => 'worker'),
+        'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true, 'required' => 'user', 'source' => 'Talk'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "attendee";

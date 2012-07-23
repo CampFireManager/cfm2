@@ -25,12 +25,12 @@
 class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-        'strName'     => array('type' => 'varchar', 'length' => 255),
+        'strName'     => array('type' => 'varchar', 'length' => 255, 'required' => 'worker'),
         'jsonLinks'   => array('type' => 'text'),
-        'isWorker'    => array('type' => 'tinyint', 'length' => 1),
-        'isAdmin'     => array('type' => 'tinyint', 'length' => 1),
-        'hasAttended' => array('type' => 'tinyint', 'length' => 1),
-        'isHere'      => array('type' => 'tinyint', 'length' => 1),
+        'isWorker'    => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
+        'isAdmin'     => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
+        'hasAttended' => array('type' => 'tinyint', 'length' => 1, 'optional' => 'worker'),
+        'isHere'      => array('type' => 'tinyint', 'length' => 1, 'optional' => 'worker'),
         'lastChange'  => array('type' => 'datetime')
     );
     protected $strDBTable      = "user";

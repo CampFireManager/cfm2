@@ -26,11 +26,11 @@ class Object_Slot extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'dateStart' => array('type' => 'date'),
-        'timeStart' => array('type' => 'time'),
-        'dateEnd' => array('type' => 'date'),
-        'timeEnd' => array('type' => 'time'),
-        'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11),
+        'dateStart' => array('type' => 'date', 'optional' => 'admin', 'input_type' => 'date'),
+        'timeStart' => array('type' => 'time', 'required' => 'admin', 'input_type' => 'time'),
+        'dateEnd' => array('type' => 'date', 'optional' => 'admin', 'input_type' => 'date'),
+        'timeEnd' => array('type' => 'time', 'required' => 'admin', 'input_type' => 'time'),
+        'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11, 'optional' => 'admin', 'source' => 'DefaultSlotType'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "slot";

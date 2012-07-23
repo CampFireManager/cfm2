@@ -29,8 +29,8 @@ class Object_DefaultSlotType extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strDefaultSlotType' => array('type' => 'varchar', 'length' => 255),
-        'lockSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none')),
+        'strDefaultSlotType' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'lockSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none'), 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "defaultslottype";

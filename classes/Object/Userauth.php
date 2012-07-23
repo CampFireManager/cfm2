@@ -26,8 +26,8 @@ class Object_Userauth extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'intUserID' => array('type' => 'int', 'length' => 11),
-        'enumAuthType' => array('type' => 'enum', 'options' => array('openid', 'basicauth', 'codeonly', 'onetime'), 'unique' => true),
+        'intUserID' => array('type' => 'int', 'length' => 11, 'optional' => 'worker'),
+        'enumAuthType' => array('type' => 'enum', 'options' => array('openid', 'basicauth', 'codeonly', 'onetime'), 'unique' => true, 'required' => 'user'),
         'strAuthValue' => array('type' => 'varchar', 'length' => '255', 'unique' => true),
         'tmpCleartext' => array('type' => 'varchar', 'length' => '255'),
         'lastChange' => array('type' => 'datetime')
@@ -43,6 +43,22 @@ class Object_Userauth extends Abstract_GenericObject
     protected $tmpCleartext = null;
     protected $lastChange = null;
 
+    /**
+     * This overloaded function performs the special magic needed for Userauth
+     * values.
+     * 
+     * @return array
+     */
+    public static function listKeys()
+    {
+        $return = parent::listKeys();
+        $return['enumAuthType']['options'] = array('basicauth' => 'basicauth');
+        $return['username']['required'] = 'user';
+        $return['password']['required'] = 'user';
+        $return['password']['input_type'] = 'password';
+        return $return;
+    }
+    
     /**
      * This overloaded function will process the normal setKey function, unless
      * it matches a pre-defined set of overideable functions.

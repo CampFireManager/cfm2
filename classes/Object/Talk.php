@@ -32,16 +32,16 @@ class Object_Talk extends Abstract_GenericObject
         'intUserID'           => array('type' => 'int', 'length' => 11, 'optional' => 'worker'),
         'intRequestedRoomID'  => array('type' => 'int', 'length' => 11),
         'intRequestedSlotID'  => array('type' => 'int', 'length' => 11),
-        'intRoomID'           => array('type' => 'int', 'length' => 11, 'optional' => 'admin', 'source' => 'room'),
-        'intSlotID'           => array('type' => 'int', 'length' => 11, 'required' => 'user', 'source' => 'slot', 'value_for_any' => '-1', 'must_have_as_true' => 'isStillToCome'),
-        'intTrackID'          => array('type' => 'int', 'length' => 11, 'optional' => 'user', 'source' => 'track'),
+        'intRoomID'           => array('type' => 'int', 'length' => 11, 'optional' => 'admin', 'source' => 'Room'),
+        'intSlotID'           => array('type' => 'int', 'length' => 11, 'required' => 'user', 'source' => 'Slot', 'value_for_any' => '-1', 'must_have_as_true' => 'isStillToCome'),
+        'intTrackID'          => array('type' => 'int', 'length' => 11, 'optional' => 'user', 'source' => 'Track'),
         'intLength'           => array('type' => 'tinyint', 'length' => 1, 'required' => 'user', 'default_value' => 1),
         'jsonLinks'           => array('type' => 'text', 'optional' => 'user'),
         'isRoomLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isSlotLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isLocked'            => array('type' => 'tinyint', 'length' => 1),
         'jsonResources'       => array('type' => 'text', 'optional' => 'user'),
-        'jsonOtherPresenters' => array('type' => 'text', 'optional' => 'user', 'source' => 'user'),
+        'jsonOtherPresenters' => array('type' => 'text', 'optional' => 'user', 'source' => 'User', 'array' => 1),
         'lastChange'          => array('type' => 'datetime')
     );
     protected $strDBTable          = "talk";
