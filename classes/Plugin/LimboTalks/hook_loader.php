@@ -28,9 +28,12 @@ class Plugin_LimboTalks
     /**
      * This function triggers each cronTick.
      * 
+     * @param string $strNow Unit Testing Purposes Only! Set what time the talks
+     * are to be sorted by.
+     * 
      * @return void
      */
-    function hook_cronTick()
+    function hook_cronTick($strNow = null)
     {
         Object_User::isSystem(true);
         $intMinAttendees = Container_Config::brokerByID('LimboMinimumVotes')->getKey('value');
@@ -38,6 +41,6 @@ class Plugin_LimboTalks
             $intMinAttendees = 2;
         }
         Object_Talk::unscheduleBasedOnAttendees(Object_Talk::brokerAll(), $intMinAttendees);
-        Object_Talk::sortAndPlaceTalksByAttendees();
+        Object_Talk::sortAndPlaceTalksByAttendees($strNow);
     }
 }

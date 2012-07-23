@@ -74,9 +74,21 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($json_data) == 0);
     }
     
-    public function testUnscheduleATalk()
+    public function testUnscheduleATalkWithAndWithoutResettingintSlotID()
     {
         Object_User::isSystem(true);
+        $objTalk = Object_Talk::brokerByID(1);
+        $this->assertTrue(is_object($objTalk));
+        $objTalk->unschedule();
+        $data = $objTalk->getSelf();
+        $this->assertTrue($data['intRoomID'] == -1);
+        $this->assertTrue($data['intSlotID'] == 1);
+        $this->assertTrue($data['isLocked'] == 0);
+        $config = Container_Config::brokerByID('Schedule Only In This Slot', '1');
+        if ($config->getKey('value') == '0') {
+            $config->setKey('value', '1');
+            $config->write();
+        }
         $objTalk = Object_Talk::brokerByID(1);
         $this->assertTrue(is_object($objTalk));
         $objTalk->unschedule();
@@ -104,7 +116,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         Object_User::isSystem(false);
     }
     
-    public function testTalksSort()
+    public function testTalksSort_Baseline()
     {
         $arrTalks = Object_Talk::brokerAll();
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
@@ -116,10 +128,17 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
+    }
 
+    public function testTalksSort_SortWholeDayAtStartOfDay()
+    {
         Object_User::isSystem(true);
+        $arrTalks = Object_Talk::brokerAll();
         Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
-        Object_Talk::sortAndPlaceTalksByAttendees();
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "00:00:01");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
@@ -128,8 +147,85 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
-        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 1);
-        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
+        // After sorting, room 1 can't be used (locked) and room 3 is larger
+        // than room 2.
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
+    }
+
+    public function testTalksSort_SortWholeDayAt2PM()
+    {
+        Object_User::isSystem(true);
+        $arrTalks = Object_Talk::brokerAll();
+        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "14:00:00");
+        Object_User::isSystem(false);
+
+        $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= -1);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
+    }
+
+    public function testTalksSort_SortSlotOnlyAtStartOfDay()
+    {
+        Object_User::isSystem(true);
+        $arrTalks = Object_Talk::brokerAll();
+        $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
+        $config->setKey('value', 1);
+        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "00:00:01");
+        Object_User::isSystem(false);
+
+        $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
+        // After sorting, room 1 can't be used (locked) and room 3 is larger
+        // than room 2.
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= 2);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
+    }
+
+    public function testTalksSort_SortSlotOnlyAt2PM()
+    {
+        Object_User::isSystem(true);
+        $arrTalks = Object_Talk::brokerAll();
+        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "14:00:00");
+        Object_User::isSystem(false);
+
+        $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
+        $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
+        // We're only sorting by slot when we've requested this slot, therefore
+        // this returns unscheduled talks.
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
+        $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
     }
 }

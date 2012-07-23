@@ -208,7 +208,9 @@ class Object_Talk extends Abstract_GenericObject
     public function unschedule()
     {
         $this->setKey('intRoomID', -1);
-        $this->setKey('intSlotID', -1);
+        if (Container_Config::brokerByID('Schedule Only In This Slot', '0')->getKey('value') != '0') {
+            $this->setKey('intSlotID', -1);
+        }
         $this->setKey('isLocked', 0);
         $this->setKey('isRoomLocked', 0);
         $this->setKey('isSlotLocked', 0);
@@ -297,6 +299,7 @@ class Object_Talk extends Abstract_GenericObject
                 }
             }
         }
+        return $arrGrid;
     }
     
     /**
@@ -305,12 +308,15 @@ class Object_Talk extends Abstract_GenericObject
      * are not locked and are not "unscheduled" (for example, elected to be 
      * removed from the grid, or where the limbo module is enabled).
      * 
+     * @param string $strNow The time to action as Now/Next (Unit testing 
+     * purposes only
+     * 
      * @return void
      */
-    public static function sortAndPlaceTalksByAttendees()
+    public static function sortAndPlaceTalksByAttendees($strNow = null)
     {
         $arrSortItems = array();
-        $arrNowNext = Object_Slot::getNowAndNext();
+        $arrNowNext = Object_Slot::getNowAndNext($strNow);
         $intNowSlot = $arrNowNext[0];
         $arrSlots = Object_Slot::brokerAll();
         $arrRooms = Object_Room::brokerAllByRoomSize();
@@ -318,8 +324,9 @@ class Object_Talk extends Abstract_GenericObject
         foreach ($arrRooms as $room => $objRoom) {
             $arrRoomsByID[$objRoom->getKey('intRoomID')] = $room;
         }
+        $arrDefaults = Object_DefaultSlotType::brokerAll();
 
-        $arrGrid = self::getGrid($arrSlots, $arrRooms, Object_DefaultSlotType::brokerAll());
+        $arrGrid = Object_Talk::getGrid($arrSlots, $arrRooms, $arrDefaults);
         foreach (Object_Talk::brokerAll() as $objTalk) {
             // Clear the spot on the grid for locked talks
             if ($objTalk->getKey('isLocked') == 1) {
@@ -369,38 +376,50 @@ class Object_Talk extends Abstract_GenericObject
                 }
             }
         }
-        if (isset($arrSortItems[0]) && Container_Config::brokerByID('Schedule talks in the next available slot when this slot is full')->getKey('value', 0) == 1) {
-            foreach ($arrSortItems[0] as $talk) {
+        if (isset($arrSortItems[0]) 
+            && count($arrSortItems[0]) > 0
+            && Container_Config::brokerByID('Schedule Only In This Slot', '0')->getKey('value') == 0
+        ) {
+            foreach ($arrSortItems[0] as $intAttendees => $arrTalk) {
                 $arrSlotSpaces = array();
-                foreach ($arrSlotItems as $arrTalkData) {
-                    $arrSlotSpaces[$arrTalkData['array']['intAttendees'] - ($arrTalkData['array']['intTalkID']/10000)] = $arrTalkData;
+                foreach ($arrTalk as $intTalkID => $objTalk) {
+                    $floatPosition = ($intAttendees - ($intTalkID/10000))*10000;
+                    $arrSlotSpaces[(float) $floatPosition] = $objTalk;
                 }
-                unset($arrSlotItems);
-                krsort($arrSlotSpaces);
-                $assigned = false;
+            }
+            unset($arrSortItems);
+            krsort($arrSlotSpaces);
+            foreach ($arrSlotSpaces as $floatPosition => $objTalk) {
+                $fixed = false;
                 foreach ($arrGrid as $intSlotID => $arrSlots) {
-                    if ($intSlotID > $intNowSlot && !isset($arrSlots['isLocked'])) {
-                        foreach ($arrSlots as $room => $arrSlot) {
-                            if (is_integer($room)) {
-                                if (! is_object($arrSlot) && !isset($arrSlot['isLocked'])) {
-                                    $arrGrid[$intSlotID][$room] = $talk['object'];
-                                    $assigned = true;
+                    if ($intSlotID > $intNowSlot
+                        && $intSlotID >= $objTalk->getKey('intRequestedSlotID')
+                        && (!isset($arrSlots['isLocked']) || ($arrSlots['isLocked'] != 'hardlock' && $arrSlots['isLocked'] != 'softlock'))
+                    ) {
+                        foreach ($arrSlots as $intRoomID => $arrSlot) {
+                            if (is_integer($intRoomID)) {
+                                if ($fixed == false 
+                                    && ! is_object($arrSlot) 
+                                    && !isset($arrSlot['isLocked'])
+                                ) {
+                                    $arrGrid[$intSlotID][$intRoomID] = $objTalk;
+                                    $fixed = true;
                                 }
                             }
                         }
                     }
                 }
-                if ($assigned == false) {
-                    $talk['object']->unschedule();
+                if ($fixed == false) {
+                    $objTalk->unschedule();
                 }
             }
         } else {
             if (isset($arrSortItems[0])) {
-                foreach ($arrSortItems[0] as $talk) {
-                    if (is_object($talk)) {
-                        $talk->unschedule();
-                    } elseif (is_array($talk)) {
-                        foreach ($talk as $objTalk) {
+                foreach ($arrSortItems[0] as $mixedTalk) {
+                    if (is_object($mixedTalk)) {
+                        $mixedTalk->unschedule();
+                    } elseif (is_array($mixedTalk)) {
+                        foreach ($mixedTalk as $objTalk) {
                             $objTalk->unschedule();
                         }
                     } else {

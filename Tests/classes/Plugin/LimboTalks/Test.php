@@ -43,7 +43,7 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
 
         $plugin = new Plugin_LimboTalks();
-        $plugin->hook_cronTick();
+        $plugin->hook_cronTick(date('Y-m-d ') . "00:00:01");
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
@@ -51,8 +51,10 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
-        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 1);
-        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
+        // After sorting, room 1 can't be used (locked) and room 3 is larger
+        // than room 2.
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
