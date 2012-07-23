@@ -976,18 +976,20 @@ abstract class Abstract_GenericObject implements Interface_Object
         }
         foreach ($thisClass->arrDBItems as $strDBItem => $arrDBItem) {
             if (isset($arrDBItem['required']) || isset($arrDBItem['optional'])) {
-                if ($arrDBItem['required'] == 'user' 
+                if (isset($arrDBItem['required'])
+                    && ($arrDBItem['required'] == 'user' 
                     || ($arrDBItem['required'] == 'worker' 
                     && Object_User::isWorker())
                     || ($arrDBItem['required'] == 'admin' 
-                    && Object_User::isAdmin())
+                    && Object_User::isAdmin()))
                 ) {
                     $return[$strDBItem]['required'] = 1;
-                } elseif ($arrDBItem['optional'] == 'user' 
+                } elseif (isset($arrDBItem['optional']) 
+                    && ($arrDBItem['optional'] == 'user' 
                     || ($arrDBItem['optional'] == 'worker' 
                     && Object_User::isWorker())
                     || ($arrDBItem['optional'] == 'admin' 
-                    && Object_User::isAdmin())
+                    && Object_User::isAdmin()))
                 ) {
                     $return[$strDBItem]['optional'] = 1;
                 }
