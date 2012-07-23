@@ -93,6 +93,28 @@ class Object_User extends Abstract_GenericObject
     }
     
     /**
+     * Calculate whether the user is a worker
+     * 
+     * @param integer $intUserID The UserID to check whether they're a worker.
+     *
+     * @return boolean 
+     */
+    public static function isWorker($intUserID = null)
+    {
+        if (self::isSystem()) {
+            return true;
+        } elseif ($intUserID == null) {
+            $self = self::brokerCurrent();
+        } else {
+            $self = self::brokerByID($intUserID);
+        }
+        if ($self != false && $self->getKey('isWorker') == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Calculate whether the user is the creator (or admin, or system)
      *
      * @param integer $intUserID  The user who created the object
