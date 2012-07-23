@@ -1018,6 +1018,21 @@ abstract class Abstract_GenericObject implements Interface_Object
                     if (isset($arrDBItem['input_type'])) {
                         $return[$strDBItem]['input_type'] = $arrDBItem['input_type'];
                     }
+                    if (isset($arrDBItem['type']) 
+                        && $arrDBItem['type'] == 'tinyint'
+                        && isset($arrDBItem['length'])
+                        && $arrDBItem['length'] == 1
+                    ) {
+                        $return[$strDBItem]['options'] = array('true' => 1, 'false' => 0);
+                    }
+                    if (isset($arrDBItem['options'])) {
+                        foreach ($arrDBItem['options'] as $option) {
+                            $return[$strDBItem]['options'][$option] = $option;
+                        }
+                    }
+                    if (isset($arrDBItem['array'])) {
+                        $return[$strDBItem]['array'] = $arrDBItem['array'];
+                    }
                 }
             }
         }
