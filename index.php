@@ -185,6 +185,9 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                     } else {
                         $arrType = explode('_', $object);
                         $object_type = strtolower($arrType[1]);
+                        if ($rest) {
+                            $object_type = 'rest/' . $object_type;
+                        }
                         Base_Response::redirectTo($object_type . '/' . $key);
                     }
                 } catch (Exception $e) {
@@ -214,6 +217,9 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         $requestedobject->write();
                         $arrType = explode('_', $object);
                         $object_type = strtolower($arrType[1]);
+                        if ($rest) {
+                            $object_type = 'rest/' . $object_type;
+                        }
                         Base_Response::redirectTo($object_type . '/' . $item);
                     } catch (Exception $e) {
                         error_log("Unable to update object of type $object, item code $item due to error " . $e->getMessage());
@@ -227,7 +233,11 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                 } else {
                     try {
                         $requestedobject->delete();
-                        Base_Response::redirectTo('timetable');
+                        if ($rest) {
+                            Base_Response::sendHttpResponse(204);
+                        } else {
+                            Base_Response::redirectTo('timetable');
+                        }
                     } catch (Exception $e) {
                         error_log("Unable to update object of type $object, item code $item due to error " . $e->getMessage());
                         Base_Response::sendHttpResponse(406);
@@ -237,7 +247,11 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
         }
     }
 } else {
-    Base_Response::redirectTo('timetable');
+    if ($rest) {
+        Base_Response::sendHttpResponse(404);
+    } else {
+        Base_Response::redirectTo('timetable');
+    }
 }
 
 foreach ($arrObjects as $object_group => $data) {
