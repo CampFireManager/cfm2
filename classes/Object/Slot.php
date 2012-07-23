@@ -48,6 +48,7 @@ class Object_Slot extends Abstract_GenericObject
     // Calculated Values
     protected $isNow = null;
     protected $isNext = null;
+    protected $isStillToCome = null;
 
     /**
      * This overloaded function returns the data from the PDO object and adds
@@ -78,6 +79,7 @@ class Object_Slot extends Abstract_GenericObject
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         $self['isNow'] = $this->isNow;
         $self['isNext'] = $this->isNext;
+        $self['isStillToCome'] = $this->isStillToCome;
 
         if ($this->isFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
@@ -125,6 +127,9 @@ class Object_Slot extends Abstract_GenericObject
                 $objSlot->isNow = true;
             } elseif ($objSlot->getKey('intSlotID') == $intNextSlot) {
                 $objSlot->isNext = true;
+                $objSlot->isStillToCome = true;
+            } elseif ($objSlot->getKey('intSlotID') > $intNextSlot) {
+                $objSlot->isStillToCome = true;
             }
         }
         return array($intNowSlot, $intNextSlot);
