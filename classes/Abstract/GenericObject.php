@@ -959,6 +959,68 @@ abstract class Abstract_GenericObject implements Interface_Object
         $return['lastChange'] = date('Y-m-d H:i:s', $return['epochLastChange']);
         return $return;
     }
+
+    /**
+     * This function will return the values which are required and which are
+     * optional to create a new object of this type
+     * 
+     * @return array
+     */
+    public static function listKeys()
+    {
+        $thisClassName = get_called_class();
+        $thisClass = new $thisClassName();
+        $return = array();
+        if ($thisClass->reqAdminToMod == true && ! Object_User::isAdmin()) {
+            return array();
+        }
+        foreach ($thisClass->arrDBItems as $strDBItem => $arrDBItem) {
+            if (isset($arrDBItem['required']) || isset($arrDBItem['optional'])) {
+                if ($arrDBItem['required'] == 'user' 
+                    || ($arrDBItem['required'] == 'worker' 
+                    && Object_User::isWorker())
+                    || ($arrDBItem['required'] == 'admin' 
+                    && Object_User::isAdmin())
+                ) {
+                    $return[$strDBItem]['required'] = 1;
+                } elseif ($arrDBItem['optional'] == 'user' 
+                    || ($arrDBItem['optional'] == 'worker' 
+                    && Object_User::isWorker())
+                    || ($arrDBItem['optional'] == 'admin' 
+                    && Object_User::isAdmin())
+                ) {
+                    $return[$strDBItem]['optional'] = 1;
+                }
+                if (isset($return[$strDBItem]['required']) 
+                    || isset($return[$strDBItem['optional']])
+                ) {
+                    if (isset($arrDBItem['source'])) {
+                        $return[$strDBItem]['source'] = $arrDBItem['source'];
+                    }
+                    if (isset($arrDBItem['default_value'])) {
+                        if ($arrDBItem['default_value'] == 'intUserID') {
+                            $thisUser = Object_User::brokerCurrent();
+                            if ($thisUser != false) {
+                                $return[$strDBItem]['default_value'] = $thisUser->getKey('intUserID');
+                            }
+                        } else {
+                            $return[$strDBItem]['default_value'] = $arrDBItem['default_value'];
+                        }
+                    }
+                    if (isset($arrDBItem['value_for_any'])) {
+                        $return[$strDBItem]['value_for_any'] = $arrDBItem['value_for_any'];
+                    }
+                    if (isset($arrDBItem['must_have_as_true'])) {
+                        $return[$strDBItem]['must_have_as_true'] = $arrDBItem['must_have_as_true'];
+                    }
+                    if (isset($arrDBItem['input_type'])) {
+                        $return[$strDBItem]['input_type'] = $arrDBItem['input_type'];
+                    }
+                }
+            }
+        }
+        return $return;
+    }
     
     /**
      * This function returns any errors we want to pass back to the client we 

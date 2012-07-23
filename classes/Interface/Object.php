@@ -89,4 +89,11 @@ interface Interface_Object
      * @return integer
      */
     public static function countAll();
+    /**
+     * This function will return the values which are required and which are
+     * optional to create a new object of this type
+     * 
+     * @return array
+     */
+    public static function listKeys();
 }

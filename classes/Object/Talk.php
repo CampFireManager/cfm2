@@ -26,46 +26,46 @@ class Object_Talk extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTalkTitle' => array('type' => 'varchar', 'length' => 255),
-        'strTalkSummary' => array('type' => 'text'),
-        'hasPGContent' =>array('type' => 'tinyint', 'length' => 1),
-        'intUserID' => array('type' => 'int', 'length' => 11),
-        'intRequestedRoomID' => array('type' => 'int', 'length' => 11),
-        'intRequestedSlotID' => array('type' => 'int', 'length' => 11),
-        'intRoomID' => array('type' => 'int', 'length' => 11),
-        'intSlotID' => array('type' => 'int', 'length' => 11),
-        'intTrackID' => array('type' => 'int', 'length' => 11),
-        'intLength' => array('type' => 'tinyint', 'length' => 1),
-        'jsonLinks' => array('type' => 'text'),
-        'isRoomLocked' => array('type' => 'tinyint', 'length' => 1),
-        'isSlotLocked' => array('type' => 'tinyint', 'length' => 1),
-        'isLocked' => array('type' => 'tinyint', 'length' => 1),
-        'jsonResources' => array('type' => 'text'),
-        'jsonOtherPresenters' => array('type' => 'text'),
-        'lastChange' => array('type' => 'datetime')
+        'strTalkTitle'        => array('type' => 'varchar', 'length' => 255, 'required' => 'user'),
+        'strTalkSummary'      => array('type' => 'text', 'optional' => 'user'),
+        'hasPGContent'        => array('type' => 'tinyint', 'length' => 1, 'optional' => 'user'),
+        'intUserID'           => array('type' => 'int', 'length' => 11, 'optional' => 'worker'),
+        'intRequestedRoomID'  => array('type' => 'int', 'length' => 11),
+        'intRequestedSlotID'  => array('type' => 'int', 'length' => 11),
+        'intRoomID'           => array('type' => 'int', 'length' => 11, 'optional' => 'admin', 'source' => 'room'),
+        'intSlotID'           => array('type' => 'int', 'length' => 11, 'required' => 'user', 'source' => 'slot', 'value_for_any' => '-1', 'must_have_as_true' => 'isStillToCome'),
+        'intTrackID'          => array('type' => 'int', 'length' => 11, 'optional' => 'user', 'source' => 'track'),
+        'intLength'           => array('type' => 'tinyint', 'length' => 1, 'required' => 'user', 'default_value' => 1),
+        'jsonLinks'           => array('type' => 'text', 'optional' => 'user'),
+        'isRoomLocked'        => array('type' => 'tinyint', 'length' => 1),
+        'isSlotLocked'        => array('type' => 'tinyint', 'length' => 1),
+        'isLocked'            => array('type' => 'tinyint', 'length' => 1),
+        'jsonResources'       => array('type' => 'text', 'optional' => 'user'),
+        'jsonOtherPresenters' => array('type' => 'text', 'optional' => 'user', 'source' => 'user'),
+        'lastChange'          => array('type' => 'datetime')
     );
-    protected $strDBTable = "talk";
-    protected $strDBKeyCol = "intTalkID";
-    protected $reqCreatorToMod = true;
+    protected $strDBTable          = "talk";
+    protected $strDBKeyCol         = "intTalkID";
+    protected $reqCreatorToMod     = true;
     // Local Object Requirements
-    protected $intTalkID = null;
-    protected $strTalkTitle = null;
-    protected $hasPGContent = null;
-    protected $strTalkSummary = null;
-    protected $intUserID = null;
-    protected $intRequestedRoomID = null;
-    protected $intRequestedSlotID = null;
-    protected $intRoomID = null;
-    protected $intSlotID = null;
-    protected $intTrackID = null;
-    protected $intLength = null;
-    protected $jsonLinks = null;
-    protected $isRoomLocked = 0;
-    protected $isSlotLocked = 0;
-    protected $isLocked = 0;
-    protected $jsonResources = null;
+    protected $intTalkID           = null;
+    protected $strTalkTitle        = null;
+    protected $hasPGContent        = null;
+    protected $strTalkSummary      = null;
+    protected $intUserID           = null;
+    protected $intRequestedRoomID  = null;
+    protected $intRequestedSlotID  = null;
+    protected $intRoomID           = null;
+    protected $intSlotID           = null;
+    protected $intTrackID          = null;
+    protected $intLength           = null;
+    protected $jsonLinks           = null;
+    protected $isRoomLocked        = 0;
+    protected $isSlotLocked        = 0;
+    protected $isLocked            = 0;
+    protected $jsonResources       = null;
     protected $jsonOtherPresenters = null;
-    protected $lastChange = null;
+    protected $lastChange          = null;
 
     /**
      * This overloaded function returns the data from the PDO object and adds

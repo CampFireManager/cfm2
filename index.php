@@ -160,11 +160,16 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
     }
 
     foreach ($useObjects as $object => $item) {
-        if ($item == null) {
+        if ($item == null || $item == 'new') {
             switch ($objRequest->get_strRequestMethod()) {
             case 'head':
             case 'get':
-                $arrObjects[$object] = $object::brokerAll();
+                if ($item == null) {
+                    $arrObjects[$object] = $object::brokerAll();
+                } else {
+                    $arrObjects[$object] = $object::listKeys();
+                    $renderPage .= '_new';
+                }
                 break;
             case 'post':
             case 'put':
@@ -240,6 +245,8 @@ foreach ($arrObjects as $object_group => $data) {
         if (is_object($object)) {
             $object->setFull(true);
             $arrObjectsData[$object_group][$key] = $object->getSelf();
+        } elseif (is_array($object)) {
+            $arrObjectsData[$object_group][$key] = $object;
         } else {
             $arrObjectsData[$object_group][$key] = null;
         }

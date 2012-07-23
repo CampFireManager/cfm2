@@ -231,4 +231,13 @@ abstract class Abstract_GenericCollection implements Interface_Object
         return 0;
     }
 
+    /**
+     * This dummy function will convince apps that they can't create new objects
+     * 
+     * @return array
+     */
+    public static function listKeys()
+    {
+        return array();
+    }
 }
