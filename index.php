@@ -173,7 +173,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                 break;
             case 'post':
             case 'put':
-                $newobject = new $object(false);
+                $newobject = new $object(true);
                 foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
                     if (is_array($value)) {
                         foreach ($value as $newvalue) {
