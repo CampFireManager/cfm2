@@ -24,7 +24,10 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $objSlot->initializeDemo();
         $objTalk = new Object_Talk_Demo();
         $objTalk->initializeDemo();
-        Base_Cache::flush();
+        $objTrack = new Object_Track_Demo();
+        $objTrack->initializeDemo();
+        $objUser = new Object_User_Demo();
+        $objUser->initializeDemo();
     }
 
     public function testObjectTalkCreation()
@@ -34,7 +37,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $data = $objTalk->getSelf();
         $this->assertTrue($data['intTalkID'] == null);
         $this->assertTrue($data['strTalk'] == null);
-        $this->assertTrue($data['hasPGContent'] == null);
+        $this->assertTrue($data['hasNsfwMaterial'] == null);
         $this->assertTrue($data['strTalkSummary'] == null);
         $this->assertTrue($data['intUserID'] == null);
         $this->assertTrue($data['intRequestedRoomID'] == null);
@@ -57,7 +60,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data != false);
         $this->assertTrue($data['intTalkID'] == 1);
         $this->assertTrue($data['strTalk'] == "Keynote");
-        $this->assertTrue($data['hasPGContent'] == null);
+        $this->assertTrue($data['hasNsfwMaterial'] == null);
         $this->assertTrue($data['strTalkSummary'] == 'A welcome to Barcamps');
         $this->assertTrue($data['intUserID'] == 1);
         $this->assertTrue($data['intRequestedRoomID'] == 1);
@@ -138,8 +141,9 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
     {
         Object_User::isSystem(true);
         $arrTalks = Object_Talk::brokerAll();
+        $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
         Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
-        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "00:00:01");
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 00:00:01");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
@@ -162,8 +166,9 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
     {
         Object_User::isSystem(true);
         $arrTalks = Object_Talk::brokerAll();
+        $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
         Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
-        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "14:00:00");
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 14:00:00");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
@@ -172,8 +177,8 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
-        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == -1);
-        $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= -1);
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 7);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
@@ -187,7 +192,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
         $config->setKey('value', 1);
         Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
-        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "00:00:01");
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 00:00:01");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
@@ -199,7 +204,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         // After sorting, room 1 can't be used (locked) and room 3 is larger
         // than room 2.
         $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
-        $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= 2);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
@@ -211,7 +216,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         Object_User::isSystem(true);
         $arrTalks = Object_Talk::brokerAll();
         Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
-        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . "14:00:00");
+        Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 14:00:00");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
