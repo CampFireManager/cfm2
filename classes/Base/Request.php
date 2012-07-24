@@ -379,7 +379,7 @@ class Base_Request
                     list($acceptItem, $q) = explode(';q=', $acceptItem);
                 }
                 if ($q > 0) {
-                    $this->arrAcceptTypes[$acceptItem] = $q;
+                    $this->arrAcceptLangs[$acceptItem] = $q;
                     if ($q > $this->intPrefAcceptLang) {
                         $this->intPrefAcceptLang = $q;
                         $this->strPrefAcceptLang = $acceptItem;
