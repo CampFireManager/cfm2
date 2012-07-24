@@ -23,4 +23,6 @@ $this->set('RO_User', null);
 $this->set('RO_Pass', null);
 
 // This is a consistent way to reset the database each run.
-unlink(dirname(__FILE__) . '/unittest.sqlite');
+if (file_exists(dirname(__FILE__) . '/unittest.sqlite')) {
+    unlink(dirname(__FILE__) . '/unittest.sqlite');
+}
