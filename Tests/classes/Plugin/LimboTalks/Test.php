@@ -3,6 +3,7 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        Base_Cache::flush();
         $config = Container_Config_Testable::GetHandler();
         $config->LoadFile('unittest.php');
         $config->SetUpDatabaseConnection();
@@ -23,7 +24,12 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $objSlot->initializeDemo();
         $objTalk = new Object_Talk_Demo();
         $objTalk->initializeDemo();
-        Base_Cache::flush();
+        $objTrack = new Object_Track_Demo();
+        $objTrack->initializeDemo();
+        $objUser = new Object_User_Demo();
+        $objUser->initializeDemo();
+        $objUserauth = new Object_Userauth_Demo();
+        $objUserauth->initializeDemo();
     }
     
     public function testHookCronTick()

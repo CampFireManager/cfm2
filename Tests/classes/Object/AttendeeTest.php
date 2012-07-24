@@ -13,6 +13,20 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $config->LoadDatabaseConfig();
         $objAttendee = new Object_Attendee_Demo();
         $objAttendee->initializeDemo();
+        $objDefaultSlotType = new Object_DefaultSlotType_Demo();
+        $objDefaultSlotType->initializeDemo();
+        $objResource = new Object_Resource_Demo();
+        $objResource->initializeDemo();
+        $objRoom = new Object_Room_Demo();
+        $objRoom->initializeDemo();
+        $objSlot = new Object_Slot_Demo();
+        $objSlot->initializeDemo();
+        $objTalk = new Object_Talk_Demo();
+        $objTalk->initializeDemo();
+        $objTrack = new Object_Track_Demo();
+        $objTrack->initializeDemo();
+        $objUser = new Object_User_Demo();
+        $objUser->initializeDemo();
     }
     
     public function testObjectAttendeeCreation()
