@@ -30,7 +30,7 @@ class Collection_NowAndNext extends Collection_Timetable
      * @param integer|null $room       The room to return, or null for all of them
      * @param string|null  $strNowTime The time string to base the now & next data on
      * 
-     * @return object This class 
+     * @return Collection_NowAndNext
      */
     protected function __construct($room = null, $strNowTime = null)
     {        

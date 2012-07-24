@@ -32,7 +32,7 @@ class Container_Hook
     /**
      * This protected function helps make this class a singleton
      *
-     * @return object
+     * @return Base_Hook
      */
     protected static function GetHandler()
     {
@@ -58,7 +58,7 @@ class Container_Hook
      * @param string  $strFileName  The filename to load
      * @param boolean $doReloadFile Force a clear and reload
      *
-     * @return object
+     * @return Base_Hook
      */
     public static function Load($strFileName = null, $doReloadFile = false)
     {

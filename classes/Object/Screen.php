@@ -48,7 +48,7 @@ class Object_Screen extends Abstract_GenericObject
      *
      * @param boolean $isCreationAction Pass this variable on to the parent class
      * 
-     * @return object
+     * @return Object_Screen
      */
     public function __construct($isCreationAction = false)
     {

@@ -72,7 +72,7 @@ class Base_Database
      * @param array   $arrDsnRw         The elements of the DSN for the 
      * read-write elements of the database connection.
      *
-     * @return object 
+     * @return PDO
      */
     public function getConnection(
         $boolRequireWrite = false,

@@ -72,7 +72,7 @@ class Object_SecureConfig extends Abstract_GenericObject
      *
      * @param array $values The optional values to insert into the object
      * 
-     * @return object
+     * @return Object_SecureConfig
      */
     public function __construct($values = null)
     {

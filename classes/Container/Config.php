@@ -40,7 +40,7 @@ class Container_Config implements Interface_Object
     /**
      * This protected function helps make this class a singleton
      *
-     * @return object
+     * @return Container_Config
      */
     protected static function GetHandler()
     {
@@ -70,7 +70,7 @@ class Container_Config implements Interface_Object
      * @param boolean $doReloadFile     A switch to force reloading the config
      * file, which in turn will force a reload of the database.
      * 
-     * @return object 
+     * @return Container_Config
      */
     public static function LoadConfig(
         $strFileName = null, 

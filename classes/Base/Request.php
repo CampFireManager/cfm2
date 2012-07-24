@@ -202,7 +202,7 @@ class Base_Request
      * @param string $strInput   A dependency injection entry for php://input
      * @param array  $arrSession A dependency injection entry for $_SESSION
      *
-     * @return array The compiled data
+     * @return Base_Request
      */
     public function parse(
         $arrGlobals = null, 

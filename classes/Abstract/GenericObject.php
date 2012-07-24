@@ -114,7 +114,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      *
      * This is our usual construct method for all extended classes.
      *
-     * @return object This class.
+     * @return Abstract_GenericObject
      */
     function __construct()
     {
@@ -135,7 +135,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      *
      * @param integer $intID The Object ID to search for
      *
-     * @return object UserObject for intUserID
+     * @return Abstract_GenericObject
      */
     static function brokerByID($intID = 0)
     {

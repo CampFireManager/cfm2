@@ -30,7 +30,7 @@ class Container_Database
     /**
      * This simple function makes the class into a singleton.
      *
-     * @return object
+     * @return Container_Database
      */
     protected static function GetHandler()
     {
@@ -85,7 +85,7 @@ class Container_Database
      * @param array   $arrDsnRw         The elements of the DSN for the 
      * read-write elements of the database connection.
      *
-     * @return object 
+     * @return PDO
      */
     public static function getConnection(
         $boolRequireWrite = false,

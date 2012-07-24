@@ -30,7 +30,7 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
      * @param integer|null $screen The screen ID to return, or null to create a
      * new screen and reload to that page.
      * 
-     * @return object This class 
+     * @return Collection_DirectionScreen
      */
     protected function __construct($screen = null)
     {

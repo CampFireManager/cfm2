@@ -49,7 +49,7 @@ class Plugin_Twitter
     /**
      * This function initializes the Twitter Manager code.
      *
-     * @return object
+     * @return Plugin_Twitter
      */
     protected function initializeTwitterHandler()
     {

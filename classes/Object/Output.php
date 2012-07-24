@@ -62,7 +62,7 @@ class Object_Output extends Abstract_GenericObject
      *
      * @param integer $intID The Object ID to search for
      *
-     * @return object UserObject for intUserID
+     * @return Object_Output
      */
     public static function brokerByID($intID)
     {
@@ -96,7 +96,7 @@ class Object_Output extends Abstract_GenericObject
      *
      * This is our usual construct method for all extended classes.
      *
-     * @return object This class.
+     * @return Object_Output
      */
     public function __construct()
     {

@@ -127,7 +127,7 @@ class Object_Userauth extends Abstract_GenericObject
     /**
      * A function to broker the current user object back to the engine.
      * 
-     * @return object 
+     * @return Object_Userauth
      */
     function brokerCurrent()
     {
@@ -225,7 +225,7 @@ class Object_Userauth extends Abstract_GenericObject
      * @param string  $codeonly         The code associated to this type of authentication
      * @param boolean $onetime          Return a one-time unique code to use
      *
-     * @return object
+     * @return Object_Userauth
      */
     function __construct($isCreationAction = false, $codeonly = false, $onetime = false)
     {

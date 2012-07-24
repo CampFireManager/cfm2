@@ -29,7 +29,7 @@ class Container_Request
     /**
      * This simple function makes the class into a singleton.
      *
-     * @return object
+     * @return Base_Request
      */
     protected static function GetHandler()
     {
@@ -61,7 +61,7 @@ class Container_Request
      * @param string $strInput   A dependency injection entry for php://input
      * @param array  $arrSession A dependency injection entry for $_SESSION
      *
-     * @return array The compiled data
+     * @return Base_Request
      */
     public static function getRequest(
         $arrGlobals = null, 

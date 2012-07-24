@@ -75,7 +75,7 @@ class Object_Config extends Abstract_GenericObject
      * config file based values, this will be the date the config file was last
      * amended.
      * 
-     * @return object
+     * @return Object_Config
      */
     public function __construct($values = null, $lastChange = null)
     {

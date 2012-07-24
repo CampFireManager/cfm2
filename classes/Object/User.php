@@ -144,7 +144,7 @@ class Object_User extends Abstract_GenericObject
     /**
      * Get the object for the current user.
      * 
-     * @return object UserObject for intUserID
+     * @return Object_User
      */
     public static function brokerCurrent()
     {
@@ -184,7 +184,7 @@ class Object_User extends Abstract_GenericObject
      *
      * @param object $objInput The Object_Input object to process
      * 
-     * @return object 
+     * @return Object_User 
      */
     public static function brokerByCodeOnly($objInput = null)
     {
@@ -221,7 +221,7 @@ class Object_User extends Abstract_GenericObject
      * @param string|boolean $strCodeOnly      CodeOnly string to pass to the 
      * UserAuth object
      *
-     * @return object This object
+     * @return Object_User
      */
     function __construct($isCreationAction = false, $strCodeOnly = false)
     {

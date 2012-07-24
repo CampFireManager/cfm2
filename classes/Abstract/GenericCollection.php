@@ -31,7 +31,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      * An internal function to make this a singleton. This should only be used 
      * when being used to find objects of itself.
      *
-     * @return object This class by itself.
+     * @return Abstract_GenericCollection
      */
     public function getHandler()
     {
@@ -43,7 +43,7 @@ abstract class Abstract_GenericCollection implements Interface_Object
      * A standard constructor method, which may be extended for specific 
      * collections.
      * 
-     * @return object This class.
+     * @return Abstract_GenericCollection
      */
     protected function __construct()
     {

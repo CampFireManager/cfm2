@@ -46,7 +46,7 @@ class Object_Tag extends Abstract_GenericObject
      * This function overloads the normal construction function to ensure that
      * Tag modifications are set as per the config file.
      *
-     * @return object
+     * @return Object_Tag
      */
     function __construct()
     {

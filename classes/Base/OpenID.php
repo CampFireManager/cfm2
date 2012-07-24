@@ -53,7 +53,7 @@ class Base_OpenID
     /**
      * An internal function to make this a singleton
      *
-     * @return object This class by itself.
+     * @return Base_OpenID
      */
     private static function getHandler()
     {

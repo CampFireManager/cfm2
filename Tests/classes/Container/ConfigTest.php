@@ -99,7 +99,7 @@ class Container_Config_Testable extends Container_Config
     /**
      * Return the parent handler
      *
-     * @return object
+     * @return Container_Config
      */
     public static function GetHandler()
     {

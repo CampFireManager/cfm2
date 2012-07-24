@@ -32,7 +32,7 @@ class Base_Cache
      * An internal function to make this a singleton. This should only be used 
      * when being used to find objects of itself.
      *
-     * @return object This class by itself.
+     * @return Base_Cache
      */
     public static function getHandler()
     {
