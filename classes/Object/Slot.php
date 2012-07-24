@@ -150,6 +150,28 @@ class Object_Slot extends Abstract_GenericObject
         }
         return parent::brokerAll();
     }
+    
+    /**
+     * Overloaded function to get certain calculated values.
+     *
+     * @param string $key Key to search for
+     * 
+     * @return string
+     */
+    public function getKey($key)
+    {
+        if ($key == 'isNow') {
+            return $this->isNow;
+        } elseif ($key == 'isNext') {
+            return $this->isNext;
+        } elseif ($key == 'isStillToCome') {
+            return $this->isStillToCome;
+        } elseif ($key == 'strSlot') {
+            return trim($this->dateStart . ' ' . $this->timeStart);
+        } else {
+            return parent::getKey($key);
+        }
+    }
 }
 
 /**
