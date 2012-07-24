@@ -3,6 +3,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        Base_Cache::flush();
         $config = Container_Config_Testable::GetHandler();
         $config->LoadFile('unittest.php');
         $config->SetUpDatabaseConnection();
@@ -32,7 +33,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_object($objTalk));
         $data = $objTalk->getSelf();
         $this->assertTrue($data['intTalkID'] == null);
-        $this->assertTrue($data['strTalkTitle'] == null);
+        $this->assertTrue($data['strTalk'] == null);
         $this->assertTrue($data['hasPGContent'] == null);
         $this->assertTrue($data['strTalkSummary'] == null);
         $this->assertTrue($data['intUserID'] == null);
@@ -55,7 +56,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $data = $objTalk->getSelf();
         $this->assertTrue($data != false);
         $this->assertTrue($data['intTalkID'] == 1);
-        $this->assertTrue($data['strTalkTitle'] == "Keynote");
+        $this->assertTrue($data['strTalk'] == "Keynote");
         $this->assertTrue($data['hasPGContent'] == null);
         $this->assertTrue($data['strTalkSummary'] == 'A welcome to Barcamps');
         $this->assertTrue($data['intUserID'] == 1);
