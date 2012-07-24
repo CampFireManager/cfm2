@@ -30,6 +30,10 @@ class Object_Attendee extends Abstract_GenericObject
         'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true, 'required' => 'user', 'source' => 'Talk'),
         'lastChange' => array('type' => 'datetime')
     );
+    protected $arrTranslations = array(
+        'label_intUserID' => array('en' => 'Attending User'),
+        'label_intUserID' => array('en' => 'Talk to attend')
+    );
     protected $strDBTable = "attendee";
     protected $strDBKeyCol = "intAttendeeID";
     protected $reqCreatorToMod = true;

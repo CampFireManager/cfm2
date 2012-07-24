@@ -32,6 +32,10 @@ class Object_Config extends Abstract_GenericObject
         'value' => array('type' => 'text', 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );
+    protected $arrTranslations = array(
+        'label_key' => array('en' => 'Variable name'),
+        'label_value' => array('en' => 'Value')
+    );
     protected $strDBTable = "config";
     protected $reqAdminToMod = true;
     // Local Object Requirements

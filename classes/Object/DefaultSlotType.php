@@ -33,6 +33,10 @@ class Object_DefaultSlotType extends Abstract_GenericObject
         'lockSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none'), 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );
+    protected $arrTranslations = array(
+        'label_strDefaultSlotType' => array('en' => 'Type of slot'),
+        'label_lockSlot' => array('en' => 'Slot locking mechanism')
+    );
     protected $strDBTable = "defaultslottype";
     protected $strDBKeyCol = "intDefaultSlotTypeID";
     protected $reqAdminToMod = true;
