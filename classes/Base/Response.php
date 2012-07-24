@@ -477,6 +477,9 @@ class Base_Response
     {
         $objRequest = Container_Request::getRequest();
         $arrLanguages = $objRequest->get_arrAcceptLangs();
+        if (! is_array($arrLanguages)) {
+            $arrLanguages = array();
+        }
         if ($strLanguage != null) {
             $arrLanguages[$strLanguage] = 2;
         }
