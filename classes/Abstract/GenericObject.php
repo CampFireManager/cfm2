@@ -934,14 +934,14 @@ abstract class Abstract_GenericObject implements Interface_Object
             $key = $this->strDBKeyCol;
             $return[$key] = $this->$key;
             if (isset($this->arrTranslations['label_' . $key])) {
-                $return['labels'][$key] = $this->arrTranslations['label_' . $key];
+                $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
             }
         }
         foreach ($this->arrDBItems as $key => $dummy) {
             $dummy = null;
             $return[$key] = $this->$key;
             if (isset($this->arrTranslations['label_' . $key])) {
-                $return['labels'][$key] = $this->arrTranslations['label_' . $key];
+                $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
             }
         }
         if ($this->booleanFull) {
@@ -1002,8 +1002,11 @@ abstract class Abstract_GenericObject implements Interface_Object
                 if (isset($return[$strDBItem]['required']) 
                     || isset($return[$strDBItem['optional']])
                 ) {
+                    if (isset($thisClass->arrTranslations['label_' . $strDBItem])) {
+                        $return[$strDBItem]['label'] = Base_Response::translate($thisClass->arrTranslations['label_' . $strDBItem]);
+                    }
                     if (isset($thisClass->arrTranslations['label_new_' . $strDBItem])) {
-                        $return[$strDBItem]['label'] = array();
+                        $return[$strDBItem]['label'] = Base_Response::translate($thisClass->arrTranslations['label_new_' . $strDBItem]);
                     }
                     if (isset($arrDBItem['source'])) {
                         $return[$strDBItem]['source'] = $arrDBItem['source'];
