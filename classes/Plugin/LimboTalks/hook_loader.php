@@ -36,7 +36,7 @@ class Plugin_LimboTalks
     function hook_cronTick($strNow = null)
     {
         Object_User::isSystem(true);
-        $intMinAttendees = Container_Config::brokerByID('LimboMinimumVotes')->getKey('value');
+        $intMinAttendees = Container_Config::brokerByID('LimboMinimumVotes', '2')->getKey('value');
         if (! is_numeric($intMinAttendees) || 0 + $intMinAttendees < 0) {
             $intMinAttendees = 2;
         }
