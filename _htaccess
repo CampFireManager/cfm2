@@ -11,6 +11,7 @@
   # These two lines were added as per http://stackoverflow.com/a/8554171/5738
   RewriteRule .* - [E=HTTP_IF_MODIFIED_SINCE:%{HTTP:If-Modified-Since}]
   RewriteRule .* - [E=HTTP_IF_NONE_MATCH:%{HTTP:If-None-Match}]
+  RewriteRule .* - [E=HTTP_ACCEPT_LANGUAGE:%{HTTP:Accept-Language}]
 
   RewriteCond %{HTTP:Authorization} ^(.*)
   RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
