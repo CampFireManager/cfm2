@@ -490,6 +490,7 @@ class Base_Response
         
         // Try to use the preferred languages in order (dialect then base)
         foreach ($arrLanguages as $strLanguage => $intLanguageValue) {
+            $intLanguageValue = null;
             if (isset($arrStrings[$strLanguage])) {
                 return $arrStrings[$strLanguage];
             } elseif (isset($arrStrings[substr($strLanguage, 0, 2)])) {

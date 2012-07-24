@@ -1024,7 +1024,8 @@ class Base_Request
      *
      * @return string 
      */
-    public function get_strPrefAcceptLang() {
+    public function get_strPrefAcceptLang()
+    {
         return $this->strPrefAcceptLang;
     }
 
@@ -1033,7 +1034,8 @@ class Base_Request
      *
      * @return array
      */
-    public function get_arrAcceptLangs() {
+    public function get_arrAcceptLangs()
+    {
         return $this->arrAcceptLangs;
     }
 }
