@@ -167,7 +167,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                 if ($item == null) {
                     $arrObjects[$object] = $object::brokerAll();
                 } else {
-                    $arrObjects[$object] = $object::listKeys();
+                    $arrObjects['Creation_Values'] = $object::listKeys();
                     $renderPage = 'new';
                 }
                 break;

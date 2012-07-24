@@ -682,7 +682,11 @@ abstract class Abstract_GenericObject implements Interface_Object
                 return true;
             }
         } catch(Exception $e) {
-            error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
+            if (isset($full_sql)) {
+                error_log("SQL error: " . $e->getMessage() . " SQL: $full_sql (Values: " . print_r($values, true) . ")");
+            } else {
+                error_log("SQL error: " . $e->getMessage());
+            }
             throw $e;
         }
     }
@@ -1000,7 +1004,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                     $return[$strDBItem]['optional'] = 1;
                 }
                 if (isset($return[$strDBItem]['required']) 
-                    || isset($return[$strDBItem['optional']])
+                    || isset($return[$strDBItem]['optional'])
                 ) {
                     if (isset($thisClass->arrTranslations['label_' . $strDBItem])) {
                         $return[$strDBItem]['label'] = Base_Response::translate($thisClass->arrTranslations['label_' . $strDBItem]);
@@ -1008,8 +1012,33 @@ abstract class Abstract_GenericObject implements Interface_Object
                     if (isset($thisClass->arrTranslations['label_new_' . $strDBItem])) {
                         $return[$strDBItem]['label'] = Base_Response::translate($thisClass->arrTranslations['label_new_' . $strDBItem]);
                     }
+                    if (isset($arrDBItem['type']) && $arrDBItem['type'] == 'tinyint' && isset($arrDBItem['length']) && $arrDBItem['length'] == 1) {
+                        $return[$strDBItem]['list']["1"] = "Yes";
+                        $return[$strDBItem]['list']["0"] = "No";
+                    }
+                    if (isset($arrDBItem['options'])) {
+                        foreach ($arrDBItem['options'] as $option) {
+                            $return[$strDBItem]['list'][$option] = $option;
+                        }
+                    }
                     if (isset($arrDBItem['source'])) {
-                        $return[$strDBItem]['source'] = $arrDBItem['source'];
+                        if (isset($arrDBItem['value_for_any'])) {
+                            $return[$strDBItem]['list'][(string) "-1"] = Base_Response::translate(array('en' => 'Any'));
+                        }
+                        $data_object = 'Object_' . $arrDBItem['source'];
+                        $data_key = 'int' . $arrDBItem['source'] . 'ID';
+                        $data_value = 'str' . $arrDBItem['source'];
+                        $arrData = $data_object::brokerAll();
+                        if (is_array($arrData) && count($arrData) > 0) {
+                            foreach ($arrData as $objData) {
+                                if (! isset($arrDBItem['must_have_as_true'])
+                                    || $objData->getKey($arrDBItem['must_have_as_true']) == 'true'
+                                    || $objData->getKey($arrDBItem['must_have_as_true']) == '1'
+                                ) {
+                                    $return[$strDBItem]['list'][$objData->getKey($data_key)] = $objData->getKey($data_value);
+                                }
+                            }
+                        }
                     }
                     if (isset($arrDBItem['default_value'])) {
                         if ($arrDBItem['default_value'] == 'intUserID') {
@@ -1021,26 +1050,8 @@ abstract class Abstract_GenericObject implements Interface_Object
                             $return[$strDBItem]['default_value'] = $arrDBItem['default_value'];
                         }
                     }
-                    if (isset($arrDBItem['value_for_any'])) {
-                        $return[$strDBItem]['value_for_any'] = $arrDBItem['value_for_any'];
-                    }
-                    if (isset($arrDBItem['must_have_as_true'])) {
-                        $return[$strDBItem]['must_have_as_true'] = $arrDBItem['must_have_as_true'];
-                    }
                     if (isset($arrDBItem['input_type'])) {
                         $return[$strDBItem]['input_type'] = $arrDBItem['input_type'];
-                    }
-                    if (isset($arrDBItem['type']) 
-                        && $arrDBItem['type'] == 'tinyint'
-                        && isset($arrDBItem['length'])
-                        && $arrDBItem['length'] == 1
-                    ) {
-                        $return[$strDBItem]['options'] = array('true' => 1, 'false' => 0);
-                    }
-                    if (isset($arrDBItem['options'])) {
-                        foreach ($arrDBItem['options'] as $option) {
-                            $return[$strDBItem]['options'][$option] = $option;
-                        }
                     }
                     if (isset($arrDBItem['array'])) {
                         $return[$strDBItem]['array'] = $arrDBItem['array'];
