@@ -26,7 +26,7 @@ class Object_Track extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTrackName' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'strTrack' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
         'rgbColour' => array('type' => 'varchar', 'length' => 6, 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );
@@ -35,7 +35,7 @@ class Object_Track extends Abstract_GenericObject
     protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intTrackID = null;
-    protected $strTrackName = null;
+    protected $strTrack = null;
     protected $rgbColour = null;
     protected $lastChange = null;
 
@@ -79,7 +79,7 @@ class Object_Track extends Abstract_GenericObject
 class Object_Track_Demo extends Object_Track
 {
     protected $arrDemoData = array(
-        array('intTrackID' => 1, 'strTrackName' => 'Coding'),
-        array('intTrackID' => 1, 'strTrackName' => 'Novice')
+        array('intTrackID' => 1, 'strTrack' => 'Coding'),
+        array('intTrackID' => 1, 'strTrack' => 'Novice')
     );
 }

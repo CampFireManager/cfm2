@@ -51,7 +51,7 @@ class Plugin_InputParser
                 case preg_match('/^([Ii][Dd][Ee][Nn][Tt][Ii][Ff][Yy])\s+(.*)\s+(\S+@\S+\.\S+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii]\s+[Aa][Mm])\s+(.*)\s+(\S+@\S+\.\S+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii])\s+(.*)\s+(\S+@\S+\.\S+)$/', $objInput->getKey('textMessage'), $match):
-                    $objUser->setKey('strName', $match[1]);
+                    $objUser->setKey('strUser', $match[1]);
                     $objUser->setKey('jsonLinks', Base_GeneralFunctions::addJson($objUser->getKey('jsonLinks'), 'email', $match[2]));
                     $objUser->write();
                     Object_Output::replyToInput($objInput, 'Thanks for letting us know your name and e-mail address.' . $strMessage);
@@ -59,7 +59,7 @@ class Plugin_InputParser
                 case preg_match('/^([Ii][Dd][Ee][Nn][Tt][Ii][Ff][Yy])\s+(.*)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii]\s+[Aa][Mm])\s+(.*)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii])\s+(.*)$/', $objInput->getKey('textMessage'), $match):
-                    $objUser->setKey('strName', $match[1]);
+                    $objUser->setKey('strUser', $match[1]);
                     $objUser->write();
                     Object_Output::replyToInput($objInput, 'Thanks for letting us know your name.' . $strMessage);
                     break;
@@ -69,20 +69,20 @@ class Plugin_InputParser
                 case preg_match('/^([Gg])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Aa])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                     $objTalk = Object_Talk::brokerByID($match[1]);
-                    $strTalkTitle = substr($objTalk->getKey('strTalkTitle'), 0, 20);
-                    if ($strTalkTitle != $objTalk->getKey('strTalkTitle')) {
-                        $strTalkTitle .= '...';
+                    $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
+                    if ($strTalk != $objTalk->getKey('strTalk')) {
+                        $strTalk .= '...';
                     }
-                    $strTalkTitle = '"' . $strTalkTitle . '"';
+                    $strTalk = '"' . $strTalk . '"';
                     if ($objTalk != false) {
                         if (! Object_Attendee::isAttending($match[1])) {
                             $objAttendee = new Object_Attendee(false);
                             $objAttendee->setKey('intUserID', $objUser->getKey('intUserID'));
                             $objAttendee->setKey('intTalkID', $match[1]);
                             $objAttendee->create();
-                            Object_Output::replyToInput($objInput, "OK, you're down to attend the talk $strTalkTitle." . $strMessage);
+                            Object_Output::replyToInput($objInput, "OK, you're down to attend the talk $strTalk." . $strMessage);
                         } else {
-                            Object_Output::replyToInput($objInput, "You had already said you were attending talk $strTalkTitle.");
+                            Object_Output::replyToInput($objInput, "You had already said you were attending talk $strTalk.");
                         }
                     } else {
                         Object_Output::replyToInput($objInput, "Sorry, that talk doesn't exist.$strMessage");
@@ -97,18 +97,18 @@ class Plugin_InputParser
                 case preg_match('/^([Dd])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ll])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                     $objTalk = Object_Talk::brokerByID($match[1]);
-                    $strTalkTitle = substr($objTalk->getKey('strTalkTitle'), 0, 20);
-                    if ($strTalkTitle != $objTalk->getKey('strTalkTitle')) {
-                        $strTalkTitle .= '...';
+                    $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
+                    if ($strTalk != $objTalk->getKey('strTalk')) {
+                        $strTalk .= '...';
                     }
-                    $strTalkTitle = '"' . $strTalkTitle . '"';
+                    $strTalk = '"' . $strTalk . '"';
                     if ($objTalk != false) {
                         $objAttendee = Object_Attendee::isAttending($match[1]);
                         if ($objAttendee != false) {
                             $objAttendee->delete();
-                            Object_Output::replyToInput($objInput, "OK, we've acknowledged you don't want to go to $strTalkTitle anymore." . $strMessage);
+                            Object_Output::replyToInput($objInput, "OK, we've acknowledged you don't want to go to $strTalk anymore." . $strMessage);
                         } else {
-                            Object_Output::replyToInput($objInput, "We didn't have recorded that you would be attending $strTalkTitle.");
+                            Object_Output::replyToInput($objInput, "We didn't have recorded that you would be attending $strTalk.");
                         }
                     } else {
                         Object_Output::replyToInput($objInput, "Sorry, that talk doesn't exist.$strMessage");
@@ -121,7 +121,7 @@ class Plugin_InputParser
                     foreach ($arrUserAuth as $objUserAuth) {
                         if ($objUserAuth->getKey('enumAuthType') == 'codeonly') {
                             $objUser->merge($objUserAuth);
-                            Object_Output::replyToInput($objInput, 'OK, you can now act as ' . $objUser->getKey('strName') . ' from this device.', $strMessage);
+                            Object_Output::replyToInput($objInput, 'OK, you can now act as ' . $objUser->getKey('strUser') . ' from this device.', $strMessage);
                         }
                     }
                     break;
@@ -151,11 +151,11 @@ class Plugin_InputParser
                             if ($return != '') {
                                 $return .= ', ';
                             }
-                            $return .= '"' . substr($arrTalk['strTalkTitle'], 0, 15);
-                            if (strlen($arrTalk['strTalkTitle']) > 15) {
+                            $return .= '"' . substr($arrTalk['strTalk'], 0, 15);
+                            if (strlen($arrTalk['strTalk']) > 15) {
                                 $return .= '... ';
                             }
-                            $return .=  '" in ' . $arrTalk['arrRoom']['strRoomName'];
+                            $return .=  '" in ' . $arrTalk['arrRoom']['strRoom'];
                         }
                     }
                     Object_Output::replyToInput($objInput, 'On next: ' . $return);
@@ -178,8 +178,8 @@ class Plugin_InputParser
                             if ($return != '') {
                                 $return .= ', ';
                             }
-                            $return .= '"' . substr($arrTalkInfo['strTalkTitle'], 0, 15);
-                            if (strlen($arrTalkInfo['strTalkTitle']) > 15) {
+                            $return .= '"' . substr($arrTalkInfo['strTalk'], 0, 15);
+                            if (strlen($arrTalkInfo['strTalk']) > 15) {
                                 $return .= '... ';
                             }
                             $return .=  '" at ' . substr($arrTalkInfo['arrSlot_start']['timeStart'], 0, 5);

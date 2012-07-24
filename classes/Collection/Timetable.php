@@ -61,7 +61,7 @@ class Collection_Timetable extends Abstract_GenericCollection
                     $objRoom->setFull(true);
                     if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
                         $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
-                            'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
+                            'strTalk' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                             'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['lockSlot'],
                             'arrRoom' => $objRoom->getSelf(),
                             'arrSlot' => $objSlot->getSelf(),
@@ -70,7 +70,7 @@ class Collection_Timetable extends Abstract_GenericCollection
                         );
                     } else {
                         $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
-                            'strTalkTitle' => '', 
+                            'strTalk' => '', 
                             'isLocked' => 'none',
                             'arrRoom' => $objRoom->getSelf(),
                             'arrSlot' => $objSlot->getSelf(),

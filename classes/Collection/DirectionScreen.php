@@ -93,7 +93,7 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                     foreach ($arrRooms as $intRoomID => $objRoom) {
                         if ($objSlot->getKey('intDefaultSlotTypeID') > 0) {
                             $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
-                                'strTalkTitle' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
+                                'strTalk' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['strDefaultSlotType'], 
                                 'isLocked' => $arrDefaultSlotTypes[$objSlot->getKey('intDefaultSlotTypeID')]['lockSlot'],
                                 'arrDirection' => $objRoom->getSelf(),
                                 'arrRoom' => $arrRooms[$objRoom->getKey('intRoomID')],
@@ -103,7 +103,7 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                             );
                         } else {
                             $this->arrData['arrTimetable']['room_' . $objRoom->getKey('intRoomID')]['slot_' . $objSlot->getKey('intSlotID')] = array(
-                                'strTalkTitle' => '', 
+                                'strTalk' => '', 
                                 'isLocked' => 'none',
                                 'arrDirection' => $objRoom->getSelf(),
                                 'arrRoom' => $arrRooms[$objRoom->getKey('intRoomID')],

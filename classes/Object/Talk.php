@@ -26,7 +26,7 @@ class Object_Talk extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTalkTitle'        => array('type' => 'varchar', 'length' => 255, 'required' => 'user'),
+        'strTalk'             => array('type' => 'varchar', 'length' => 255, 'required' => 'user'),
         'strTalkSummary'      => array('type' => 'text', 'optional' => 'user'),
         'hasPGContent'        => array('type' => 'tinyint', 'length' => 1, 'optional' => 'user'),
         'intUserID'           => array('type' => 'int', 'length' => 11, 'optional' => 'worker'),
@@ -35,7 +35,7 @@ class Object_Talk extends Abstract_GenericObject
         'intRoomID'           => array('type' => 'int', 'length' => 11, 'optional' => 'admin', 'source' => 'Room'),
         'intSlotID'           => array('type' => 'int', 'length' => 11, 'required' => 'user', 'source' => 'Slot', 'value_for_any' => '-1', 'must_have_as_true' => 'isStillToCome'),
         'intTrackID'          => array('type' => 'int', 'length' => 11, 'optional' => 'user', 'source' => 'Track'),
-        'intLength'           => array('type' => 'tinyint', 'length' => 1, 'required' => 'user', 'default_value' => 1),
+        'intLength'           => array('type' => 'int', 'length' => 1, 'required' => 'user', 'default_value' => 1),
         'jsonLinks'           => array('type' => 'text', 'optional' => 'user'),
         'isRoomLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isSlotLocked'        => array('type' => 'tinyint', 'length' => 1),
@@ -49,7 +49,7 @@ class Object_Talk extends Abstract_GenericObject
     protected $reqCreatorToMod     = true;
     // Local Object Requirements
     protected $intTalkID           = null;
-    protected $strTalkTitle        = null;
+    protected $strTalk             = null;
     protected $hasPGContent        = null;
     protected $strTalkSummary      = null;
     protected $intUserID           = null;
@@ -76,26 +76,6 @@ class Object_Talk extends Abstract_GenericObject
     function getSelf()
     {
         $self = parent::getSelf();
-        if (isset($self['isEditable']['intRequestedRoomID']) 
-            && ! Object_User::isAdmin()
-        ) {
-            unset($self['isEditable']['intRequestedRoomID']);
-        }
-        if (isset($self['isEditable']['intRequestedSlotID']) 
-            && ! Object_User::isAdmin()
-        ) {
-            unset($self['isEditable']['intRequestedSlotID']);
-        }
-        if (isset($self['isEditable']['isRoomLocked']) 
-            && ! Object_User::isAdmin()
-        ) {
-            unset($self['isEditable']['isRoomLocked']);
-        }
-        if (isset($self['isEditable']['isLocked']) 
-            && ! Object_User::isAdmin()
-        ) {
-            unset($self['isEditable']['isLocked']);
-        }
         if ($this->isFull() == true) {
             $self['intAttendees'] = Object_Attendee::countByColumnSearch('intTalkID', $this->intTalkID);
             if (strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID)) > $self['epochLastChange']) {
@@ -482,9 +462,9 @@ class Object_Talk extends Abstract_GenericObject
 class Object_Talk_Demo extends Object_Talk
 {
     protected $arrDemoData = array(
-        array('intTalkID' => 1, 'strTalkTitle' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intTrackID' => null, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isLocked' => 1, 'jsonResources' => '[1]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 2, 'strTalkTitle' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => 1, 'intSlotID' => 2, 'intTrackID' => 1, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isLocked' => '0', 'jsonResources' => '[]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 3, 'strTalkTitle' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRequestedRoomID' => 2, 'intRequestedSlotID' => 2, 'intRoomID' => 2, 'intSlotID' => 2, 'intTrackID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isLocked' => '0', 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]'),
-        array('intTalkID' => 4, 'strTalkTitle' => 'A talk in limbo', 'strTalkSummary' => 'This talk should be rendered as an unscheduled talk', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => -1, 'intSlotID' => -1, 'intTrackID' => null, 'intLength' => 1),
+        array('intTalkID' => 1, 'strTalk' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intTrackID' => null, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isLocked' => 1, 'jsonResources' => '[1]', 'jsonOtherPresenters' => '[]'),
+        array('intTalkID' => 2, 'strTalk' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => 1, 'intSlotID' => 2, 'intTrackID' => 1, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isLocked' => '0', 'jsonResources' => '[]', 'jsonOtherPresenters' => '[]'),
+        array('intTalkID' => 3, 'strTalk' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRequestedRoomID' => 2, 'intRequestedSlotID' => 2, 'intRoomID' => 2, 'intSlotID' => 2, 'intTrackID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isLocked' => '0', 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]'),
+        array('intTalkID' => 4, 'strTalk' => 'A talk in limbo', 'strTalkSummary' => 'This talk should be rendered as an unscheduled talk', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => -1, 'intSlotID' => -1, 'intTrackID' => null, 'intLength' => 1),
     );
 }

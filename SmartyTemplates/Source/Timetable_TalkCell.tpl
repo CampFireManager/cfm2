@@ -4,11 +4,11 @@
 {if isset($cell.intTalkID)}
             <span class="intTalkID">{$cell.intTalkID}</span>
 {/if}
-            <span class="strTalkTitle">{$cell.strTalkTitle}</span>
+            <span class="strTalk">{$cell.strTalk}</span>
 {if isset($cell.intUserID)}
-            <span class="label_strName">by 
+            <span class="label_strUser">by 
 {foreach $cell.arrPresenters as $presenter}
-<span class="strName">{$presenter.strName}</span>{if !$presenter@last}, {/if}
+<span class="strUser">{$presenter.strUser}</span>{if !$presenter@last}, {/if}
 {/foreach}
             </span>
 {/if}

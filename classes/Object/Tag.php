@@ -26,7 +26,7 @@ class Object_Tag extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTagName' => array('type' => 'varchar', 'length' => 255, 'unique' => true, 'required' => 'user'),
+        'strTag' => array('type' => 'varchar', 'length' => 255, 'unique' => true, 'required' => 'user'),
         'intTalkID' => array('type' => 'int', 'length' => 11, 'unique' => true, 'required' => 'user', 'source' => 'Talk'),
         'intUserID' => array('type' => 'int', 'length' => 11, 'unique' => true, 'optional' => 'worker'),
         'lastChange' => array('type' => 'datetime')
@@ -37,7 +37,7 @@ class Object_Tag extends Abstract_GenericObject
     protected $reqCreatorToMod = false;
     // Local Object Requirements
     protected $intTagID = null;
-    protected $strTagName = null;
+    protected $strTag = null;
     protected $intTalkID = null;
     protected $intUserID = null;
     protected $lastChange = null;
@@ -69,11 +69,11 @@ class Object_Tag extends Abstract_GenericObject
 class Object_Tag_Demo extends Object_Tag
 {
     protected $arrDemoData = array(
-        array('intTagID' => 1, 'strTagName' => 'Developers ^ 3', 'intTalkID' => 1, 'intUserID' => 2),
-        array('intTagID' => 2, 'strTagName' => 'Open Source', 'intTalkID' => 2, 'intUserID' => 2),
-        array('intTagID' => 3, 'strTagName' => 'Events', 'intTalkID' => 2, 'intUserID' => 2),
-        array('intTagID' => 4, 'strTagName' => 'Scheduling', 'intTalkID' => 2, 'intUserID' => 2),
-        array('intTagID' => 5, 'strTagName' => 'Newbie', 'intTalkID' => 3, 'intUserID' => 2),
-        array('intTagID' => 6, 'strTagName' => 'Explanation', 'intTalkID' => 3, 'intUserID' => 2)
+        array('intTagID' => 1, 'strTag' => 'Developers ^ 3', 'intTalkID' => 1, 'intUserID' => 2),
+        array('intTagID' => 2, 'strTag' => 'Open Source', 'intTalkID' => 2, 'intUserID' => 2),
+        array('intTagID' => 3, 'strTag' => 'Events', 'intTalkID' => 2, 'intUserID' => 2),
+        array('intTagID' => 4, 'strTag' => 'Scheduling', 'intTalkID' => 2, 'intUserID' => 2),
+        array('intTagID' => 5, 'strTag' => 'Newbie', 'intTalkID' => 3, 'intUserID' => 2),
+        array('intTagID' => 6, 'strTag' => 'Explanation', 'intTalkID' => 3, 'intUserID' => 2)
     );
 }

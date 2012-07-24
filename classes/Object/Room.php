@@ -26,7 +26,7 @@ class Object_Room extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strRoomName' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'strRoom' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
         'jsonResourceList' => array('type' => 'text', 'optional' => 'admin', 'source' => 'Resource', 'array' => 1),
         'intCapacity' => array('type' => 'integer', 'length' => 4, 'required' => 'admin'),
         'isLocked' => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin', 'default_value' => 0),
@@ -37,7 +37,7 @@ class Object_Room extends Abstract_GenericObject
     protected $reqAdminToMod = true;
     // Local Object Requirements
     protected $intRoomID = null;
-    protected $strRoomName = null;
+    protected $strRoom = null;
     protected $jsonResourceList = null;
     protected $intCapacity = null;
     protected $isLocked = false;
@@ -105,8 +105,8 @@ class Object_Room extends Abstract_GenericObject
 class Object_Room_Demo extends Object_Room
 {
     protected $arrDemoData = array(
-        array('intRoomID' => 1, 'strRoomName' => 'Room A', 'intCapacity' => 100, 'isLocked' => 1, 'jsonResourceList' => '[1,2]'),
-        array('intRoomID' => 2, 'strRoomName' => 'Room B', 'intCapacity' => 50, 'jsonResourceList' => '[2,3]'),
-        array('intRoomID' => 3, 'strRoomName' => 'Room C', 'intCapacity' => 75, 'jsonResourceList' => '[3]')
+        array('intRoomID' => 1, 'strRoom' => 'Room A', 'intCapacity' => 100, 'isLocked' => 1, 'jsonResourceList' => '[1,2]'),
+        array('intRoomID' => 2, 'strRoom' => 'Room B', 'intCapacity' => 50, 'jsonResourceList' => '[2,3]'),
+        array('intRoomID' => 3, 'strRoom' => 'Room C', 'intCapacity' => 75, 'jsonResourceList' => '[3]')
     );
 }

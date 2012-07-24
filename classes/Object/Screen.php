@@ -29,7 +29,7 @@ class Object_Screen extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strScreenName' => array('type' => 'varchar', 'length' => 255),
+        'strScreen' => array('type' => 'varchar', 'length' => 255),
         'dtLastSeen' => array('type' => 'datetime'),
         'lastChange' => array('type' => 'datetime')
     );
@@ -37,7 +37,7 @@ class Object_Screen extends Abstract_GenericObject
     protected $strDBKeyCol = "intScreenID";
     // Local Object Requirements
     protected $intScreenID = null;
-    protected $strScreenName = null;
+    protected $strScreen = null;
     protected $dtLastSeen = null;
     protected $lastChange = null;
 
@@ -54,7 +54,7 @@ class Object_Screen extends Abstract_GenericObject
     {
         $self = parent::__construct();
         if ($isCreationAction == true) {
-            $self->setKey('strScreenName', $_SERVER['REMOTE_ADDR']);
+            $self->setKey('strScreen', $_SERVER['REMOTE_ADDR']);
             $self->create();
             // When creating a new screen, create ScreenDirection objects for 
             // all rooms with a direction of "Unset"
@@ -102,10 +102,10 @@ class Object_Screen extends Abstract_GenericObject
 class Object_Screen_Demo extends Object_Screen
 {
     protected $arrDemoData = array(
-        array('intScreenID' => 1, 'strScreenName' => 'Base of Stairs', 'dtLastSeen' => ''),
-        array('intScreenID' => 2, 'strScreenName' => 'Top of Stairs', 'dtLastSeen' => ''),
-        array('intScreenID' => 3, 'strScreenName' => 'Outside Room 1', 'dtLastSeen' => ''),
-        array('intScreenID' => 4, 'strScreenName' => 'Outside Room 2', 'dtLastSeen' => ''),
-        array('intScreenID' => 5, 'strScreenName' => 'Outside Room 3', 'dtLastSeen' => '')
+        array('intScreenID' => 1, 'strScreen' => 'Base of Stairs', 'dtLastSeen' => ''),
+        array('intScreenID' => 2, 'strScreen' => 'Top of Stairs', 'dtLastSeen' => ''),
+        array('intScreenID' => 3, 'strScreen' => 'Outside Room 1', 'dtLastSeen' => ''),
+        array('intScreenID' => 4, 'strScreen' => 'Outside Room 2', 'dtLastSeen' => ''),
+        array('intScreenID' => 5, 'strScreen' => 'Outside Room 3', 'dtLastSeen' => '')
     );
 }

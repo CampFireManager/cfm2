@@ -25,7 +25,7 @@
 class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-        'strName'     => array('type' => 'varchar', 'length' => 255, 'required' => 'worker'),
+        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'worker'),
         'jsonLinks'   => array('type' => 'text'),
         'isWorker'    => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
         'isAdmin'     => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
@@ -38,7 +38,7 @@ class Object_User extends Abstract_GenericObject
     protected $reqCreatorToMod = true;
     // Local Object Requirements
     protected $intUserID       = null;
-    protected $strName         = null;
+    protected $strUser         = null;
     protected $jsonLinks       = null;
     protected $isWorker        = false;
     protected $isAdmin         = false;
@@ -327,8 +327,8 @@ class Object_User extends Abstract_GenericObject
             $objToUser = $objUser;
             $objFromUser = $this;
         }
-        if ($objToUser->getKey('strName') == '' && $objFromUser->getKey('strName') != '') {
-            $objToUser->setKey('strName', $objFromUser->getKey('strName'));
+        if ($objToUser->getKey('strUser') == '' && $objFromUser->getKey('strUser') != '') {
+            $objToUser->setKey('strUser', $objFromUser->getKey('strUser'));
             $objToUser->write();
         }
         if ($objFromUser->getKey('isWorker') == 1 && $objToUser->getKey('isWorker') != 1) {
@@ -386,9 +386,9 @@ class Object_User extends Abstract_GenericObject
 class Object_User_Demo extends Object_User
 {
     protected $arrDemoData = array(
-        array('intUserID' => 1, 'strName' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 2, 'strName' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 3, 'strName' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 4, 'strName' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
+        array('intUserID' => 1, 'strUser' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 2, 'strUser' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 3, 'strUser' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
+        array('intUserID' => 4, 'strUser' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
     );
 }

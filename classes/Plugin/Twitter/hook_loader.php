@@ -37,7 +37,7 @@ class Plugin_Twitter
             $objTwitterManager = $this->initializeTwitterHandler();
             $object->setFull(true);
             $arrTalk = $object->getSelf();
-            $objTwitterManager->post($arrTalk['strTalkName'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoomName']);
+            $objTwitterManager->post($arrTalk['strTalkName'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoom']);
             if ($objTwitterManager->errno() != 200) {
                 throw new Exception('TwitterManager: ' . $objTwitterManager->error());
             }
