@@ -149,8 +149,12 @@ class Base_Request
     protected $strPathRouter      = null;
     protected $arrPathItems       = null;
     protected $strPathFormat      = null;
+    protected $intPrefAcceptType  = 0;
     protected $strPrefAcceptType  = null;
     protected $arrAcceptTypes     = null;
+    protected $intPrefAcceptLang  = 0;
+    protected $strPrefAcceptLang  = null;
+    protected $arrAcceptLangs     = null;
     protected $strBasePath        = null;
     protected $strUserAgent       = null;
     protected $arrSession         = null;
@@ -365,6 +369,24 @@ class Base_Request
                 }
             }
         }
+        
+        // Make the list of accepted types into an array, and then step through it.
+        if (isset($arrServer['HTTP_ACCEPT_LANGUAGE'])) {
+            $arrAccept = explode(',', strtolower(str_replace(' ', '', $arrServer['HTTP_ACCEPT_LANGUAGE'])));
+            foreach ($arrAccept as $acceptItem) {
+                $q = 1;
+                if (strpos($acceptItem, ';q=')) {
+                    list($acceptItem, $q) = explode(';q=', $acceptItem);
+                }
+                if ($q > 0) {
+                    $this->arrAcceptTypes[$acceptItem] = $q;
+                    if ($q > $this->intPrefAcceptLang) {
+                        $this->intPrefAcceptLang = $q;
+                        $this->strPrefAcceptLang = $acceptItem;
+                    }
+                }
+            }
+        }
 
         $this->arrRqstParameters = $data;
 
@@ -446,7 +468,6 @@ class Base_Request
         // This is based on http://stackoverflow.com/questions/1049401/how-to-select-content-type-from-http-accept-header-in-php
 
         // Make the list of accepted types into an array, and then step through it.
-
         if (isset($arrServer['HTTP_ACCEPT'])) {
             $arrAccept = explode(',', strtolower(str_replace(' ', '', $arrServer['HTTP_ACCEPT'])));
             foreach ($arrAccept as $acceptItem) {
@@ -785,6 +806,8 @@ class Base_Request
         
         // Add the Session data to the collected data
         $this->arrSession = $arrSession;
+        
+        return $this;
     }
 
     /**
@@ -994,5 +1017,23 @@ class Base_Request
     public function get_arrSession()
     {
         return $this->arrSession;
+    }
+    
+    /**
+     * Return the highest rated, first listed accepted language
+     *
+     * @return string 
+     */
+    public function get_strPrefAcceptLang() {
+        return $this->strPrefAcceptLang;
+    }
+
+    /**
+     * Return the array of accepted languages
+     *
+     * @return array
+     */
+    public function get_arrAcceptLangs() {
+        return $this->arrAcceptLangs;
     }
 }

@@ -462,4 +462,47 @@ class Base_Response
             }
         }
     }
+
+    /**
+     * This function returns either a localized string or a default string if
+     * the localized value hasn't been created
+     *
+     * @param array  $arrStrings  The array of translated strings
+     * @param string $strLanguage The default language to return (for unit
+     * testing purposes)
+     * 
+     * @return string
+     */
+    public static function translate($arrStrings, $strLanguage = null)
+    {
+        $objRequest = Container_Request::getRequest();
+        $arrLanguages = $objRequest->get_arrAcceptLangs();
+        if ($strLanguage != null) {
+            $arrLanguages[$strLanguage] = 2;
+        }
+        sort($arrLanguages, SORT_NUMERIC);
+        
+        if (! is_array($arrStrings)) {
+            throw new InvalidArgumentException('Not a valid array of strings');
+        } elseif (count($arrStrings) == 0) {
+            throw new InvalidArgumentException('No translation strings provided');
+        }
+        
+        // Try to use the preferred languages in order (dialect then base)
+        foreach ($arrLanguages as $strLanguage => $intLanguageValue) {
+            if (isset($arrStrings[$strLanguage])) {
+                return $arrStrings[$strLanguage];
+            } elseif (isset($arrStrings[substr($strLanguage, 0, 2)])) {
+                return $arrStrings[substr($strLanguage, 0, 2)];
+            }            
+        }
+        
+        // If none of the preferred strings exist, use the english base as
+        // default. If that also doesn't exist, thrown an exception.
+        if (isset($arrStrings['en'])) {
+            return $arrStrings['en'];
+        } else {
+            throw new InvalidArgumentException('No valid strings found');
+        }
+    }
 }

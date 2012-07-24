@@ -108,6 +108,13 @@ abstract class Abstract_GenericObject implements Interface_Object
      * @var string|boolean
      */
     protected $errorMessageReturn = false;
+    /**
+     * An array of translation strings. Default to "en" if no more specific
+     * translation is available.
+     * 
+     * @var array|null
+     */
+    protected $arrTranslations = array();
 
     /**
      * Ensure that all database items are backed up before processing.
@@ -916,19 +923,26 @@ abstract class Abstract_GenericObject implements Interface_Object
 
     
     /**
-     * Return an array of the collected or created data.
+     * Return an array of the collected or created data, including Labels for
+     * text boxes and details of what can be edited in this case.
      * 
      * @return array A mixed array of these items
      */
-    function getSelf()
+    public function getSelf()
     {
         if ($this->strDBKeyCol != '') {
             $key = $this->strDBKeyCol;
             $return[$key] = $this->$key;
+            if (isset($this->arrTranslations['label_' . $key])) {
+                $return['labels'][$key] = $this->arrTranslations['label_' . $key];
+            }
         }
         foreach ($this->arrDBItems as $key => $dummy) {
             $dummy = null;
             $return[$key] = $this->$key;
+            if (isset($this->arrTranslations['label_' . $key])) {
+                $return['labels'][$key] = $this->arrTranslations['label_' . $key];
+            }
         }
         if ($this->booleanFull) {
             if ($this->reqAdminToMod && ! Object_User::isAdmin()) {
@@ -939,16 +953,8 @@ abstract class Abstract_GenericObject implements Interface_Object
             ) {
                 $return['isEditable'] = array();
             } else {
-                foreach ($this->arrDBItems as $key=>$value) {
-                    $return['isEditable'][$key] = $value['type'];
-                }
+                $return['isEditable'] = self::listKeys();
             }
-            if (isset($return['isEditable']['intUserID']) 
-                && ! Object_User::isAdmin()
-            ) {
-                unset($return['isEditable']['intUserID']);
-            }
-            unset($return['isEditable']['lastChange']);
         }
         if (isset($this->lastChange)) {
             $return['epochLastChange'] = strtotime($this->lastChange);
@@ -996,6 +1002,9 @@ abstract class Abstract_GenericObject implements Interface_Object
                 if (isset($return[$strDBItem]['required']) 
                     || isset($return[$strDBItem['optional']])
                 ) {
+                    if (isset($thisClass->arrTranslations['label_new_' . $strDBItem])) {
+                        $return[$strDBItem]['label'] = array();
+                    }
                     if (isset($arrDBItem['source'])) {
                         $return[$strDBItem]['source'] = $arrDBItem['source'];
                     }
