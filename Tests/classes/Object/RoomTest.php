@@ -42,7 +42,7 @@ class Object_RoomTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrRoom['intCapacity'] == 75);
         $this->assertTrue(count($arrRoom['arrResources']) == 1);
         $this->assertTrue(is_array($arrRoom['arrResources'][0]));
-        $this->assertTrue($arrRoom['arrResources'][0]['strResourceName'] == 'Flat Screen TV');
+        $this->assertTrue($arrRoom['arrResources'][0]['strResource'] == 'Flat Screen TV');
     }
     
     public function testGetAllRoomsByRoomSize()
@@ -64,8 +64,8 @@ class Object_RoomTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrRoom['intCapacity'] == 50);
         $this->assertTrue(count($arrRoom['arrResources']) == 2);
         $this->assertTrue(is_array($arrRoom['arrResources'][0]));
-        $this->assertTrue($arrRoom['arrResources'][0]['strResourceName'] == 'PA');
+        $this->assertTrue($arrRoom['arrResources'][0]['strResource'] == 'PA');
         $this->assertTrue(is_array($arrRoom['arrResources'][1]));
-        $this->assertTrue($arrRoom['arrResources'][1]['strResourceName'] == 'Flat Screen TV');
+        $this->assertTrue($arrRoom['arrResources'][1]['strResource'] == 'Flat Screen TV');
     }
 }
