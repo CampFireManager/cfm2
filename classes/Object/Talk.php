@@ -28,7 +28,7 @@ class Object_Talk extends Abstract_GenericObject
     protected $arrDBItems = array(
         'strTalk'             => array('type' => 'varchar', 'length' => 255, 'required' => 'user'),
         'strTalkSummary'      => array('type' => 'text', 'optional' => 'user'),
-        'hasPGContent'        => array('type' => 'tinyint', 'length' => 1, 'optional' => 'user'),
+        'hasNsfwMaterial'     => array('type' => 'tinyint', 'length' => 1, 'required' => 'user', 'default_value' => "0"),
         'intUserID'           => array('type' => 'int', 'length' => 11, 'optional' => 'worker'),
         'intRequestedRoomID'  => array('type' => 'int', 'length' => 11),
         'intRequestedSlotID'  => array('type' => 'int', 'length' => 11),
@@ -36,13 +36,31 @@ class Object_Talk extends Abstract_GenericObject
         'intSlotID'           => array('type' => 'int', 'length' => 11, 'required' => 'user', 'source' => 'Slot', 'value_for_any' => '-1', 'must_have_as_true' => 'isStillToCome'),
         'intTrackID'          => array('type' => 'int', 'length' => 11, 'optional' => 'user', 'source' => 'Track'),
         'intLength'           => array('type' => 'int', 'length' => 1, 'required' => 'user', 'default_value' => 1),
-        'jsonLinks'           => array('type' => 'text', 'optional' => 'user'),
+        'jsonLinks'           => array('type' => 'text', 'optional' => 'user', 'array' => 1),
         'isRoomLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isSlotLocked'        => array('type' => 'tinyint', 'length' => 1),
-        'isLocked'            => array('type' => 'tinyint', 'length' => 1),
-        'jsonResources'       => array('type' => 'text', 'optional' => 'user'),
+        'isLocked'            => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
+        'jsonResources'       => array('type' => 'text', 'optional' => 'user', 'source' => 'Resource', 'array' => 1),
         'jsonOtherPresenters' => array('type' => 'text', 'optional' => 'user', 'source' => 'User', 'array' => 1),
         'lastChange'          => array('type' => 'datetime')
+    );
+    protected $arrTranslations = array(
+        'label_strTalk' => array('en' => 'Talk Title'),
+        'label_new_strTalkSummary' => array('en' => 'A short paragraph describing your talk'),
+        'label_strTalkSummary' => array('en' => 'Talk Summary'),
+        'label_new_hasNsfwMaterial' => array('en' => 'Does this talk contain content which may be unsuitable for minors'),
+        'label_intUserID' => array('en' => 'Proposing Presenter'),
+        'label_new_intRoomID' => array('en' => 'Room Requested'),
+        'label_intRoomID' => array('en' => 'Room'),
+        'label_new_intSlotID' => array('en' => 'Slot Requested'),
+        'label_intSlotID' => array('en' => 'Slot'),
+        'label_intTrackID' => array('en' => 'Track'),
+        'label_intLength' => array('en' => 'Talk Length in slots'),
+        'label_jsonLinks' => array('en' => 'Associated Links'),
+        'label_new_jsonLinks' => array('en' => 'Associated Links (in the format: Twitter:http://twitter.com/yourusername or Blog:http://my.blog.com)'),
+        'label_isLocked' => array('en' => 'Lock this talk to this Room and Slot'),
+        'label_jsonResources' => array('en' => 'Resources requested'),
+        'label_jsonOtherPresenters' => array('en' => 'Other Presenters')
     );
     protected $strDBTable          = "talk";
     protected $strDBKeyCol         = "intTalkID";
@@ -50,7 +68,7 @@ class Object_Talk extends Abstract_GenericObject
     // Local Object Requirements
     protected $intTalkID           = null;
     protected $strTalk             = null;
-    protected $hasPGContent        = null;
+    protected $hasNsfwMaterial     = null;
     protected $strTalkSummary      = null;
     protected $intUserID           = null;
     protected $intRequestedRoomID  = null;
