@@ -168,7 +168,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                     $arrObjects[$object] = $object::brokerAll();
                 } else {
                     $arrObjects[$object] = $object::listKeys();
-                    $renderPage .= '_new';
+                    $renderPage = 'new';
                 }
                 break;
             case 'post':
