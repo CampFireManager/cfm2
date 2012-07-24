@@ -427,15 +427,17 @@ class Object_Talk extends Abstract_GenericObject
             }
         }
         foreach ($arrGrid as $intSlotID => $arrSlots) {
-            foreach ($arrSlots as $room => $objTalk) {
-                if ($room == 'isLocked' || is_array($objTalk)) {
-                    continue;
-                }
-                $intRoomID = $arrRooms[$room - 1]->getKey('intRoomID');
-                if (0 + $intRoomID > 0 && is_object($objTalk)) {
-                    $objTalk->setKey('intRoomID', $intRoomID);
-                    $objTalk->setKey('intSlotID', $intSlotID);
-                    $objTalk->write();
+            if ($intSlotID > 0) {
+                foreach ($arrSlots as $room => $objTalk) {
+                    if ($room == 'isLocked' || is_array($objTalk)) {
+                        continue;
+                    }
+                    $intRoomID = $arrRooms[$room - 1]->getKey('intRoomID');
+                    if (0 + $intRoomID > 0 && is_object($objTalk)) {
+                        $objTalk->setKey('intRoomID', $intRoomID);
+                        $objTalk->setKey('intSlotID', $intSlotID);
+                        $objTalk->write();
+                    }
                 }
             }
         }
