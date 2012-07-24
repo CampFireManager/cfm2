@@ -4,9 +4,6 @@ class Container_ConfigTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         Container_Config_Testable::reset();
-        if (file_exists(dirname(__FILE__) . '/../../../../config/unittest.sqlite')) {
-            unlink(dirname(__FILE__) . '/../../../../config/unittest.sqlite');
-        }
     }
     
     public function testInitialize()

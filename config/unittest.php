@@ -21,3 +21,6 @@ $this->set('RW_Pass', null);
 $this->set('RO_DSN', null);
 $this->set('RO_User', null);
 $this->set('RO_Pass', null);
+
+// This is a consistent way to reset the database each run.
+unlink(dirname(__FILE__) . '/unittest.sqlite');
