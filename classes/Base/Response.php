@@ -164,8 +164,8 @@ class Base_Response
                 $message = 'You must be authorized to view this page.';
                 break;
             case 404:
-                $temp = static::getPath();
-                $message = 'The requested URL ' . $temp[0] . ' was not found.';
+                $request = Container_Request::getRequest();
+                $message = 'The requested URL ' . $request->get_requestUrlExParams() . ' was not found.';
                 break;
             case 500:
                 $message = 'The server encountered an error processing your request.';
