@@ -167,12 +167,31 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                 if ($item == null) {
                     $arrObjects[$object] = $object::brokerAll();
                 } else {
-                    $arrObjects['Creation_Values'] = $object::listKeys();
-                    $renderPage = 'new';
+                    if ($arrObjects['Object_User']['current'] != false
+                        && $arrObjects['Object_User']['current'] != null
+                    ) {
+                        $arrObjects['Creation_Values'] = $object::listKeys();
+                        $renderPage = 'new';
+                    } else {
+                        if ($rest) {
+                            Base_Response::sendHttpResponse(404);
+                        } else {
+                            Base_Response::redirectTo('timetable');
+                        }
+                    }
                 }
                 break;
             case 'post':
             case 'put':
+                if ($arrObjects['Object_User']['current'] == false
+                    || $arrObjects['Object_User']['current'] == null
+                ) {
+                    if ($rest) {
+                        Base_Response::sendHttpResponse(404);
+                    } else {
+                        Base_Response::redirectTo('timetable');
+                    }
+                }
                 $newobject = new $object(true);
                 foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
                     if (is_array($value)) {
