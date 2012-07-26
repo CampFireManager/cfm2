@@ -438,10 +438,12 @@ class Base_Response
         $baseSmarty = dirname(__FILE__) . '/../../SmartyTemplates/';
         include_once $libSmarty;
         $objSmarty = new Smarty();
-        $objSmarty->setTemplateDir($baseSmarty . 'Source');
+        $objSmarty->setTemplateDir($baseSmarty);
         $objSmarty->setCompileDir(
             Container_Config::brokerByID('TemporaryFiles', '/tmp')->getKey('value') . '/smartyCompiled'
         );
+        $objSmarty->left_delimiter = '<!--SM:';
+        $objSmarty->right_delimiter = ':SM-->';
         if (is_array($arrAssignments) and count($arrAssignments) > 0) {
             foreach ($arrAssignments as $key=>$value) {
                 $objSmarty->assign($key, $value);
@@ -449,13 +451,13 @@ class Base_Response
         }
         if (Container_Config::brokerByID('smarty_debug', 'false')->getKey('value') != 'false') {
             $objSmarty->debugging = true;
-            if (file_exists($baseSmarty . 'Source/' . $template . '.html.tpl')) {
+            if (file_exists($baseSmarty . $template . '.html.tpl')) {
                 $objSmarty->display($template . '.html.tpl');
             } else {
                 $objSmarty->display('Generic_Object.html.tpl');
             }
         } else {
-            if (file_exists($baseSmarty . 'Source/' . $template . '.html.tpl')) {
+            if (file_exists($baseSmarty . $template . '.html.tpl')) {
                 self::sendHttpResponse(200, $objSmarty->fetch($template . '.html.tpl'));
             } else {
                 self::sendHttpResponse(200, $objSmarty->fetch('Generic_Object.html.tpl'));
