@@ -134,7 +134,7 @@ class Base_Request
         'application/vnd.oasis.opendocument.presentation' => array(
             'media' => true, 'rest' => false, 'site' => false
         ),
-        'application/javascript' => array(
+        'text/javascript' => array(
             'media' => true, 'rest' => false, 'site' => false
         )
     );
