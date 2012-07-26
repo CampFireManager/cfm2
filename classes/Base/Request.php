@@ -133,6 +133,9 @@ class Base_Request
         ),
         'application/vnd.oasis.opendocument.presentation' => array(
             'media' => true, 'rest' => false, 'site' => false
+        ),
+        'application/javascript' => array(
+            'media' => true, 'rest' => false, 'site' => false
         )
     );
 
@@ -759,6 +762,12 @@ class Base_Request
                         case 'odp':
                             $this->setAcceptType(
                                 'application/vnd.oasis.opendocument.presentation',
+                                $arrDenyTypes
+                            );
+                            break;
+                        case 'js':
+                            $this->setAcceptType(
+                                'text/javascript',
                                 $arrDenyTypes
                             );
                             break;

@@ -57,6 +57,8 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
         }
         if (is_file($file)) {
             Base_Response::sendResumableFile($file, TRUE, $objRequest->get_strPrefAcceptType());
+        } else {
+            Base_Response::sendHttpResponse(404, null, $objRequest->get_strPrefAcceptType());
         }
     }
     if ($arrPathItems[0] == 'openid') {
