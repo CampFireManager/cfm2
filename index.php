@@ -162,12 +162,24 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
     }
 
     foreach ($useObjects as $object => $item) {
-        if ($item == null || $item == 'new') {
+        if ($item == null || $item == 'new' || $item == 'me') {
             switch ($objRequest->get_strRequestMethod()) {
             case 'head':
             case 'get':
                 if ($item == null) {
                     $arrObjects[$object] = $object::brokerAll();
+                } elseif ($item == 'me') {
+                    if ($arrObjects['Object_User']['current'] != false
+                        && $arrObjects['Object_User']['current'] != null
+                    ) {
+                        $arrObjects[$object] = $object::brokerByColumnSearch('intUserID', $arrObjects['Object_User']['current']->getKey('intUserID'));
+                    } else {
+                        if ($rest) {
+                            Base_Response::sendHttpResponse(404);
+                        } else {
+                            Base_Response::redirectTo('timetable');
+                        }
+                    }
                 } else {
                     if ($arrObjects['Object_User']['current'] != false
                         && $arrObjects['Object_User']['current'] != null
