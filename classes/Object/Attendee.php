@@ -32,7 +32,7 @@ class Object_Attendee extends Abstract_GenericObject
     );
     protected $arrTranslations = array(
         'label_intUserID' => array('en' => 'Attending User'),
-        'label_intUserID' => array('en' => 'Talk to attend')
+        'label_intTalkID' => array('en' => 'Talk to attend')
     );
     protected $strDBTable = "attendee";
     protected $strDBKeyCol = "intAttendeeID";

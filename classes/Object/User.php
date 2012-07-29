@@ -25,7 +25,7 @@
 class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'worker'),
+        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'worker', 'render_in_sub_views' => true),
         'jsonLinks'   => array('type' => 'text'),
         'isWorker'    => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
         'isAdmin'     => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
@@ -211,7 +211,6 @@ class Object_User extends Abstract_GenericObject
             return false;
         }
     }
-
 
     /**
      * Create a new User object, or post-process the PDO data

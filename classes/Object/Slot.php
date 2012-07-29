@@ -26,10 +26,10 @@ class Object_Slot extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'dateStart' => array('type' => 'date', 'optional' => 'admin', 'input_type' => 'date'),
-        'timeStart' => array('type' => 'time', 'required' => 'admin', 'input_type' => 'time'),
-        'dateEnd' => array('type' => 'date', 'optional' => 'admin', 'input_type' => 'date'),
-        'timeEnd' => array('type' => 'time', 'required' => 'admin', 'input_type' => 'time'),
+        'dateStart' => array('type' => 'date', 'optional' => 'admin', 'input_type' => 'date', 'render_in_sub_views' => true),
+        'timeStart' => array('type' => 'time', 'required' => 'admin', 'input_type' => 'time', 'render_in_sub_views' => true),
+        'dateEnd' => array('type' => 'date', 'optional' => 'admin', 'input_type' => 'date', 'render_in_sub_views' => true),
+        'timeEnd' => array('type' => 'time', 'required' => 'admin', 'input_type' => 'time', 'render_in_sub_views' => true),
         'intDefaultSlotTypeID' => array('type' => 'integer', 'length' => 11, 'optional' => 'admin', 'source' => 'DefaultSlotType'),
         'lastChange' => array('type' => 'datetime')
     );

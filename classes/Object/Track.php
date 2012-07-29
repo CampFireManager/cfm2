@@ -26,7 +26,7 @@ class Object_Track extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTrack' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'strTrack' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin', 'render_in_sub_views' => true),
         'rgbColour' => array('type' => 'varchar', 'length' => 6, 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );

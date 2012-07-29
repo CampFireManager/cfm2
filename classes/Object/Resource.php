@@ -27,8 +27,11 @@ class Object_Resource extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strResource' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'strResource' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin', 'render_in_sub_views' => true),
         'lastChange' => array('type' => 'datetime')
+    );
+    protected $arrTranslations = array(
+        'label_strResource' => array('en' => 'Resource'),
     );
     protected $strDBTable = "resource";
     protected $strDBKeyCol = "intResourceID";

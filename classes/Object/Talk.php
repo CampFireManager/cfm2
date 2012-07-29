@@ -26,7 +26,7 @@ class Object_Talk extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strTalk'             => array('type' => 'varchar', 'length' => 255, 'required' => 'user'),
+        'strTalk'             => array('type' => 'varchar', 'length' => 255, 'required' => 'user', 'render_in_sub_views' => true),
         'strTalkSummary'      => array('type' => 'text', 'optional' => 'user'),
         'hasNsfwMaterial'     => array('type' => 'tinyint', 'length' => 1, 'required' => 'user', 'default_value' => "0"),
         'intUserID'           => array('type' => 'int', 'length' => 11, 'optional' => 'worker'),
@@ -46,21 +46,21 @@ class Object_Talk extends Abstract_GenericObject
     );
     protected $arrTranslations = array(
         'label_strTalk' => array('en' => 'Talk Title'),
-        'label_new_strTalkSummary' => array('en' => 'A short paragraph describing your talk'),
         'label_strTalkSummary' => array('en' => 'Talk Summary'),
+        'label_new_strTalkSummary' => array('en' => 'A short paragraph describing your talk'),
         'label_new_hasNsfwMaterial' => array('en' => 'Does this talk contain content which may be unsuitable for minors'),
-        'label_intUserID' => array('en' => 'Proposing Presenter'),
+        'label_hasNsfwMaterial' => array('en' => 'Contains content which may be unsuitable for minors'),
+        'label_new_intUserID' => array('en' => 'Proposing Presenter'),
         'label_new_intRoomID' => array('en' => 'Room Requested'),
-        'label_intRoomID' => array('en' => 'Room'),
         'label_new_intSlotID' => array('en' => 'Slot Requested'),
-        'label_intSlotID' => array('en' => 'Slot'),
-        'label_intTrackID' => array('en' => 'Track'),
         'label_intLength' => array('en' => 'Talk Length in slots'),
-        'label_jsonLinks' => array('en' => 'Associated Links'),
+        'label_arrLinks' => array('en' => 'Associated Links'),
         'label_new_jsonLinks' => array('en' => 'Associated Links (in the format: Twitter:http://twitter.com/yourusername or Blog:http://my.blog.com)'),
-        'label_isLocked' => array('en' => 'Lock this talk to this Room and Slot'),
-        'label_jsonResources' => array('en' => 'Resources requested'),
-        'label_jsonOtherPresenters' => array('en' => 'Other Presenters')
+        'label_new_isLocked' => array('en' => 'Lock this talk to this Room and Slot'),
+        'label_arrResources' => array('en' => 'Resources requested'),
+        'label_new_jsonResources' => array('en' => 'Resources requested'),
+        'label_arrOtherPresenters' => array('en' => 'Other Presenters'),
+        'label_new_jsonOtherPresenters' => array('en' => 'Other Presenters')
     );
     protected $strDBTable          = "talk";
     protected $strDBKeyCol         = "intTalkID";
