@@ -17,6 +17,10 @@
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
 require_once dirname(__FILE__) . '/classes/autoloader.php';
+$objRequest = Container_Request::getRequest();
+if ($objRequest->get_strRequestMethod() != 'file') {
+    die("Must only be run from the command line.");
+}
 Object_User::isSystem(true);
 Container_Config_Demo::initializeDemo();
 
