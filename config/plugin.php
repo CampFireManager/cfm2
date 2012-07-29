@@ -14,7 +14,9 @@
  */
 
 // This is vital - it clears the cleartext passwords stored for display purposes
-Base_Hook::addHook(new Plugin_ResetCleartexts());
+Base_Hook::addHooks(new Plugin_TalkFixer());
+Base_Hook::addHooks(new Plugin_LimboTalks());
+Base_Hook::addHooks(new Plugin_ResetCleartexts());
 
-// Base_Hook::addHook(new Plugin_Twitter());
-// Base_Hook::addHook(new Plugin_Verbose());
+// Base_Hook::addHooks(new Plugin_Twitter());
+// Base_Hook::addHooks(new Plugin_Verbose());

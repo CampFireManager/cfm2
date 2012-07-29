@@ -44,7 +44,7 @@ class Base_HookTest extends PHPUnit_Framework_TestCase
     public function testAddHookWithNoTriggers()
     {
         $hook = new Base_Hook();
-        @$hook->addHook(new Testable_HookWithNoTriggers());
+        @$hook->addHooks(new Testable_HookWithNoTriggers());
     }
     
     /**
@@ -53,7 +53,7 @@ class Base_HookTest extends PHPUnit_Framework_TestCase
     public function testAddNonObjectHook()
     {
         $hook = new Base_Hook();
-        @$hook->addHook(true);
+        @$hook->addHooks(true);
     }
 
     public function testAddNewTrigger()
@@ -90,7 +90,7 @@ class Base_HookTest extends PHPUnit_Framework_TestCase
     public function testAddValidHook()
     {
         $hook = new Base_Hook();
-        $hook->addHook(new Testable_HookWithTrigger());
+        $hook->addHooks(new Testable_HookWithTrigger());
         @$hook->triggerHook('cronTick');
     }
 }

@@ -148,13 +148,14 @@ class Base_Hook
     }
     
     /**
-     * This function reads a plugin object to look for the triggers which can be tied into the the hook array.
+     * This function reads a plugin object to look for the triggers which can be
+     * tied into the the hook array.
      *
      * @param object $objHook An object to process for triggers.
      * 
      * @return void
      */
-    public function addHook($objHook = null)
+    public function addHooks($objHook = null)
     {
         if (is_object($objHook)) {
             $boolTriggerSet = false;
