@@ -23,8 +23,7 @@ if ($objRequest->get_strRequestMethod() != 'file') {
 }
 
 $forever = true;
-foreach ($objRequest->get_arrRqstParameters() as $key => $parameter)
-{
+foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
     if ($key == '--once' || $parameter == '--once') {
         $forever = false;
     }
