@@ -1,5 +1,5 @@
 <!--SM:assign var=comma value=',':SM-->
-<!--SM:foreach $Collection_Timetable as $Timetable:SM-->
+<!--SM:foreach $renderPage as $Timetable:SM-->
     <!--SM:foreach $Timetable.arrSlots as $slot:SM-->
     <!--SM:assign var=showroom value=false:SM-->
                     <li data-role="list-divider"><!--SM:$slot.timeStart:SM--> - <!--SM:$slot.timeEnd:SM--></li>

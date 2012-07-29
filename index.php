@@ -341,10 +341,19 @@ foreach ($arrObjects as $object_group => $data) {
     foreach ($data as $key => $object) {
         if (is_object($object)) {
             $object->setFull(true);
+            if ($object_group == $renderPage) {
+                $arrObjectsData['renderPage'][$key] = $object->getSelf();
+            }
             $arrObjectsData[$object_group][$key] = $object->getSelf();
         } elseif (is_array($object)) {
+            if ($object_group == $renderPage) {
+                $arrObjectsData['renderPage'][$key] = $object;
+            }
             $arrObjectsData[$object_group][$key] = $object;
         } else {
+            if ($object_group == $renderPage) {
+                $arrObjectsData['renderPage'][$key] = null;
+            }
             $arrObjectsData[$object_group][$key] = null;
         }
     }
