@@ -499,7 +499,13 @@ class Container_Config implements Interface_Object
     {
         return array();
     }
-    
+
+    /**
+     * The functional equivelent of the getSelf function, but for the config
+     * container.
+     *
+     * @return array
+     */
     public function getSelf()
     {
         return array($this->key => array('key' => $this->key, 'value' => $this->value, 'lastChange' => $this->lastChange));
