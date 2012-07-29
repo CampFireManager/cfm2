@@ -234,10 +234,11 @@ class Object_User extends Abstract_GenericObject
                 $objRequest = Container_Request::getRequest();
                 $this->setKey('strUserName', $objRequest->get_strUsername());
                 $this->create();
+                $system_state = Object_User::isSystem();
                 Object_User::isSystem(true);
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
-                Object_User::isSystem(false);
+                Object_User::isSystem($system_state);
                 $this->objUserAuthTemp = $objUserAuth;
                 if ($objUserAuth->getKey('enumAuthType') == 'openid'
                     || $objUserAuth->getKey('enumAuthType') == 'basicauth'

@@ -126,10 +126,10 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
-        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == 1);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == 2);
         $this->assertTrue($arrTalks[2]->getKey('intSlotID') == 2);
         $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
-        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 2);
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
         $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
@@ -142,7 +142,7 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         Object_User::isSystem(true);
         $arrTalks = Object_Talk::brokerAll();
         $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
-        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::lockTalks(date('Y-m-d ') . " 00:00:01");
         Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 00:00:01");
         Object_User::isSystem(false);
 
@@ -162,24 +162,28 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
     }
 
+    /**
+     * @todo This should probably have the pre-2PM lock action performed on it
+     * first. Another test or two to be written I suspect.
+     */
     public function testTalksSort_SortWholeDayAt2PM()
     {
         Object_User::isSystem(true);
         $arrTalks = Object_Talk::brokerAll();
         $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
-        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::lockTalks(date('Y-m-d ') . " 14:00:00");
         Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 14:00:00");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
-        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
-        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
-        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == 2);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 1);
         $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
-        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 7);
-        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 1);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
@@ -191,10 +195,10 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $arrTalks = Object_Talk::brokerAll();
         $config = Container_Config::brokerByID('Schedule Only In This Slot', '0');
         $config->setKey('value', 1);
-        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::lockTalks(date('Y-m-d ') . " 00:00:01");
         Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 00:00:01");
         Object_User::isSystem(false);
-
+        
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
@@ -211,25 +215,27 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
     }
 
+    /**
+     * @todo This should probably have the pre-2PM lock action performed on it
+     * first. Another test or two to be written I suspect.
+     */
     public function testTalksSort_SortSlotOnlyAt2PM()
     {
         Object_User::isSystem(true);
         $arrTalks = Object_Talk::brokerAll();
-        Object_Talk::unscheduleBasedOnAttendees($arrTalks, 2);
+        Object_Talk::lockTalks(date('Y-m-d ') . " 14:00:00");
         Object_Talk::sortAndPlaceTalksByAttendees(date('Y-m-d ') . " 14:00:00");
         Object_User::isSystem(false);
 
         $this->assertTrue($arrTalks[1]->getKey('intRoomID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
-        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
-        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
-        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
-        // We're only sorting by slot when we've requested this slot, therefore
-        // this returns unscheduled talks.
-        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == -1);
-        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == -1);
-        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
+        $this->assertTrue($arrTalks[2]->getKey('intRoomID') == 2);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[2]->getKey('isLocked') == 1);
+        $this->assertTrue($arrTalks[3]->getKey('intRoomID') == 3);
+        $this->assertTrue($arrTalks[3]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[3]->getKey('isLocked') == 1);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);

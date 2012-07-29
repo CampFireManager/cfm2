@@ -615,7 +615,7 @@ abstract class Abstract_GenericObject implements Interface_Object
     function write()
     {
         try {
-            if ($this->reqAdminToMod && ! Object_User::isAdmin() == false) {
+            if ($this->reqAdminToMod && ! Object_User::isAdmin()) {
                 throw new BadMethodCallException("You need to be an admin to perform this operation");
             }
             if ($this->reqCreatorToMod && isset($this->arrDBItems['intUserID']) && ! Object_User::isCreator($this->intUserID)) {
@@ -922,7 +922,6 @@ abstract class Abstract_GenericObject implements Interface_Object
             error_log("SQL error: " . $e->getMessage() . " SQL: $sql");
             throw $e;
         }
-        Object_User::isSystem(false);
     }
 
     /**

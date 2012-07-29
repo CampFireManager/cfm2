@@ -341,7 +341,11 @@ class Object_Userauth extends Abstract_GenericObject
         ) {
             $tmpCleartext = $this->tmpCleartext;
             $this->setKey('tmpCleartext', '');
-            $this->write();
+            try {
+                $this->write();
+            } catch (Exception $e) {
+                throw $e;
+            }
             $this->tmpCleartext = $tmpCleartext;
         } elseif ($this->enumAuthType != 'codeonly'
             && $this->tmpCleartext == ''

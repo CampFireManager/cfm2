@@ -27,6 +27,7 @@ class Object_AttendeeTest extends PHPUnit_Framework_TestCase
         $objTrack->initializeDemo();
         $objUser = new Object_User_Demo();
         $objUser->initializeDemo();
+        Object_User::isSystem(false);
     }
     
     public function testObjectAttendeeCreation()
