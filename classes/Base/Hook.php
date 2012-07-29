@@ -202,7 +202,13 @@ class Base_Hook
                 && count($this->arrHooks[$strAction]) > 0
             ) {
                 foreach ($this->arrHooks[$strAction] as $objHook) {
+                    if ($strAction == 'cronTick') {
+                        echo "     * " . get_class($objHook) . ": ";
+                    }
                     $objHook->$strHookAction($parameters);
+                    if ($strAction == 'cronTick') {
+                        echo "Done\r\n";
+                    }
                 }
             }
         }
