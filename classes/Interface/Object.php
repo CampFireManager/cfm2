@@ -96,4 +96,10 @@ interface Interface_Object
      * @return array
      */
     public static function listKeys();
+    /**
+     * This function returns an array of all the calculated data for this object
+     * 
+     * @return array
+     */
+    public function getSelf();
 }

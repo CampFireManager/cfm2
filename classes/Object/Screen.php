@@ -76,9 +76,9 @@ class Object_Screen extends Abstract_GenericObject
      * 
      * @return array
      */
-    public function getSelf()
+    public function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         $arrDirections = Object_ScreenDirection::brokerByColumnSearch('intScreenID', $this->intScreenID);
         if ($arrDirections != false) {
             foreach ($arrDirections as $direction) {

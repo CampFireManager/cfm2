@@ -56,9 +56,9 @@ class Object_Slot extends Abstract_GenericObject
      * 
      * @return array
      */
-    function getSelf()
+    function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         if ((string) $this->dateStart == '') {
             $self['dateStart'] = date('Y-m-d');
             $this->setKey('dateStart', date('Y-m-d'));

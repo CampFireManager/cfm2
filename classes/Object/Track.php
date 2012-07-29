@@ -45,9 +45,9 @@ class Object_Track extends Abstract_GenericObject
      * 
      * @return array
      */
-    function getSelf()
+    function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         if ($this->booleanFull) {
             $arrTalks = Object_Talk::brokerByColumnSearch('intTrackID', $this->intTrackID);
             if ($arrTalks != false) {

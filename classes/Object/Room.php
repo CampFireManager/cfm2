@@ -49,9 +49,9 @@ class Object_Room extends Abstract_GenericObject
      * 
      * @return array
      */
-    function getSelf()
+    function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         if ($this->isFull() == true) {
             $resources = json_decode($this->jsonResourceList, true);
             foreach ($resources as $resource) {

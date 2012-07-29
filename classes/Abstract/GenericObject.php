@@ -925,6 +925,34 @@ abstract class Abstract_GenericObject implements Interface_Object
         Object_User::isSystem(false);
     }
 
+    /**
+     * Append the translated labels to the returned data for this class.
+     *
+     * @param array $return The classes' data
+     * 
+     * @return array
+     */
+    protected function getLabels($return)
+    {
+        foreach ($return as $key => $data) {
+            $data = null;
+            if (isset($this->arrTranslations['label_' . $key])) {
+                $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
+            }
+        }
+        return $return;
+    }
+
+    /**
+     * This function is used a lot throughout the code base. It was recently
+     * re-written to support adding the data labels for the
+     *
+     * @return array
+     */
+    public function getSelf()
+    {
+        return $this->getLabels($this->getData());
+    }
     
     /**
      * Return an array of the collected or created data, including Labels for
@@ -932,21 +960,15 @@ abstract class Abstract_GenericObject implements Interface_Object
      * 
      * @return array A mixed array of these items
      */
-    public function getSelf()
+    public function getData()
     {
         if ($this->strDBKeyCol != '') {
             $key = $this->strDBKeyCol;
             $return[$key] = $this->$key;
-            if (isset($this->arrTranslations['label_' . $key])) {
-                $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
-            }
         }
         foreach ($this->arrDBItems as $key => $dummy) {
             $dummy = null;
             $return[$key] = $this->$key;
-            if (isset($this->arrTranslations['label_' . $key])) {
-                $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
-            }
         }
         if ($this->booleanFull) {
             if ($this->reqAdminToMod && ! Object_User::isAdmin()) {

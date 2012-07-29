@@ -288,9 +288,9 @@ class Object_User extends Abstract_GenericObject
      * 
      * @return array
      */
-    function getSelf()
+    function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         if ($this->isFull() == true) {
             $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $this->intUserID);
             foreach ($arrUserAuth as $key => $value) {

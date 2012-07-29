@@ -91,9 +91,9 @@ class Object_Talk extends Abstract_GenericObject
      * 
      * @return array
      */
-    function getSelf()
+    function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         if ($this->isFull() == true) {
             $self['intAttendees'] = Object_Attendee::countByColumnSearch('intTalkID', $this->intTalkID);
             if (strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID)) > $self['epochLastChange']) {

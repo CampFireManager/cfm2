@@ -284,9 +284,9 @@ class Object_Userauth extends Abstract_GenericObject
      * 
      * @return array
      */
-    function getSelf()
+    function getData()
     {
-        $self = parent::getSelf();
+        $self = parent::getData();
         switch ($this->enumAuthType) {
         case 'basicauth':
             $string = explode(':', $this->strAuthValue);
