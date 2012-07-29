@@ -30,6 +30,7 @@ class Object_Input extends Abstract_GenericObject
         'strInterface' => array('type' => 'varchar', 'length' => 255),
         'textMessage' => array('type' => 'text'),
         'isActioned' => array('type' => 'tinyint', 'length' => 1),
+        'intNativeID' => array('type' => 'integer', 'length' => 25),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "input";
@@ -41,6 +42,7 @@ class Object_Input extends Abstract_GenericObject
     protected $strInterface = null;
     protected $textMessage = null;
     protected $isActioned = false;
+    protected $intNativeID = null;
     protected $lastChange = null;
     
     /**
