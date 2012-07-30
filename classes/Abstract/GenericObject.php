@@ -180,14 +180,16 @@ abstract class Abstract_GenericObject implements Interface_Object
     /**
      * Get all objects by a particular search field
      *
-     * @param string  $column  The column to search
-     * @param string  $value   The value to look for.
-     * @param boolean $inverse Look for anything but this value
-     * @param boolean $json    Look for a JSON encoded string
+     * @param string  $column    The column to search
+     * @param string  $value     The value to look for.
+     * @param boolean $inverse   Look for anything but this value
+     * @param boolean $json      Look for a JSON encoded string
+     * @param integer $count     The number of records to return
+     * @param string  $direction The SQL direction to process
      * 
      * @return array The array of objects matching this search
      */
-    static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false)
+    static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false, $count = null, $direction = 'ASC')
     {
         if ($column == null) {
             throw new OutOfBoundsException('No column name');
@@ -209,45 +211,85 @@ abstract class Abstract_GenericObject implements Interface_Object
         try {
             $objDatabase = Container_Database::getConnection();
             if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol}"
-                    )
-                );
+                if ($count != null) {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                        )
+                    );
+                } else {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                        )
+                    );
+                }
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
             } elseif ($value == '%') {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol}"
-                    )
-                );
+                if ($count != null) {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                        )
+                    );
+                } else {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                        )
+                    );
+                }
                 $query = $objDatabase->prepare($sql);
                 $query->execute();
             } elseif ($inverse == false) {
                 if ($json == true) {
-                    $sql = Container_Database::getSqlString(
-                        array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
-                        )
-                    );
+                    if ($count != null) {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                            )
+                        );
+                    } else {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                            )
+                        );
+                    }
                     $query = $objDatabase->prepare($sql);
                     $query->execute(array("[$value]", "%\"$value\"%", "[$value,%", "%,$value,%", "%,$value]"));
                 } else {
-                    $sql = Container_Database::getSqlString(
-                        array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol}"
-                        )
-                    );
+                    if ($count != null) {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                            )
+                        );
+                    } else {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                            )
+                        );
+                    }
                     $query = $objDatabase->prepare($sql);
                     $query->execute(array($value));
                 }
             } else {
-                $sql = Container_Database::getSqlString(
-                    array(
-                        'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} != ? ORDER BY {$thisClass->strDBKeyCol}"
-                    )
-                );
+                if ($count != null) {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} != ? ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                        )
+                    );
+                } else {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} != ? ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                        )
+                    );                    
+                }
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($value));
             }

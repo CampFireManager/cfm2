@@ -78,16 +78,19 @@ class Object_Input extends Abstract_GenericObject
     /**
      * Get all objects by a particular search field
      *
-     * @param string  $column  The column to search
-     * @param string  $value   The value to look for.
-     * @param boolean $inverse Look for anything but this value
+     * @param string  $column    The column to search
+     * @param string  $value     The value to look for.
+     * @param boolean $inverse   Look for anything but this value
+     * @param boolean $json      Look for a JSON encoded string
+     * @param integer $count     The number of records to return
+     * @param string  $direction The SQL direction to process
      * 
      * @return array The array of objects matching this search
      */
-    public static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
+    public static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false, $count = null, $direction = 'ASC')
     {
         if (Object_User::isSystem()) {
-            return parent::brokerByColumnSearch($column, $value, $inverse);
+            return parent::brokerByColumnSearch($column, $value, $inverse, $json, $count, $direction);
         } else {
             return false;
         }
@@ -106,6 +109,36 @@ class Object_Input extends Abstract_GenericObject
             throw new Exception('It is not permitted to directly create input actions');
         } else {
             parent::__construct();
+        }
+    }
+    
+    /**
+     * This function wrappers the creation of a new item for use in Glue classes
+     *
+     * @param string  $strSender    The ID of the sender (e.g. phone number,
+     * XMPP address, Twitter Handle, etc)
+     * @param string  $strInterface The interface to use to reply to. Suffix 
+     * with -private when received over a private medium (such as Twitter DM,
+     * email etc.) and -public when received over a public medium (such as IRC).
+     * Optionally add the internal resource ID (such as a Gammu interface) by
+     * again suffixing with _ResourceID. An example might be: Gammu-private_O2
+     * @param string  $textMessage The message received.
+     * @param integer $intNativeID The native internal ID to refer to.
+     * 
+     * @return Object_Import
+     */
+    public static function import($strSender, $strInterface, $textMessage, $intNativeID)
+    {
+        try {
+            $object = new Object_Input();
+            $object->setKey('strSender', $strSender);
+            $object->setKey('strInterface', $strInterface);
+            $object->setKey('textMessage', $textMessage);
+            $object->setKey('intNativeID', $intNativeID);
+            $object->create();
+            return $object;
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 }

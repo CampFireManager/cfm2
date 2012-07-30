@@ -76,18 +76,21 @@ class Object_Output extends Abstract_GenericObject
     /**
      * Get all objects by a particular search field
      *
-     * @param string  $column  The column to search
-     * @param string  $value   The value to look for.
-     * @param boolean $inverse Look for anything but this value
+     * @param string  $column    The column to search
+     * @param string  $value     The value to look for.
+     * @param boolean $inverse   Look for anything but this value
+     * @param boolean $json      Look for a JSON encoded string
+     * @param integer $count     The number of records to return
+     * @param string  $direction The SQL direction to process
      * 
      * @return array The array of objects matching this search
      */
-    public static function brokerByColumnSearch($column = null, $value = null, $inverse = false)
+    public static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false, $count = null, $direction = 'ASC')
     {
         if (Object_User::isSystem()) {
-            return parent::brokerByColumnSearch($column, $value, $inverse);
+            return parent::brokerByColumnSearch($column, $value, $inverse, $json, $count, $direction);
         } else {
-            return array();
+            return false;
         }
     }
     
