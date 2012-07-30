@@ -36,6 +36,7 @@
 class Glue_TwitterAPI implements Interface_Glue
 {
     protected $oAuth = null;
+    protected $strInterface = null;
 
     /**
      * This function instantiates the object using the supplied configuration
@@ -96,6 +97,8 @@ class Glue_TwitterAPI implements Interface_Glue
         if ($cfgUS == false) {
             throw new InvalidArgumentException("No User Secret");
         }
+
+        $this->strInterface = $db_prefix;
         
         $libTwitterHelper = Base_ExternalLibraryLoader::getVersion("TwitterHelper");
         if ($libTwitterHelper == false) {
@@ -116,70 +119,79 @@ class Glue_TwitterAPI implements Interface_Glue
     }
 
     /**
-     * This function calls the service, and retrieves a list of messages
-     * 
-     * @param timestamp $since_timestamp The timestamp of the last successful
-     * retrieval of a message
-     * @param integer   $since_id        The last ID of a successfully received
-     * message.
+     * This function calls the service, and retrieves a list of private messages
      * 
      * @return array
      */
-    public function read_private($since_timestamp = null, $since_id = null)
+    public function read_private()
     {
+        $lastmessage = Object_Input::brokerByColumnSearch('strInterface', $this->strInterface . '-private', false, false, 1, 'DESC');
+        if ($lastmessage == false) {
+            $args['since_id'] = 0;
+        } else {
+            $lastmessage = end($lastmessage);
+            $args['since_id'] = $lastmessage->getKey('intNativeID');
+        }
+        
         if ($this->oAuth->config['use_ssl']) {
             $api_path = 'https://';
         } else {
             $api_path = 'http://';
         }
         $api_path .= $this->oAuth->config['host'];
-        $args = array();
-        if ($since_id != null && $since_id != '') {
-            $args['since_id'] = $since_id;
-        }
         
         $this->oAuth->request('GET', $api_path . '/1/direct_messages.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             foreach ($data['results'] as $tweet) {
-                $return[] = array('strSender' => $tweet['from_user'], 'textMessage' => $tweet['text'], 'intNativeID' => 'D' . $tweet['id_str']);
+                $return = new Object_Input();
+                $return->setKey('strInterface', $this->strInterface . '-private');
+                $return->setKey('strSender', $tweet['from_user']);
+                $return->setKey('textMessage', $tweet['text']);
+                $return->setKey('intNativeID', $tweet['id_str']);
+                $return->setKey('isActioned', 0);
+                $return->create();
             }
         } else {
             $data = htmlentities($this->oAuth->response['response']);
             error_log('There was an error in the OAuth library fetching direct messages. ' . print_r($data, true));
             throw new HttpResponseException('Error fetching OAuth Direct Messages');
         }
-        return $return;
     }
 
     /**
      * This function calls the service, and retrieves a list of public messages
      * 
-     * @param timestamp $since_timestamp The timestamp of the last successful
-     * retrieval of a message
-     * @param integer   $since_id        The last ID of a successfully received
-     * message.
-     * 
      * @return array
      */
-    public function read_public($since_timestamp = null, $since_id = null)
+    public function read_public()
     {
+        $lastmessage = Object_Input::brokerByColumnSearch('strInterface', $this->strInterface . '-public', false, false, 1, 'DESC');
+        if ($lastmessage == false) {
+            $args['since_id'] = 0;
+        } else {
+            $lastmessage = end($lastmessage);
+            $args['since_id'] = $lastmessage->getKey('intNativeID');
+        }
+        
         if ($this->oAuth->config['use_ssl']) {
             $api_path = 'https://';
         } else {
             $api_path = 'http://';
         }
         $api_path .= $this->oAuth->config['host'];
-        $args = array();
-        if ($since_id != null && $since_id != '') {
-            $args['since_id'] = $since_id;
-        }
         
         $this->oAuth->request('GET', $api_path . '/1/statuses/mentions.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             foreach ($data['results'] as $tweet) {
-                $return[] = array('strSender' => $tweet['from_user'], 'textMessage' => $tweet['text'], 'intNativeID' => $tweet['id_str']);
+                $return = new Object_Input();
+                $return->setKey('strInterface', $this->strInterface . '-public');
+                $return->setKey('strSender', $tweet['from_user']);
+                $return->setKey('textMessage', $tweet['text']);
+                $return->setKey('intNativeID', $tweet['id_str']);
+                $return->setKey('isActioned', 0);
+                $return->create();
             }
         } else {
             $data = htmlentities($this->oAuth->response['response']);
@@ -197,19 +209,28 @@ class Glue_TwitterAPI implements Interface_Glue
      * 
      * @return boolean
      */
-    public function send($message, $destination = null)
+    public function send()
     {
-        if ($destination != null && $destination != '') {
-            $status = $this->objTwitterConnection->request('POST', $this->objTwitterConnection->url('1/direct_messages/new'), array('text' => $message, 'screen_name' => $destination));
-        } else {
-            $status = $this->objTwitterConnection->request('POST', $this->objTwitterConnection->url('1/statuses/update'), array('status' => $message));
-        }
-        if ($status == 200) {
-            return true;
-        } else {
-            $data = htmlentities($this->oAuth->response['response']);
-            error_log('There was an error in the OAuth library sending. ' . print_r($data, true));
-            throw new HttpResponseException('Error Sending using OAuth');
+        $messages = Object_Output::brokerByColumnSearch('isActioned', 0);
+        foreach ($messages as $message) {
+            if (preg_match('/^([^-]+)/', $message->getKey('strInterface'), $matches) == 1) {
+                if ($matches[1] != $this->strInterface) {
+                    continue;
+                }
+            }
+            if ($message->getKey('strReceiver') != null && $message->getKey('strReceiver') != '') {
+                $status = $this->oAuth->request('POST', $this->oAuth->url('1/direct_messages/new'), array('text' => substr($message->getKey('textMessage'), 0, 158 - strlen($message->getKey('strReceiver'))), 'screen_name' => $message->getKey('strReceiver')));
+            } else {
+                $status = $this->oAuth->request('POST', $this->oAuth->url('1/statuses/update'), array('status' => substr($message->getKey('textMessage'), 0, 160)));
+            }
+            if ($status == 200) {
+                $message->setKey('isActioned', 1);
+                $message->write();
+            } else {
+                $data = htmlentities($this->oAuth->response['response']);
+                error_log('There was an error in the OAuth library sending. ' . print_r($data, true));
+                throw new HttpResponseException('Error Sending using OAuth');
+            }
         }
     }
 }

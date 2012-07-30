@@ -36,32 +36,19 @@ interface Interface_Glue
     /**
      * This function calls the service, and retrieves a list of private messages
      * 
-     * @param timestamp $since_timestamp The timestamp of the last successful
-     * retrieval of a message
-     * @param integer   $since_id        The last ID of a successfully received
-     * message.
-     * 
      * @return array
      */
-    public function read_private($since_timestamp = null, $since_id = null);
+    public function read_private();
     /**
      * This function calls the service, and retrieves a list of public messages
      * 
-     * @param timestamp $since_timestamp The timestamp of the last successful
-     * retrieval of a message
-     * @param integer   $since_id        The last ID of a successfully received
-     * message.
-     * 
      * @return array
      */
-    public function read_public($since_timestamp = null, $since_id = null);
+    public function read_public();
     /**
      * This function calls the service, sending a message.
      * 
-     * @param string $message     The message to send
-     * @param string $destination The destination (if required) to send it to.
-     * 
      * @return boolean
      */
-    public function send($message, $destination = null);
+    public function send();
 }
