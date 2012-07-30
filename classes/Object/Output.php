@@ -30,6 +30,7 @@ class Object_Output extends Abstract_GenericObject
         'strInterface' => array('type' => 'varchar', 'length' => 255),
         'textMessage' => array('type' => 'text'),
         'isActioned' => array('type' => 'tinyint', 'length' => 1),
+        'strError' => array('type' => 'text'),
         'lastChange' => array('type' => 'datetime')
     );
     protected $strDBTable = "output";
@@ -41,6 +42,7 @@ class Object_Output extends Abstract_GenericObject
     protected $strInterface = null;
     protected $textMessage = null;
     protected $isActioned = false;
+    protected $strError = null;
     protected $lastChange = null;
 
     /**
