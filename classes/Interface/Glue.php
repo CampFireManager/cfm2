@@ -36,19 +36,32 @@ interface Interface_Glue
     /**
      * This function calls the service, and retrieves a list of private messages
      * 
-     * @return array
+     * @return void
      */
     public function read_private();
     /**
      * This function calls the service, and retrieves a list of public messages
      * 
-     * @return array
+     * @return void
      */
     public function read_public();
     /**
+     * This function follows back any followers, or authorizes connections to
+     * this glue connection.
+     * 
+     * @return void
+     */
+    public function follow_followers();
+    /**
      * This function calls the service, sending a message.
      * 
-     * @return boolean
+     * @return void
      */
     public function send();
+    /**
+     * This function returns an array containing the objects for all these glues
+     * 
+     * @return array
+     */
+    public static function brokerAllGlues();
 }
