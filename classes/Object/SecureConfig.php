@@ -85,6 +85,16 @@ class Object_SecureConfig extends Abstract_GenericObject
             parent::__construct();
         }
     }
+    
+    /**
+     * We do not want to return all the SecureConfig values!
+     *
+     * @return array 
+     */
+    public function getSelf()
+    {
+        return array();
+    }
 }
 
 /**
