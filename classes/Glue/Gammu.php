@@ -27,6 +27,26 @@ class Glue_Gammu implements Interface_Glue
     protected $sms = null;
     protected $strInterface = null;
     protected $objDaemon = null;
+    
+    /**
+     * Advise whether this Glue can send broadcast messages.
+     *
+     * @return string|boolean
+     */
+    public function canSendBroadcast()
+    {
+        return false;
+    }
+    
+    /**
+     * Advise whether this Glue can send Private/Directed messages.
+     *
+     * @return string|boolean
+     */
+    public function canSendPrivateMessage()
+    {
+        return $this->strInterface;
+    }
 
     /**
      * This function instantiates the object using the supplied configuration

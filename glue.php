@@ -29,16 +29,7 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
     }
 }
 
-foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Glue') as $file) {
-    if ($file->isDir() || $file->isDot()) continue;
-    if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
-        $strGlueName = 'Glue_' . $file->getBasename('.php');
-        foreach ($strGlueName::brokerAllGlues() as $objGlue) {
-            $arrGlues[] = $objGlue;
-        }
-    }
-}
-
+$arrGlues = Collection_Glue::brokerAll();
 do {
     foreach ($arrGlues as $objGlue) {
         $objGlue->follow_followers();

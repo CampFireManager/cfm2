@@ -40,6 +40,26 @@ class Glue_TwitterAPI implements Interface_Glue
     protected $objDaemon = null;
 
     /**
+     * Advise whether this Glue can send broadcast messages.
+     *
+     * @return string|boolean
+     */
+    public function canSendBroadcast()
+    {
+        return $this->strInterface;
+    }
+    
+    /**
+     * Advise whether this Glue can send Private/Directed messages.
+     *
+     * @return string|boolean
+     */
+    public function canSendPrivateMessage()
+    {
+        return $this->strInterface;
+    }
+
+    /**
      * This function instantiates the object using the supplied configuration
      * details.
      * 
