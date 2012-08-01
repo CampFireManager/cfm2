@@ -49,6 +49,6 @@ do {
     $hook->triggerHook('cronTick');
     echo "Done\r\n";
     if ($forever) {
-        echo "==========================\r\n\r\n";
+        echo "\r\n=========================================\r\n\r\n";
     }
 } while ($forever);
