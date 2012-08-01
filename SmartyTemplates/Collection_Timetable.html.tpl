@@ -15,7 +15,7 @@
     <!--SM:assign var=base_close value='" />':SM-->
         <!--SM:$base_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$base_close:SM-->
     <!--SM:assign var=localStorage_open value='<script type="text/Javascript">if (!localStorage.getItem("CFM")) {localStorage.setItem("CFM", JSON.stringify("':SM-->
-    <!--SM:assign var=localStorage_close value='rest"));}</script>':SM-->}
+    <!--SM:assign var=localStorage_close value='rest"));}</script>':SM-->
         <!--SM:$localStorage_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$localStorage_close:SM-->
 <!--SM:/if:SM-->
         <meta name="viewport" content="width=device-width, initial-scale=1">
