@@ -350,7 +350,9 @@ class Object_Talk extends Abstract_GenericObject
             // Clear the spot on the grid for locked talks
             if ($objTalk->getKey('isLocked') == 1) {
                 for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
-                    $arrGrid[$intSlotID][$arrRoomsByID[$objTalk->getKey('intRoomID')]]['isLocked'] = true;
+                    if ($objTalk->getKey('intRoomID') > 0) {
+                        $arrGrid[$intSlotID][$arrRoomsByID[$objTalk->getKey('intRoomID')]]['isLocked'] = true;
+                    }
                 }
             } elseif ($objTalk->getKey('intRoomID') != '-1') {
                 $objTalk->setFull(true);
