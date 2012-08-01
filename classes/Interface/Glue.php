@@ -25,6 +25,12 @@
 interface Interface_Glue
 {
     /**
+     * This function returns the strInterface value
+     * 
+     * @return string
+     */
+    public function getGlue();
+    /**
      * This function instantiates the object using the supplied configuration
      * details.
      * 

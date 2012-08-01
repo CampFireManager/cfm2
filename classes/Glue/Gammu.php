@@ -28,6 +28,11 @@ class Glue_Gammu implements Interface_Glue
     protected $strInterface = null;
     protected $objDaemon = null;
     
+    public function getGlue()
+    {
+        return $this->strInterface;
+    }
+    
     /**
      * Advise whether this Glue can send broadcast messages.
      *
@@ -340,7 +345,7 @@ class Glue_Gammu implements Interface_Glue
      */
     public static function brokerAllGlues()
     {
-        $arrConfig = Container_SecureConfig::brokerAll();
+        $arrConfig = Object_SecureConfig::brokerAll();
         $return = array();
         foreach ($arrConfig as $key => $objConfig) {
             if (preg_match('/^Glue_Gammu-[^_]+/', $key)) {

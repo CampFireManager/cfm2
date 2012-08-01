@@ -30,6 +30,7 @@ class Collection_Glue
      * @return array 
      */
     public static function brokerAll() {
+        $arrGlues = array();
         foreach (new DirectoryIterator(dirname(__FILE__) . '/../Glue') as $file) {
             if ($file->isDir() || $file->isDot()) continue;
             if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
@@ -39,6 +40,6 @@ class Collection_Glue
                 }
             }
         }
-        return $arrGlues[];
+        return $arrGlues;
     }    
 }
