@@ -37,7 +37,9 @@ do {
     Container_Config::LoadConfig();
     echo "Done\r\n";
     echo "(3/5) Sleeping to reduce server load: ";
-    sleep(Container_Config::brokerByID('Sleep In Cron Script', '5')->getKey('value'));
+    if ($forever) {
+        sleep(Container_Config::brokerByID('Sleep In Cron Script', '5')->getKey('value'));
+    }
     echo "Awake\r\n";
     echo "(4/5) Loading hook processes: ";
     $hook = new Base_Hook();
