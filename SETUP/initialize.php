@@ -16,7 +16,7 @@
 /**
  * This file defines the autoloader for the classes mentioned elsewhere.
  */
-require_once dirname(__FILE__) . '/classes/autoloader.php';
+require_once dirname(__FILE__) . '/../classes/autoloader.php';
 $objRequest = Container_Request::getRequest();
 if ($objRequest->get_strRequestMethod() != 'file') {
     die("Must only be run from the command line.");
@@ -24,7 +24,7 @@ if ($objRequest->get_strRequestMethod() != 'file') {
 Object_User::isSystem(true);
 Container_Config_Demo::initializeDemo();
 
-foreach (new DirectoryIterator(dirname(__FILE__) . '/classes/Object') as $file) {
+foreach (new DirectoryIterator(dirname(__FILE__) . '/../classes/Object') as $file) {
     if ($file->isDir() || $file->isDot()) continue;
     if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
         $classname = 'Object_' . $file->getBasename('.php');
