@@ -67,13 +67,13 @@ class Object_Daemon extends Abstract_GenericObject
 /**
  * This class defines some default and demo data for the use in demos.
  * 
- * @category Object_Output
+ * @category Object_Daemon
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
-class Object_Output_Demo extends Object_Input
+class Object_Daemon_Demo extends Object_Daemon
 {
     protected $arrDemoData = array(
         array('strDaemon' => 'Glue_TwitterAPI-1', 'intInboundCounter' => 0, 'intOutboundCounter' => 0, 'intUniqueCounter' => 0, 'intScope' => 350, 'lastUsedSuccessfully' => '1970-01-01 00:00:00')

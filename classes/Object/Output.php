@@ -144,7 +144,7 @@ class Object_Output extends Abstract_GenericObject
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
-class Object_Output_Demo extends Object_Input
+class Object_Output_Demo extends Object_Output
 {
     protected $arrDemoData = array(
         array('strReceiver' => '+447000000001', 'strInterface' => 'gammu', 'textMessage' => '')
