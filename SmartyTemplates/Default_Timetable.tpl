@@ -27,11 +27,19 @@
                         <!--SM:if $talk.isLocked == 'hardlock':SM-->
                         <h3>All other rooms in this slot unavailable due to: <!--SM:$talk.strTalk:SM--></h3>
                         <!--SM:else:SM-->
+                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
                         <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?slot=<!--SM:$slot.intSlotID:SM-->">
+                            <!--SM:/if:SM-->
                             <h3>Empty<!--SM:if $talk.isLocked == 'softlock':SM--> during: <!--SM:$talk.strTalk:SM--><!--SM:/if:SM--></h3>
+                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
                             <p><strong>Click to arrange a talk here!</strong></p>
+                            <!--SM:else:SM-->
+                                <p>If you were logged in, you could arrange a talk by clicking here.</p>
+                            <!--SM:/if:SM-->
                             <p class="ui-li-aside"></p>
+                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
                         </a>
+                            <!--SM:/if:SM-->
                         <!--SM:/if:SM-->
                     </li>
                     <!--SM:/if:SM-->
