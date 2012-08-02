@@ -8,6 +8,7 @@ if ($objRequest->get_strRequestMethod() != 'file') {
 
 echo "Welcome to CampFireManager2 Installation!\n";
 
+$run_init = 0;
 $config_file = dirname(__FILE__) . '/../config/local.php';
 
 if ( ! is_writable($config_file)) {
@@ -314,12 +315,58 @@ while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
         } else {
             die("\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\n");
         }
+        $run_init = 1;
         break;
     case 'N':
     case 'n':
         die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
         break;
     }
+}
+
+$oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
+$newfile = array();
+foreach ($oldfile as $oldline) {
+    switch(substr($oldline, 4, 7)) {
+    case 'RW_TYPE':
+        $newfile[] = "$RW_TYPE = '{$arrConfig['coretype']}'";
+        break;
+    case 'RW_HOST':
+        $newfile[] = "$RW_HOST = '{$arrConfig['corehost']}'";
+        break;
+    case 'RW_PORT':
+        $newfile[] = "$RW_PORT = '{$arrConfig['coreport']}'";
+        break;
+    case 'RW_BASE':
+        $newfile[] = "$RW_BASE = '{$arrConfig['coredatabase']}'";
+        break;
+    case 'RW_USER':
+        $newfile[] = "$RW_USER = '{$arrConfig['coreuser']}'";
+        break;
+    case 'RW_PASS':
+        $newfile[] = "$RW_PASS = '{$arrConfig['corepass']}'";
+        break;
+    default:
+        $newfile[] = $oldline;
+        break;
+    }
+}
+file_put_contents($config_file, implode("\n", $newfile));
+
+while ($run_init == 0) {
+    switch (readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
+    case 'Y':
+    case 'y':
+        $run_init = 1;
+        break;
+    case 'N':
+    case 'n':
+        $run_init = -1;
+        break;
+    }
+}
+if ($run_init == 1) {
+    include_once dirname(__FILE__) . '/initialize.php';
 }
 
 while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammudatabase'], $gammudb)) {
@@ -394,48 +441,19 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
     }
 }
 
-$oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
-$newfile = array();
-foreach ($oldfile as $oldline) {
-    switch(substr($oldline, 4, 7)) {
-    case 'RW_TYPE':
-        $newfile[] = "$RW_TYPE = '{$arrConfig['coretype']}'";
-        break;
-    case 'RW_HOST':
-        $newfile[] = "$RW_HOST = '{$arrConfig['corehost']}'";
-        break;
-    case 'RW_PORT':
-        $newfile[] = "$RW_PORT = '{$arrConfig['coreport']}'";
-        break;
-    case 'RW_BASE':
-        $newfile[] = "$RW_BASE = '{$arrConfig['coredatabase']}'";
-        break;
-    case 'RW_USER':
-        $newfile[] = "$RW_USER = '{$arrConfig['coreuser']}'";
-        break;
-    case 'RW_PASS':
-        $newfile[] = "$RW_PASS = '{$arrConfig['corepass']}'";
-        break;
-    default:
-        $newfile[] = $oldline;
-        break;
-    }
-}
-file_put_contents($config_file, implode("\n", $newfile));
-
 if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../config/gammu.php')) {
     switch(readline("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
     case 'Y':
     case 'y':
         $contents = array(
-            ';<?php //This line is here to prevent casual evesdroppers from getting to the SMS SQL credentials',
+            ';<?php $hold = "//This line is here to prevent casual evesdroppers from getting to the SMS SQL credentials',
             '[gammu]',
             'port = ' . $arrConfig['gammudevice'],
-            'Connection = at19200',
+            'Connection = at',
             '',
             '[smsd]',
             'PhoneID = phone' . $arrConfig['gammuservice'],
-            'CommTimeout = 5',
+            'CommTimeout = 30',
             'DeliveryReport = sms',
             '',
             'service = mysql',
@@ -446,7 +464,8 @@ if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../confi
             '',
             'LogFormat = textall',
             'logfile = stdout',
-            'debuglevel = 1'
+            'debuglevel = 3',
+            ';";'
         );
         file_put_contents($_SERVER['HOME'].'/phone'.$id.'.gammu', implode("\n", $contents));
         $sql = 'INSERT INTO secureconfig (`key`, `value`) VALUES '
