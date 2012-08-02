@@ -6,7 +6,45 @@ if ($objRequest->get_strRequestMethod() != 'file') {
     die("Must only be run from the command line.");
 }
 
-echo "Welcome to CampFireManager2 Installation!\n";
+echo "Welcome to CampFireManager2 Installation!\r\n\r\n";
+
+echo "(1/8) Ensuring your external libraries are installed\r\n";
+
+$Libraries = array(
+    'php-openid' => array('ver' => 'current', 'source' => 'git'),
+    'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
+    'Smarty' => array('ver' => '3.1.11', 'source' => 'http://www.smarty.net/files/Smarty-3.1.11.tar.gz'),
+    'jQueryMobile' => array('ver' => '1.1.1', 'source' => 'http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.zip'),
+    'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js')
+);
+
+echo " * Git Submodules (php-openid and TwitterHelper): ";
+exec('git submodule update --init', $return);
+echo "Done\r\n";
+
+echo " * Smarty {$Libraries['Smarty']['ver']}: ";
+chdir('../ExternalLibraries');
+mkdir("Smarty");
+chdir("Smarty");
+exec("wget -O Smarty-{$Libraries['Smarty']['ver']}.tar.gz {$Libraries['Smarty']['source']}", $return);
+exec("tar xfz Smarty-{$Libraries['Smarty']['ver']}.tar.gz", $return);
+echo "Done\r\n";
+
+echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
+chdir(dirname(__FILE__) . '/../media');
+exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
+exec("unzip c -d .", $return);
+unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
+echo "Done\r\n";
+
+echo " * jQuery {$Libraries['jQuery']['ver']}: ";
+rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
+exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
+echo "Done\r\n";
+
+chdir(dirname(__FILE__));
+
+echo "(2/8) Parsing config options\r\n";
 
 $run_init = 0;
 $config_file = dirname(__FILE__) . '/../config/local.php';
@@ -125,6 +163,11 @@ $arrOptions = array(
         '--[Gg][Aa][Mm][Mm][Uu][Ss][Vv][Cc]',
         '-[Gg][Ss]'
     ),
+    'gammuenable' => array(
+        '--[Gg][Aa][Mm][Mm][Uu][Ee][Nn][Aa][Bb][Ll][Ee]',
+        '--[Gg][Aa][Mm][Mm][Uu]',
+        '-[Gg][Ee]'
+    ),
     'twitterconsumerkey' => array(
         '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr][Cc][Oo][Nn][Ss][Uu][Mm][Ee][Rr][Kk][Ee][Yy]',
         '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr][Cc][Kk]',
@@ -144,8 +187,12 @@ $arrOptions = array(
         '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr][Uu][Ss][Ee][Rr][Ss][Ee][Cc][Rr][Ee][Tt]',
         '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr][Uu][Ss]',
         '-[Tt][Uu][Ss]'
+    ),
+    'twitterenable' => array(
+        '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr][Ee][Nn][Aa][Bb][Ll][Ee]',
+        '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr]',
+        '-[Tt][Ee]'
     )
-
 );
 
 foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
@@ -168,11 +215,12 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
                 break;
             default:
                 help();
-                die("Option not found");
+                die("\r\nOption not found");
             }
             if ($strKey == 'gammufile' && ! file_exists($arrConfig['gammufile'])) {
                 $arrConfig['gammufile'] = $oldkey;
             }
+            echo "\r\n * $strKey: Done";
         }
     }
 }
@@ -203,6 +251,10 @@ if ($arrConfig['gammuenable'] == 1) {
 if ($arrConfig['coretype'] != 'mysql' || ($arrConfig['gammutype'] != 'mysql' && $arrConfig['gammuenable'] == 1)) {
     die("\r\nSorry, right now, we only support mysql based databases.\r\n");
 }
+
+echo "Done\r\n";
+
+echo "(3/8) Accessing and configuring core database: ";
 
 $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], $arrConfig['rootpass']);
 $coredb = mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
@@ -237,6 +289,88 @@ if (! $coredb && $coredb != false) {
 } elseif (! $coredb) {
     die("\r\nCouldn't proceed - the non-core user account did not exist, and the root credentials were not supplied.\r\n");
 }
+
+while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
+    switch (readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
+    case 'Y':
+    case 'y':
+        if ($rootdb) {
+            try {
+                if(!mysql_query("CREATE DATABASE IF NOT EXISTS `{$arrConfig['coredatabase']}`;", $rootdb)) {
+                    throw new Exception("Couldn't create database. Are you sure you provided the correct root credentials?");
+                }
+                if(!mysql_query("GRANT ALL PRIVILEGES ON `{$arrConfig['coredatabase']}` . * TO '{$arrConfig['coreuser']}'@'%';", $rootdb)) {
+                    throw new Exception("Couldn't grant database privileges. Are you sure you provided the correct root credentials?");
+                }
+            } catch (Exception $e) {
+                help();
+                die("\r\n".$e->getMessage()."\r\n");
+            }
+        } else {
+            die("\r\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\r\n");
+        }
+        $run_init = 1;
+        break;
+    case 'N':
+    case 'n':
+        die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
+        break;
+    }
+}
+
+echo "Done\r\n";
+
+echo "\r\n(4/8) Building config file: ";
+
+$oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
+$newfile = array();
+foreach ($oldfile as $oldline) {
+    switch(substr($oldline, 4, 7)) {
+    case 'RW_TYPE':
+        $newfile[] = "$RW_TYPE = '{$arrConfig['coretype']}'";
+        break;
+    case 'RW_HOST':
+        $newfile[] = "$RW_HOST = '{$arrConfig['corehost']}'";
+        break;
+    case 'RW_PORT':
+        $newfile[] = "$RW_PORT = '{$arrConfig['coreport']}'";
+        break;
+    case 'RW_BASE':
+        $newfile[] = "$RW_BASE = '{$arrConfig['coredatabase']}'";
+        break;
+    case 'RW_USER':
+        $newfile[] = "$RW_USER = '{$arrConfig['coreuser']}'";
+        break;
+    case 'RW_PASS':
+        $newfile[] = "$RW_PASS = '{$arrConfig['corepass']}'";
+        break;
+    default:
+        $newfile[] = $oldline;
+        break;
+    }
+}
+file_put_contents($config_file, implode("\n", $newfile));
+echo "Done\r\n";
+
+echo "(5/8) Running Core Database Configuration: ";
+while ($run_init == 0) {
+    switch (readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
+    case 'Y':
+    case 'y':
+        $run_init = 1;
+        break;
+    case 'N':
+    case 'n':
+        $run_init = -1;
+        break;
+    }
+}
+if ($run_init == 1) {
+    include_once dirname(__FILE__) . '/initialize.php';
+}
+echo "\r\nDone\r\n";
+
+echo "(6/8) Accessing and configuring Gammu Databases: ";
 
 if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
     $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
@@ -294,79 +428,6 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
             $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
         }
     }    
-}
-
-while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
-    switch (readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
-    case 'Y':
-    case 'y':
-        if ($rootdb) {
-            try {
-                if(!mysql_query("CREATE DATABASE IF NOT EXISTS `{$arrConfig['coredatabase']}`;", $rootdb)) {
-                    throw new Exception("Couldn't create database. Are you sure you provided the correct root credentials?");
-                }
-                if(!mysql_query("GRANT ALL PRIVILEGES ON `{$arrConfig['coredatabase']}` . * TO '{$arrConfig['coreuser']}'@'%';", $rootdb)) {
-                    throw new Exception("Couldn't grant database privileges. Are you sure you provided the correct root credentials?");
-                }
-            } catch (Exception $e) {
-                help();
-                die("\n".$e->getMessage()."\n");
-            }
-        } else {
-            die("\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\n");
-        }
-        $run_init = 1;
-        break;
-    case 'N':
-    case 'n':
-        die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
-        break;
-    }
-}
-
-$oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
-$newfile = array();
-foreach ($oldfile as $oldline) {
-    switch(substr($oldline, 4, 7)) {
-    case 'RW_TYPE':
-        $newfile[] = "$RW_TYPE = '{$arrConfig['coretype']}'";
-        break;
-    case 'RW_HOST':
-        $newfile[] = "$RW_HOST = '{$arrConfig['corehost']}'";
-        break;
-    case 'RW_PORT':
-        $newfile[] = "$RW_PORT = '{$arrConfig['coreport']}'";
-        break;
-    case 'RW_BASE':
-        $newfile[] = "$RW_BASE = '{$arrConfig['coredatabase']}'";
-        break;
-    case 'RW_USER':
-        $newfile[] = "$RW_USER = '{$arrConfig['coreuser']}'";
-        break;
-    case 'RW_PASS':
-        $newfile[] = "$RW_PASS = '{$arrConfig['corepass']}'";
-        break;
-    default:
-        $newfile[] = $oldline;
-        break;
-    }
-}
-file_put_contents($config_file, implode("\n", $newfile));
-
-while ($run_init == 0) {
-    switch (readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
-    case 'Y':
-    case 'y':
-        $run_init = 1;
-        break;
-    case 'N':
-    case 'n':
-        $run_init = -1;
-        break;
-    }
-}
-if ($run_init == 1) {
-    include_once dirname(__FILE__) . '/initialize.php';
 }
 
 while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammudatabase'], $gammudb)) {
@@ -440,7 +501,9 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
         die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
     }
 }
+echo "Done\r\n";
 
+echo "\r\n(7/8) Building Gammu SMSD config file: ";
 if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../config/gammu.php')) {
     switch(readline("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
     case 'Y':
@@ -478,7 +541,9 @@ if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../confi
         mysql_query($sql, $coredb);
     }
 }
+echo "Done\r\n";
 
+echo "\r\n(8/8) Configuring Twitter API access: ";
 if ($arrConfig['twitterenable'] == 1
     && $arrConfig['twitterconsumerkey'] != ''
     && $arrConfig['twitterconsumersecret'] != ''
@@ -493,10 +558,66 @@ if ($arrConfig['twitterenable'] == 1
     . "('Glue_TwitterAPI-Broadcast_UserSecret', '{$arrConfig['twitterusersecret']}')";
     mysql_query($sql, $coredb);
 }
+echo "Done\r\n";
 
 echo "\nInstall complete. Run the following commands to start the daemons:\n\n";
 echo "touch nohup.out\n";
-echo "sudo nohup gammu-smsd -c " . dirname(__FILE__) . '/../config/gammu.php' . " -U gammu & \n";
+echo "nohup gammu-smsd -c " . dirname(__FILE__) . '/../config/gammu.php' . " & \n";
 echo "nohup php -q " . dirname(__FILE__) . "/../cron.php";
 echo "nohup php -q " . dirname(__FILE__) . "/../glue.php";
 echo "\n";
+
+function help()
+{
+    echo "
+ =============================================================================
+ ======================== CampFireManager2  Installer ========================
+ =============================================================================
+
+All options can be specified with their short, medium (where offered) and long
+versions, and can be specified as -v, --var, --variable (in which case, all
+options barring the --ServiceENABLE should prompt you for that value), or
+providing the option on the command line, as -v=value, --var=value or
+--variable=value. All variable names are non-case specific, but their values
+are case specific. If left blank, all values should self-populate.
+
+ ============================= Database Defaults =============================
+-t   | --type                                = Default: mysql
+-h   | --host | --hostname                   = Default: localhost
+-p   | --port                                = Default: 3306
+-u   | --user | --username                   = Default: root
+-pw  | --pass | --password                   = Default: <empty>
+
+ =============================== Core Defaults ===============================
+
+-cu  | --coreuser | --coreusername           = Default: <default username>
+-cpw | --corepass | --corepassword           = Default: <default password>
+-cd  | --corebase | --coredatabase           = Default: cfm2
+
+ ============================== Gammu  Defaults ==============================
+
+-gt  | --gammutype                           = Default: <default type>
+-gh  | --gammuhost | --gammuhostname         = Default: <default hostname>
+-gp  | --gammuport                           = Default: <default port>
+-gu  | --gammuuser | --gammuusername         = Default: <default username>
+-gpw | --gammupass | --gammupassword         = Default: <default password>
+-gd  | --gammubase | --gammudatabase         = Default: gammu
+-gf  | --gammufile                           = Default: /usr/share/doc/
+                                               ...cont: gammu-smsd/examples/
+                                               ...cont: mysql.sql.gz
+-gde | --gammudev  | --gammudevice           = Default: /dev/ttyUSB0
+-gs  | --gammusvc  | --gammuservice          = Default: Generic
+-ge  | --gammu     | --gammuenable           = Default: 1 (0 to disable)
+
+ ============================= Twitter  Defaults =============================
+
+-tck | --twitterck | --twitterconsumerkey    = Default: <empty>
+-tck | --twitterck | --twitterconsumerkey    = Default: <empty>
+-tcs | --twittercs | --twitterconsumersecret = Default: <empty>
+-tut | --twitterut | --twitterusertoken      = Default: <empty>
+-tus | --twitterus | --twitterusersecret     = Default: <empty>
+-te  | --twitter   | --twitterenable         = Default: <empty>
+
+ =============================================================================
+";
+}
