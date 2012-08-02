@@ -19,21 +19,23 @@ $Libraries = array(
 );
 
 echo " * Git Submodules (php-openid and TwitterHelper): ";
+chdir(dirname(__FILE__) . '/..');
 exec('git submodule update --init', $return);
 echo "Done\r\n";
 
 echo " * Smarty {$Libraries['Smarty']['ver']}: ";
-chdir('../ExternalLibraries');
-mkdir("Smarty");
-chdir("Smarty");
+if (!file_exists(dirname(__FILE__) . '/../ExternalLibraries/Smarty')) {
+    mkdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
+}
+chdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
 exec("wget -O Smarty-{$Libraries['Smarty']['ver']}.tar.gz {$Libraries['Smarty']['source']}", $return);
 exec("tar xfz Smarty-{$Libraries['Smarty']['ver']}.tar.gz", $return);
 echo "Done\r\n";
 
 echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
-chdir(dirname(__FILE__) . '/../media');
+chdir(dirname(__FILE__) . '/../Media');
 exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
-exec("unzip c -d .", $return);
+exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
 unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
 echo "Done\r\n";
 
@@ -201,21 +203,20 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
             switch(1) {
             case preg_match('/^' . $strOption . '=(.*)$/', $parameter, $match):
             case preg_match('/^' . $strOption . '=(.*)$/', $key, $match):
-            case preg_match('/^' . $strOption . '=(.*)$/', $parameter, $match):
-            case preg_match('/^' . $strOption . '=(.*)$/', $key, $match):
                 $oldkey = $arrConfig[$strKey];
                 $arrConfig[$strKey] = $match[1];
                 break;
-            case preg_match('/^' . $strOption . '$/', $parameter, $match):
             case preg_match('/^' . $strOption . '$/', $key, $match):
+                $oldkey = $arrConfig[$strKey];
+                $arrConfig[$strKey] = $parameter;
+                break;
             case preg_match('/^' . $strOption . '$/', $parameter, $match):
-            case preg_match('/^' . $strOption . '$/', $key, $match):
                 $oldkey = $arrConfig[$strKey];
                 $arrConfig[$strKey] = readline("\r\nPlease supply the configuration value for $strKey: ");                    
                 break;
             default:
                 help();
-                die("\r\nOption not found");
+                die("\r\nOption $key | $parameter not found");
             }
             if ($strKey == 'gammufile' && ! file_exists($arrConfig['gammufile'])) {
                 $arrConfig['gammufile'] = $oldkey;
