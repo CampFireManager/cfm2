@@ -80,6 +80,8 @@
 <!--SM:/if:SM-->
             </div>
             <div data-role="content" data-theme="d">	
+               <div data-role="collapsible-set">
+                <div data-role="collapsible" data-collapsed="false"> 
                 <h3>OpenID</h3>
                 <form method="post" action="openid/" data-ajax="false">
                     <input type="hidden" name="id" value="http://www.google.com/accounts/o8/id" />
@@ -97,6 +99,8 @@
                     <input type="text" name="id" size="10" value="http://" />
                     <input type="submit" value="Login with your Own OpenID Provider" />
                 </form>
+                </div>
+                <div data-role="collapsible"> 
                 <h3>Basic Authentication</h3>
                 <form method="post" action="#" data-ajax="false">
                     Username: <input type="text" size="10" name="username" value="" /> 
@@ -104,11 +108,14 @@
                     Register? <input type="checkbox" value="true" name="register" />
                     <input type="submit" value="Login" />
                 </form>
+                </div>
+                <div data-role="collapsible"> 
                 <h3>Auth Code</h3>
                 <form method="post" action="#" data-ajax="false">
                     Auth Code: <input type="text" size="10" name="code" value="" /> 
                     <input type="submit" value="Login" />
                 </form>	
+                </div>
             </div>
 
             <div data-role="footer" data-theme="e">
