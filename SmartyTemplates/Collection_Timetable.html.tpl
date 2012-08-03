@@ -103,9 +103,9 @@
                 <div data-role="collapsible"> 
                 <h3>Basic Authentication</h3>
                 <form method="post" action="#" data-ajax="false">
-                    Username: <input type="text" size="10" name="username" value="" /> 
-                    Password: <input type="password" size="10" name="password" value="" /> 
-                    Register? <input type="checkbox" value="true" name="register" />
+                    <label>Username: <input type="text" size="10" name="username" value="" /></label>
+                    <label>Password: <input type="password" size="10" name="password" value="" /></label> 
+                    <label><input type="checkbox" checked="checked" name="register" />Register?</label>
                     <input type="submit" value="Login" />
                 </form>
                 </div>
@@ -115,6 +115,7 @@
                     Auth Code: <input type="text" size="10" name="code" value="" /> 
                     <input type="submit" value="Login" />
                 </form>	
+                </div>
                 </div>
             </div>
 
