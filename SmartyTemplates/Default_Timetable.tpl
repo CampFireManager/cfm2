@@ -15,7 +15,7 @@
                                 in <strong><!--SM:$talk.arrRoom.strRoom:SM--></strong>
                             </p>
                             <p><!--SM:$talk.strTalkSummary:SM--></p>
-                            <span class="ui-li-count"><!--SM:$talk.intAttendees:SM--> / <!--SM:$talk.arrRoom.intCapacity:SM--> Attendees</span>
+                            <span class="ui-li-count"><!--SM:$talk.intAttendees:SM--> / <!--SM:$talk.arrRoom.strCapacity:SM--> Attendees</span>
                             <p class="ui-li-aside"></p>
                         </a>
                     </li>

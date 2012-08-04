@@ -109,6 +109,7 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
+            
             if ($this->intRoomID != null && $this->intRoomID > 0) {
                 $objRoom = Object_Room::brokerByID($this->intRoomID);
                 if (is_object($objRoom)) {
@@ -123,26 +124,30 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
+            
             if ($this->intSlotID != null && $this->intSlotID > 0) {
                 $objSlot = Object_Slot::brokerByID($this->intSlotID);
                 if (is_object($objSlot)) {
                     $objSlot->setFull(true);
-                    $self['arrSlot_start'] = $objSlot->getSelf();
-                    if ($self['arrSlot_start']['epochLastChange'] > $self['epochLastChange']) {
-                        $self['epochLastChange'] = $self['arrSlot_start']['epochLastChange'];
+                    $self['arrSlot'] = $objSlot->getSelf();
+                    if ($self['arrSlot']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrSlot']['epochLastChange'];
                     }
-                    $self['arrSlot_stop'] = $objSlot->getSelf();
                 }
                 if ($this->intLength > 1) {
                     $objSlot = Object_Slot::brokerByID($this->intSlotID + ($this->intLength - 1));
                     if (is_object($objSlot)) {
                         $objSlot->setFull(true);
-                        $self['arrSlot_stop'] = $objSlot->getSelf();
-                        if ($self['arrSlot_stop']['epochLastChange'] > $self['epochLastChange']) {
-                            $self['epochLastChange'] = $self['arrSlot_stop']['epochLastChange'];
+                        $self['arrSlot']['dateEnd'] = $arrSlot_stop['dateEnd'];
+                        $self['arrSlot']['timeEnd'] = $arrSlot_stop['timeEnd'];
+                        $self['arrSlot']['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ', 'Z')->getKey('value');
+                        $self['arrSlot']['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
+
+                        if ($arrSlot_stop['epochLastChange'] > $self['epochLastChange']) {
+                            $self['epochLastChange'] = $arrSlot['epochLastChange'];
                         }
-                        if ($self['arrSlot_stop']['lastChange'] > $self['lastChange']) {
-                            $self['lastChange'] = $self['arrSlot_stop']['lastChange'];
+                        if ($arrSlot_stop['lastChange'] > $self['lastChange']) {
+                            $self['lastChange'] = $arrSlot_stop['lastChange'];
                         }
                     }
                 }
@@ -160,6 +165,7 @@ class Object_Talk extends Abstract_GenericObject
             if (! is_array($self['arrLinks'])) {
                 $self['arrLinks'] = array();
             }
+            
             $resources = json_decode($this->jsonResources, true);
             if (! is_array($resources)) {
                 $resources = array();
@@ -174,12 +180,13 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
+            
             $presenters = json_decode($this->jsonOtherPresenters, true);
             if (!is_array($presenters)) {
                 $presenters = array();
             }
             foreach ($presenters as $presenter) {
-                $objPresenter = Object_User::brokerByID($presenter);
+                $objPresenter = Object_UserPresenter::brokerByID($presenter);
                 if (is_object($objPresenter)) {
                     $arrPresenter = $objPresenter->getSelf();
                     $self['arrPresenters'][] = $arrPresenter;
@@ -188,6 +195,7 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
+            
             $self['strSlotID'] = 'slot_' . $this->intSlotID;
             $self['strRoomID'] = 'room_' . $this->intRoomID;
         }
