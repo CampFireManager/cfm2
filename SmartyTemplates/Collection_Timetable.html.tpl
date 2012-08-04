@@ -112,7 +112,7 @@
                 <div data-role="collapsible"> 
                 <h3>Auth Code</h3>
                 <form method="post" action="#" data-ajax="false">
-                    Auth Code: <input type="text" size="10" name="code" value="" /> 
+                    <label>Auth Code: <input type="text" size="10" name="code" value="" /></label> 
                     <input type="submit" value="Login" />
                 </form>	
                 </div>
