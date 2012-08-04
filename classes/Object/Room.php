@@ -56,6 +56,11 @@ class Object_Room extends Abstract_GenericObject
     function getData()
     {
         $self = parent::getData();
+        if ($self['intCapacity'] == 0) {
+            $self['strCapacity'] = '&infin;';
+        } else {
+            $self['strCapacity'] = $self['intCapacity'];
+        }
         if ($this->isFull() == true) {
             $resources = json_decode($this->jsonResourceList, true);
             foreach ($resources as $resource) {
