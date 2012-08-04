@@ -580,8 +580,8 @@ echo "Done\r\n";
 echo "\nInstall complete. Run the following commands to start the daemons:\n\n";
 echo "touch nohup.out\n";
 echo "nohup gammu-smsd -c " . dirname(__FILE__) . '/../config/gammu.php' . " & \n";
-echo "nohup php -q " . dirname(__FILE__) . "/../cron.php";
-echo "nohup php -q " . dirname(__FILE__) . "/../glue.php";
+echo "nohup php -q " . dirname(__FILE__) . "/../cron.php &\n";
+echo "nohup php -q " . dirname(__FILE__) . "/../glue.php &";
 echo "\n";
 
 function help()
