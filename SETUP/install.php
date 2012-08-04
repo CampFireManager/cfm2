@@ -8,7 +8,7 @@ if ($objRequest->get_strRequestMethod() != 'file') {
 
 echo "Welcome to CampFireManager2 Installation!\r\n\r\n";
 
-echo "(1/8) Ensuring your external libraries are installed\r\n";
+echo "(1/9) Ensuring your external libraries are installed\r\n";
 
 $Libraries = array(
     'php-openid' => array('ver' => 'current', 'source' => 'git'),
@@ -46,10 +46,16 @@ echo "Done\r\n";
 
 chdir(dirname(__FILE__));
 
-echo "(2/8) Parsing config options\r\n";
+echo "(2/9) Parsing config options\r\n";
 
 $run_init = 0;
 $config_file = dirname(__FILE__) . '/../config/local.php';
+
+if ( ! file_exists($config_file)) {
+    $fh = fopen($config_file) or die("\n/config/local.php is not creatable. Please make sure you have permission to create and edit this file.\nYou may need root to run this script with root privileges\n");
+    fwrite($fh, '');
+    fclose($fh);
+}
 
 if ( ! is_writable($config_file)) {
     die("\n/config/local.php is not writable. Please make sure you have permission to create and edit this file.\nYou may need to run this script with root privileges\n");
@@ -261,7 +267,7 @@ if ($arrConfig['coretype'] != 'mysql' || ($arrConfig['gammutype'] != 'mysql' && 
 
 echo "Done\r\n";
 
-echo "(3/8) Accessing and configuring core database: ";
+echo "(3/9) Accessing and configuring core database: ";
 
 $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], $arrConfig['rootpass']);
 $coredb = mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
@@ -327,7 +333,7 @@ while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
 
 echo "Done\r\n";
 
-echo "\r\n(4/8) Building config file: ";
+echo "\r\n(4/9) Building config file: ";
 
 $oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
 $newfile = array();
@@ -359,7 +365,7 @@ foreach ($oldfile as $oldline) {
 file_put_contents($config_file, implode("\n", $newfile));
 echo "Done\r\n";
 
-echo "(5/8) Running Core Database Configuration: ";
+echo "(5/9) Running Core Database Configuration: ";
 while ($run_init == 0) {
     switch (readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
     case 'Y':
@@ -377,7 +383,7 @@ if ($run_init == 1) {
 }
 echo "\r\nDone\r\n";
 
-echo "(6/8) Accessing and configuring Gammu Databases: ";
+echo "(6/9) Accessing and configuring Gammu Databases: ";
 
 if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
     $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
@@ -510,7 +516,7 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
 }
 echo "Done\r\n";
 
-echo "\r\n(7/8) Building Gammu SMSD config file: ";
+echo "\r\n(7/9) Building Gammu SMSD config file: ";
 if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../config/gammu.php')) {
     switch(readline("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
     case 'Y':
@@ -550,7 +556,7 @@ if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../confi
 }
 echo "Done\r\n";
 
-echo "\r\n(8/8) Configuring Twitter API access: ";
+echo "\r\n(8/9) Configuring Twitter API access: ";
 if ($arrConfig['twitterenable'] == 1
     && $arrConfig['twitterconsumerkey'] != ''
     && $arrConfig['twitterconsumersecret'] != ''
@@ -565,6 +571,10 @@ if ($arrConfig['twitterenable'] == 1
     . "('Glue_TwitterAPI-Broadcast_UserSecret', '{$arrConfig['twitterusersecret']}')";
     mysql_query($sql, $coredb);
 }
+echo "Done\r\n";
+
+echo "\r\n(9/9) Linking _htaccess to .htaccess: ";
+link(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess');
 echo "Done\r\n";
 
 echo "\nInstall complete. Run the following commands to start the daemons:\n\n";
