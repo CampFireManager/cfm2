@@ -28,7 +28,7 @@
         <input type="hidden" id="pageIdentifier" page="thegrid" />
         <div data-role="page" id="timetable">
             <div data-role="header">
-                <a href="#" data-icon="refresh">Refresh</a>
+                <a href="<!--SM:$SiteConfig.baseurl:SM-->" data-icon="refresh">Refresh</a>
 <!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
 <!--SM:if isset($SiteConfig.Site_Name):SM-->
     <!--SM:assign var=title_open value='<h1>':SM-->
