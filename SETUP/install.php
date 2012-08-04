@@ -328,22 +328,22 @@ $newfile = array();
 foreach ($oldfile as $oldline) {
     switch(substr($oldline, 4, 7)) {
     case 'RW_TYPE':
-        $newfile[] = "$RW_TYPE = '{$arrConfig['coretype']}'";
+        $newfile[] = "\$RW_TYPE = '{$arrConfig['coretype']}';";
         break;
     case 'RW_HOST':
-        $newfile[] = "$RW_HOST = '{$arrConfig['corehost']}'";
+        $newfile[] = "\$RW_HOST = '{$arrConfig['corehost']}';";
         break;
     case 'RW_PORT':
-        $newfile[] = "$RW_PORT = '{$arrConfig['coreport']}'";
+        $newfile[] = "\$RW_PORT = '{$arrConfig['coreport']}';";
         break;
     case 'RW_BASE':
-        $newfile[] = "$RW_BASE = '{$arrConfig['coredatabase']}'";
+        $newfile[] = "\$RW_BASE = '{$arrConfig['coredatabase']}';";
         break;
     case 'RW_USER':
-        $newfile[] = "$RW_USER = '{$arrConfig['coreuser']}'";
+        $newfile[] = "\$RW_USER = '{$arrConfig['coreuser']}';";
         break;
     case 'RW_PASS':
-        $newfile[] = "$RW_PASS = '{$arrConfig['corepass']}'";
+        $newfile[] = "\$RW_PASS = '{$arrConfig['corepass']}';";
         break;
     default:
         $newfile[] = $oldline;
