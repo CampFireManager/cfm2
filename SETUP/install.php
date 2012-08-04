@@ -52,7 +52,7 @@ $run_init = 0;
 $config_file = dirname(__FILE__) . '/../config/local.php';
 
 if ( ! file_exists($config_file)) {
-    $fh = fopen($config_file) or die("\n/config/local.php is not creatable. Please make sure you have permission to create and edit this file.\nYou may need root to run this script with root privileges\n");
+    $fh = fopen($config_file, 'w') or die("\n/config/local.php is not creatable. Please make sure you have permission to create and edit this file.\nYou may need root to run this script with root privileges\n");
     fwrite($fh, '');
     fclose($fh);
 }
