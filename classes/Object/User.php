@@ -33,6 +33,10 @@ class Object_User extends Abstract_GenericObject
         'isHere'      => array('type' => 'tinyint', 'length' => 1, 'optional' => 'worker'),
         'lastChange'  => array('type' => 'datetime')
     );
+    protected $arrTranslations = array(
+        'label_strUser' => array('en' => 'User'),
+        'label_arrLinks' => array('en' => 'Links')
+    );
     protected $strDBTable      = "user";
     protected $strDBKeyCol     = "intUserID";
     protected $reqCreatorToMod = true;

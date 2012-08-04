@@ -174,12 +174,13 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
+            
             $presenters = json_decode($this->jsonOtherPresenters, true);
             if (!is_array($presenters)) {
                 $presenters = array();
             }
             foreach ($presenters as $presenter) {
-                $objPresenter = Object_User::brokerByID($presenter);
+                $objPresenter = Object_UserPresenter::brokerByID($presenter);
                 if (is_object($objPresenter)) {
                     $arrPresenter = $objPresenter->getSelf();
                     $self['arrPresenters'][] = $arrPresenter;

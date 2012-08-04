@@ -115,7 +115,15 @@ abstract class Abstract_GenericObject implements Interface_Object
      * @var array|null
      */
     protected $arrTranslations = array();
-
+    /**
+     * This value, if set to true, allows us to customize what type of data is
+     * returned, without creating a new table. See, for example, Users as
+     * Presenters
+     * 
+     * @var boolean
+     */
+    protected $doNotInitialize = false;
+    
     /**
      * Ensure that all database items are backed up before processing.
      *
@@ -824,6 +832,9 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function initialize()
     {
+        if ($this->doNotInitialize == true) {
+            return false;
+        }
         try {
             $objDatabase = Container_Database::getConnection(true);
             $unique_key = '';
@@ -937,6 +948,9 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function initializeDemo()
     {
+        if ($this->doNotInitialize == true) {
+            return false;
+        }
         Object_User::isSystem(true);
         try {
             $objDatabase = Container_Database::getConnection(true);
