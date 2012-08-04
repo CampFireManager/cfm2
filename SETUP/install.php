@@ -198,32 +198,38 @@ $arrOptions = array(
 );
 
 foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
+    $matchfound = false;
     foreach ($arrOptions as $strKey => $arrOption) {
         foreach ($arrOption as $strOption) {
-            switch(1) {
+            switch(1) { 
             case preg_match('/^' . $strOption . '=(.*)$/', $parameter, $match):
             case preg_match('/^' . $strOption . '=(.*)$/', $key, $match):
                 $oldkey = $arrConfig[$strKey];
-                $arrConfig[$strKey] = $match[1];
-                break;
+		$arrConfig[$strKey] = $match[1];
+		$matchfound = true;
+                break 3;
             case preg_match('/^' . $strOption . '$/', $key, $match):
                 $oldkey = $arrConfig[$strKey];
-                $arrConfig[$strKey] = $parameter;
-                break;
+		$arrConfig[$strKey] = $parameter;
+		$matchfound = true;
+                break 3;
             case preg_match('/^' . $strOption . '$/', $parameter, $match):
                 $oldkey = $arrConfig[$strKey];
-                $arrConfig[$strKey] = readline("\r\nPlease supply the configuration value for $strKey: ");                    
-                break;
-            default:
-                help();
-                die("\r\nOption $key | $parameter not found");
-            }
+		$arrConfig[$strKey] = readline("\r\nPlease supply the configuration value for $strKey: ");                    
+		$matchfound = true;
+		break 3;
+	    }
             if ($strKey == 'gammufile' && ! file_exists($arrConfig['gammufile'])) {
                 $arrConfig['gammufile'] = $oldkey;
             }
-            echo "\r\n * $strKey: Done";
-        }
+        }	
     }
+    if ($matchfound) {
+        echo "\r\n * $strKey: Done";
+    } else {
+        help();
+        die("Option $key | $parameter not found");	
+    }	
 }
 
 foreach (array('type', 'host', 'user', 'pass', 'port') as $part) {
