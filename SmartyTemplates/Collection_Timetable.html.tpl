@@ -28,7 +28,7 @@
         <input type="hidden" id="pageIdentifier" page="thegrid" />
         <div data-role="page" id="timetable">
             <div data-role="header">
-                <a href="#" data-icon="refresh">Refresh</a>
+                <a href="<!--SM:$SiteConfig.baseurl:SM-->" data-icon="refresh">Refresh</a>
 <!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
 <!--SM:if isset($SiteConfig.Site_Name):SM-->
     <!--SM:assign var=title_open value='<h1>':SM-->
@@ -80,6 +80,8 @@
 <!--SM:/if:SM-->
             </div>
             <div data-role="content" data-theme="d">	
+               <div data-role="collapsible-set">
+                <div data-role="collapsible" data-collapsed="false"> 
                 <h3>OpenID</h3>
                 <form method="post" action="openid/" data-ajax="false">
                     <input type="hidden" name="id" value="http://www.google.com/accounts/o8/id" />
@@ -97,18 +99,24 @@
                     <input type="text" name="id" size="10" value="http://" />
                     <input type="submit" value="Login with your Own OpenID Provider" />
                 </form>
+                </div>
+                <div data-role="collapsible"> 
                 <h3>Basic Authentication</h3>
                 <form method="post" action="#" data-ajax="false">
-                    Username: <input type="text" size="10" name="username" value="" /> 
-                    Password: <input type="password" size="10" name="password" value="" /> 
-                    Register? <input type="checkbox" value="true" name="register" />
+                    <label>Username: <input type="text" size="10" name="username" value="" /></label>
+                    <label>Password: <input type="password" size="10" name="password" value="" /></label> 
+                    <label><input type="checkbox" checked="checked" name="register" />Register?</label>
                     <input type="submit" value="Login" />
                 </form>
+                </div>
+                <div data-role="collapsible"> 
                 <h3>Auth Code</h3>
                 <form method="post" action="#" data-ajax="false">
-                    Auth Code: <input type="text" size="10" name="code" value="" /> 
+                    <label>Auth Code: <input type="text" size="10" name="code" value="" /></label> 
                     <input type="submit" value="Login" />
                 </form>	
+                </div>
+                </div>
             </div>
 
             <div data-role="footer" data-theme="e">
