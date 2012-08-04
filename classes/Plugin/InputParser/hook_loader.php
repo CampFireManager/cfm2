@@ -182,7 +182,7 @@ class Plugin_InputParser
                             if (strlen($arrTalkInfo['strTalk']) > 15) {
                                 $return .= '... ';
                             }
-                            $return .=  '" at ' . substr($arrTalkInfo['arrSlot_start']['timeStart'], 0, 5);
+                            $return .=  '" at ' . substr($arrTalkInfo['arrSlot']['timeStart'], 0, 5);
                         }
                     }
                     Object_Output::replyToInput($objInput, "Next three talks I'm attending: $return");

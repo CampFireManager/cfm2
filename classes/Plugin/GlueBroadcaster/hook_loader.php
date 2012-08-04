@@ -70,7 +70,7 @@ class Plugin_GlueBroadcaster
         try {
             $object->setFull(true);
             $arrTalk = $object->getSelf();
-            $text = $arrTalk['strTalkName'] . ' has been fixed in room: ' . $arrTalk['arrRoom']['strRoom'] . ' to start at ' . date('H:i', $arrTalk['arrSlot_start']['epochStart']);
+            $text = $arrTalk['strTalkName'] . ' has been fixed in room: ' . $arrTalk['arrRoom']['strRoom'] . ' to start at ' . date('H:i', $arrTalk['arrSlot']['epochStart']);
 
             Object_User::isSystem(true);
             $arrGlues = Collection_Glue::brokerAll();
