@@ -1,155 +1,59 @@
+<!--SM:foreach $renderPage as $DirectionScreen:SM-->
+<!--SM:/foreach:SM-->
 <html>
     <head>
         <title>Direction Screen</title>
+        <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/jQueryClock/jquery.jclock.js"></script>
     </head>
     <body>
-        <table>
-            <tr>
-                <td id="UL">
-                    <!--SM:if isset($renderPage.upleft.strRoom):SM-->
-                        <!--SM:$renderPage.upleft.strRoom:SM-->
-                        <!--SM:foreach $renderPage.upleft.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.upleft.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
-                <td id="U">
-                    <!--SM:if isset($renderPage.upcentre.strRoom):SM-->
-                        <!--SM:$renderPage.upcentre.strRoom:SM-->
-                        <!--SM:foreach $renderPage.upcentre.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.upcentre.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
-                <td id="UR">
-                    <!--SM:if isset($renderPage.upright.strRoom):SM-->
-                        <!--SM:$renderPage.upright.strRoom:SM-->
-                        <!--SM:foreach $renderPage.upright.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.upright.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
+        <table width="100%" height="100%">
+            <!--SM:if $DirectionScreen.toprow:SM-->
+            <tr height="<!--SM:$DirectionScreen.trheight:SM-->">
+                <!--SM:if $DirectionScreen.leftcolumn:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='upleft':SM-->
+                <!--SM:/if:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='upcentre':SM-->
+                <!--SM:if $DirectionScreen.rightcolumn:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='upright':SM-->
+                <!--SM:/if:SM-->
             </tr>
-            <tr>
-                <td id="L">
-                    <!--SM:if isset($renderPage.left.strRoom):SM-->
-                        <!--SM:$renderPage.left.strRoom:SM-->
-                        <!--SM:foreach $renderPage.left.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.left.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
+            <!--SM:/if:SM-->
+            <tr height="<!--SM:$DirectionScreen.trheight:SM-->">
+                <!--SM:if $DirectionScreen.leftcolumn:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='left':SM-->
+                <!--SM:/if:SM-->
+                <td id="C" width="<!--SM:$DirectionScreen.tdwidth:SM-->">
+                    <div class="Now">The time now is: <span class="clock" /></div>
+                    <div class="Next">Next talk starts at <span id="next_talk_time">
+                            <!--SM:if $DirectionScreen.NextSlot == false:SM-->
+                                the next event!
+                            <!--SM:else:SM-->
+                                <!--SM:$DirectionScreen.NextSlot.timeStart:SM-->
+                            <!--SM:/if:SM-->
+                        </span>
+                    </div>
                 </td>
-                <td id="C">Time of this talk and the next goes here</td>
-                <td id="R">
-                    <!--SM:if isset($renderPage.right.strRoom):SM-->
-                        <!--SM:$renderPage.right.strRoom:SM-->
-                        <!--SM:foreach $renderPage.right.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.right.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
+                <!--SM:if $DirectionScreen.rightcolumn:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='right':SM-->
+                <!--SM:/if:SM-->
             </tr>
-            <tr>
-                <td id="DL">
-                    <!--SM:if isset($renderPage.downleft.strRoom):SM-->
-                        <!--SM:$renderPage.downleft.strRoom:SM-->
-                        <!--SM:foreach $renderPage.downleft.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.downleft.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
-                <td id="D">
-                    <!--SM:if isset($renderPage.downcentre.strRoom):SM-->
-                        <!--SM:$renderPage.downcentre.strRoom:SM-->
-                        <!--SM:foreach $renderPage.downcentre.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.downcentre.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
-                <td id="DR">
-                    <!--SM:if isset($renderPage.downright.strRoom):SM-->
-                        <!--SM:$renderPage.downright.strRoom:SM-->
-                        <!--SM:foreach $renderPage.downright.now as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                        <!--SM:foreach $renderPage.downright.next as $talk:SM-->
-                            <!--SM:$talk.strTalk:SM--> by
-                            <!--SM:foreach $talk.arrPresenters as $arrPresenter:SM-->
-                                <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
-                            <!--SM:/foreach:SM-->
-                        <!--SM:/foreach:SM-->
-                    <!--SM:/if:SM-->
-                </td>
+            <!--SM:if $DirectionScreen.bottomrow:SM-->
+            <tr height="<!--SM:$DirectionScreen.trheight:SM-->">
+                <!--SM:if $DirectionScreen.leftcolumn:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='downleft':SM-->
+                <!--SM:/if:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='downcentre':SM-->
+                <!--SM:if $DirectionScreen.rightcolumn:SM-->
+<!--SM:include file="Collection_DirectionScreen.tpl" direction='downright':SM-->
+                <!--SM:/if:SM-->
             </tr>
+            <!--SM:/if:SM-->
         </table>
-        <pre>
-        <!--SM:var_dump($renderPage):SM-->
-        </pre>
+        <script type="text/javascript">
+          $(function($) {
+            $('.clock').jclock();
+          });
+        </script>
     </body>
 </html>

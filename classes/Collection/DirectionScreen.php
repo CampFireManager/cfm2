@@ -68,20 +68,6 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
 
         $this->arrData = array('NowSlot' => $nowSlot, 'NextSlot' => $nextSlot);
         
-        $arrScreenDirections = array(
-            'upleft' => null, 
-            'upcentre' => null, 
-            'upright' => null, 
-            'left' => null, 
-            'right' => null, 
-            'downleft' => null, 
-            'downcentre' => null, 
-            'downright' => null, 
-            'inside' => null,
-            'unset' => null
-        );
-        $arrRoomDirections = array();
-        
         $arrNTalks = Object_Talk::brokerByColumnSearch('intSlotID', $now);
         if ($arrNTalks == false) {
             $arrNTalks = array();
@@ -109,6 +95,39 @@ class Collection_DirectionScreen extends Abstract_GenericCollection
                     'next' => $arrTalks['next'][$intRoomID]
                 );
             }
+        }
+        // These values assum just the middle block is there.
+        $this->arrData['toprow'] = false;
+        $this->arrData['bottomrow'] = false;
+        $this->arrData['leftcolumn'] = false;
+        $this->arrData['rightcolumn'] = false;
+        $this->arrData['trheight'] = '100%';
+        $this->arrData['tdwidth'] = '100%';
+        
+        foreach ($this->arrData as $direction => $dummy) {
+            $dummy = null;
+            if (substr($direction, 0, 2) == 'up') {
+                $this->arrData['toprow'] = true;
+            }
+            if (substr($direction, 0, 4) == 'down') {
+                $this->arrData['bottomrow'] = true;
+            }
+            if (substr($direction, -4) == 'left') {
+                $this->arrData['leftcolumn'] = true;
+            }
+            if (substr($direction, -5) == 'right') {
+                $this->arrData['rightcolumn'] = true;
+            }
+        }
+        if ($this->arrData['toprow'] && $this->arrData['bottomrow']) {
+            $this->arrData['trheight'] = '33%';
+        } elseif ($this->arrData['toprow'] || $this->arrData['bottomrow']) {
+            $this->arrData['trheight'] = '50%';
+        }
+        if ($this->arrData['leftcolumn'] && $this->arrData['rightcolumn']) {
+            $this->arrData['tdwidth'] = '33%';
+        } elseif ($this->arrData['leftcolumn'] || $this->arrData['rightcolumn']) {
+            $this->arrData['tdwidth'] = '50%';
         }
         return $this;
     }
