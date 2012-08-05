@@ -7,6 +7,7 @@
             <!--SM:if isset($talk.intUserID):SM-->
                     <li>
                         <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$talk.intTalkID:SM-->">
+                            <!--SM:if isset($talk.hasNsfwMaterial):SM--><img src="media/images/alert-triangle-red.png" class="ui-li-icon" /><!--SM:/if:SM-->
                             <h3>(ID: <!--SM:$talk.intTalkID:SM-->) <!--SM:$talk.strTalk:SM--></h3>
                             <p>by
                 <!--SM:foreach $talk.arrPresenters as $presenter:SM-->
@@ -15,8 +16,7 @@
                                 in <strong><!--SM:$talk.arrRoom.strRoom:SM--></strong>
                             </p>
                             <p><!--SM:$talk.strTalkSummary:SM--></p>
-                            <span class="ui-li-count"><!--SM:$talk.intAttendees:SM--> / <!--SM:$talk.arrRoom.strCapacity:SM--> Attendees</span>
-                            <p class="ui-li-aside"></p>
+                            <span class="ui-li-count"><img data-icon="alert" /><!--SM:$talk.intAttendees:SM--> / <!--SM:$talk.arrRoom.strCapacity:SM--> Attendees</span>
                         </a>
                     </li>
             <!--SM:else:SM-->
