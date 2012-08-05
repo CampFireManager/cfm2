@@ -132,7 +132,7 @@ date_default_timezone_set($TZ);
 if (date_default_timezone_get() == 'UTC') {
     $offsetString = 'Z'; // No need to calculate offset, as default timezone is already UTC
 } else {
-    $phpTime = '2001-01-01 01:00:00';
+    $phpTime = date('Y-m-d H:i:s');
     $millis = strtotime($phpTime); // Convert time to milliseconds since 1970, using default timezone
     $timezone = new DateTimeZone(date_default_timezone_get()); // Get default system timezone to create a new DateTimeZone object
     $offset = $timezone->getOffset(new DateTime($phpTime)); // Offset in seconds to UTC
