@@ -9,7 +9,7 @@
             <!--SM:else:SM-->
                 <!--SM:$arrRoom.now.strTalk:SM--> by
                 <!--SM:foreach $arrRoom.now.arrPresenters as $arrPresenter:SM-->
-                    <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
+                    <!--SM:$arrPresenter.strUser:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
                 <!--SM:/foreach:SM-->
             <!--SM:/if:SM-->
             </div>
@@ -19,7 +19,7 @@
             <!--SM:else:SM-->
                 <!--SM:$arrRoom.next.strTalk:SM--> by
                 <!--SM:foreach $arrRoom.next.arrPresenters as $arrPresenter:SM-->
-                    <!--SM:$arrPresenter.strName:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
+                    <!--SM:$arrPresenter.strUser:SM--><!--SM:if ! $arrPresenter@last:SM-->,<!--SM:/if:SM-->
                 <!--SM:/foreach:SM-->
             <!--SM:/if:SM-->
             </div>
