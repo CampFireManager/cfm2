@@ -213,10 +213,16 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                             $arrNewValue = explode(':', $newvalue, 2);
                             if (substr($newvalue, 0, 7) == 'http://'
                                 || substr($newvalue, 0, 8) == 'https://'
-                                || substr($newvalue, 0, 7) == 'mailto:'
-                                || substr($newvalue, 0, 4) == 'sip:'
                             ) {
                                 $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                            } elseif (substr($newvalue, 0, 7) == 'mailto:') {
+                                $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), 'EMail', $newvalue));
+                            } elseif (substr($newvalue, 0, 5) == 'xmpp:'
+                                || substr($newvalue, 0, 6) == 'gtalk:'
+                            ) {
+                                $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), 'XMPP', $newvalue));
+                            } elseif (substr($newvalue, 0, 4) == 'sip:') {
+                                $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), 'SIP', $newvalue));
                             } elseif (count($arrNewValue) > 1) {
                                 $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), $arrNewValue[0], $arrNewValue[1]));
                             } else {
