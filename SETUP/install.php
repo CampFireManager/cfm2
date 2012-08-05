@@ -16,7 +16,8 @@ $Libraries = array(
     'Smarty' => array('ver' => '3.1.11', 'source' => 'http://www.smarty.net/files/Smarty-3.1.11.tar.gz'),
     'jQueryMobile' => array('ver' => '1.1.1', 'source' => 'http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.zip'),
     'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js'),
-    'jQueryClock' => array('ver' => 'current', 'source' => 'git')
+    'jQueryClock' => array('ver' => 'current', 'source' => 'git'),
+    'sketchdocicons' => array('ver' => 'current', 'source' => 'http://github.com/downloads/sketchdock/111-Free-Ecommerce-Icons/111-free-ecommerce-icons-by-sketchdock.zip', 'license' => 'CC By V3 Unported')
 );
 
 echo " * Git Submodules (php-openid, TwitterHelper and jQueryClock): ";
@@ -43,6 +44,13 @@ echo "Done\r\n";
 
 echo " * jQuery {$Libraries['jQuery']['ver']}: ";
 exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
+echo "Done\r\n";
+
+echo " * Sketchdoc Icon Library {$Libraries['sketchdocicons']['ver']}: ";
+exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}", $return);
+exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .", $return);
+unlink("icons-{$Libraries['sketchdocicons']['ver']}.zip");
+rename('sketchdock-ecommerce-icons', 'images');
 echo "Done\r\n";
 
 chdir(dirname(__FILE__));
