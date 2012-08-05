@@ -60,7 +60,7 @@ class Object_Screen extends Abstract_GenericObject
             // all rooms with a direction of "Unset"
             $arrRoomObjects = Object_Room::brokerAll();
             foreach ($arrRoomObjects as $objRoomObject) {
-                $sd = new Object_ScreenDirection(true);
+                $sd = new Object_ScreenDirection();
                 $sd->setKey('intScreenID', $self->intScreenID);
                 $sd->setKey('intRoomID', $objRoomObject->getKey('intRoomID'));
                 $sd->setKey('enumDirection', 'unset');

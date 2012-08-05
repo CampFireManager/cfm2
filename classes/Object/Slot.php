@@ -114,16 +114,16 @@ class Object_Slot extends Abstract_GenericObject
         if ($strNow == null) {
             $strNow = '+0 minutes';
         }
-        $intNowSlot = null;
-        $intNextSlot = null;
+        $intNowSlot = "0";
+        $intNextSlot = "0";
         foreach ($arrSlots as $objSlot) {
             $slot = $objSlot->getSelf();
-            if ($intNextSlot == null) {
+            if ($intNextSlot == 0) {
                 $intNextSlot = $slot['intSlotID'];
             }
             if (date('YmdHi', strtotime($slot['dateStart'] . ' ' . $slot['timeStart'])) <= date('YmdHi', strtotime($strNow))) {
                 $intNowSlot = $slot['intSlotID'];
-                $intNextSlot = null;
+                $intNextSlot = "0";
             }
         }
         foreach ($arrSlots as $objSlot) {
