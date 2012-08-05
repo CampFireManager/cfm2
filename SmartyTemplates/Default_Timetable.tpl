@@ -9,6 +9,8 @@
                         <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$talk.intTalkID:SM-->">
                             <!--SM:if isset($talk.hasNsfwMaterial):SM--><img src="media/images/alert-triangle-red.png" class="ui-li-icon" />
                             <p class="ui-li-aside"><strong>NSFW/18+ Content!</strong></p><!--SM:/if:SM-->
+                            <!--SM:if $talk.hasExcessAttendees:SM--><img src="media/images/alert-triangle-red.png" class="ui-li-icon" />
+                            <p class="ui-li-aside"><strong>Talk Over Capacity!</strong></p><!--SM:/if:SM-->
                             <h3>(ID: <!--SM:$talk.intTalkID:SM-->) <!--SM:$talk.strTalk:SM--></h3>
                             <p>by
                 <!--SM:foreach $talk.arrPresenters as $presenter:SM-->
