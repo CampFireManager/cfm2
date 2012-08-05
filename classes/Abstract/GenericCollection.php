@@ -240,4 +240,43 @@ abstract class Abstract_GenericCollection implements Interface_Object
     {
         return array();
     }
+    
+    /**
+     * Get the most recent lastChange in the grid
+     *
+     * @param string  $column  Unused
+     * @param string  $value   Unused
+     * @param boolean $inverse Unused
+     * 
+     * @return datetime
+     */
+    public static function lastChangeByColumnSearch($column = null, $value = null, $inverse = false)
+    {
+        $column = null;
+        $value = null;
+        $inverse = null;
+        return self::lastChangeAll();
+    }
+    
+    /**
+     * Return the most recent lastChange in the grid
+     *
+     * @return datetime
+     */
+    public static function lastChangeAll()
+    {
+        $intRoom = strtotime(Object_Room::lastChangeAll());
+        $intSlot = strtotime(Object_Slot::lastChangeAll());
+        $intTalk = strtotime(Object_Talk::lastChangeAll());
+        if ($intRoom >= $intSlot && $intRoom >= $intTalk) {
+            return date('Y-m-d H:i:s', $intRoom);
+        }
+        if ($intSlot >= $intRoom && $intSlot >= $intTalk) {
+            return date('Y-m-d H:i:s', $intSlot);
+        }
+        if ($intTalk >= $intRoom && $intTalk >= $intSlot) {
+            return date('Y-m-d H:i:s', $intTalk);
+        }
+    }
+
 }
