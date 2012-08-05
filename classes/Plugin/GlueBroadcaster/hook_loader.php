@@ -40,7 +40,7 @@ class Plugin_GlueBroadcaster
             $text = $arrTalk['strTalkName'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoom'];
 
             Object_User::isSystem(true);
-            $arrGlues = Collection_Glue::brokerAll();
+            $arrGlues = Glue_Broker::brokerAll();
             foreach ($arrGlues as $objGlue) {
                 $strInterface = $objGlue->canSendBroadcast();
                 if ($strInterface != false) {
@@ -73,7 +73,7 @@ class Plugin_GlueBroadcaster
             $text = $arrTalk['strTalkName'] . ' has been fixed in room: ' . $arrTalk['arrRoom']['strRoom'] . ' to start at ' . date('H:i', $arrTalk['arrSlot']['epochStart']);
 
             Object_User::isSystem(true);
-            $arrGlues = Collection_Glue::brokerAll();
+            $arrGlues = Glue_Broker::brokerAll();
             foreach ($arrGlues as $objGlue) {
                 $strInterface = $objGlue->canSendBroadcast();
                 if ($strInterface != false) {

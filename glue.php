@@ -30,7 +30,7 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
     }
 }
 
-$arrGlues = Collection_Glue::brokerAll();
+$arrGlues = Glue_Broker::brokerAll();
 do {
     echo "About to run glues at " . date('Y-m-d H:i:s') . "\r\n";
 

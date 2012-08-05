@@ -15,14 +15,14 @@
 /**
  * This class returns an array of Glues.
  *
- * @category Collection_Glue
+ * @category Glue_Broker
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-class Collection_Glue
+class Glue_Broker
 {
     /**
      * Return an array of glues.
@@ -31,9 +31,12 @@ class Collection_Glue
      */
     public static function brokerAll() {
         $arrGlues = array();
-        foreach (new DirectoryIterator(dirname(__FILE__) . '/../Glue') as $file) {
+        foreach (new DirectoryIterator(dirname(__FILE__)) as $file) {
             if ($file->isDir() || $file->isDot()) continue;
-            if ($file->isFile() && ($file->getBasename('.php') != $file->getBasename())) {
+            if ($file->isFile() 
+                && ($file->getBasename('.php') != $file->getBasename()) 
+                && $file->getBasename() != 'Broker.php'
+            ) {
                 $strGlueName = 'Glue_' . $file->getBasename('.php');
                 foreach ($strGlueName::brokerAllGlues() as $objGlue) {
                     $arrGlues[] = $objGlue;
