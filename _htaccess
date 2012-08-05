@@ -4,8 +4,6 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^(.*)$ index.php [L]
 
   # These two lines were added as per http://stackoverflow.com/a/8554171/5738
