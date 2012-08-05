@@ -4,3 +4,6 @@
 [submodule "ExternalLibraries/TwitterHelper/current"]
 	path = ExternalLibraries/TwitterHelper/current
 	url = git://github.com/themattharris/tmhOAuth.git
+[submodule "Media/jQueryClock"]
+	path = Media/jQueryClock
+	url = https://github.com/dsparling/jclock.git

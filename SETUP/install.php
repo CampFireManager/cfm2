@@ -15,10 +15,11 @@ $Libraries = array(
     'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
     'Smarty' => array('ver' => '3.1.11', 'source' => 'http://www.smarty.net/files/Smarty-3.1.11.tar.gz'),
     'jQueryMobile' => array('ver' => '1.1.1', 'source' => 'http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.zip'),
-    'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js')
+    'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js'),
+    'jQueryClock' => array('ver' => 'current', 'source' => 'git')
 );
 
-echo " * Git Submodules (php-openid and TwitterHelper): ";
+echo " * Git Submodules (php-openid, TwitterHelper and jQueryClock): ";
 chdir(dirname(__FILE__) . '/..');
 exec('git submodule update --init', $return);
 echo "Done\r\n";
@@ -37,10 +38,10 @@ chdir(dirname(__FILE__) . '/../Media');
 exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
 exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
 unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
+rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
 echo "Done\r\n";
 
 echo " * jQuery {$Libraries['jQuery']['ver']}: ";
-rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
 exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
 echo "Done\r\n";
 
