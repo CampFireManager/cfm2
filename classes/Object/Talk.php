@@ -114,7 +114,7 @@ class Object_Talk extends Abstract_GenericObject
                 $objRoom = Object_Room::brokerByID($this->intRoomID);
                 if (is_object($objRoom)) {
                     $self['hasExcessAttendees'] = false;
-                    if ($self['intAttendees'] > $objRoom->getKey('intCapacity')) {
+                    if ($self['intAttendees'] > ($objRoom->getKey('intCapacity') * (Container_Config::brokerByID('Capacity Alert Percentage', '75')->getKey('value') / 100))) {
                         $self['hasExcessAttendees'] = true;
                     }
                     $objRoom->setFull(true);
