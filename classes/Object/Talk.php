@@ -39,7 +39,6 @@ class Object_Talk extends Abstract_GenericObject
         'isRoomLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isSlotLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isLocked'            => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin'),
-        'jsonResources'       => array('type' => 'text', 'optional' => 'user', 'source' => 'Resource', 'array' => 'arrResources'),
         'jsonOtherPresenters' => array('type' => 'text', 'optional' => 'user', 'source' => 'User', 'array' => 'arrPresenters'),
         'lastChange'          => array('type' => 'datetime')
     );
@@ -57,8 +56,7 @@ class Object_Talk extends Abstract_GenericObject
         'label_jsonLinks' => array('en' => 'Associated Links'),
         'label_new_jsonLinks' => array('en' => 'Associated Links (in the format: Twitter:http://twitter.com/yourusername or Blog:http://my.blog.com)'),
         'label_new_isLocked' => array('en' => 'Lock this talk to this Room and Slot'),
-        'label_jsonResources' => array('en' => 'Resources requested'),
-        'label_new_jsonResources' => array('en' => 'Resources requested'),
+        'label_isLocked' => array('en' => 'Talk fixed'),
         'label_jsonOtherPresenters' => array('en' => 'Other Presenters'),
         'label_new_jsonOtherPresenters' => array('en' => 'Other Presenters'),
     );
@@ -80,7 +78,6 @@ class Object_Talk extends Abstract_GenericObject
     protected $isRoomLocked        = 0;
     protected $isSlotLocked        = 0;
     protected $isLocked            = 0;
-    protected $jsonResources       = null;
     protected $jsonOtherPresenters = null;
     protected $lastChange          = null;
 
@@ -151,26 +148,16 @@ class Object_Talk extends Abstract_GenericObject
                     }
                 }
             }
-            $self['arrLinks'] = json_decode($this->jsonLinks, true);
-            if (! is_array($self['arrLinks'])) {
-                $self['arrLinks'] = array();
+            $arrLinks = json_decode($this->jsonLinks, true);
+            if (! is_array($arrLinks)) {
+                $arrLinks = array();
             }
-            
-            $resources = json_decode($this->jsonResources, true);
-            if (! is_array($resources)) {
-                $resources = array();
-            }
-            foreach ($resources as $resource) {
-                $objResource = Object_Resource::brokerByID($resource);
-                if (is_object($objResource)) {
-                    $arrResource = $objResource->getSelf();
-                    $self['arrResources'][] = $arrResource;
-                    if ($arrResource['epochLastChange'] > $self['epochLastChange']) {
-                        $self['epochLastChange'] = $arrResource['epochLastChange'];
-                    }
+            foreach ($arrLinks as $key => $value) {
+                if ($value != '' && $value != '[]') {
+                    $self['arrLinks'][$key] = $value;
                 }
             }
-            
+                        
             $presenters = json_decode($this->jsonOtherPresenters, true);
             if (!is_array($presenters)) {
                 $presenters = array();
@@ -507,9 +494,9 @@ class Object_Talk extends Abstract_GenericObject
 class Object_Talk_Demo extends Object_Talk
 {
     protected $arrDemoData = array(
-        array('intTalkID' => 1, 'strTalk' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isLocked' => 1, 'jsonResources' => '[1]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 2, 'strTalk' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRequestedRoomID' => 2, 'intRequestedSlotID' => 2, 'intRoomID' => 2, 'intSlotID' => 2, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isLocked' => '0', 'jsonResources' => '[]', 'jsonOtherPresenters' => '[]'),
-        array('intTalkID' => 3, 'strTalk' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRequestedRoomID' => 3, 'intRequestedSlotID' => 2, 'intRoomID' => 3, 'intSlotID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isLocked' => '0', 'jsonResources' => '[3]', 'jsonOtherPresenters' => '[1]'),
+        array('intTalkID' => 1, 'strTalk' => 'Keynote', 'strTalkSummary' => 'A welcome to Barcamps', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 1, 'intRoomID' => 1, 'intSlotID' => 1, 'intLength' => 1, 'jsonLinks' => '{"slides":"http:\/\/slideshare.net","twitter":"http:\/\/twitter.com\/"}', 'isLocked' => 1, 'jsonOtherPresenters' => '[]'),
+        array('intTalkID' => 2, 'strTalk' => 'An introduction to CampFireManager2', 'strTalkSummary' => 'A walk through of how it works, where to get it from and why you should use it at your next conference', 'intUserID' => 2, 'intRequestedRoomID' => 2, 'intRequestedSlotID' => 2, 'intRoomID' => 2, 'intSlotID' => 2, 'intLength' => 1, 'jsonLinks' => '{"code":"http:\/\/www.github.com\/JonTheNiceGuy\/cfm2"}', 'isLocked' => '0', 'jsonOtherPresenters' => '[]'),
+        array('intTalkID' => 3, 'strTalk' => 'An introduction to BarCamp', 'strTalkSummary' => "So, this is your first BarCamp? Glad you're here! This talk explains what BarCamps are, why they are so cool and why you should do a talk!", 'intUserID' => 3, 'intRequestedRoomID' => 3, 'intRequestedSlotID' => 2, 'intRoomID' => 3, 'intSlotID' => 2, 'intLength' => 1, 'jsonLinks' => '[]', 'isLocked' => '0', 'jsonOtherPresenters' => '[1]'),
         array('intTalkID' => 4, 'strTalk' => 'A talk in limbo', 'strTalkSummary' => 'This talk should be rendered as an unscheduled talk', 'intUserID' => 1, 'intRequestedRoomID' => 1, 'intRequestedSlotID' => 2, 'intRoomID' => -1, 'intSlotID' => -1, 'intLength' => 1),
     );
 }

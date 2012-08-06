@@ -994,6 +994,12 @@ abstract class Abstract_GenericObject implements Interface_Object
             if (isset($this->arrTranslations['label_' . $key])) {
                 $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
             }
+            if (isset($this->arrDBItems[$key]['array'])) {
+                $return['pointers'][$key]['data'] = $this->arrDBItems[$key]['array'];
+                if (isset($this->arrDBItems[$key]['source'])) {
+                    $return['pointers'][$key]['source'] = strtolower($this->arrDBItems[$key]['source']);
+                }
+            }
         }
         return $return;
     }

@@ -34,8 +34,7 @@ class Object_User extends Abstract_GenericObject
         'lastChange'  => array('type' => 'datetime')
     );
     protected $arrTranslations = array(
-        'label_strUser' => array('en' => 'User'),
-        'label_arrLinks' => array('en' => 'Links')
+        'label_strUser' => array('en' => 'Creator')
     );
     protected $strDBTable      = "user";
     protected $strDBKeyCol     = "intUserID";

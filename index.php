@@ -269,6 +269,9 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                     foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
                         if (is_array($value)) {
                             foreach ($value as $newvalue) {
+                                if ($newvalue == '') {
+                                    continue;
+                                }
                                 if (substr($newvalue, 0, 4) == 'del_') {
                                     $newvalue = substr($newvalue, 4);
                                     $arrNewValue = explode(':', $newvalue, 2);
@@ -277,11 +280,11 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                                         || substr($newvalue, 0, 7) == 'mailto:'
                                         || substr($newvalue, 0, 4) == 'sip:'
                                     ) {
-                                        $newobject->setKey($key, Base_GeneralFunctions::delJson($newobject->getKey($key), $newvalue));
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $newvalue));
                                     } elseif (count($arrNewValue) > 1) {
-                                        $newobject->setKey($key, Base_GeneralFunctions::delJson($newobject->getKey($key), $arrNewValue[1]));
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $arrNewValue[1]));
                                     } else {
-                                        $newobject->setKey($key, Base_GeneralFunctions::delJson($newobject->getKey($key), $newvalue));
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $newvalue));
                                     }
                                 } else {
                                     $arrNewValue = explode(':', $newvalue, 2);
@@ -290,16 +293,16 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                                         || substr($newvalue, 0, 7) == 'mailto:'
                                         || substr($newvalue, 0, 4) == 'sip:'
                                     ) {
-                                        $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::addJson($requestedobject->getKey($key), null, $newvalue));
                                     } elseif (count($arrNewValue) > 1) {
-                                        $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), $arrNewValue[0], $arrNewValue[1]));
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::addJson($requestedobject->getKey($key), $arrNewValue[0], $arrNewValue[1]));
                                     } else {
-                                        $newobject->setKey($key, Base_GeneralFunctions::addJson($newobject->getKey($key), null, $newvalue));
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::addJson($requestedobject->getKey($key), null, $newvalue));
                                     }
                                 }
                             }
                         } else {
-                            $newobject->setKey($key, $value);
+                            $requestedobject->setKey($key, $value);
                         }
                     }
                     try {
