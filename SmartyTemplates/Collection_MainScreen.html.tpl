@@ -34,7 +34,7 @@
 <!--SM:/if:SM-->
 <!--SM:foreach $xaxis as $xaxis_value:SM-->
         <td class="talk<!--SM:if $Timetable.arrTimetable[$xaxis_value@key][$yaxis_value@key]['isNow'] == 1:SM--> slot_now<!--SM:elseif $Collection_Timetable.0.arrTimetable[$xaxis_value@key][$yaxis_value@key]['isNext'] == 1:SM--> slot_next<!--SM:/if:SM-->">
-<!--SM:include file="Timetable_TalkCell.tpl" cell=$Timetable.arrTimetable[$xaxis_value@key][$yaxis_value@key]:SM-->
+<!--SM:include file="Timetable_TalkCell.tpl" cell=$Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]:SM-->
         </td>
 <!--SM:/foreach:SM-->
     </tr>

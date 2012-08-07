@@ -1,7 +1,7 @@
 <!--SM:foreach $cell as $talkdata:SM-->
             <!-- <!--SM:$talkdata@key:SM-->:<!--SM:$talkdata:SM--> -->
 <!--SM:/foreach:SM-->
-<!--SM:if isset($cell.intTalkID):SM-->
+<!--SM:if isset($talkdata.intTalkID):SM-->
             <span class="intTalkID"><!--SM:$cell.intTalkID:SM--></span>
 <!--SM:/if:SM-->
             <span class="strTalk"><!--SM:$cell.strTalk:SM--></span>
