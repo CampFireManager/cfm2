@@ -61,6 +61,7 @@
                         <!--SM:$attending:SM-->
                         <!--SM:$profile_open:SM--><!--SM:$Object_User.current.intUserID--:SM--><!--SM:$profile_close:SM-->
 <!--SM:else:SM-->
+                        <li><a href="#object" data-rel="dialog" data-transition="pop" data-icon="arrow-u">Object</a></li>
                         <li><a href="#login" data-rel="dialog" data-transition="pop" data-icon="star">I'm attending</a></li>
                         <li><a href="#login" data-rel="dialog" data-transition="pop" data-icon="arrow-r">My Profile</a></li>
 <!--SM:/if:SM-->
@@ -68,6 +69,26 @@
                 </div>
             </div>		
         </div>
+        <div data-role="page" id="object">
+            <div data-role="header" data-theme="e">
+<!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
+<!--SM:if isset($SiteConfig.Site_Name):SM-->
+        <!--SM:assign var=title_open value='<h1>':SM-->
+        <!--SM:assign var=title_close value='</h1>':SM-->
+        <!--SM:$title_open:SM--><!--SM:$SiteConfig.Site_Name:SM--><!--SM:$title_close:SM-->
+<!--SM:else:SM-->
+                <h1>Campfire Manager</h1>
+<!--SM:/if:SM-->
+            </div>
+            <div data-role="content" data-theme="d">	
+                <p>Sorry, you've not loaded any objects yet. Please go back to the grid and find something!</p>
+            </div>
+
+            <div data-role="footer" data-theme="e">
+                <p><a href="#timetable" data-rel="back" data-role="button" data-inline="true" data-icon="back">Cancel</a></p>
+            </div>
+        </div>
+
         <div data-role="page" id="login">
             <div data-role="header" data-theme="e">
 <!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
@@ -120,7 +141,7 @@
             </div>
 
             <div data-role="footer" data-theme="e">
-                <p><a href="#one" data-rel="back" data-role="button" data-inline="true" data-icon="back">Cancel</a></p>
+                <p><a href="#timetable" data-rel="back" data-role="button" data-inline="true" data-icon="back">Cancel</a></p>
             </div>
         </div>
     </body>
