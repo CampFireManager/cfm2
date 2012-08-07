@@ -102,6 +102,25 @@ class Object_Slot extends Abstract_GenericObject
     }
 
     /**
+     * Append a single value containing the key and the string representation
+     * of this row.
+     *
+     * @param array $return The classes' data
+     * 
+     * @return array
+     */
+    protected function getCurrent($return)
+    {
+        $return = parent::getCurrent($return);
+        if (date("Y-m-d") != $this->dateStart) {
+            $return['current']['value'] = $this->dateStart . ' ' . $this->timeStart . ' - ' . $this->timeEnd;
+        } else {
+            $return['current']['value'] = $this->timeStart . ' - ' . $this->timeEnd;
+        }
+        return $return;
+    }
+    
+    /**
      * Get the intSlotID's of the "Now slot" and "Next slot"
      * 
      * @param string $strNow The value to use when searching for the now/next values

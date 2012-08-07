@@ -1005,6 +1005,35 @@ abstract class Abstract_GenericObject implements Interface_Object
     }
 
     /**
+     * Append a single value containing the key and the string representation
+     * of this row.
+     *
+     * @param array $return The classes' data
+     * 
+     * @return array
+     */
+    protected function getCurrent($return)
+    {
+        $return['current'] = array('key' => $this->getPrimaryKeyValue(), 'element' => $this->strDBTable, 'value' => '');
+        foreach ($this->arrDBItems as $strDBItem => $arrDBItem) {
+            if (isset($arrDBItem['render_in_sub_views'])) {
+                if ($return['current']['value'] != '') {
+                    $return['current']['value'] .= ', ';
+                }
+                $return['current']['value'] .= $this->getKey($strDBItem);
+            }
+        }
+        if ($return['current']['value'] == '') {
+            if (isset($arrDBItems['str' . strtoupper(substr($this->strDBTable, 0, 1)) . substr($this->strDBTable, 1)])) {
+                $return['current']['value'] = $this->getKey('str' . strtoupper(substr($this->strDBTable, 0, 1)) . substr($this->strDBTable, 1));
+            } else {
+                $return['current']['value'] = $this->getPrimaryKeyValue();
+            }
+        }
+        return $return;
+    }
+    
+    /**
      * This function is used a lot throughout the code base. It was recently
      * re-written to support adding the data labels for the
      *
@@ -1012,7 +1041,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     public function getSelf()
     {
-        return $this->getLabels($this->getData());
+        return $this->getCurrent($this->getLabels($this->getData()));
     }
     
     /**
@@ -1040,7 +1069,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             ) {
                 $return['isEditable'] = array();
             } else {
-                $return['isEditable'] = self::listKeys();
+                $return['isEditable'] = $this->listKeys($this);
             }
         }
         if (isset($this->lastChange)) {
@@ -1057,17 +1086,22 @@ abstract class Abstract_GenericObject implements Interface_Object
      * This function will return the values which are required and which are
      * optional to create a new object of this type
      * 
+     * @param Abstract_GenericObject $self An object of this type to retrieve
+     * current values from.
+     * 
      * @return array
      */
-    public static function listKeys()
+    public static function listKeys($self = null)
     {
         $thisClassName = get_called_class();
-        $thisClass = new $thisClassName();
+        if ($self == null) {
+            $self = new $thisClassName();
+        }
         $return = array();
-        if ($thisClass->reqAdminToMod == true && ! Object_User::isAdmin()) {
+        if ($self->reqAdminToMod == true && ! Object_User::isAdmin()) {
             return array();
         }
-        foreach ($thisClass->arrDBItems as $strDBItem => $arrDBItem) {
+        foreach ($self->arrDBItems as $strDBItem => $arrDBItem) {
             if (isset($arrDBItem['required']) || isset($arrDBItem['optional'])) {
                 if (isset($arrDBItem['required'])
                     && ($arrDBItem['required'] == 'user' 
@@ -1089,11 +1123,11 @@ abstract class Abstract_GenericObject implements Interface_Object
                 if (isset($return[$strDBItem]['required']) 
                     || isset($return[$strDBItem]['optional'])
                 ) {
-                    if (isset($thisClass->arrTranslations['label_' . $strDBItem])) {
-                        $return[$strDBItem]['label'] = Base_Response::translate($thisClass->arrTranslations['label_' . $strDBItem]);
+                    if (isset($self->arrTranslations['label_' . $strDBItem])) {
+                        $return[$strDBItem]['label'] = Base_Response::translate($self->arrTranslations['label_' . $strDBItem]);
                     }
-                    if (isset($thisClass->arrTranslations['label_new_' . $strDBItem])) {
-                        $return[$strDBItem]['label'] = Base_Response::translate($thisClass->arrTranslations['label_new_' . $strDBItem]);
+                    if (isset($self->arrTranslations['label_new_' . $strDBItem])) {
+                        $return[$strDBItem]['label'] = Base_Response::translate($self->arrTranslations['label_new_' . $strDBItem]);
                     }
                     if (isset($arrDBItem['type']) && $arrDBItem['type'] == 'tinyint' && isset($arrDBItem['length']) && $arrDBItem['length'] == 1) {
                         $return[$strDBItem]['list']["1"] = "Yes";
@@ -1106,7 +1140,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                     }
                     if (isset($arrDBItem['source'])) {
                         if (isset($arrDBItem['value_for_any'])) {
-                            $return[$strDBItem]['list'][(string) "-1"] = Base_Response::translate(array('en' => 'Any'));
+                            $return[$strDBItem]['list'][(string) $arrDBItem['value_for_any']] = Base_Response::translate(array('en' => 'Any'));
                         }
                         $data_object = 'Object_' . $arrDBItem['source'];
                         $data_key = 'int' . $arrDBItem['source'] . 'ID';
@@ -1119,6 +1153,8 @@ abstract class Abstract_GenericObject implements Interface_Object
                                     || $objData->getKey($arrDBItem['must_have_as_true']) == '1'
                                 ) {
                                     $return[$strDBItem]['list'][$objData->getKey($data_key)] = $objData->getKey($data_value);
+                                } elseif ($objData->getKey($data_key) == $self->getKey($strDBItem)) {
+                                    $return[$strDBItem]['list'][$objData->getKey($data_key)] = $objData->getKey($data_value) . ' ('. Base_Response::translate(array('en' => 'current value')) . ')';                                    
                                 }
                             }
                         }
