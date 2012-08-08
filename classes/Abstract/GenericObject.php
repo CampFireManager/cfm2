@@ -212,6 +212,9 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $process = true;
             }
         }
+        if ($thisClass->strDBKeyCol == $column) {
+            $process = true;
+        }
         if ($process == false) {
             throw new OutOfBoundsException('Not a valid column name');
         }

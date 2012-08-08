@@ -173,6 +173,9 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         && $arrObjects['Object_User']['current'] != null
                     ) {
                         $arrObjects[$object] = $object::brokerByColumnSearch('intUserID', $arrObjects['Object_User']['current']->getKey('intUserID'));
+                        if ($object == 'Object_User') {
+                            $arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
+                        }
                     } else {
                         if ($rest) {
                             Base_Response::sendHttpResponse(404);
@@ -185,7 +188,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         && $arrObjects['Object_User']['current'] != null
                     ) {
                         $arrObjects['Creation_Values'] = $object::listKeys();
-                        $renderPage = 'new';
+                        $renderPage = 'new_' . $object;
                     } else {
                         if ($rest) {
                             Base_Response::sendHttpResponse(404);

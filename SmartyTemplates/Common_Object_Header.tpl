@@ -48,10 +48,12 @@
                 <h1>Campfire Manager</h1>
 <!--SM:/if:SM-->
 <!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
-<!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
+<!--SM:if isset($Object_User.current) && $Object_User.current != null && $Object_User.current != false:SM-->
     <!--SM:assign var=logout_open value='<a href="':SM-->
     <!--SM:assign var=logout_close value='?logout=1" data-role="button">Logout</a>':SM-->
-                <!--SM:$logout_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$logout_close:SM-->
+    <!--SM:assign var=settings_open value='<a href="':SM-->
+    <!--SM:assign var=settings_close value='user/me" data-role="button" data-icon="gear">Settings/Logout</a>':SM-->
+                <!--SM:$settings_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$settings_close:SM-->
 <!--SM:else:SM-->
                 <a href="#login" data-role="button" data-rel="dialog" data-transition="pop" data-icon="gear">Login</a>
 <!--SM:/if:SM-->
