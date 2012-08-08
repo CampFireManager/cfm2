@@ -54,6 +54,7 @@
                     <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' label=$object.labels.jsonLinks edit=$object.isEditable.jsonLinks list=$object.arrLinks:SM-->
                     <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intUserID' label=$object.labels.intUserID edit=$object.isEditable.intUserID current=$object.arrUser.current:SM-->
                     <!--SM:include file="Elements/MultiElementFromArray.tpl" field='jsonOtherPresenters' label=$object.labels.jsonOtherPresenters edit=$object.isEditable.jsonOtherPresenters list=$object.arrPresenters exclude=$object.intUserID:SM-->
+                    <!--SM:include file="Elements/AssociatedRecords.tpl" field="arrAttendee" label=$object.labels.arrAttendee list=$object.arrAttendee:SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>

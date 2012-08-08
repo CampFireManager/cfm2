@@ -59,6 +59,7 @@ class Object_Talk extends Abstract_GenericObject
         'label_isLocked' => array('en' => 'Talk fixed'),
         'label_jsonOtherPresenters' => array('en' => 'Other Presenters'),
         'label_new_jsonOtherPresenters' => array('en' => 'Other Presenters'),
+        'label_arrAttendee' => array('en' => '(Potentially) Attending people')
     );
     protected $strDBTable          = "talk";
     protected $strDBKeyCol         = "intTalkID";
@@ -82,6 +83,22 @@ class Object_Talk extends Abstract_GenericObject
     protected $lastChange          = null;
 
     /**
+     * Append the translated labels to the returned data for this class.
+     *
+     * @param array $return The classes' data
+     * 
+     * @return array
+     */
+    protected function getLabels($return)
+    {
+        $return = parent::getLabels($return);
+        if (isset($this->arrTranslations['label_arrAttendee'])) {
+            $return['labels']['arrAttendee'] = Base_Response::translate($this->arrTranslations['label_arrAttendee']);
+        }
+        return $return;
+    }
+
+    /**
      * This overloaded function returns the data from the PDO object and adds
      * supplimental data based on linked tables
      * 
@@ -91,7 +108,11 @@ class Object_Talk extends Abstract_GenericObject
     {
         $self = parent::getData();
         if ($this->isFull() == true) {
-            $self['intAttendees'] = Object_Attendee::countByColumnSearch('intTalkID', $this->intTalkID);
+            $arrAttendee = Object_Attendee::brokerByColumnSearch('intTalkID', $this->intTalkID);
+            foreach ($arrAttendee as $intAttendeeID => $objAttendee) {
+                $self['arrAttendee'][$intAttendeeID] = $objAttendee->getSelf(true);
+            }
+            $self['intAttendees'] = count($self['arrAttendee']);
             if (strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID)) > $self['epochLastChange']) {
                 $self['epochLastChange'] = strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID));
             }
