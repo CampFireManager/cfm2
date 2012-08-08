@@ -29,10 +29,15 @@ class Object_ScreenDirection extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'intScreenID' => array('type' => 'int', 'length' => 11, 'unique' => true),
-        'intRoomID' => array('type' => 'int', 'length' => 11, 'unique' => true),
-        'enumDirection' => array('type' => 'enum', 'options' => array('upleft', 'upcentre', 'upright', 'left', 'right', 'downleft', 'downcentre', 'downright', 'inside', 'hidden', 'unset')),
+        'intScreenID' => array('type' => 'int', 'length' => 11, 'unique' => true, 'render_in_sub_views' => true, 'required' => 'admin', 'source' => 'Screen'),
+        'intRoomID' => array('type' => 'int', 'length' => 11, 'unique' => true, 'render_in_sub_views' => true, 'required' => 'admin', 'source' => 'Room'),
+        'enumDirection' => array('type' => 'enum', 'options' => array('upleft', 'upcentre', 'upright', 'left', 'right', 'downleft', 'downcentre', 'downright', 'inside', 'hidden', 'unset'), 'render_in_sub_views' => true, 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
+    );
+    protected $arrTranslations = array(
+        'label_intScreenID' => array('en' => 'Screen Name'),
+        'label_intRoomID' => array('en' => 'Room'),
+        'label_enumDirection' => array('en' => 'Direction from room to screen')
     );
     protected $strDBTable = "screendirection";
     protected $strDBKeyCol = "intScreenDirectionID";
@@ -42,6 +47,48 @@ class Object_ScreenDirection extends Abstract_GenericObject
     protected $intRoomID = null;
     protected $enumDirection = null;
     protected $lastChange = null;
+    
+    protected function getCurrent($return)
+    {
+        $return = parent::getCurrent($return);
+        $return['current']['enumDirection']['key'] = $this->enumDirection;
+        $return['current']['enumDirection']['value'] = $this->enumDirection;
+        return $return;
+    }
+    
+    /**
+     * This overloaded function returns the data from the PDO object and adds
+     * supplimental data based on linked tables
+     * 
+     * @return array
+     */
+    function getData()
+    {
+        $self = parent::getData();
+        if ($this->isFull() == true) {
+            if ($this->intRoomID != null && $this->intRoomID > 0) {
+                $objRoom = Object_Room::brokerByID($this->intRoomID);
+                if (is_object($objRoom)) {
+                    $objRoom->setFull(true);
+                    $self['arrRoom'] = $objRoom->getSelf();
+                    if ($self['arrRoom']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrRoom']['epochLastChange'];
+                    }
+                }
+            }
+            if ($this->intScreenID != null && $this->intScreenID > 0) {
+                $objScreen = Object_Screen::brokerByID($this->intScreenID);
+                if (is_object($objScreen)) {
+                    $objScreen->setFull(true);
+                    $self['arrScreen'] = $objScreen->getSelf();
+                    if ($self['arrScreen']['epochLastChange'] > $self['epochLastChange']) {
+                        $self['epochLastChange'] = $self['arrScreen']['epochLastChange'];
+                    }
+                }
+            }
+        }
+        return $self;
+    }
 }
 
 /**

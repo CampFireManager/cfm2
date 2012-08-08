@@ -29,9 +29,13 @@ class Object_Screen extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strScreen' => array('type' => 'varchar', 'length' => 255),
+        'strScreen' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin', 'render_in_sub_views' => true),
         'dtLastSeen' => array('type' => 'datetime'),
         'lastChange' => array('type' => 'datetime')
+    );
+    protected $arrTranslations = array(
+        'label_strScreen' => array('en' => 'Screen Name'),
+        'label_dtLastSeen' => array('en' => 'Last time this screen checked in')
     );
     protected $strDBTable = "screen";
     protected $strDBKeyCol = "intScreenID";
