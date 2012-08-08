@@ -339,11 +339,15 @@ class Object_Userauth extends Abstract_GenericObject
             && $user->getKey('intUserID') == $this->intUserID)
             || strtotime($this->lastChange) < strtotime("2 minutes ago")
         ) {
+            $system_state = Object_User::isSystem();
+            Object_User::isSystem(true);
             $tmpCleartext = $this->tmpCleartext;
             $this->setKey('tmpCleartext', '');
             try {
                 $this->write();
+                Object_User::isSystem($system_state);
             } catch (Exception $e) {
+                Object_User::isSystem($system_state);
                 throw $e;
             }
             $this->tmpCleartext = $tmpCleartext;
