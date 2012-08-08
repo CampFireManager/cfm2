@@ -29,7 +29,7 @@ class Object_DefaultSlotType extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'strDefaultSlotType' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin'),
+        'strDefaultSlotType' => array('type' => 'varchar', 'length' => 255, 'required' => 'admin', 'render_in_sub_views' => true),
         'lockSlot' => array('type' => 'enum', 'options' => array('hardlock', 'softlock', 'none'), 'required' => 'admin'),
         'lastChange' => array('type' => 'datetime')
     );
@@ -45,6 +45,22 @@ class Object_DefaultSlotType extends Abstract_GenericObject
     protected $strDefaultSlotType = null;
     protected $lockSlot = null;
     protected $lastChange = null;
+    
+    /**
+     * Append a single value containing the key and the string representation
+     * of this row.
+     *
+     * @param array $return The classes' data
+     * 
+     * @return array
+     */
+    protected function getCurrent($return)
+    {
+        $return = parent::getCurrent($return);
+        $return['current']['arrDefaultSlotType']['key'] = $this->lockSlot;
+        $return['current']['arrDefaultSlotType']['value'] = $this->lockSlot;
+        return $return;
+    }
 }
 
 /**

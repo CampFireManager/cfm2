@@ -1,3 +1,4 @@
+<!--SM:if isset($dodebug) && $dodebug == "true":SM--><pre><!--SM:var_dump("edit", $edit, "label", $label, "field", $field, "current", $current):SM--></pre><!--SM:/if:SM-->
 <!--SM:if ($edit.label != "0" && $edit.label != "") || ($label != "0" && $label != ""):SM-->
 <div id="<!--SM:$field:SM-->">
     <!--SM:if $edit.label != "0" && $edit.label != "":SM-->
@@ -17,7 +18,7 @@
             <label for="select_<!--SM:$field:SM-->">
                 <span class="progressive_basic">Read only: </span><!--SM:$label:SM-->:
                 <data id="select_<!--SM:$field:SM-->">
-                    <a href="<!--SM:$SiteConfig.baseurl:SM--><!--SM:$current.element:SM-->/<!--SM:$current.key:SM-->"><!--SM:$current.value:SM--></a>
+                    <!--SM:if isset($current.element):SM--><a href="<!--SM:$SiteConfig.baseurl:SM--><!--SM:$current.element:SM-->/<!--SM:$current.key:SM-->"><!--SM:/if:SM--><!--SM:$current.value:SM--><!--SM:if isset($current.element):SM--></a><!--SM:/if:SM-->
                 </data>
             </label>
         </div>

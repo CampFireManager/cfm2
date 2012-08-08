@@ -34,7 +34,10 @@ class Object_Room extends Abstract_GenericObject
     );
     protected $arrTranslations = array(
         'label_strRoom' => array('en' => 'Room'),
-        'label_intCapacity' => array('en' => 'Capacity')
+        'label_intCapacity' => array('en' => 'Capacity'),
+        'label_jsonResourceList' => array('en' => 'Items available in this room'),
+        'label_isLocked' => array('en' => 'Room reserved for specific talks'),
+        'label_new_isLocked' => array('en' => 'Lock room')
     );
     protected $strDBTable = "room";
     protected $strDBKeyCol = "intRoomID";

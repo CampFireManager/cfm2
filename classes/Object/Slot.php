@@ -35,7 +35,11 @@ class Object_Slot extends Abstract_GenericObject
     );
     protected $arrTranslations = array(
         'label_dateStart' => array('en' => 'Date this Slot starts'),
-        'label_timeStart' => array('en' => 'Time this Slot starts')
+        'label_timeStart' => array('en' => 'Time this Slot starts'),
+        'label_dateEnd' => array('en' => 'Date this Slot ends'),
+        'label_timeEnd' => array('en' => 'Time this Slot ends'),
+        'label_intDefaultSlotTypeID' => array('en' => 'Slot is labelled for a particular purpose'),
+        'label_new_intDefaultSlotTypeID' => array('en' => 'Default Slot Type')
     );
     protected $strDBTable = "slot";
     protected $strDBKeyCol = "intSlotID";
