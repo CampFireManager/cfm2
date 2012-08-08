@@ -79,6 +79,8 @@ class Object_Attendee extends Abstract_GenericObject
             $objTalk = Object_Talk::brokerByID($this->intTalkID);
             $objTalk->setFull(true);
             $return['arrTalk'] = $objTalk->getSelf();
+            $objUser = Object_User::brokerByID($this->intUserID);
+            $return['arrUser'] = $objUser->getSelf();
         }
         return $return;
     }
