@@ -336,7 +336,6 @@ class Base_Request
                 $data = $arrRequest;
                 break;
             }
-
         }
 
         // Next, parse the URL or script name we just received, and store it.
@@ -392,6 +391,22 @@ class Base_Request
         }
 
         $this->arrRqstParameters = $data;
+        
+        // Special case for browsers who can't cope with sending the full range
+        // of HTTP actions.
+        if (isset($this->arrRqstParameters['HTTPaction'])) {
+            switch(strtolower($this->arrRqstParameters['HTTPaction'])) {
+            case 'head':
+                // Typically a request to see if this has changed since the last time
+                $this->strRequestMethod = 'head';
+                unset($this->arrRqstParameters['HTTPaction']);
+                break;
+            case 'delete':
+                $this->strRequestMethod = 'delete';
+                unset($this->arrRqstParameters['HTTPaction']);
+                break;
+            }
+        }
 
         // Remove the trailing slash from the path, if there is one
 
