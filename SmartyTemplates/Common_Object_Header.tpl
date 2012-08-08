@@ -36,10 +36,9 @@
         <!-- <script src="media/CampFireManager.js"></script> -->
     </head>
     <body>
-        <input type="hidden" id="pageIdentifier" page="theobject" />
         <div data-role="page" id="theobject">
             <div data-role="header">
-                <a href="<!--SM:$SiteConfig.thisurl:SM-->" data-icon="refresh">Refresh</a>
+                <a href="<!--SM:$SiteConfig.baseurl:SM-->" data-ajax="false" data-icon="grid">The Grid</a>
 <!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
 <!--SM:if isset($SiteConfig.Site_Name):SM-->
     <!--SM:assign var=title_open value='<h1>':SM-->
