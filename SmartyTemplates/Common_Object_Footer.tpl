@@ -2,22 +2,49 @@
                 <div data-role="navbar">
                     <ul>
                         <li><a href="<!--SM:$SiteConfig.baseurl:SM-->timetable" data-icon="arrow-l">The Grid</a></li>
-                        <li><a href="#theobject" class="ui-btn-active" data-icon="grid">Object</a></li>
+                        
 <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
     <!--SM:assign var=attending_open value='<li><a href="':SM-->
-    <!--SM:assign var=attending_close value='attendee/me" data-icon="star">I\'m attending</a></li>':SM-->
+    <!--SM:if substr($SiteConfig.thisurl, -11) == 'attendee/me' || substr($SiteConfig.thisurl, -12) == 'attendee/me/':SM-->
+        <!--SM:assign var=thisobject value='<li><a href="#anobject" data-rel="dialog" data-transition="pop" data-icon="grid">Object</a></li>':SM-->
+        <!--SM:assign var=attending_close value='attendee/me" class="ui-btn-active" data-icon="star">I\'m attending</a></li>':SM-->
+    <!--SM:else:SM-->
+        <!--SM:assign var=thisobject value='<li><a href="#theobject" class="ui-btn-active" data-icon="grid">Object</a></li>':SM-->
+        <!--SM:assign var=attending_close value='attendee/me" data-icon="star">I\'m attending</a></li>':SM-->
+    <!--SM:/if:SM-->
     <!--SM:assign var=profile_open value='<li><a href="':SM-->
     <!--SM:assign var=profile_middle value='user/':SM-->
     <!--SM:assign var=profile_close value='" data-icon="arrow-r">My Profile</a></li>':SM-->
+                        <!--SM:$thisobject:SM-->
                         <!--SM:$attending_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$attending_close:SM-->
                         <!--SM:$profile_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$profile_middle:SM--><!--SM:$Object_User.current.intUserID:SM--><!--SM:$profile_close:SM-->
 <!--SM:else:SM-->
+                        <li><a href="#theobject" class="ui-btn-active" data-icon="grid">Object</a></li>
                         <li><a href="#login" data-rel="dialog" data-transition="pop" data-icon="star">I'm attending</a></li>
                         <li><a href="#login" data-rel="dialog" data-transition="pop" data-icon="arrow-r">My Profile</a></li>
 <!--SM:/if:SM-->
                     </ul>
                 </div>
             </div>		
+        </div>
+        <div data-role="page" id="anobject">
+            <div data-role="header" data-theme="e">
+<!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
+<!--SM:if isset($SiteConfig.Site_Name):SM-->
+        <!--SM:assign var=title_open value='<h1>':SM-->
+        <!--SM:assign var=title_close value='</h1>':SM-->
+        <!--SM:$title_open:SM--><!--SM:$SiteConfig.Site_Name:SM--><!--SM:$title_close:SM-->
+<!--SM:else:SM-->
+                <h1>Campfire Manager</h1>
+<!--SM:/if:SM-->
+            </div>
+            <div data-role="content" data-theme="d">	
+                <p>Sorry, you've not loaded any objects yet. Please go back to the grid and find something!</p>
+            </div>
+
+            <div data-role="footer" data-theme="e">
+                <p><a href="#timetable" data-rel="back" data-role="button" data-inline="true" data-icon="back">Cancel</a></p>
+            </div>
         </div>
         <div data-role="page" id="login">
             <div data-role="header" data-theme="e">

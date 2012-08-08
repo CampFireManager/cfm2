@@ -20,6 +20,17 @@
 <!--SM:/if:SM-->
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="media/JQM/jquery.mobile-1.1.1.min.css">
+        <style type="text/css">
+            .ui-icon-star-grey {
+                background-image: url("media/images/star-grey.png"); background-size: 18px 18px;
+            }
+            .ui-icon-star-gold {
+                background-image: url("media/images/star-gold.png"); background-size: 18px 18px;
+            }
+            .ui-icon-star-blue {
+                background-image: url("media/images/star-blue.png"); background-size: 18px 18px;
+            }
+        </style>
         <script src="media/JQM/jquery-1.7.1.min.js"></script>
         <script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
         <!-- <script src="media/CampFireManager.js"></script> -->

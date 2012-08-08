@@ -77,8 +77,34 @@ class Object_Attendee extends Abstract_GenericObject
         $return = parent::getData();
         if ($this->isFull() == true) {
             $objTalk = Object_Talk::brokerByID($this->intTalkID);
-            $objTalk->setFull(true);
             $return['arrTalk'] = $objTalk->getSelf();
+            $objUser = Object_User::brokerByID($this->intUserID);
+            $return['arrUser'] = $objUser->getSelf();
+        }
+        return $return;
+    }
+    
+    /**
+     * This function is used a lot throughout the code base. It was recently
+     * re-written to support adding the data labels for the
+     * 
+     * @param boolean $getUser Set to true to add the User data to the data
+     * @param boolean $getTalk Set to true to add the Talk data to the data
+     *
+     * @return array
+     */
+    public function getSelf($getUser = false, $getTalk = false)
+    {
+        $return = $this->getCurrent($this->getLabels($this->getData()));
+        if ($getUser && !isset($return['arrUser'])) {
+            $objUser = Object_User::brokerByID($this->intUserID);
+            $return['arrUser'] = $objUser->getSelf();
+            $return['current']['value'] = $objUser->getKey('strUser');
+        }
+        if ($getTalk && !isset($return['arrTalk'])) {
+            $objTalk = Object_Talk::brokerByID($this->intTalkID);
+            $return['arrTalk'] = $objTalk->getSelf();
+            $return['current']['value'] = $objTalk->getKey('strTalk');
         }
         return $return;
     }
