@@ -103,7 +103,5 @@ class Object_UserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($objUser->getKey('strUser') == null);
         $this->assertFalse($objUser->getKey('isWorker'));
         $this->assertFalse($objUser->getKey('isAdmin'));
-        $this->assertFalse($objUser->getKey('hasAttended'));
-        $this->assertFalse($objUser->getKey('isHere'));
     }
 }

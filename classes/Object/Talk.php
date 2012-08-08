@@ -115,6 +115,7 @@ class Object_Talk extends Abstract_GenericObject
                 $self['isPresenting'] = false;
             }
             $arrAttendee = Object_Attendee::brokerByColumnSearch('intTalkID', $this->intTalkID);
+            $self['arrAttendee'] = array();
             foreach ($arrAttendee as $intAttendeeID => $objAttendee) {
                 $self['arrAttendee'][$intAttendeeID] = $objAttendee->getSelf(true);
             }

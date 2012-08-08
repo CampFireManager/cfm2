@@ -25,16 +25,17 @@
 class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'worker', 'render_in_sub_views' => true),
-        'jsonLinks'   => array('type' => 'text'),
-        'isWorker'    => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
-        'isAdmin'     => array('type' => 'tinyint', 'length' => 1, 'optional' => 'admin'),
-        'hasAttended' => array('type' => 'tinyint', 'length' => 1, 'optional' => 'worker'),
-        'isHere'      => array('type' => 'tinyint', 'length' => 1, 'optional' => 'worker'),
+        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'user', 'required' => 'worker', 'render_in_sub_views' => true),
+        'jsonLinks'   => array('type' => 'text', 'array' => 'arrLinks', 'optional' => 'user'),
+        'isWorker'    => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin'),
+        'isAdmin'     => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin'),
         'lastChange'  => array('type' => 'datetime')
     );
     protected $arrTranslations = array(
-        'label_strUser' => array('en' => 'Creator')
+        'label_strUser' => array('en' => 'Creator'),
+        'label_jsonLinks' => array('en' => 'Links for this person'),
+        'label_isWorker' => array('en' => 'This person can act on behalf of other attendees'),
+        'label_new_isAdmin' => array('en' => 'This person can manage the event'),
     );
     protected $strDBTable      = "user";
     protected $strDBKeyCol     = "intUserID";
@@ -45,8 +46,6 @@ class Object_User extends Abstract_GenericObject
     protected $jsonLinks       = null;
     protected $isWorker        = false;
     protected $isAdmin         = false;
-    protected $hasAttended     = false;
-    protected $isHere          = false;
     protected $lastChange      = false;
     // Temporary storage values
     public $objUserAuthTemp    = null;
@@ -303,6 +302,17 @@ class Object_User extends Abstract_GenericObject
                 }
             }
         }
+
+        $arrLinks = json_decode($this->jsonLinks, true);
+            if (! is_array($arrLinks)) {
+                $arrLinks = array();
+            }
+            foreach ($arrLinks as $key => $value) {
+                if ($value != '' && $value != '[]') {
+                    $self['arrLinks'][$key] = $value;
+                }
+            }
+
         Base_Response::setLastModifiedTime($self['epochLastChange']);
         $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
         return $self;
@@ -339,12 +349,6 @@ class Object_User extends Abstract_GenericObject
         }
         if ($objFromUser->getKey('isAdmin') == 1 && $objToUser->getKey('isAdmin') != 1) {
             $objToUser->setKey('isAdmin', 1);
-        }
-        if ($objFromUser->getKey('hasAttended') == 1 && $objToUser->getKey('hasAttended') != 1) {
-            $objToUser->setKey('hasAttended', 1);
-        }
-        if ($objFromUser->getKey('isHere') == 1 && $objToUser->getKey('isHere') != 1) {
-            $objToUser->setKey('isHere', 1);
         }
         $arrAttendee = Object_Attendee::brokerByColumnSearch('intUserID', $objFromUser->getKey('intUserID'));
         $arrUserAuth = Object_Userauth::brokerByColumnSearch('intUserID', $objFromUser->getKey('intUserID'));
@@ -389,9 +393,9 @@ class Object_User extends Abstract_GenericObject
 class Object_User_Demo extends Object_User
 {
     protected $arrDemoData = array(
-        array('intUserID' => 1, 'strUser' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 2, 'strUser' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 3, 'strUser' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0, 'hasAttended' => 1, 'isHere' => 1),
-        array('intUserID' => 4, 'strUser' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0, 'hasAttended' => 0, 'isHere' => 0)
+        array('intUserID' => 1, 'strUser' => 'Mr Keynote', 'isWorker' => 0, 'isAdmin' => 0),
+        array('intUserID' => 2, 'strUser' => 'Mr CFM Admin', 'isWorker' => 1, 'isAdmin' => 1),
+        array('intUserID' => 3, 'strUser' => 'Ms SoftSkills', 'isWorker' => 1, 'isAdmin' => 0),
+        array('intUserID' => 4, 'strUser' => 'Ms Attendee', 'isWorker' => 0, 'isAdmin' => 0)
     );
 }

@@ -1,6 +1,6 @@
 <!--SM:if $edit.label != "0" || $label != "0":SM-->
 <div id="<!--SM:$field:SM-->">
-    <!--SM:if $edit.label != "0":SM-->
+    <!--SM:if $edit.label != "0" && $edit.label != "":SM-->
         <div class="readwrite">
             <label for="edit_boolean_<!--SM:$field:SM-->">
                 <span class="progressive_basic">Read write: </span><!--SM:$edit.label:SM-->:
@@ -11,7 +11,7 @@
             </label>
         </div>
     <!--SM:/if:SM-->
-    <!--SM:if $label != "0":SM-->
+    <!--SM:if $label != "0" && $label != "":SM-->
         <div class="readonly<!--SM:if isset($edit.label):SM--> haseditable<!--SM:/if:SM-->">
             <label for="boolean_<!--SM:$field:SM-->">
                 <span class="progressive_basic">Read only: </span><!--SM:$label:SM-->:

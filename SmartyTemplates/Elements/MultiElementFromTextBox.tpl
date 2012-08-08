@@ -1,3 +1,4 @@
+<!--SM:if isset($dodebug) && $dodebug == "true":SM--><pre><!--SM:var_dump("edit", $edit, "label", $label, "field", $field, "list", $list, "current", $current):SM--></pre><!--SM:/if:SM-->
 <div id="<!--SM:$field:SM-->">
     <!--SM:if isset($edit.label):SM-->
         <div class="readwrite">
