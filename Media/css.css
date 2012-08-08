@@ -23,8 +23,8 @@ tr.entry {height:<?php echo $row_heights; ?>%;}
 .Left {text-align:left;}
 .Long {background-color:Silver;}
 .Time_title {background-color:Silver;}
-.slot_next {background-color:LightBlue;}
-.slot_now {background-color:Yellow;}
+.slot_next {background-color:#DDDDDD;}
+.slot_now {background-color:#BBBBBB;}
 div#verify-form {padding: .5em; border: 1px solid #777777; background: #dddddd; margin-top: 1em; padding-bottom: 0em;}
 .alert {border: 1px solid #e7dc2b; background: #fff888; }
 .success {border: 1px solid #669966; background: #88ff88; }
