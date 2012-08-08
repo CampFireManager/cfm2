@@ -16,7 +16,6 @@
                                     $('#Talk_<!--SM:$object.intTalkID:SM--> .haseditable').show();
                                 }
                             });
-
                         });
                     </script>
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
@@ -27,9 +26,8 @@
                                     <option value="1">on</option>
                                 </select>
                             </label>
+                            <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$object.intTalkID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                         </div>
-
-                        <a href="<!--SM:$SiteConfig.thisurl:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                                 
                         <form action="<!--SM:$SiteConfig.thisurl:SM-->" method="post">
                     <!--SM:/if:SM--><!-- This is editable - add the form tags -->
