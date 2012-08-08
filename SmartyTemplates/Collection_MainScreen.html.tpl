@@ -2,9 +2,14 @@
 <head>
 <title></title>
 <link rel="stylesheet" href="media/css.css" type="text/css">
+<link rel="stylesheet" href="media/JQM/jquery.mobile-1.1.1.min.css">
+<script src="media/JQM/jquery-1.7.1.min.js"></script>
+<script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
 </head>
 <body>
 <!--SM:foreach $Collection_MainScreen as $Timetable:SM-->
+<div data-role="page">
+<div data-role="content">
 <table>
     <tr>
         <th>&nbsp;</th>
@@ -45,5 +50,7 @@
 <!--SM:/foreach:SM-->
 </table>
 <!--SM:/foreach:SM-->
+</div>
+</div>
 </body>
 </html>
