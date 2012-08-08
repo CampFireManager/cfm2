@@ -58,6 +58,7 @@
     <!--SM:assign var=attending value='<li><a href="attendee/me" data-icon="star">I\'m attending</a></li>':SM-->
     <!--SM:assign var=profile_open value='<li><a href="user/':SM-->
     <!--SM:assign var=profile_close value='" data-icon="arrow-r">My Profile</a></li>':SM-->
+                        <li><a href="#object" data-rel="dialog" data-transition="pop" data-icon="arrow-u">Object</a></li>
                         <!--SM:$attending:SM-->
                         <!--SM:$profile_open:SM--><!--SM:$Object_User.current.intUserID--:SM--><!--SM:$profile_close:SM-->
 <!--SM:else:SM-->
