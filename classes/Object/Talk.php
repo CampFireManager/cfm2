@@ -106,8 +106,14 @@ class Object_Talk extends Abstract_GenericObject
      */
     function getData()
     {
+        $me = Object_User::brokerCurrent();
         $self = parent::getData();
         if ($this->isFull() == true) {
+            if (is_object($me) && $this->intUserID == $me->getPrimaryKeyValue()) {
+                $self['isPresenting'] = true;
+            } else {
+                $self['isPresenting'] = false;
+            }
             $arrAttendee = Object_Attendee::brokerByColumnSearch('intTalkID', $this->intTalkID);
             foreach ($arrAttendee as $intAttendeeID => $objAttendee) {
                 $self['arrAttendee'][$intAttendeeID] = $objAttendee->getSelf(true);
@@ -186,6 +192,9 @@ class Object_Talk extends Abstract_GenericObject
             foreach ($presenters as $presenter) {
                 $objPresenter = Object_UserPresenter::brokerByID($presenter);
                 if (is_object($objPresenter)) {
+                    if (is_object($me) && $presenter == $me->getPrimaryKeyValue()) {
+                        $self['isPresenting'] = true;
+                    }
                     $arrPresenter = $objPresenter->getSelf();
                     $self['arrPresenters'][] = $arrPresenter;
                     if ($arrPresenter['epochLastChange'] > $self['epochLastChange']) {
