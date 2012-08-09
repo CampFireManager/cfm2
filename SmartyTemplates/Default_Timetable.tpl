@@ -31,7 +31,7 @@
                         <h3>All other rooms in this slot unavailable due to: <!--SM:$talk.strTalk:SM--></h3>
                         <!--SM:else:SM-->
                             <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
-                        <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?slot=<!--SM:$slot.intSlotID:SM-->">
+                        <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?intSlotID=<!--SM:$slot.intSlotID:SM-->">
                             <!--SM:/if:SM-->
                             <h3>Empty<!--SM:if $talk.isLocked == 'softlock':SM--> during: <!--SM:$talk.strTalk:SM--><!--SM:/if:SM--></h3>
                             <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
