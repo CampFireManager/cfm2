@@ -305,14 +305,15 @@ class Object_User extends Abstract_GenericObject
         }
 
         $arrLinks = json_decode($this->jsonLinks, true);
-            if (! is_array($arrLinks)) {
-                $arrLinks = array();
+        if (! is_array($arrLinks)) {
+            $arrLinks = array();
+        }
+        $self['arrLinks'] = array();
+        foreach ($arrLinks as $key => $value) {
+            if ($value != '' && $value != '[]') {
+                $self['arrLinks'][$key] = $value;
             }
-            foreach ($arrLinks as $key => $value) {
-                if ($value != '' && $value != '[]') {
-                    $self['arrLinks'][$key] = $value;
-                }
-            }
+        }
 
         Base_Response::setLastModifiedTime($self['epochLastChange']);
         $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
