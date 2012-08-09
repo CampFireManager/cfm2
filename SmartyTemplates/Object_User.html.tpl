@@ -1,11 +1,11 @@
 <!--SM:include file="Common_Object_Header.tpl":SM-->
     <div data-role="content">
         <ul data-role="listview" id="theobject" data-theme="d" data-divider-theme="d">
-            <!--SM:if substr($SiteConfig.thisurl, -4) == '/me/' || substr($SiteConfig.thisurl, -3) == '/me':SM-->
-                <a href="<!--SM:$SiteConfig.baseurl:SM-->?logout=1" data-role="button">Logout</a>
-            <!--SM:/if:SM-->
             <!--SM:foreach $renderPage as $object:SM-->
                 <!--SM:if ($object@key != 'current'):SM-->
+                    <!--SM:if $Object_User.current.intUserID == $object.intUserID:SM-->
+                        <a href="<!--SM:$SiteConfig.baseurl:SM-->?logout=1" data-role="button">Logout</a>
+                    <!--SM:/if:SM-->
                     <div id="User_<!--SM:$object.intUserID:SM-->">
                         <script type="text/Javascript">
                             $(function() {
@@ -30,10 +30,10 @@
                                         <option value="1">on</option>
                                     </select>
                                 </label>
-                                <a href="<!--SM:$SiteConfig.baseurl:SM-->resource/<!--SM:$object.intUserID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
+                                <a href="<!--SM:$SiteConfig.baseurl:SM-->user/<!--SM:$object.intUserID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                             </div>
 
-                            <form action="<!--SM:$SiteConfig.thisurl:SM-->" method="post">
+                            <form action="<!--SM:$SiteConfig.baseurl:SM-->user/<!--SM:$object.intUserID:SM-->" method="post">
                         <!--SM:/if:SM--><!-- This is editable - add the form tags -->
 
                         <div id="intUserID">
