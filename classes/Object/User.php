@@ -25,14 +25,15 @@
 class Object_User extends Abstract_GenericObject
 {
     protected $arrDBItems = array(
-        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'user', 'required' => 'worker', 'render_in_sub_views' => true),
+        'strUser'     => array('type' => 'varchar', 'length' => 255, 'required' => 'user', 'render_in_sub_views' => true),
         'jsonLinks'   => array('type' => 'text', 'array' => 'arrLinks', 'optional' => 'user'),
         'isWorker'    => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin'),
         'isAdmin'     => array('type' => 'tinyint', 'length' => 1, 'required' => 'admin'),
         'lastChange'  => array('type' => 'datetime')
     );
     protected $arrTranslations = array(
-        'label_strUser' => array('en' => 'Creator'),
+        'label_strUser' => array('en' => 'Attendee'),
+        'label_new_strUser' => array('en' => 'Your name'),
         'label_jsonLinks' => array('en' => 'Links for this person'),
         'label_isWorker' => array('en' => 'This person can act on behalf of other attendees'),
         'label_new_isAdmin' => array('en' => 'This person can manage the event'),
@@ -42,7 +43,7 @@ class Object_User extends Abstract_GenericObject
     protected $reqCreatorToMod = true;
     // Local Object Requirements
     protected $intUserID       = null;
-    protected $strUser         = null;
+    protected $strUser         = 'Anonymous';
     protected $jsonLinks       = null;
     protected $isWorker        = false;
     protected $isAdmin         = false;

@@ -124,7 +124,7 @@ class Object_Talk extends Abstract_GenericObject
                 $self['epochLastChange'] = strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID));
             }
             if ($this->intUserID != null && $this->intUserID > 0) {
-                $objUser = Object_User::brokerByID($this->intUserID);
+                $objUser = Object_UserProposer::brokerByID($this->intUserID);
                 if (is_object($objUser)) {
                     $self['arrUser'] = $objUser->getSelf();
                     $self['arrPresenters'][] = $objUser->getSelf();

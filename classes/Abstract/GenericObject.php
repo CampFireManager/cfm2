@@ -1194,4 +1194,18 @@ abstract class Abstract_GenericObject implements Interface_Object
     {
         return $this->errorMessageReturn;
     }
+    
+    public static function dataForNewPage()
+    {
+        $thisClassName = get_called_class();
+        if ($self == null) {
+            $self = new $thisClassName();
+        }       
+        $return['isEditable'] = self::listKeys();
+        $return[$self->strDBKeyCol] = 'New';
+        foreach ($self->arrDBItems as $strKey => $arrDBItem) {
+            $return[$strKey] = '';
+        }
+        return $return;
+    }
 }

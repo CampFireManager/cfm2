@@ -18,8 +18,6 @@
                 </data>
             </label>
         </div>
-    <!--SM:else:SM-->
-        <div>Label: "<!--SM:$label:SM-->"</div>
     <!--SM:/if:SM-->
 </div>
 <!--SM:/if:SM-->

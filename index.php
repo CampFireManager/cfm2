@@ -187,7 +187,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                     if ($arrObjects['Object_User']['current'] != false
                         && $arrObjects['Object_User']['current'] != null
                     ) {
-                        $arrObjects['Creation_Values'] = $object::listKeys();
+                        $arrObjects['renderPage'][] = $object::dataForNewPage();
                         $renderPage = 'new_' . $object;
                     } else {
                         if ($rest) {
