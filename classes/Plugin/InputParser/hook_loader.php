@@ -43,7 +43,7 @@ class Plugin_InputParser
                 $objUser = Object_User::brokerByCodeOnly($objInput);
                 $strMessage = '';
                 if (isset($objUser->objUserAuthTemp) && is_object($objUser->objUserAuthTemp)) {
-                    $strMessage = ' If you want get involved in a web browser, please visit ' . Container_Config::brokerByID('Public_Url', 'http://www.example.com') . ' and login with the authcode: ' . $objUser->objUserAuthTemp->getKey('tmpCleartext');
+                    $strMessage = ' If you want get involved in a web browser, please visit ' . Container_Config::brokerByID('Public_Url', 'http://www.example.com')->getKey('value') . ' and login with the authcode: ' . $objUser->objUserAuthTemp->getKey('tmpCleartext');
                     $objUser->objUserAuthTemp->setKey('tmpCleartext', null);
                     $objUser->objUserAuthTemp->write();
                 }
@@ -51,15 +51,15 @@ class Plugin_InputParser
                 case preg_match('/^([Ii][Dd][Ee][Nn][Tt][Ii][Ff][Yy])\s+(.*)\s+(\S+@\S+\.\S+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii]\s+[Aa][Mm])\s+(.*)\s+(\S+@\S+\.\S+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii])\s+(.*)\s+(\S+@\S+\.\S+)$/', $objInput->getKey('textMessage'), $match):
-                    $objUser->setKey('strUser', $match[1]);
-                    $objUser->setKey('jsonLinks', Base_GeneralFunctions::addJson($objUser->getKey('jsonLinks'), 'email', $match[2]));
+                    $objUser->setKey('strUser', $match[2]);
+                    $objUser->setKey('jsonLinks', Base_GeneralFunctions::addJson($objUser->getKey('jsonLinks'), 'email', $match[3]));
                     $objUser->write();
                     Object_Output::replyToInput($objInput, 'Thanks for letting us know your name and e-mail address.' . $strMessage);
                     break;
                 case preg_match('/^([Ii][Dd][Ee][Nn][Tt][Ii][Ff][Yy])\s+(.*)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii]\s+[Aa][Mm])\s+(.*)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ii])\s+(.*)$/', $objInput->getKey('textMessage'), $match):
-                    $objUser->setKey('strUser', $match[1]);
+                    $objUser->setKey('strUser', $match[2]);
                     $objUser->write();
                     Object_Output::replyToInput($objInput, 'Thanks for letting us know your name.' . $strMessage);
                     break;
@@ -68,17 +68,17 @@ class Plugin_InputParser
                 case preg_match('/^([Gg][Oo])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Gg])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Aa])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
-                    $objTalk = Object_Talk::brokerByID($match[1]);
-                    $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
-                    if ($strTalk != $objTalk->getKey('strTalk')) {
-                        $strTalk .= '...';
-                    }
-                    $strTalk = '"' . $strTalk . '"';
+                    $objTalk = Object_Talk::brokerByID($match[2]);
                     if ($objTalk != false) {
-                        if (! Object_Attendee::isAttending($match[1])) {
-                            $objAttendee = new Object_Attendee(false);
+                        $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
+                        if ($strTalk != $objTalk->getKey('strTalk')) {
+                            $strTalk .= '...';
+                        }
+                        $strTalk = '"' . $strTalk . '"';
+                        if (! Object_Attendee::isAttending($match[2])) {
+                            $objAttendee = new Object_Attendee();
                             $objAttendee->setKey('intUserID', $objUser->getKey('intUserID'));
-                            $objAttendee->setKey('intTalkID', $match[1]);
+                            $objAttendee->setKey('intTalkID', $match[2]);
                             $objAttendee->create();
                             Object_Output::replyToInput($objInput, "OK, you're down to attend the talk $strTalk." . $strMessage);
                         } else {
@@ -96,14 +96,14 @@ class Plugin_InputParser
                 case preg_match('/^([Cc])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Dd])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                 case preg_match('/^([Ll])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
-                    $objTalk = Object_Talk::brokerByID($match[1]);
-                    $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
-                    if ($strTalk != $objTalk->getKey('strTalk')) {
-                        $strTalk .= '...';
-                    }
-                    $strTalk = '"' . $strTalk . '"';
+                    $objTalk = Object_Talk::brokerByID($match[2]);
                     if ($objTalk != false) {
-                        $objAttendee = Object_Attendee::isAttending($match[1]);
+                        $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
+                        if ($strTalk != $objTalk->getKey('strTalk')) {
+                            $strTalk .= '...';
+                        }
+                        $strTalk = '"' . $strTalk . '"';
+                        $objAttendee = Object_Attendee::isAttending($match[2]);
                         if ($objAttendee != false) {
                             $objAttendee->delete();
                             Object_Output::replyToInput($objInput, "OK, we've acknowledged you don't want to go to $strTalk anymore." . $strMessage);
@@ -189,14 +189,14 @@ class Plugin_InputParser
                     break;
                 default:
                     if ($strMessage != '') {
-                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'." . $strMessage);
+                        Object_Output::replyToInput($objInput, "You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'." . $strMessage);
                     } else {
-                        Object_Output::replyToInput("You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'. If you want get involved using your web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
+                        Object_Output::replyToInput($objInput, "You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'. If you want get involved using your web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
                     }
                 }
+                $objInput->setKey('isActioned', '1');
+                $objInput->write();
             }
-            $objInput->setKey('isActioned', '1');
-            $objInput->write();
         } catch (Exception $e) {
             error_log($e->getMessage());
         }

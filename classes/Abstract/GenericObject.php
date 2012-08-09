@@ -204,7 +204,10 @@ abstract class Abstract_GenericObject implements Interface_Object
         }
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
+        $system_state = Object_User::isSystem();
+        Object_User::isSystem(true);
         $thisClass = new $thisClassName();
+        Object_User::isSystem($system_state);
         $process = false;
         foreach ($thisClass->arrDBItems as $dbItem => $dummy) {
             $dummy = null;
@@ -221,17 +224,20 @@ abstract class Abstract_GenericObject implements Interface_Object
         $arrResult = array();
         try {
             $objDatabase = Container_Database::getConnection();
+            if ($thisClass->strDBKeyCol == null) {
+                $thisClass->strDBKeyCol = $column;
+            }
             if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
                 if ($count != null) {
                     $sql = Container_Database::getSqlString(
                         array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` IS NULL OR `{$column}` = '' ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
                         )
                     );
                 } else {
                     $sql = Container_Database::getSqlString(
                         array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == '' ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` IS NULL OR `{$column}` = '' ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
                         )
                     );
                 }
@@ -241,13 +247,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                 if ($count != null) {
                     $sql = Container_Database::getSqlString(
                         array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` IS NOT NULL ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
                         )
                     );
                 } else {
                     $sql = Container_Database::getSqlString(
                         array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} IS NOT NULL ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` IS NOT NULL ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
                         )
                     );
                 }
@@ -258,13 +264,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                     if ($count != null) {
                         $sql = Container_Database::getSqlString(
                             array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
                             )
                         );
                     } else {
                         $sql = Container_Database::getSqlString(
                             array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? OR {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
                             )
                         );
                     }
@@ -274,13 +280,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                     if ($count != null) {
                         $sql = Container_Database::getSqlString(
                             array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
                             )
                         );
                     } else {
                         $sql = Container_Database::getSqlString(
                             array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} = ? ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
                             )
                         );
                     }
@@ -291,13 +297,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                 if ($count != null) {
                     $sql = Container_Database::getSqlString(
                         array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} != ? ORDER BY {$thisClass->strDBKeyCol} {$direction} LIMIT 0, {$count}"
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` != ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
                         )
                     );
                 } else {
                     $sql = Container_Database::getSqlString(
                         array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE {$column} != ? ORDER BY {$thisClass->strDBKeyCol} {$direction}"
+                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` != ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
                         )
                     );                    
                 }
@@ -497,6 +503,9 @@ abstract class Abstract_GenericObject implements Interface_Object
             $query->execute();
             $result = $query->fetchObject($thisClassName);
             while ($result != false) {
+                if (isset($thisClass->arrDBItems['key']) && $thisClass->strDBKeyCol == null) {
+                    $thisClass->strDBKeyCol = 'key';
+                }
                 if (isset($thisClass->strDBKeyCol) 
                     && $thisClass->strDBKeyCol != '' 
                     && $thisClass->strDBKeyCol != null
@@ -1067,7 +1076,8 @@ abstract class Abstract_GenericObject implements Interface_Object
             if ($this->reqAdminToMod && ! Object_User::isAdmin()) {
                 $return['isEditable'] = array();
             } elseif ($this->reqCreatorToMod 
-                && isset($this->arrDBItems['intUserID']) 
+                && (isset($this->arrDBItems['intUserID'])
+                || $this->strDBKeyCol == 'intUserID')
                 && ! Object_User::isCreator($this->intUserID)
             ) {
                 $return['isEditable'] = array();
@@ -1107,7 +1117,8 @@ abstract class Abstract_GenericObject implements Interface_Object
         foreach ($self->arrDBItems as $strDBItem => $arrDBItem) {
             if (isset($arrDBItem['required']) || isset($arrDBItem['optional'])) {
                 if (isset($arrDBItem['required'])
-                    && ($arrDBItem['required'] == 'user' 
+                    && (($arrDBItem['required'] == 'user'
+                    && Object_User::brokerCurrent() != false)
                     || ($arrDBItem['required'] == 'worker' 
                     && Object_User::isWorker())
                     || ($arrDBItem['required'] == 'admin' 
@@ -1115,7 +1126,8 @@ abstract class Abstract_GenericObject implements Interface_Object
                 ) {
                     $return[$strDBItem]['required'] = 1;
                 } elseif (isset($arrDBItem['optional']) 
-                    && ($arrDBItem['optional'] == 'user' 
+                    && (($arrDBItem['optional'] == 'user'
+                    && Object_User::brokerCurrent() != false)
                     || ($arrDBItem['optional'] == 'worker' 
                     && Object_User::isWorker())
                     || ($arrDBItem['optional'] == 'admin' 
@@ -1203,8 +1215,19 @@ abstract class Abstract_GenericObject implements Interface_Object
         }       
         $return['isEditable'] = self::listKeys();
         $return[$self->strDBKeyCol] = 'New';
+        $objUser = Object_User::brokerCurrent();
+        if (is_object($objUser)) {
+            $return['intUserID'] = $objUser->getKey('intUserID');
+        }
+        $arrRequest = Container_Request::getRequest()->get_arrRqstParameters();
         foreach ($self->arrDBItems as $strKey => $arrDBItem) {
-            $return[$strKey] = '';
+            if (isset($arrRequest[$strKey]) && isset($return['isEditable'][$strKey]['required']) && $return['isEditable'][$strKey]['required'] == 1) {
+                $return[$strKey] = $arrRequest[$strKey];
+            } elseif (isset($arrRequest[$strKey]) && isset($return['isEditable'][$strKey]['optional']) && $return['isEditable'][$strKey]['optional'] == 1) {
+                $return[$strKey] = $arrRequest[$strKey];
+            } else {
+                $return[$strKey] = '';
+            }
         }
         return $return;
     }

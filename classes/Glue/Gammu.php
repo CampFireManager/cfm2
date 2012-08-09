@@ -120,6 +120,7 @@ class Glue_Gammu implements Interface_Glue
         
         $this->objDaemon = Object_Daemon::brokerByColumnSearch('strDaemon', $this->strInterface);
         if ($this->objDaemon == false) {
+            
             $this->objDaemon = new Object_Daemon();
             $this->objDaemon->setKey('strDaemon', $this->strInterface);
             $this->objDaemon->setKey('intInboundCounter', 0);
@@ -348,7 +349,7 @@ class Glue_Gammu implements Interface_Glue
         $arrConfig = Object_SecureConfig::brokerAll();
         $return = array();
         foreach ($arrConfig as $key => $objConfig) {
-            if (preg_match('/^Glue_Gammu-[^_]+/', $key)) {
+            if (preg_match('/^Glue_Gammu-[^_]+$/', $objConfig->getKey('key'))) {
                 $key = $objConfig->getKey('value');
                 if (isset($arrConfig[$key . '_DBType']) 
                     && isset($arrConfig[$key . '_DBHost']) 

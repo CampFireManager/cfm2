@@ -17,6 +17,5 @@
 Base_Hook::addHooks(new Plugin_TalkFixer());
 Base_Hook::addHooks(new Plugin_LimboTalks());
 Base_Hook::addHooks(new Plugin_ResetCleartexts());
-
-// Base_Hook::addHooks(new Plugin_Twitter());
-// Base_Hook::addHooks(new Plugin_Verbose());
+Base_Hook::addHooks(new Plugin_InputParser());
+Base_Hook::addHooks(new Plugin_GlueBroadcaster());

@@ -40,6 +40,11 @@ class Object_SecureConfig extends Abstract_GenericObject
     protected $isLocal = false;
     protected $lastChange = null;
     
+    public static function brokerByID($key)
+    {
+        return end(self::brokerByColumnSearch('key', $key));
+    }
+    
     /**
      * This function overloads the parent write function - ensuring the value
      * is not locally stored first before performing the write action.
