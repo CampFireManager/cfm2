@@ -196,6 +196,7 @@ class Object_Userauth extends Abstract_GenericObject
                         $query = $objDatabase->prepare($sql);
                         $query->execute(array($value));
                     }
+                    unset($_SESSION['OPENID_AUTH']['url']);
                 } else {
                     if ($createIfNotExist === true) {
                         $result = new Object_User(true);
@@ -242,6 +243,7 @@ class Object_Userauth extends Abstract_GenericObject
         if (isset($arrSession['OPENID_AUTH']['url'])) {
             $this->setKey('enumAuthType', 'openid');
             $this->setKey('strAuthValue', $arrSession['OPENID_AUTH']['url']);
+            unset($_SESSION['OPENID_AUTH']['url']);
         } elseif (
             Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'username', false, true) != false
             && Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'password', false, true) != false
