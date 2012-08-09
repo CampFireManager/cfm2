@@ -25,7 +25,6 @@
         <!--SM:assign var=title_open value='<h1>Login to ':SM-->
     <!--SM:assign var=title_close value='</h1>':SM-->
                 <!--SM:$title_open:SM--><!--SM:$SiteConfig.Site_Name:SM--><!--SM:$title_close:SM-->
-        <!--SM:$title:SM-->
 <!--SM:else:SM-->
                 <h1>Login to Campfire Manager</h1>
 <!--SM:/if:SM-->
