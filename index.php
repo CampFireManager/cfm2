@@ -209,7 +209,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         Base_Response::redirectTo('timetable/' . date('Y-m-d'));
                     }
                 }
-                $newobject = new $object(true);
+                $newobject = new $object();
                 foreach ($objRequest->get_arrRqstParameters() as $key => $value) {
                     if (is_array($value)) {
                         foreach ($value as $newvalue) {
