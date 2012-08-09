@@ -89,7 +89,7 @@ class Glue_TwitterAPI implements Interface_Glue
             && Object_SecureConfig::brokerByID(Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value') . '_ConsumerKey', false)->getKey('value') != false
             && Object_SecureConfig::brokerByID(Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value') . '_ConsumerSecret', false)->getKey('value') != false
         ) {
-            $ConsumerPrefix = Object_SecureConfig::brokerByID($ConsumerPrefix . '_ConsumerPrefix', false)->getKey('value');
+            $ConsumerPrefix = Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value');
         } else {
             $ConsumerPrefix = $GluePrefix;
         }
@@ -114,11 +114,6 @@ class Glue_TwitterAPI implements Interface_Glue
         } else {
             $cfgUS = Object_SecureConfig::brokerByID($GluePrefix . '_UserSecret', false)->getKey('value');
         }
-        if (isset($arrConfigValues['APIHost'])) {
-            $cfgAPI = $arrConfigValues['APIHost'];
-        } else {
-            $cfgAPI = Object_SecureConfig::brokerByID($GluePrefix . '_APIHost', 'api.twitter.com')->getKey('value');
-        }
         if ($cfgCK == false) {
             throw new InvalidArgumentException("No Consumer Key");
         }
@@ -134,12 +129,13 @@ class Glue_TwitterAPI implements Interface_Glue
 
         $this->strInterface = $GluePrefix;
         
-        $libTwitterHelper = Base_ExternalLibraryLoader::getVersion("TwitterHelper");
+        $libTwitterHelper = Base_ExternalLibraryLoader::loadLibrary("TwitterHelper");
         if ($libTwitterHelper == false) {
-            return false;
+            throw new LogicException("Failed to load Twitter Helper");
         }
-        include $libTwitterHelper . '/tmhOAuth.php';
-        include $libTwitterHelper . '/tmhUtilities.php';
+        
+        include_once $libTwitterHelper . '/tmhOAuth.php';
+        include_once $libTwitterHelper . '/tmhUtilities.php';
 
         $this->oAuth = new tmhOAuth(
             array(
@@ -147,11 +143,10 @@ class Glue_TwitterAPI implements Interface_Glue
                 'consumer_secret' => $cfgCS,
                 'user_token'      => $cfgUK,
                 'user_secret'     => $cfgUS,
-                'host'            => $cfgAPI
             )
         );
         
-        $this->objDaemon = Object_Daemon::brokerByColumnSearch('strDaemon', $this->strInterface);
+        $this->objDaemon = end(Object_Daemon::brokerByColumnSearch('strDaemon', $this->strInterface));
         if ($this->objDaemon == false) {
             $this->objDaemon = new Object_Daemon();
             $this->objDaemon->setKey('strDaemon', $this->strInterface);
@@ -170,14 +165,7 @@ class Glue_TwitterAPI implements Interface_Glue
      */
     public function read_private()
     {        
-        if ($this->oAuth->config['use_ssl']) {
-            $api_path = 'https://';
-        } else {
-            $api_path = 'http://';
-        }
-        $api_path .= $this->oAuth->config['host'];
-        
-        $this->oAuth->request('GET', $api_path . '/1/account/rate_limit_status.json', array(), true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/account/rate_limit_status.json', array(), true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             $this->objDaemon->setKey('intScope', $data['remaining_hits']);
@@ -192,24 +180,26 @@ class Glue_TwitterAPI implements Interface_Glue
             $args['since_id'] = $lastmessage->getKey('intNativeID');
         }
         
-        $this->oAuth->request('GET', $api_path . '/1/direct_messages.json', $args, true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/direct_messages.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
-            foreach ($data['results'] as $tweet) {
-                if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['from_user'], false, false, 1, 'DESC')) == 0) {
-                    $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
+            if (isset($data['results'])) {
+                foreach ($data['results'] as $tweet) {
+                    if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['from_user'], false, false, 1, 'DESC')) == 0) {
+                        $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
+                    }
+                    $return = new Object_Input();
+                    $return->setKey('strInterface', $this->strInterface . '-private');
+                    $return->setKey('strSender', $tweet['from_user']);
+                    $return->setKey('textMessage', $tweet['text']);
+                    $return->setKey('intNativeID', $tweet['id_str']);
+                    $return->setKey('isActioned', 0);
+                    $return->create();
+                    $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
                 }
-                $return = new Object_Input();
-                $return->setKey('strInterface', $this->strInterface . '-private');
-                $return->setKey('strSender', $tweet['from_user']);
-                $return->setKey('textMessage', $tweet['text']);
-                $return->setKey('intNativeID', $tweet['id_str']);
-                $return->setKey('isActioned', 0);
-                $return->create();
-                $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
             }
             $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
-            $this->objDaemon->write();
+            $this->objDaemon->write();                
         } else {
             $data = htmlentities($this->oAuth->response['response']);
             error_log('There was an error in the OAuth library fetching direct messages. ' . print_r($data, true));
@@ -224,14 +214,7 @@ class Glue_TwitterAPI implements Interface_Glue
      */
     public function read_public()
     {
-        if ($this->oAuth->config['use_ssl']) {
-            $api_path = 'https://';
-        } else {
-            $api_path = 'http://';
-        }
-        $api_path .= $this->oAuth->config['host'];
-
-        $this->oAuth->request('GET', $api_path . '/1/account/rate_limit_status.json', array(), true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/account/rate_limit_status.json', array(), true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             $this->objDaemon->setKey('intScope', $data['remaining_hits']);
@@ -240,27 +223,29 @@ class Glue_TwitterAPI implements Interface_Glue
 
         $lastmessage = Object_Input::brokerByColumnSearch('strInterface', $this->strInterface . '-public', false, false, 1, 'DESC');
         if ($lastmessage == false) {
-            $args['since_id'] = 0;
+            $args['since_id'] = 1;
         } else {
             $lastmessage = end($lastmessage);
             $args['since_id'] = $lastmessage->getKey('intNativeID');
         }
         
-        $this->oAuth->request('GET', $api_path . '/1/statuses/mentions.json', $args, true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/statuses/mentions.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
-            foreach ($data['results'] as $tweet) {
-                if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['from_user'], false, false, 1, 'DESC')) == 0) {
-                    $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
-                }
-                $return = new Object_Input();
-                $return->setKey('strInterface', $this->strInterface . '-public');
-                $return->setKey('strSender', $tweet['from_user']);
-                $return->setKey('textMessage', $tweet['text']);
-                $return->setKey('intNativeID', $tweet['id_str']);
-                $return->setKey('isActioned', 0);
-                $return->create();
-                $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+            if (isset($data['results'])) {
+                foreach ($data['results'] as $tweet) {
+                    if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['from_user'], false, false, 1, 'DESC')) == 0) {
+                        $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
+                    }
+                    $return = new Object_Input();
+                    $return->setKey('strInterface', $this->strInterface . '-public');
+                    $return->setKey('strSender', $tweet['from_user']);
+                    $return->setKey('textMessage', $tweet['text']);
+                    $return->setKey('intNativeID', $tweet['id_str']);
+                    $return->setKey('isActioned', 0);
+                    $return->create();
+                    $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+                }                
             }
             $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
             $this->objDaemon->write();
@@ -269,7 +254,6 @@ class Glue_TwitterAPI implements Interface_Glue
             error_log('There was an error in the OAuth library fetching mentions. ' . print_r($data, true));
             throw new HttpResponseException('Error fetching OAuth Mentions');
         }
-        return $return;
     }
 
     /**
@@ -279,7 +263,7 @@ class Glue_TwitterAPI implements Interface_Glue
      */
     public function send()
     {
-        $this->oAuth->request('GET', $api_path . '/1/account/rate_limit_status.json', array(), true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/account/rate_limit_status.json', array(), true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             $this->objDaemon->setKey('intScope', $data['remaining_hits']);
@@ -288,7 +272,9 @@ class Glue_TwitterAPI implements Interface_Glue
 
         $messages = Object_Output::brokerByColumnSearch('isActioned', 0);
         foreach ($messages as $message) {
-            if (preg_match('/^([^-]+)/', $message->getKey('strInterface'), $matches) == 1) {
+            if ($message->getKey('strInterface') == $this->strInterface) {
+                // Skip on!
+            } elseif (preg_match('/^([^-]+)/', $message->getKey('strInterface'), $matches) == 1) {
                 if ($matches[1] != $this->strInterface) {
                     continue;
                 }
@@ -305,9 +291,8 @@ class Glue_TwitterAPI implements Interface_Glue
                 $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                 $this->objDaemon->write();
             } else {
-                $data = htmlentities($this->oAuth->response['response']);
-                error_log('There was an error in the OAuth library sending. ' . print_r($data, true));
-                throw new HttpResponseException('Error Sending using OAuth');
+                $message->setKey('strError', $status . ': ' . $this->oAuth->response['response']);
+                $message->write();
             }
         }
     }
@@ -322,11 +307,11 @@ class Glue_TwitterAPI implements Interface_Glue
         $arrConfig = Object_SecureConfig::brokerAll();
         $return = array();
         foreach ($arrConfig as $key => $objConfig) {
-            if (preg_match('/^Glue_TwitterAPI-[^_]+/', $key)) {
+            if (preg_match('/^Glue_TwitterAPI-[^_]+$/', $key)) {
                 $key = $objConfig->getKey('value');
                 if (((isset($arrConfig[$key . '_ConsumerPrefix'])
-                    && isset($arrConfig[$arrConfig[$key . '_ConsumerPrefix'] . '_ConsumerKey']) 
-                    && isset($arrConfig[$arrConfig[$key . '_ConsumerPrefix'] . '_ConsumerSecret']))
+                    && isset($arrConfig[$arrConfig[$key . '_ConsumerPrefix']->getKey('value') . '_ConsumerKey']) 
+                    && isset($arrConfig[$arrConfig[$key . '_ConsumerPrefix']->getKey('value') . '_ConsumerSecret']))
                     || (isset($arrConfig[$key . '_ConsumerKey']) 
                     && isset($arrConfig[$key . '_ConsumerSecret'])))
                     && isset($arrConfig[$key . '_UserToken']) 
@@ -347,14 +332,14 @@ class Glue_TwitterAPI implements Interface_Glue
      */
     public function follow_followers()
     {
-        $this->oAuth->request('GET', $api_path . '/1/account/rate_limit_status.json', array(), true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/account/rate_limit_status.json', array(), true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             $this->objDaemon->setKey('intScope', $data['remaining_hits']);
             $this->objDaemon->write();
         }
 
-        $this->oAuth->request('GET', $api_path . '/1/account/verify_credentials.json', array(), true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/account/verify_credentials.json', array(), true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             $user_id = $data['id'];
@@ -364,7 +349,7 @@ class Glue_TwitterAPI implements Interface_Glue
         $cursor = -1;
         $friends = array();
         while($cursor > $previous_cursor) {
-            $this->oAuth->request('GET', $api_path . '/1/account/friends/ids.json', array('user_id' => $user_id, 'cursor' => $cursor), true);
+            $this->oAuth->request('GET', 'https://api.twitter.com/1/friends/ids.json', array('user_id' => $user_id, 'cursor' => $cursor), true);
             if ($this->oAuth->response['code'] == 200) {
                 $data = json_decode($this->oAuth->response['response'], true);
                 $previous_cursor = $cursor;
@@ -379,7 +364,7 @@ class Glue_TwitterAPI implements Interface_Glue
         $cursor = -1;
         $followers = array();
         while($cursor > $previous_cursor) {
-            $this->oAuth->request('GET', $api_path . '/1/followers/ids.json', array('user_id' => $user_id, 'cursor' => $cursor), true);
+            $this->oAuth->request('GET', 'https://api.twitter.com/1/followers/ids.json', array('user_id' => $user_id, 'cursor' => $cursor), true);
             if ($this->oAuth->response['code'] == 200) {
                 $data = json_decode($this->oAuth->response['response'], true);
                 $previous_cursor = $cursor;
@@ -393,11 +378,11 @@ class Glue_TwitterAPI implements Interface_Glue
         foreach ($followers as $follower_id => $dummy) {
             $dummy = null;
             if (!isset($friends[$follower_id])) {
-                $this->oAuth->request('POST', $api_path . '/1/friendships/create.json', array('user_id' => $follower_id), true);
+                $this->oAuth->request('POST', 'https://api.twitter.com/1/friendships/create.json', array('user_id' => $follower_id), true);
             }
         }
         
-        $this->oAuth->request('GET', $api_path . '/1/account/rate_limit_status.json', array(), true);
+        $this->oAuth->request('GET', 'https://api.twitter.com/1/account/rate_limit_status.json', array(), true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             $this->objDaemon->setKey('intScope', $data['remaining_hits']);
