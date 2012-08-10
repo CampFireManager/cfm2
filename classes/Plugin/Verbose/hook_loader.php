@@ -34,11 +34,12 @@ class Plugin_Verbose
      */
     function hook_createRecord($object)
     {
-        echo "(" . $object->sql . ") {";
+        $record = "(" . $object->sql . ") {";
         foreach ($object->sql_value as $valuename => $value) {
-            echo "$valuename - $value, ";
+            $record .= "$valuename - $value, ";
         }
-        echo "}\r\n";
+        $record .= "}\r\n";
+        error_log($record);
     }
 
     /**
@@ -50,11 +51,12 @@ class Plugin_Verbose
      */
     function hook_deleteRecord($object)
     {
-        echo "(" . $object->sql . ") {";
+        $record = "(" . $object->sql . ") {";
         foreach ($object->sql_value as $valuename => $value) {
-            echo "$valuename - $value, ";
+            $record .= "$valuename - $value, ";
         }
-        echo "}\r\n";
+        $record .= "}\r\n";
+        error_log($record);
     }
 
     /**
@@ -66,10 +68,11 @@ class Plugin_Verbose
      */
     function hook_updateRecord($object)
     {
-        echo "(" . $object->sql . ") {";
+        $record = "(" . $object->sql . ") {";
         foreach ($object->sql_value as $valuename => $value) {
-            echo "$valuename - $value, ";
+            $record .= "$valuename - $value, ";
         }
-        echo "}\r\n";
+        $record .= "}\r\n";
+        error_log($record);
     }
 }
