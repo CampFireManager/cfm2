@@ -54,7 +54,7 @@
     <!--SM:assign var=settings_open value='<a href="':SM-->
     <!--SM:assign var=settings_close value='user/me" data-role="button" data-icon="gear">My Profile':SM-->
     <!--SM:assign var=settings_tagclose value='</a>':SM-->
-                <!--SM:$settings_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$settings_close:SM--><!--SM:$Object_User.current.intUserID:SM--><!--SM:$settings_tagclose:SM-->
+                <!--SM:$settings_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$settings_close:SM--><!--SM:$settings_tagclose:SM-->
 <!--SM:else:SM-->
                 <a href="#login" data-role="button" data-rel="dialog" data-transition="pop" data-icon="gear">Login</a>
 <!--SM:/if:SM-->
