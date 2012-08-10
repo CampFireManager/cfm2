@@ -37,7 +37,7 @@ class Plugin_GlueBroadcaster
         try {
             $object->setFull(true);
             $arrTalk = $object->getSelf();
-            $text = $arrTalk['strTalkName'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoom'];
+            $text = $arrTalk['strTalk'] . ' is about to start in ' . $arrTalk['arrRoom']['strRoom'];
 
             Object_User::isSystem(true);
             $arrGlues = Glue_Broker::brokerAll();
@@ -70,7 +70,7 @@ class Plugin_GlueBroadcaster
         try {
             $object->setFull(true);
             $arrTalk = $object->getSelf();
-            $text = $arrTalk['strTalkName'] . ' has been fixed in room: ' . $arrTalk['arrRoom']['strRoom'] . ' to start at ' . date('H:i', $arrTalk['arrSlot']['epochStart']);
+            $text = $arrTalk['strTalk'] . ' has been fixed in room: ' . $arrTalk['arrRoom']['strRoom'] . ' to start at ' . date('H:i', $arrTalk['arrSlot']['epochStart']);
 
             Object_User::isSystem(true);
             $arrGlues = Glue_Broker::brokerAll();
