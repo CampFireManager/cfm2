@@ -247,8 +247,6 @@ class Object_Talk extends Abstract_GenericObject
         $this->setKey('isRoomLocked', 1);
         $this->setKey('isSlotLocked', 1);
         $this->write();
-        $hook = new Base_Hook();
-        $hook->triggerHook('fixTalk', $this);
     }
     
     /**
@@ -264,11 +262,20 @@ class Object_Talk extends Abstract_GenericObject
     public function setKey($key, $value)
     {
         switch ($key) {
-        case 'isLocked':
         case 'isRoomLocked':
         case 'isSlotLocked':
         case 'intAssignedSlotID':
             if (! Object_User::isAdmin()) {
+                return false;
+            }
+            break;
+        case 'isLocked':
+            if (Object_User::isAdmin()) {
+                if ($value == 1) {
+                    $hook = new Base_Hook();
+                    $hook->triggerHook('fixTalk', $this);
+                }
+            } else {
                 return false;
             }
             break;
