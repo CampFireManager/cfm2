@@ -29,7 +29,7 @@
                             <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$object.intTalkID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                         </div>
                                 
-                        <form action="<!--SM:$SiteConfig.thisurl:SM-->" method="post">
+                        <form action="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$object.intTalkID:SM-->" method="post">
                     <!--SM:/if:SM--><!-- This is editable - add the form tags -->
 
                     <div id="intTalkID">
@@ -56,15 +56,17 @@
                     <!--SM:include file="Elements/MultiElementFromArray.tpl" field='jsonOtherPresenters' label=$object.labels.jsonOtherPresenters edit=$object.isEditable.jsonOtherPresenters list=$object.arrPresenters exclude=$object.intUserID:SM-->
                     <!--SM:include file="Elements/AssociatedRecords.tpl" field="arrAttendee" label=$object.labels.arrAttendee list=$object.arrAttendee:SM-->
 
-                    <div class="readonly haseditable">
-                        <!--SM:if $object.isPresenting == true:SM-->
-                            <a href="#" data-role="button" data-inline="true" data-icon="star-blue">Presenting</a>
-                        <!--SM:elseif Object_Attendee::isAttending($object.intTalkID) != false:SM-->
-                            <a href="<!--SM:$SiteConfig.baseurl:SM-->attendee/<!--SM:$objAttendee->getPrimaryKeyValue():SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="star-gold">Decline</a>
-                        <!--SM:else:SM-->
-                            <a href="<!--SM:$SiteConfig.baseurl:SM-->attendee/new?intTalkID=<!--SM:$object.intTalkID:SM-->" data-role="button" data-inline="true" data-icon="star-grey">Attend</a>
-                        <!--SM:/if:SM-->
-                    </div>
+                    <!--SM:if isset($Object_User.current) && $Object_User.current != null && $Object_User.current != false:SM-->
+                        <div class="readonly haseditable">
+                            <!--SM:if $object.isPresenting:SM-->
+                                <a href="<!--SM:$SiteConfig.thisurl:SM-->" data-role="button" data-inline="true" data-icon="star-blue">Presenting</a>
+                            <!--SM:elseif $object.isAttending != false:SM-->
+                                <a href="<!--SM:$SiteConfig.baseurl:SM-->attendee/<!--SM:$object.isAttending:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="star-gold">Decline</a>
+                            <!--SM:else:SM-->
+                                <a href="<!--SM:$SiteConfig.baseurl:SM-->attendee/new?intTalkID=<!--SM:$object.intTalkID:SM-->" data-role="button" data-inline="true" data-icon="star-grey">Attend</a>
+                            <!--SM:/if:SM-->
+                        </div>
+                    <!--SM:/if:SM-->
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>
                         </form>

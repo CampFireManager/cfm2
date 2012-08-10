@@ -29,7 +29,7 @@
                             <a href="<!--SM:$SiteConfig.baseurl:SM-->resource/<!--SM:$object.intResourceID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                         </div>
                                 
-                        <form action="<!--SM:$SiteConfig.thisurl:SM-->" method="post">
+                        <form action="<!--SM:$SiteConfig.baseurl:SM-->resource/<!--SM:$object.intResourceID:SM-->" method="post">
                     <!--SM:/if:SM--><!-- This is editable - add the form tags -->
 
                     <div id="intResourceID">

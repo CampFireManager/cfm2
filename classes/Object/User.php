@@ -61,9 +61,7 @@ class Object_User extends Abstract_GenericObject
     public static function isSystem($isSystem = null)
     {
         $objCache = Base_Cache::getHandler();
-        if ($isSystem === false && isset($objCache->arrCache['Object_User']['isSystem'])) {
-            unset($objCache->arrCache['Object_User']['isSystem']);
-        } elseif ($isSystem != null && $isSystem != false) {
+        if ($isSystem !== null) {
             $objCache->arrCache['Object_User']['isSystem'] = (boolean) $isSystem;
         }
         if (isset($objCache->arrCache['Object_User']['isSystem'])) {

@@ -116,8 +116,12 @@ class Object_Talk extends Abstract_GenericObject
             }
             $arrAttendee = Object_Attendee::brokerByColumnSearch('intTalkID', $this->intTalkID);
             $self['arrAttendee'] = array();
+            $self['isAttending'] = false;
             foreach ($arrAttendee as $intAttendeeID => $objAttendee) {
                 $self['arrAttendee'][$intAttendeeID] = $objAttendee->getSelf(true);
+                if (is_object($me) && $objAttendee->getKey('intUserID') == $me->getPrimaryKeyValue()) {
+                    $self['isAttending'] = $intAttendeeID;
+                }
             }
             $self['intAttendees'] = count($self['arrAttendee']);
             if (strtotime(Object_Attendee::lastChangeByColumnSearch('intTalkID', $this->intTalkID)) > $self['epochLastChange']) {

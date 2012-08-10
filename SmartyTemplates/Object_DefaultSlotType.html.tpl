@@ -26,10 +26,10 @@
                                     <option value="1">on</option>
                                 </select>
                             </label>
-                            <a href="<!--SM:$SiteConfig.baseurl:SM-->resource/<!--SM:$object.intDefaultSlotTypeID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
+                            <a href="<!--SM:$SiteConfig.baseurl:SM-->defaultslottype/<!--SM:$object.intDefaultSlotTypeID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                         </div>
                                 
-                        <form action="<!--SM:$SiteConfig.thisurl:SM-->" method="post">
+                        <form action="<!--SM:$SiteConfig.baseurl:SM-->defaultslottype/<!--SM:$object.intDefaultSlotTypeID:SM-->" method="post">
                     <!--SM:/if:SM--><!-- This is editable - add the form tags -->
 
                     <div id="intDefaultSlotTypeID">

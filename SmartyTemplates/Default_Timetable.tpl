@@ -7,6 +7,15 @@
             <!--SM:if isset($talk.intUserID):SM-->
                     <li>
                         <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$talk.intTalkID:SM-->">
+                            <!--SM:if isset($Object_User.current) && $Object_User.current != null && $Object_User.current != false:SM-->
+                                <!--SM:if $talk.isPresenting:SM-->
+                                    <img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/star-blue.png" alt="Presenting" class="ui-li-icon" />
+                                <!--SM:elseif $talk.isAttending != false:SM-->
+                                    <img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/star-gold.png" alt="Attending" class="ui-li-icon" />
+                                <!--SM:else:SM-->
+                                    <img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/star-grey.png" alt="Not Attending" class="ui-li-icon" />
+                                <!--SM:/if:SM-->
+                            <!--SM:/if:SM-->
                             <!--SM:if isset($talk.hasNsfwMaterial) && $talk.hasNsfwMaterial:SM--><img src="media/images/alert-triangle-red.png" class="ui-li-icon" />
                             <p class="ui-li-aside"><strong>NSFW/18+ Content!</strong></p><!--SM:/if:SM-->
                             <!--SM:if isset($talk.hasExcessAttendees) && $talk.hasExcessAttendees:SM--><img src="media/images/alert-triangle-red.png" class="ui-li-icon" />

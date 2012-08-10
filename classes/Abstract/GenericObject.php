@@ -1124,7 +1124,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                     || ($arrDBItem['required'] == 'admin' 
                     && Object_User::isAdmin()))
                 ) {
-                    $return[$strDBItem]['required'] = 1;
+                    if (Object_User::isAdmin()) {
+                        $return[$strDBItem]['required'] = 'admin';
+                    } elseif (Object_User::isWorker()) {
+                        $return[$strDBItem]['required'] = 'worker';
+                    } elseif (Object_User::brokerCurrent() != false) {
+                        $return[$strDBItem]['required'] = 'user';
+                    }
                 } elseif (isset($arrDBItem['optional']) 
                     && (($arrDBItem['optional'] == 'user'
                     && Object_User::brokerCurrent() != false)
@@ -1133,7 +1139,13 @@ abstract class Abstract_GenericObject implements Interface_Object
                     || ($arrDBItem['optional'] == 'admin' 
                     && Object_User::isAdmin()))
                 ) {
-                    $return[$strDBItem]['optional'] = 1;
+                    if (Object_User::isAdmin()) {
+                        $return[$strDBItem]['optional'] = 'admin';
+                    } elseif (Object_User::isWorker()) {
+                        $return[$strDBItem]['optional'] = 'worker';
+                    } elseif (Object_User::brokerCurrent() != false) {
+                        $return[$strDBItem]['optional'] = 'user';
+                    }
                 }
                 if (isset($return[$strDBItem]['required']) 
                     || isset($return[$strDBItem]['optional'])
@@ -1210,25 +1222,22 @@ abstract class Abstract_GenericObject implements Interface_Object
     public static function dataForNewPage()
     {
         $thisClassName = get_called_class();
-        if ($self == null) {
-            $self = new $thisClassName();
-        }       
-        $return['isEditable'] = self::listKeys();
-        $return[$self->strDBKeyCol] = 'New';
+        $system_state = Object_User::isSystem();
+        Object_User::isSystem(true);
+        $self = new $thisClassName();
+        Object_User::isSystem($system_state);
+        $objRequest = Container_Request::getRequest();
+        $arrRequest = $objRequest->get_arrRqstParameters();
         $objUser = Object_User::brokerCurrent();
-        if (is_object($objUser)) {
-            $return['intUserID'] = $objUser->getKey('intUserID');
+        if (isset($self->arrDBItems['intUserID']) && $objUser != false) {
+            $self->intUserID = $objUser->getKey('intUserID');
         }
-        $arrRequest = Container_Request::getRequest()->get_arrRqstParameters();
         foreach ($self->arrDBItems as $strKey => $arrDBItem) {
-            if (isset($arrRequest[$strKey]) && isset($return['isEditable'][$strKey]['required']) && $return['isEditable'][$strKey]['required'] == 1) {
-                $return[$strKey] = $arrRequest[$strKey];
-            } elseif (isset($arrRequest[$strKey]) && isset($return['isEditable'][$strKey]['optional']) && $return['isEditable'][$strKey]['optional'] == 1) {
-                $return[$strKey] = $arrRequest[$strKey];
-            } else {
-                $return[$strKey] = '';
+            if (isset($arrRequest[$strKey])) {
+                $self->$strKey = $arrRequest[$strKey];
             }
         }
-        return $return;
+        $self->setFull(true);
+        return $self->getCurrent($self->getLabels($self->getData()));
     }
 }

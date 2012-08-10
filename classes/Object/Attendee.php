@@ -26,7 +26,7 @@ class Object_Attendee extends Abstract_GenericObject
 {
     // Generic Object Requirements
     protected $arrDBItems = array(
-        'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true, 'optional' => 'worker'),
+        'intUserID' => array('type' => 'integer', 'length' => 11, 'unique' => true, 'required' => 'worker', 'source' => 'User'),
         'intTalkID' => array('type' => 'integer', 'length' => 11, 'unique' => true, 'required' => 'user', 'source' => 'Talk'),
         'lastChange' => array('type' => 'datetime')
     );
@@ -77,9 +77,13 @@ class Object_Attendee extends Abstract_GenericObject
         $return = parent::getData();
         if ($this->isFull() == true) {
             $objTalk = Object_Talk::brokerByID($this->intTalkID);
-            $return['arrTalk'] = $objTalk->getSelf();
+            if ($objTalk != false) {
+                $return['arrTalk'] = $objTalk->getSelf();
+            }
             $objUser = Object_User::brokerByID($this->intUserID);
-            $return['arrUser'] = $objUser->getSelf();
+            if ($objUser != false) {
+                $return['arrUser'] = $objUser->getSelf();
+            }
         }
         return $return;
     }
@@ -98,13 +102,17 @@ class Object_Attendee extends Abstract_GenericObject
         $return = $this->getCurrent($this->getLabels($this->getData()));
         if ($getUser && !isset($return['arrUser'])) {
             $objUser = Object_User::brokerByID($this->intUserID);
-            $return['arrUser'] = $objUser->getSelf();
-            $return['current']['value'] = $objUser->getKey('strUser');
+            if ($objUser != false) {
+                $return['arrUser'] = $objUser->getSelf();
+                $return['current']['value'] = $objUser->getKey('strUser');                
+            }
         }
         if ($getTalk && !isset($return['arrTalk'])) {
             $objTalk = Object_Talk::brokerByID($this->intTalkID);
-            $return['arrTalk'] = $objTalk->getSelf();
-            $return['current']['value'] = $objTalk->getKey('strTalk');
+            if ($objTalk != false) {
+                $return['arrTalk'] = $objTalk->getSelf();
+                $return['current']['value'] = $objTalk->getKey('strTalk');
+            }
         }
         return $return;
     }

@@ -247,7 +247,11 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         if ($rest) {
                             $object_type = 'rest/' . $object_type;
                         }
-                        Base_Response::redirectTo($object_type . '/' . $key);
+                        if ($object_type == 'attendee') {
+                            Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+                        } else {
+                            Base_Response::redirectTo($object_type . '/' . $key);
+                        }
                     }
                 } catch (Exception $e) {
                     error_log("Unable to create new object of type $object due to error " . $e->getMessage());

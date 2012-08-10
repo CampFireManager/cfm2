@@ -26,7 +26,7 @@
                                     <option value="1">on</option>
                                 </select>
                             </label>
-                            <a href="<!--SM:$SiteConfig.baseurl:SM-->resource/<!--SM:$object.intSlotID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
+                            <a href="<!--SM:$SiteConfig.baseurl:SM-->slot/<!--SM:$object.intScreenDirectionID:SM-->?HTTPaction=delete" data-role="button" data-inline="true" data-icon="delete">Delete</a>
                         </div>
                                 
                         <form action="<!--SM:$SiteConfig.thisurl:SM-->" method="post">
