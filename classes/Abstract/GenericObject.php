@@ -365,7 +365,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == ''"
+                        'sql' => "SELECT count({$thisClass->strDBKeyCol}) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} = ''"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
@@ -436,7 +436,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             if ($value == null || $value == '' || ($inverse == true && $value == '%')) {
                 $sql = Container_Database::getSqlString(
                     array(
-                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} == ''"
+                        'sql' => "SELECT max(lastChange) FROM {$thisClass->strDBTable} WHERE {$column} IS NULL OR {$column} = ''"
                     )
                 );
                 $query = $objDatabase->prepare($sql);
