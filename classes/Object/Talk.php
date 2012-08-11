@@ -72,9 +72,9 @@ class Object_Talk extends Abstract_GenericObject
     protected $intUserID           = null;
     protected $intRequestedRoomID  = null;
     protected $intRequestedSlotID  = null;
-    protected $intRoomID           = null;
+    protected $intRoomID           = "-1";
     protected $intSlotID           = null;
-    protected $intLength           = null;
+    protected $intLength           = "1";
     protected $jsonLinks           = null;
     protected $isRoomLocked        = 0;
     protected $isSlotLocked        = 0;
@@ -151,6 +151,8 @@ class Object_Talk extends Abstract_GenericObject
                         $self['epochLastChange'] = $self['arrRoom']['epochLastChange'];
                     }
                 }
+            } else {
+                $self['arrRoom'] = array('current' => array('key' => '-1', 'element' => 'room', 'value' => 'Unset'));
             }
             
             if ($this->intSlotID != null && $this->intSlotID > 0) {
