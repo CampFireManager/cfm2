@@ -183,14 +183,14 @@ class Glue_TwitterAPI implements Interface_Glue
         $this->oAuth->request('GET', 'https://api.twitter.com/1/direct_messages.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
-            if (isset($data['results'])) {
-                foreach ($data['results'] as $tweet) {
-                    if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['from_user'], false, false, 1, 'DESC')) == 0) {
+            if (is_array($data)) {
+                foreach ($data as $tweet) {
+                    if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['sender_screen_name'], false, false, 1, 'DESC')) == 0) {
                         $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
                     }
                     $return = new Object_Input();
                     $return->setKey('strInterface', $this->strInterface . '-private');
-                    $return->setKey('strSender', $tweet['from_user']);
+                    $return->setKey('strSender', $tweet['sender_screen_name']);
                     $return->setKey('textMessage', $tweet['text']);
                     $return->setKey('intNativeID', $tweet['id_str']);
                     $return->setKey('isActioned', 0);
@@ -232,14 +232,14 @@ class Glue_TwitterAPI implements Interface_Glue
         $this->oAuth->request('GET', 'https://api.twitter.com/1/statuses/mentions.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
-            if (isset($data['results'])) {
-                foreach ($data['results'] as $tweet) {
-                    if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['from_user'], false, false, 1, 'DESC')) == 0) {
+            if (isset($data)) {
+                foreach ($data as $tweet) {
+                    if (count(Object_Input::brokerByColumnSearch('strSender', $tweet['user']['screen_name'], false, false, 1, 'DESC')) == 0) {
                         $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
                     }
                     $return = new Object_Input();
                     $return->setKey('strInterface', $this->strInterface . '-public');
-                    $return->setKey('strSender', $tweet['from_user']);
+                    $return->setKey('strSender', $tweet['user']['screen_name']);
                     $return->setKey('textMessage', $tweet['text']);
                     $return->setKey('intNativeID', $tweet['id_str']);
                     $return->setKey('isActioned', 0);
