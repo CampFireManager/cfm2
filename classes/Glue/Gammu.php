@@ -113,10 +113,14 @@ class Glue_Gammu implements Interface_Glue
         $this->strInterface = $GluePrefix;
         
         if ($DBType != 'sqlite') {
-            $this->sms = new PDO($DBType . '://' . $DBHost . ':' . $DBPort . '/' . $DBBase, $DBUser, $DBPass);
+            $this->sms = new PDO($DBType . ':host=' . $DBHost . ';port=' . $DBPort .';dbname=' . $DBBase, $DBUser, $DBPass);
         } else {
-            $this->sms = new PDO($DBType . '://' . $DBHost);
+            $this->sms = new PDO($DBType . ':' . $DBHost);
         }
+        if ($this->sms->errorCode() > 0) {
+            die($this->sms->errorInfo());
+        }
+        $this->sms->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         $this->objDaemon = Object_Daemon::brokerByColumnSearch('strDaemon', $this->strInterface);
         if ($this->objDaemon == false) {
@@ -142,7 +146,7 @@ class Glue_Gammu implements Interface_Glue
      */
     public function read_private()
     {
-        $sql = "SELECT max(TimeOut) AS TimeOut, max(Signal) AS Sigal FROM phones";
+        $sql = "SELECT `ID`, `TimeOut`, `Signal` FROM phones";
         $query = $this->sms->prepare($sql);
         $query->execute(array());
         $result = $query->fetch(PDO::FETCH_ASSOC);
