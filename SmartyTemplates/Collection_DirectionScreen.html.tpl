@@ -3,10 +3,12 @@
 <html>
     <head>
         <title>Direction Screen</title>
+        <link rel="stylesheet" type="text/css" href="../Media/directions.css" />
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/jQueryClock/jquery.jclock.js"></script>
     </head>
     <body>
+   
         <table width="100%" height="100%">
             <!--SM:if $DirectionScreen.toprow:SM-->
             <tr height="<!--SM:$DirectionScreen.trheight:SM-->">
@@ -24,8 +26,8 @@
 <!--SM:include file="Collection_DirectionScreen.tpl" direction='left':SM-->
                 <!--SM:/if:SM-->
                 <td id="C" width="<!--SM:$DirectionScreen.tdwidth:SM-->">
-                    <div class="Now">The time now is: <span class="clock" /></div>
-                    <div class="Next">Next talk starts at <span id="next_talk_time">
+                    <div class="time">The time now is: <span class="clock" /></div>
+                    <div class="NextTime">Next talk starts at <span id="next_talk_time">
                             <!--SM:if $DirectionScreen.NextSlot == false:SM-->
                                 the next event!
                             <!--SM:else:SM-->

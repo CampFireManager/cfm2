@@ -6,6 +6,7 @@
 <script src="media/JQM/jquery-1.7.1.min.js"></script>
 <script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
 </head>
+
 <body>
 <!--SM:foreach $Collection_MainScreen as $Timetable:SM-->
 <div data-role="page">

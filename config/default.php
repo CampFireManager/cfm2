@@ -37,17 +37,17 @@ $RW_PORT = '3306';
  * These values are the default R/W Database Connection Values
  * @var string The name of the collection of tables on the Database Server
  */
-$RW_BASE = 'database';
+$RW_BASE = 'cfm2';
 /**
  * These values are the default R/W Database Connection Values
  * @var string The default username to connect with
  */
-$RW_USER = 'root';
+$RW_USER = 'cfm2';
 /**
  * These values are the default R/W Database Connection Values
  * @var string The default password to connect with
  */
-$RW_PASS = '';
+$RW_PASS = 'cfm2';
 
 /**
  * These values are the default R/W Database Connection Values

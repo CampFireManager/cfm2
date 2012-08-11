@@ -1,0 +1,117 @@
+.roomName
+{
+font-size: 3em;
+}
+
+.now
+{
+font-size: 2.5em;
+}
+
+.next
+{
+font-size: 1.8em;
+}
+
+.time
+{
+font-size: 2.6em;
+}
+
+.NextTime
+{
+font-size: 1.8em;
+}
+
+#c
+{
+text-align: center;
+}
+
+#upcentre_arrow
+{
+ 
+  width: 100%;
+  text-align: center;
+}
+#upcentre_room
+{
+text-align: center;
+}
+
+#downcentre_arrow
+{
+ 
+  width: 100%;
+  text-align: center;
+}
+#downcentre_room
+{
+text-align: center;
+}
+
+#upleft_arrow
+{
+width: 100%;
+text-align: center;
+float: left;
+}
+#left_room
+{
+text-align: center;
+}
+
+#left_arrow
+{
+width: 100%;
+text-align: center;
+float: left;
+}
+#left_room
+{
+text-align: center;
+}
+
+#downleft_arrow
+{
+width: 100%;
+text-align: center;
+float: left;
+}
+#downleft_room
+{
+text-align: center;
+}
+
+#upright_arrow
+{
+width: 100%;
+text-align: center;
+float: right;
+}
+#right_room
+{
+text-align: center;
+}
+
+#right_arrow
+{
+width: 100%;
+text-align: center;
+float: right;
+}
+#left_room
+{
+text-align: center;
+}
+
+#downright_arrow
+{
+width: 100%;
+text-align: center;
+float: right;
+}
+#downright_room
+{
+text-align: center;
+}
