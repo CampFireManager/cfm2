@@ -1042,6 +1042,9 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $return['current']['value'] = $this->getPrimaryKeyValue();
             }
         }
+        if ($return['current']['key'] == '-1') {
+            $return['current']['value'] = Base_Response::translate(array('en' => 'Any'));
+        }
         return $return;
     }
     
@@ -1229,9 +1232,7 @@ abstract class Abstract_GenericObject implements Interface_Object
         $objRequest = Container_Request::getRequest();
         $arrRequest = $objRequest->get_arrRqstParameters();
         $objUser = Object_User::brokerCurrent();
-        if (isset($self->arrDBItems['intUserID']) && $objUser != false) {
-            $self->intUserID = $objUser->getKey('intUserID');
-        }
+        $self->setKey('intUserID', $objUser->getKey('intUserID'));
         foreach ($self->arrDBItems as $strKey => $arrDBItem) {
             if (isset($arrRequest[$strKey])) {
                 $self->$strKey = $arrRequest[$strKey];
