@@ -290,6 +290,13 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                                         $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $newvalue));
                                     } elseif (count($arrNewValue) > 1) {
                                         $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $arrNewValue[1]));
+                                    } elseif ($newvalue == "0" || 0 + $newvalue > 0) {
+                                        foreach (Base_GeneralFunctions::getJson($requestedobject->getKey($key)) as $newkey => $value) {
+                                            if ($newkey == $newvalue) {
+                                                $newvalue = $value;
+                                            }
+                                        }
+                                        $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $newvalue));
                                     } else {
                                         $requestedobject->setKey($key, Base_GeneralFunctions::delJson($requestedobject->getKey($key), $newvalue));
                                     }
