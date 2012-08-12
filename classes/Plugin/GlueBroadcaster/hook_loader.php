@@ -90,4 +90,41 @@ class Plugin_GlueBroadcaster
         }
     }
 
+    /**
+     * This function performs all the input parsing requests from text-only 
+     * services.
+     * 
+     * @return void
+     */
+    function hook_cronTick()
+    {
+        try {
+            Base_Cache::flush();
+            Object_User::isSystem(true);
+            $arrGlues = Glue_Broker::brokerAll();
+            if (count($arrGlues) > 0) {
+                echo "\r\n";
+            }
+            foreach ($arrGlues as $objGlue) {
+                echo "       - Glue: " .$objGlue->getGlue() . "\r\n";
+                echo "         * Following followers: ";
+                $objGlue->follow_followers();
+                echo "Done\r\n";
+                echo "         * Reading private messages: ";
+                $objGlue->read_private();
+                echo "Done\r\n";
+                echo "         * Reading public messages: ";
+                $objGlue->read_public();
+                echo "Done\r\n";
+                echo "         * Sending messages: ";
+                $objGlue->send();
+                echo "Done\r\n";
+            }
+            if (count($arrGlues) > 0) {
+                echo "     + " . get_class($this) . ": ";
+            }
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+        }
+    }
 }
