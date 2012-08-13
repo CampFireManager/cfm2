@@ -28,9 +28,9 @@ class Base_OpenID
 {
     protected static $self = null;
 
-    protected $nickname     = FALSE;
+    protected $nickname     = true;
     protected $email        = FALSE;
-    protected $realname     = FALSE;
+    protected $realname     = true;
     protected $language     = FALSE;
     protected $dateofbirth  = FALSE;
     protected $gender       = FALSE;
