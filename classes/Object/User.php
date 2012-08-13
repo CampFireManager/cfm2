@@ -234,18 +234,18 @@ class Object_User extends Abstract_GenericObject
             if (is_object($objUserAuth)) {
                 $objRequest = Container_Request::getRequest();
                 $this->setKey('strUserName', $objRequest->get_strUsername());
-                $this->create();
                 $system_state = Object_User::isSystem();
                 Object_User::isSystem(true);
+                $this->create();
                 $objUserAuth->setKey('intUserID', $this->getKey('intUserID'));
                 $objUserAuth->write();
-                Object_User::isSystem($system_state);
                 $this->objUserAuthTemp = $objUserAuth;
                 if ($objUserAuth->getKey('enumAuthType') == 'openid'
                     || $objUserAuth->getKey('enumAuthType') == 'basicauth'
                 ) {
                     $this->objUserAuthTemp = new Object_Userauth(false);
                     $this->objUserAuthTemp->setKey('enumAuthType', 'codeonly');
+                    $this->objUserAuthTemp->setKey('intUserID', $this->getKey('intUserID'));
                     $authString = '';
                     while ($authString == '') {
                         $authString = Base_GeneralFunctions::genRandStr(5, 9);
@@ -254,11 +254,14 @@ class Object_User extends Abstract_GenericObject
                         }
                     }
                     $this->objUserAuthTemp->setKey('strAuthValue', array('password' => $authString, 'username' => 'codeonly_' . $objUserAuth->getKey('enumAuthType') . '_' . $objUserAuth->getKey('intUserAuthID')));
+                    $this->objUserAuthTemp->create();
                 }
             } else {
                 $this->errorMessageReturn = $objUserAuth;
             }
+            Object_User::isSystem($system_state);
         } catch (Exception $e) {
+            Object_User::isSystem($system_state);
             throw $e;
         }
     }
