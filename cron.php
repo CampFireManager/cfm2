@@ -47,7 +47,7 @@ do {
     echo "Done\r\n";
     echo "(5/5) Triggering cron hooks: \r\n";
     $hook->triggerHook('cronTick');
-    echo "Done\r\n";
+    echo "+++++ Triggering cron hooks: Done\r\n";
     if ($forever) {
         echo "\r\n=========================================\r\n\r\n";
     }
