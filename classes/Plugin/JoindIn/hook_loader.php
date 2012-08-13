@@ -23,12 +23,6 @@
  * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
  */
 
-require_once dirname(__FILE__) . '/../../autoloader.php';
-Container_Config::LoadConfig();
-$hook = new Plugin_JoindIn();
-$talk = Object_Talk::brokerByID(2);
-$hook->hook_talkFixed($talk);
-
 class Plugin_JoindIn
 {
     /**
