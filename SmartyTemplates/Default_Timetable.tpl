@@ -2,7 +2,7 @@
 <!--SM:foreach $renderPage as $Timetable:SM-->
     <!--SM:foreach $Timetable.arrSlots as $slot:SM-->
     <!--SM:assign var=showroom value=false:SM-->
-                    <li data-role="list-divider"><!--SM:$slot.timeStart:SM--> - <!--SM:$slot.timeEnd:SM--></li>
+                    <li data-role="list-divider"><!--SM:if $slot.dateStart != date('Y-m-d'):SM--><!--SM:$slot.dateStart:SM--> <!--SM:/if:SM--><!--SM:$slot.timeStart:SM--> - <!--SM:$slot.timeEnd:SM--></li>
         <!--SM:foreach $Timetable.arrTimetable[$slot@key] as $talk:SM-->
             <!--SM:if isset($talk.intUserID):SM-->
                     <li>

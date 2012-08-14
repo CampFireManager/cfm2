@@ -25,7 +25,7 @@ $arrMediaType = explode('/', $objRequest->get_strPrefAcceptType());
 
 if (Base_GeneralFunctions::getValue($objRequest->get_arrRqstParameters(), 'logout', false, false) != false) {
     Object_User::logout();
-    Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+    Base_Response::redirectTo('timetable');
 }
 
 // What type of request is this
@@ -75,7 +75,7 @@ if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathI
         } elseif (isset($arrParameters['return'])) {
             Base_OpenID::response($objRequest->get_strBasePath() . 'openid/');
         } else {
-            Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+            Base_Response::redirectTo('timetable');
         }
     }
     if ($arrPathItems[0] == 'rest' && $objRequest->hasMediaType('rest')) {
@@ -180,7 +180,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         if ($rest) {
                             Base_Response::sendHttpResponse(404);
                         } else {
-                            Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+                            Base_Response::redirectTo('timetable');
                         }
                     }
                 } else {
@@ -193,7 +193,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         if ($rest) {
                             Base_Response::sendHttpResponse(404);
                         } else {
-                            Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+                            Base_Response::redirectTo('timetable');
                         }
                     }
                 }
@@ -206,7 +206,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                     if ($rest) {
                         Base_Response::sendHttpResponse(404);
                     } else {
-                        Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+                        Base_Response::redirectTo('timetable');
                     }
                 }
                 $newobject = new $object();
@@ -248,7 +248,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                             $object_type = 'rest/' . $object_type;
                         }
                         if ($object_type == 'attendee') {
-                            Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+                            Base_Response::redirectTo('timetable');
                         } else {
                             Base_Response::redirectTo($object_type . '/' . $key);
                         }
@@ -342,7 +342,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
                         if ($rest) {
                             Base_Response::sendHttpResponse(204);
                         } else {
-                            Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+                            Base_Response::redirectTo('timetable');
                         }
                     } catch (Exception $e) {
                         error_log("Unable to update object of type $object, item code $item due to error " . $e->getMessage());
@@ -356,7 +356,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
     if ($rest) {
         Base_Response::sendHttpResponse(404);
     } else {
-        Base_Response::redirectTo('timetable/' . date('Y-m-d'));
+        Base_Response::redirectTo('timetable');
     }
 }
 
