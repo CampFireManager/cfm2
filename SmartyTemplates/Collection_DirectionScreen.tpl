@@ -1,10 +1,9 @@
 <!--SM:if isset($DirectionScreen[$direction]) && count($DirectionScreen[$direction]) > 0:SM-->
     <td id="<!--SM:$direction:SM-->" width="<!--SM:$DirectionScreen.tdwidth:SM-->">
+        <div id="<!--SM:$direction:SM-->_arrow">
+            <img src="<!--SM:$SiteConfig.baseurl:SM-->media/direction_arrows/<!--SM:$direction:SM-->.png"/>
+        </div>
     <!--SM:foreach $DirectionScreen[$direction] as $arrRoom:SM-->
-		 
-            <div id="<!--SM:$direction:SM-->_arrow">
-             <img src="../Media/direction_arrows/<!--SM:$direction:SM-->.png"/>
-              </div>
           <div id="<!--SM:$direction:SM-->_room">
             <br/>
             <div class = "roomName"><!--SM:$arrRoom.strRoom:SM--></div>
