@@ -1,10 +1,14 @@
 <html>
 <head>
 <title></title>
-<link rel="stylesheet" href="media/css.css" type="text/css">
-<link rel="stylesheet" href="media/JQM/jquery.mobile-1.1.1.min.css">
-<script src="media/JQM/jquery-1.7.1.min.js"></script>
-<script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
+<link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/css.css" type="text/css">
+<link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.css">
+<script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
+<script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.js"></script>
+<script src="<!--SM:$SiteConfig.baseurl:SM-->media/refresh.js"></script>
+<script type="text/Javascript">
+    window.onload = setRefresh(60000);
+</script>
 </head>
 
 <body>

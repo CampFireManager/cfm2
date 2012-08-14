@@ -1,4 +1,4 @@
-<!--SM:include file="Common_Object_Header.tpl":SM-->
+<!--SM:include file="Common_Object_Header.tpl" timeout="300000":SM-->
             <div data-role="content">
                 <ul data-role="listview" id="thegrid" data-theme="d" data-divider-theme="d">
 <!--SM:include file="Default_Timetable.tpl":SM-->
