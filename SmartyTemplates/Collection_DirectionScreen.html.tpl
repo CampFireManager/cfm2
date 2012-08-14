@@ -6,6 +6,10 @@
         <link rel="stylesheet" type="text/css" href="../Media/directions.css" />
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/jQueryClock/jquery.jclock.js"></script>
+        <script src="media/refresh.js"></script>
+        <script type="text/Javascript">
+            window.onload = setRefresh("directionscreen", 60000);
+        </script>
     </head>
     <body>
    

@@ -34,6 +34,12 @@
         <script src="media/JQM/jquery-1.7.1.min.js"></script>
         <script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
         <!-- <script src="media/CampFireManager.js"></script> -->
+        <!--SM:if isset($timeout):SM-->
+        <script src="media/refresh.js"></script>
+        <script type="text/Javascript">
+            window.onload = setRefresh("<!--SM:$smarty.server.SERVER_NAME:SM-->", <!--SM:$timeout:SM-->);
+        </script>
+        <!--SM:/if:SM-->
     </head>
     <body>
         <div data-role="page" id="theobject">

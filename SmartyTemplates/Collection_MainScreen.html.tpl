@@ -5,6 +5,10 @@
 <link rel="stylesheet" href="media/JQM/jquery.mobile-1.1.1.min.css">
 <script src="media/JQM/jquery-1.7.1.min.js"></script>
 <script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
+<script src="media/refresh.js"></script>
+<script type="text/Javascript">
+    window.onload = setRefresh("mainscreen", 60000);
+</script>
 </head>
 
 <body>
