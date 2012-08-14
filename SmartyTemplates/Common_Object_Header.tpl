@@ -37,7 +37,7 @@
         <!--SM:if isset($timeout):SM-->
         <script src="media/refresh.js"></script>
         <script type="text/Javascript">
-            window.onload = setRefresh("<!--SM:$smarty.server.SERVER_NAME:SM-->", <!--SM:$timeout:SM-->);
+            window.onload = setRefresh(<!--SM:$timeout:SM-->);
         </script>
         <!--SM:/if:SM-->
     </head>

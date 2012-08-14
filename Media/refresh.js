@@ -1,4 +1,4 @@
-function setRefresh(url, timeout) {
+function setRefresh(timeout) {
     setInterval(function() {
         $.mobile.changePage(
             window.location.href,
