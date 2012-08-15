@@ -34,7 +34,7 @@ class Object_Talk extends Abstract_GenericObject
         'intRequestedSlotID'  => array('type' => 'int', 'length' => 11),
         'intRoomID'           => array('type' => 'int', 'length' => 11, 'optional' => 'admin', 'source' => 'Room', 'value_for_any' => '-1'),
         'intSlotID'           => array('type' => 'int', 'length' => 11, 'required' => 'user', 'source' => 'Slot', 'must_have_as_true' => 'isStillToCome'),
-        'intLength'           => array('type' => 'int', 'length' => 1, 'required' => 'user', 'default_value' => 1),
+        'intLength'           => array('type' => 'int', 'length' => 1, 'required' => 'user', 'default_value' => 1, 'options' => array(1, 2)),
         'jsonLinks'           => array('type' => 'text', 'optional' => 'user', 'array' => 'arrLinks'),
         'isRoomLocked'        => array('type' => 'tinyint', 'length' => 1),
         'isSlotLocked'        => array('type' => 'tinyint', 'length' => 1),
