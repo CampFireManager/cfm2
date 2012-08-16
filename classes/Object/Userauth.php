@@ -196,13 +196,14 @@ class Object_Userauth extends Abstract_GenericObject
                         $query = $objDatabase->prepare($sql);
                         $query->execute(array($value));
                     }
+                    $_SESSION['login'] = 'return';
                     unset($_SESSION['OPENID_AUTH']);
                 } else {
                     if ($createIfNotExist === true) {
                         $result = new Object_User(true);
                         if ($result != false && isset($result->objUserAuthTemp)) {
-                            Base_GeneralFunctions::startSession();
                             $_SESSION['intUserAuthID'] = $result->objUserAuthTemp->getKey('intUserAuthID');
+                            $_SESSION['login'] = 'first';
                         }
                         return $result->objUserAuthTemp;
                     } else {
