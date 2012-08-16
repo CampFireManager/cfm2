@@ -39,11 +39,19 @@ padding: 0;
 </head>
 
 <body>
-<!--SM:foreach $Collection_MainScreen as $Timetable:SM-->
 <div data-role="page">
-<div data-role="content">
-<table id="wrap">
-    <tr height="20%">
+<div data-role="content" id="wrap">
+<h1><!--SM:$SiteConfig.Site_Name:SM--></h1>
+<table width="100%">
+<tr>
+    <!--SM:if isset($SiteConfig.SMSNumber):SM--><td width="33%" style="text-align:left;">SMS "help" to: <!--SM:$SiteConfig.SMSNumber:SM--></td><!--SM:/if:SM-->
+    <td width="33%"  style="text-align:center;">Browse to: <!--SM:$SiteConfig.baseurl:SM--></td>
+    <!--SM:if isset($SiteConfig.TwitterAccount):SM--><td width="33%" style="text-align:right;">Follow on Twitter then DM "help" to: @<!--SM:$SiteConfig.TwitterAccount:SM--></td><!--SM:/if:SM-->
+</tr>
+</table>
+<!--SM:foreach $Collection_MainScreen as $Timetable:SM-->
+<table height="90%">
+    <tr>
         <th>&nbsp;</th>
 <!--SM:if $Timetable.x_axis == 'room':SM-->
 <!--SM:assign var="xaxis" value=$Timetable.arrRooms:SM-->
