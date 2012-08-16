@@ -12,3 +12,4 @@
 <!--SM:/foreach:SM-->
             </span>
 <!--SM:/if:SM-->
+<div style="text-align:left;"><!--SM:if isset($cell.hasNsfwMaterial) && $cell.hasNsfwMaterial:SM--><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-red.png" /><!--SM:/if:SM--><!--SM:if isset($cell.hasExcessAttendees) && $cell.hasExcessAttendees:SM--><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-blue.png" /><!--SM:/if:SM--></div>
