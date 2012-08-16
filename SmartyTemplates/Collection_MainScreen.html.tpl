@@ -28,6 +28,21 @@ padding: 0;
 .talk {
     text-align: center;
 }
+.empty {
+    font-size: xx-small;
+}
+table.timetable tr td {
+    border: 1px dotted black;
+}
+table.timetable tr th {
+    border: 1px dotted black;
+}
+th.blank {
+    border: 0px;
+}
+.limbo {
+    font-size: small;
+}
 </style>
 <script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
 <script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.js"></script>
@@ -44,15 +59,15 @@ padding: 0;
 <h1><!--SM:$SiteConfig.Site_Name:SM--></h1>
 <table width="100%">
 <tr>
-    <!--SM:if isset($SiteConfig.SMSNumber):SM--><td width="33%" style="text-align:left;">SMS "help" to: <!--SM:$SiteConfig.SMSNumber:SM--></td><!--SM:/if:SM-->
+    <!--SM:if isset($SiteConfig.SMSNumber):SM--><td width="33%" style="text-align:left;">SMS "help" to: <br /><!--SM:$SiteConfig.SMSNumber:SM--></td><!--SM:/if:SM-->
     <td width="33%"  style="text-align:center;">Browse to: <!--SM:$SiteConfig.baseurl:SM--></td>
-    <!--SM:if isset($SiteConfig.TwitterAccount):SM--><td width="33%" style="text-align:right;">Follow on Twitter then DM "help" to: @<!--SM:$SiteConfig.TwitterAccount:SM--></td><!--SM:/if:SM-->
+    <!--SM:if isset($SiteConfig.TwitterAccount):SM--><td width="33%" style="text-align:right;">Follow on Twitter then DM "help" to: <br />@<!--SM:$SiteConfig.TwitterAccount:SM--></td><!--SM:/if:SM-->
 </tr>
 </table>
 <!--SM:foreach $Collection_MainScreen as $Timetable:SM-->
-<table height="90%">
+<table class="timetable" height="86%">
     <tr>
-        <th>&nbsp;</th>
+        <th class="blank">&nbsp;</th>
 <!--SM:if $Timetable.x_axis == 'room':SM-->
 <!--SM:assign var="xaxis" value=$Timetable.arrRooms:SM-->
 <!--SM:assign var="yaxis" value=$Timetable.arrSlots:SM-->
@@ -82,9 +97,16 @@ padding: 0;
         </th>
 <!--SM:/if:SM-->
 <!--SM:foreach $xaxis as $xaxis_value:SM-->
-        <td class="talk <!--SM:if $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['isNow'] == 1:SM-->slot_now<!--SM:elseif $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['isNext'] == 1:SM-->slot_next<!--SM:/if:SM-->">
-<!--SM:include file="Timetable_TalkCell.tpl" cell=$Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]:SM-->
+    <!--SM:if isset($Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['intLength']) && ($Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['intSlotID'] == $xaxis_value.intSlotID || $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['intSlotID'] == $yaxis_value.intSlotID):SM-->
+        <td colspan="<!--SM:$Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['intLength']:SM-->" class="talk <!--SM:if $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['isNow'] == 1:SM-->slot_now<!--SM:elseif $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['isNext'] == 1:SM-->slot_next<!--SM:/if:SM-->">
+            <!--SM:include file="Timetable_TalkCell.tpl" cell=$Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]:SM-->
         </td>
+    <!--SM:elseif isset($Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['intLength']):SM-->
+    <!--SM:else:SM-->
+        <td class="talk <!--SM:if $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['isNow'] == 1:SM-->slot_now<!--SM:elseif $Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]['isNext'] == 1:SM-->slot_next<!--SM:/if:SM-->">
+            <!--SM:include file="Timetable_TalkCell.tpl" cell=$Timetable.arrTimetable[$yaxis_value@key][$xaxis_value@key]:SM-->
+        </td>
+    <!--SM:/if:SM-->
 <!--SM:/foreach:SM-->
     </tr>
 <!--SM:/foreach:SM-->
@@ -99,7 +121,7 @@ padding: 0;
 
 <!--SM:if $limbo == "true":SM-->
     <!--SM:foreach $Timetable.arrSlots as $arrSlot:SM-->
-        <td class="talk <!--SM:if $arrSlot['isNow'] == 1:SM-->slot_now<!--SM:elseif $arrSlot['isNext'] == 1:SM-->slot_next<!--SM:/if:SM-->">
+        <td class="limbo talk <!--SM:if $arrSlot['isNow'] == 1:SM-->slot_now<!--SM:elseif $arrSlot['isNext'] == 1:SM-->slot_next<!--SM:/if:SM-->">
         <!--SM:assign var="limbo" value="false":SM-->
         <!--SM:foreach $Timetable.arrTimetable as $arrRoom:SM-->
             <!--SM:if strpos($arrRoom@key, 'limbo') !== "false":SM-->
