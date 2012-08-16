@@ -56,8 +56,32 @@
                         <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                             <div class="readwrite"><input type="submit" value="Update"/></div>
                             </form>
-                        <!--SM:/if:SM--><!-- This is editable - add the form tags -->
+                            <!--SM:if isset($object.arrUserAuth) && count($object.arrUserAuth) > 0:SM-->
+                                <div class="authcodes">
+                                <!--SM:foreach $object.arrUserAuth as $arrUserAuth:SM-->
+                                    <!--SM:if $arrUserAuth.strCleartext != '':SM-->
+                                        <div class="authcode">AuthCode: <!--SM:$arrUserAuth.strCleartext:SM--></div>
+                                    <!--SM:/if:SM-->
+                                <!--SM:/foreach:SM-->
+                                </div>
+                            <!--SM:/if:SM-->
+                        <!--SM:/if:SM-->
                     </div>
+                    <!--SM:if isset($object.arrTalksPresenting) && count($object.arrTalksPresenting) > 0:SM-->
+                        <div class="Presenting">Presenting:
+                            <!--SM:foreach $object.arrTalksPresenting as $arrPresenting:SM-->
+                                <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$arrPresenting.intTalkID:SM-->"><!--SM:$arrPresenting.strTalk:SM--></a><!--SM:if !$arrPresenting@last:SM-->, <!--SM:/if:SM-->
+                            <!--SM:/foreach:SM-->
+                        </div>
+                    <!--SM:/if:SM-->
+                    <!--SM:if isset($object.arrTalksAttending) && count($object.arrTalksAttending) > 0:SM-->
+                        <div class="Attending">Attending:
+                            
+                            <!--SM:foreach $object.arrTalksAttending as $arrAttending:SM-->
+                                <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$arrAttending.arrTalk.intTalkID:SM-->"><!--SM:$arrAttending.arrTalk.strTalk:SM--></a><!--SM:if !$arrAttending@last:SM-->, <!--SM:/if:SM-->
+                            <!--SM:/foreach:SM-->
+                        </div>
+                    <!--SM:/if:SM-->
                     <!--SM:if !$object@last:SM--><hr /><!--SM:/if:SM-->
                 <!--SM:/if:SM-->
             <!--SM:/foreach:SM-->
