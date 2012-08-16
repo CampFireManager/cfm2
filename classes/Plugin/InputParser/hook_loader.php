@@ -43,7 +43,7 @@ class Plugin_InputParser
                 $objUser = Object_User::brokerByCodeOnly($objInput);
                 $strMessage = '';
                 if (isset($objUser->objUserAuthTemp) && is_object($objUser->objUserAuthTemp)) {
-                    $strMessage = ' If you want get involved in a web browser, please visit ' . Container_Config::brokerByID('Public_Url', 'http://www.example.com')->getKey('value') . ' and login with the authcode: ' . $objUser->objUserAuthTemp->getKey('tmpCleartext');
+                    $strMessage = ' Web access: ' . Container_Config::brokerByID('Public_URL', 'talks.oggcamp.org')->getKey('value') . ', login with Authcode: ' . $objUser->objUserAuthTemp->getKey('tmpCleartext');
                     $objUser->objUserAuthTemp->setKey('tmpCleartext', null);
                     $objUser->objUserAuthTemp->write();
                 }
@@ -189,9 +189,9 @@ class Plugin_InputParser
                     break;
                 default:
                     if ($strMessage != '') {
-                        Object_Output::replyToInput($objInput, "You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'." . $strMessage);
+                        Object_Output::replyToInput($objInput, "Send: 'A 1' Attend Talk ID 1. Cancel it with 'C 1'. On next? Send 'W'. Your next 3 talks to attend - Send 'M'. " . $strMessage);
                     } else {
-                        Object_Output::replyToInput($objInput, "You can attend a talk by sending 'A 1' where 1 is the talk ID. You can cancel attending a talk with 'C 1'. You can see what's on next with 'W' and the next 3 talks you're attending with 'M'. If you want get involved using your web browser, please visit " . Container_Config::brokerByID('Public_Url', 'http://www.example.com'));
+                        Object_Output::replyToInput($objInput, "Send: 'A 1' Attend Talk ID 1. Cancel it with 'C 1'. On next? Send 'W'. Your next 3 talks to attend - Send 'M'. Or use " . Container_Config::brokerByID('Public_URL', 'talks.oggcamp.org')->getKey('value'));
                     }
                 }
                 $objInput->setKey('isActioned', '1');
