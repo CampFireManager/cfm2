@@ -16,10 +16,10 @@
                                     <img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/star-grey.png" alt="Not Attending" class="ui-li-icon" />
                                 <!--SM:/if:SM-->
                             <!--SM:/if:SM-->
-                            <!--SM:if isset($talk.hasNsfwMaterial) && $talk.hasNsfwMaterial:SM--><img src="media/images/alert-triangle-red.png" class="ui-li-icon" />
-                            <p class="ui-li-aside"><strong>NSFW/18+ Content!</strong></p><!--SM:/if:SM-->
-                            <!--SM:if isset($talk.hasExcessAttendees) && $talk.hasExcessAttendees:SM--><img src="media/images/alert-triangle-blue.png" class="ui-li-icon" />
-                            <p class="ui-li-aside"><strong>Talk Over Capacity!</strong></p><!--SM:/if:SM-->
+                            <!--SM:if isset($talk.hasNsfwMaterial) && $talk.hasNsfwMaterial:SM-->
+                            <p><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-red.png" /> <strong>NSFW/18+ Content!</strong></p><!--SM:/if:SM-->
+                            <!--SM:if isset($talk.hasExcessAttendees) && $talk.hasExcessAttendees:SM-->
+                            <p><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-blue.png" /> <strong>Room Over Capacity!</strong></p><!--SM:/if:SM-->
                             <h3>(ID: <!--SM:$talk.intTalkID:SM-->) <!--SM:$talk.strTalk:SM--></h3>
                             <p>by
                 <!--SM:foreach $talk.arrPresenters as $presenter:SM-->
