@@ -39,7 +39,7 @@
                     <input type="hidden" name="id" value="http://yahoo.com" />
                     <input type="submit" value="Login with Yahoo!" />
                 </form>
-                <form method="post" action="openid/" data-ajax="false">
+                <form method="post" action="<!--SM:$SiteConfig.baseurl:SM-->openid/" data-ajax="false">
                     <input type="hidden" name="id" value="https://openid.stackexchange.com" />
                     <input type="submit" value="Login with StackExchange" />
                 </form>
