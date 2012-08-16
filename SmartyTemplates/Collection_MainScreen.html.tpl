@@ -65,7 +65,7 @@ padding: 0;
 
 <!--SM:foreach $yaxis as $yaxis_value:SM-->
 <!--SM:if $Timetable.y_axis == 'room':SM-->
-    <tr height="20%" class="room" id="<!--SM:$yaxis_value@key:SM-->">
+    <tr class="room" id="<!--SM:$yaxis_value@key:SM-->">
         <th class="room" id="<!--SM:$yaxis_value@key:SM-->"><!--SM:$yaxis_value.strRoom:SM--></th>
 <!--SM:else:SM-->
     <tr class="slot<!--SM:if isset($yaxis_value.isNow) && $yaxis_value.isNow:SM--> slot_now<!--SM:elseif isset($yaxis_value.isNext) && $yaxis_value.isNext:SM--> slot_next<!--SM:/if:SM-->" id="<!--SM:$yaxis_value@key:SM-->">
@@ -80,6 +80,33 @@ padding: 0;
 <!--SM:/foreach:SM-->
     </tr>
 <!--SM:/foreach:SM-->
+<!--SM:assign var="limbo" value="false":SM-->
+<!--SM:foreach $Timetable.arrTimetable as $arrRoom:SM-->
+    <!--SM:if strpos($arrRoom@key, 'limbo') !== false && $limbo == "false":SM-->
+        <tr class="room" id="limbo">
+            <th>Limbo</th>
+        <!--SM:assign var="limbo" value="true":SM-->
+    <!--SM:/if:SM-->
+<!--SM:/foreach:SM-->
+
+<!--SM:if $limbo == "true":SM-->
+    <!--SM:foreach $Timetable.arrSlots as $arrSlot:SM-->
+        <td class="talk <!--SM:if $arrSlot['isNow'] == 1:SM-->slot_now<!--SM:elseif $arrSlot['isNext'] == 1:SM-->slot_next<!--SM:/if:SM-->">
+        <!--SM:assign var="limbo" value="false":SM-->
+        <!--SM:foreach $Timetable.arrTimetable as $arrRoom:SM-->
+            <!--SM:if strpos($arrRoom@key, 'limbo') !== "false":SM-->
+                <!--SM:foreach $arrRoom as $arrTalk:SM-->
+                    <!--SM:if $arrTalk@key == $arrSlot@key && $arrTalk.intRoomID == '-1':SM-->
+<div><!--SM:include file="Timetable_TalkCell.tpl" cell=$arrTalk:SM--></div>
+                    <!--SM:/if:SM-->
+                <!--SM:/foreach:SM-->
+            <!--SM:/if:SM-->
+        <!--SM:/foreach:SM-->
+        <!--SM:if $limbo == "false":SM-->&nbsp;<!--SM:/if:SM-->
+        </td>
+    <!--SM:/foreach:SM-->
+    </tr>
+<!--SM:/if:SM-->
 </table>
 <!--SM:/foreach:SM-->
 </div>
