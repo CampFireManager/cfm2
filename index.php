@@ -401,6 +401,9 @@ foreach (Container_Config::brokerAll() as $key=>$object) {
 if (isset($_SESSION['authentication_failure'])) {
     $arrObjectsData['Object_User']['Failure'] = $_SESSION['authentication_failure'];
     unset($_SESSION['authentication_failure']);
+} elseif (isset($_SESSION['login'])) {
+    $arrObjectsData['Object_User']['Success'] = $_SESSION['login'];
+    unset($_SESSION['login']);
 }
 
 if ($rest) {
