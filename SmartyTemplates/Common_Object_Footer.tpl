@@ -39,9 +39,9 @@
                     <input type="hidden" name="id" value="http://yahoo.com" />
                     <input type="submit" value="Login with Yahoo!" />
                 </form>
-                <form method="post" action="<!--SM:$SiteConfig.baseurl:SM-->openid/" data-ajax="false">
-                    <input type="hidden" name="id" value="http://myspace.com" />
-                    <input type="submit" value="Login with MySpace" />
+                <form method="post" action="openid/" data-ajax="false">
+                    <input type="hidden" name="id" value="https://openid.stackexchange.com" />
+                    <input type="submit" value="Login with StackExchange" />
                 </form>
                 <form method="post" action="<!--SM:$SiteConfig.baseurl:SM-->openid/" data-ajax="false">
                     <input type="text" name="id" size="10" value="http://" />
