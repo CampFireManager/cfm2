@@ -310,6 +310,42 @@ class Object_User extends Abstract_GenericObject
                     $self['epochLastChange'] = $self['arrUserAuth'][$key]['epochLastChange'];
                 }
             }
+            
+            $self['arrTalksPresenting'] = array();
+            $self['arrTalksAttending'] = array();
+            $getUser = false;
+
+            $objRequest = Container_Request::getRequest();
+            $arrRequest = $objRequest->get_arrPathItems();
+            foreach ($arrRequest as $pathitem) {
+                if ($pathitem == 'user') {
+                    $getUser = true;
+                }
+            }
+            if (Object_User::isCreator($this->intUserID) && $getUser == true) {
+                $arrTalks = Object_Talk::brokerByColumnSearch('intUserID', $this->intUserID);
+                if ($arrTalks != false) {
+                    foreach ($arrTalks as $intTalkID => $objTalk) {
+                        $arrTalk = $objTalk->getSelf();
+                        $self['arrTalksPresenting'][$intTalkID] = $arrTalk;
+                    }
+                }
+                $arrTalks = Object_Talk::brokerByColumnSearch('jsonOtherPresenters', $this->intUserID, false, true);
+                if ($arrTalks != false) {
+                    foreach ($arrTalks as $intTalkID => $objTalk) {
+                        $arrTalk = $objTalk->getSelf();
+                        $self['arrTalksPresenting'][$intTalkID] = $arrTalk;
+                    }
+                }
+                $arrTalks = Object_Attendee::brokerByColumnSearch('intUserID', $this->intUserID);
+                if ($arrTalks != false) {
+                    foreach ($arrTalks as $intAttendeeID => $objTalk) {
+                        $arrTalk = $objTalk->getSelf(false, true);
+                        $self['arrTalksAttending'][$arrTalk['arrTalk']['intTalkID']] = $arrTalk;
+                    }
+                }
+            }
+
         }
 
         $arrLinks = json_decode($this->jsonLinks, true);
@@ -325,6 +361,7 @@ class Object_User extends Abstract_GenericObject
 
         Base_Response::setLastModifiedTime($self['epochLastChange']);
         $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
+                        
         return $self;
     }
 

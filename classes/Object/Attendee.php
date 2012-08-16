@@ -82,6 +82,7 @@ class Object_Attendee extends Abstract_GenericObject
             }
             $objUser = Object_User::brokerByID($this->intUserID);
             if ($objUser != false) {
+                $objUser->setFull(false);
                 $return['arrUser'] = $objUser->getSelf();
             }
         }
