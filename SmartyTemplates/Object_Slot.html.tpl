@@ -44,11 +44,11 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/TextBox.tpl" field='dateStart' label=$object.labels.dateStart edit=$object.isEditable.dateStart current=$object.dateStart:SM-->
-                    <!--SM:include file="Elements/TextBox.tpl" field='timeStart' label=$object.labels.timeStart edit=$object.isEditable.timeStart current=$object.timeStart:SM-->
-                    <!--SM:include file="Elements/TextBox.tpl" field='dateEnd' label=$object.labels.dateEnd edit=$object.isEditable.dateEnd current=$object.dateEnd:SM-->
-                    <!--SM:include file="Elements/TextBox.tpl" field='timeEnd' label=$object.labels.timeEnd edit=$object.isEditable.timeEnd current=$object.timeEnd:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intDefaultSlotTypeID' label=$object.labels.intDefaultSlotTypeID edit=$object.isEditable.intDefaultSlotTypeID current=$object.arrDefaultSlotType.current:SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='dateStart' label=$object.labels.dateStart|default:'' edit=$object.isEditable.dateStart|default:array() current=$object.dateStart|default:'':SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='timeStart' label=$object.labels.timeStart|default:'' edit=$object.isEditable.timeStart|default:array() current=$object.timeStart|default:'':SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='dateEnd' label=$object.labels.dateEnd|default:'' edit=$object.isEditable.dateEnd|default:array() current=$object.dateEnd|default:'':SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='timeEnd' label=$object.labels.timeEnd|default:'' edit=$object.isEditable.timeEnd|default:array() current=$object.timeEnd|default:'':SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intDefaultSlotTypeID' label=$object.labels.intDefaultSlotTypeID|default:'' edit=$object.isEditable.intDefaultSlotTypeID|default:array() current=$object.arrDefaultSlotType.current|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>

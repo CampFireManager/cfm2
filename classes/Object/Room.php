@@ -66,13 +66,15 @@ class Object_Room extends Abstract_GenericObject
         }
         if ($this->isFull() == true) {
             $resources = json_decode($this->jsonResourceList, true);
-            foreach ($resources as $resource) {
-                $objResource = Object_Resource::brokerByID($resource);
-                if (is_object($objResource)) {
-                    $arrResource = $objResource->getSelf();
-                    $self['arrResources'][] = $arrResource;
-                    if ($arrResource['epochLastChange'] > $self['epochLastChange']) {
-                        $self['epochLastChange'] = $arrResource['epochLastChange'];
+            if (is_array($resources) && count($resources) > 0) {
+                foreach ($resources as $resource) {
+                    $objResource = Object_Resource::brokerByID($resource);
+                    if (is_object($objResource)) {
+                        $arrResource = $objResource->getSelf();
+                        $self['arrResources'][] = $arrResource;
+                        if ($arrResource['epochLastChange'] > $self['epochLastChange']) {
+                            $self['epochLastChange'] = $arrResource['epochLastChange'];
+                        }
                     }
                 }
             }

@@ -1,5 +1,5 @@
 <!--SM:if isset($dodebug) && $dodebug == "true":SM--><pre><!--SM:var_dump("edit", $edit, "field", $field, "current", $current):SM--></pre><!--SM:/if:SM-->
-<!--SM:if $edit.label != "0" && $edit.label != "":SM-->
+<!--SM:if isset($edit.label) && $edit.label != "0" && $edit.label != "":SM-->
     <div id="<!--SM:$field:SM-->">
         <div class="readwrite">
             <label for="edit_<!--SM:$field:SM-->">
