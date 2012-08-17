@@ -44,9 +44,9 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intScreenID' label=$object.labels.intScreenID edit=$object.isEditable.intScreenID current=$object.arrScreen.current:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intRoomID' label=$object.labels.intRoomID edit=$object.isEditable.intRoomID current=$object.arrRoom.current:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='enumDirection' label=$object.labels.enumDirection edit=$object.isEditable.enumDirection current=$object.current.enumDirection:SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intScreenID' label=$object.labels.intScreenID|default:'' edit=$object.isEditable.intScreenID|default:array() current=$object.arrScreen.current|default:array():SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intRoomID' label=$object.labels.intRoomID|default:'' edit=$object.isEditable.intRoomID|default:array() current=$object.arrRoom.current|default:array():SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='enumDirection' label=$object.labels.enumDirection|default:'' edit=$object.isEditable.enumDirection|default:array() current=$object.current.enumDirection|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>

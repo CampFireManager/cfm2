@@ -44,10 +44,10 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/TextBox.tpl" field='strRoom' label=$object.labels.strRoom edit=$object.isEditable.strRoom current=$object.strRoom:SM-->
-                    <!--SM:include file="Elements/TextBox.tpl" field='intCapacity' label=$object.labels.intCapacity edit=$object.isEditable.intCapacity current=$object.intCapacity:SM-->
-                    <!--SM:include file="Elements/Boolean.tpl" field='isLocked' label=$object.labels.isLocked edit=$object.isEditable.isLocked current=$object.isLocked:SM-->
-                    <!--SM:include file="Elements/MultiElementFromArray.tpl" field='jsonResourceList' label=$object.labels.jsonResourceList edit=$object.isEditable.jsonResourceList list=$object.arrResources:SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='strRoom' label=$object.labels.strRoom|default:'' edit=$object.isEditable.strRoom|default:array() current=$object.strRoom|default:'':SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='intCapacity' label=$object.labels.intCapacity|default:'' edit=$object.isEditable.intCapacity|default:array() current=$object.intCapacity|default:0:SM-->
+                    <!--SM:include file="Elements/Boolean.tpl" field='isLocked' label=$object.labels.isLocked|default:'' edit=$object.isEditable.isLocked|default:array() current=$object.isLocked|default:'':SM-->
+                    <!--SM:include file="Elements/MultiElementFromArray.tpl" field='jsonResourceList' label=$object.labels.jsonResourceList|default:'' edit=$object.isEditable.jsonResourceList|default:array() list=$object.arrResources|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>
