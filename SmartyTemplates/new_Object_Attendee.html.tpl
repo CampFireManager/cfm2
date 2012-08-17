@@ -26,8 +26,8 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intTalkID' edit=$object.isEditable.intTalkID current=$object.arrTalk.current:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intUserID' edit=$object.isEditable.intUserID current=$object.arrUser.current:SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intTalkID' edit=$object.isEditable.intTalkID|default:'' current=$object.arrTalk.current|default:'':SM-->
+                    <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intUserID' edit=$object.isEditable.intUserID|default:array() current=$object.arrUser.current|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Confirm"/></div>

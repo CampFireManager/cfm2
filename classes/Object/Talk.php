@@ -168,10 +168,11 @@ class Object_Talk extends Abstract_GenericObject
                     $objSlot = Object_Slot::brokerByID($this->intSlotID + ($this->intLength - 1));
                     if (is_object($objSlot)) {
                         $objSlot->setFull(true);
+                        $arrSlot_stop = $objSlot->getSelf();
                         $self['arrSlot']['dateEnd'] = $arrSlot_stop['dateEnd'];
                         $self['arrSlot']['timeEnd'] = $arrSlot_stop['timeEnd'];
-                        $self['arrSlot']['datetimeEnd'] = $self['dateEnd'] . 'T' . $self['timeEnd'] . Container_Config::brokerByID('TZ', 'Z')->getKey('value');
-                        $self['arrSlot']['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
+                        $self['arrSlot']['datetimeEnd'] = $self['arrSlot']['dateEnd'] . 'T' . $self['arrSlot']['timeEnd'] . Container_Config::brokerByID('TZ', 'Z')->getKey('value');
+                        $self['arrSlot']['datetimeDuration'] = $self['arrSlot']['datetimeStart'] . '/' . $self['arrSlot']['datetimeEnd'];
 
                         if ($arrSlot_stop['epochLastChange'] > $self['epochLastChange']) {
                             $self['epochLastChange'] = $arrSlot['epochLastChange'];

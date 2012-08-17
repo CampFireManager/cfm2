@@ -44,8 +44,8 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/TextBox.tpl" field='strDefaultSlotType' label=$object.labels.strDefaultSlotType edit=$object.isEditable.strDefaultSlotType current=$object.strDefaultSlotType:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='lockSlot' label=$object.labels.lockSlot edit=$object.isEditable.lockSlot current=$object.current.arrDefaultSlotType:SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='strDefaultSlotType' label=$object.labels.strDefaultSlotType|default:'' edit=$object.isEditable.strDefaultSlotType|default:array() current=$object.strDefaultSlotType|default:'':SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='lockSlot' label=$object.labels.lockSlot|default:'' edit=$object.isEditable.lockSlot|default:array() current=$object.current.arrDefaultSlotType|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>

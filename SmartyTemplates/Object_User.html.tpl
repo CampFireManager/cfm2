@@ -3,7 +3,7 @@
         <ul data-role="listview" id="theobject" data-theme="d" data-divider-theme="d">
             <!--SM:foreach $renderPage as $object:SM-->
                 <!--SM:if ($object@key != 'current'):SM-->
-                    <!--SM:if $Object_User.current.intUserID == $object.intUserID:SM-->
+                    <!--SM:if isset($Object_User.current) && $Object_User.current.intUserID == $object.intUserID:SM-->
                         <a href="<!--SM:$SiteConfig.baseurl:SM-->?logout=1" data-role="button">Logout</a>
                     <!--SM:/if:SM-->
                     <div id="User_<!--SM:$object.intUserID:SM-->">
@@ -48,10 +48,10 @@
                             </div>
                         </div>
 
-                        <!--SM:include file="Elements/TextBox.tpl" field='strUser' label=$object.labels.strUser edit=$object.isEditable.strUser current=$object.strUser:SM-->
-                        <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' label=$object.labels.jsonLinks edit=$object.isEditable.jsonLinks list=$object.arrLinks:SM-->
-                        <!--SM:include file="Elements/Boolean.tpl" field='isWorker' label=$object.labels.isWorker edit=$object.isEditable.isWorker current=$object.isWorker:SM-->
-                        <!--SM:include file="Elements/Boolean.tpl" field='isAdmin' label=$object.labels.isAdmin edit=$object.isEditable.isAdmin current=$object.isAdmin:SM-->
+                        <!--SM:include file="Elements/TextBox.tpl" field='strUser' label=$object.labels.strUser|default:'' edit=$object.isEditable.strUser|default:array() current=$object.strUser|default:'':SM-->
+                        <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' label=$object.labels.jsonLinks|default:'' edit=$object.isEditable.jsonLinks|default:array() list=$object.arrLinks|default:array():SM-->
+                        <!--SM:include file="Elements/Boolean.tpl" field='isWorker' label=$object.labels.isWorker|default:'' edit=$object.isEditable.isWorker|default:array() current=$object.isWorker|default:0:SM-->
+                        <!--SM:include file="Elements/Boolean.tpl" field='isAdmin' label=$object.labels.isAdmin|default:'' edit=$object.isEditable.isAdmin|default:array() current=$object.isAdmin|default:0:SM-->
 
                         <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                             <div class="readwrite"><input type="submit" value="Update"/></div>
