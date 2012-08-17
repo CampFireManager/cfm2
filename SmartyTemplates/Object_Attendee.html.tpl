@@ -29,8 +29,8 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intTalkID' label=$object.labels.intTalkID edit=$object.isEditable.intTalkID current=$object.arrTalk.current:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intUserID' label=$object.labels.intUserID edit=$object.isEditable.intUserID current=$object.arrUser.current:SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intTalkID' label=$object.labels.intTalkID|default:'' edit=$object.isEditable.intTalkID|default:array() current=$object.arrTalk.current|default:array():SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intUserID' label=$object.labels.intUserID|default:'' edit=$object.isEditable.intUserID|default:array() current=$object.arrUser.current|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>

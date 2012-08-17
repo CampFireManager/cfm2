@@ -26,17 +26,17 @@
                         </div>
                     </div>
 
-                    <!--SM:include file="Elements/TextBox.tpl" field='strTalk' label=$object.labels.strTalk edit=$object.isEditable.strTalk current=$object.strTalk:SM-->
-                    <!--SM:include file="Elements/TextBox.tpl" field='strTalkSummary' label=$object.labels.strTalkSummary edit=$object.isEditable.strTalkSummary current=$object.strTalkSummary:SM-->
-                    <!--SM:include file="Elements/Boolean.tpl" field='hasNsfwMaterial' label=$object.labels.hasNsfwMaterial edit=$object.isEditable.hasNsfwMaterial current=$object.hasNsfwMaterial:SM-->
-                    <!--SM:include file="Elements/Boolean.tpl" field='isLocked' label=$object.labels.isLocked edit=$object.isEditable.isLocked current=$object.isLocked:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intRoomID' label=$object.labels.intRoomID edit=$object.isEditable.intRoomID current=$object.arrRoom.current:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intSlotID' label=$object.labels.intSlotID edit=$object.isEditable.intSlotID current=$object.arrSlot.current:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intLength' label=$object.labels.Length edit=$object.isEditable.intLength current=$object.intLength.current:SM-->
-                    <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' label=$object.labels.jsonLinks edit=$object.isEditable.jsonLinks list=$object.arrLinks:SM-->
-                    <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intUserID' label=$object.labels.intUserID edit=$object.isEditable.intUserID current=$object.arrUser.current:SM-->
-                    <!--SM:include file="Elements/MultiElementFromArray.tpl" field='jsonOtherPresenters' label=$object.labels.jsonOtherPresenters edit=$object.isEditable.jsonOtherPresenters list=$object.arrPresenters exclude=$object.intUserID:SM-->
-                    <!--SM:include file="Elements/AssociatedRecords.tpl" field="arrAttendee" label=$object.labels.arrAttendee list=$object.arrAttendee:SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='strTalk' label=$object.labels.strTalk|default:'' edit=$object.isEditable.strTalk|default:array() current=$object.strTalk|default:'':SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='strTalkSummary' label=$object.labels.strTalkSummary|default:'' edit=$object.isEditable.strTalkSummary|default:array() current=$object.strTalkSummary|default:'':SM-->
+                    <!--SM:include file="Elements/Boolean.tpl" field='hasNsfwMaterial' label=$object.labels.hasNsfwMaterial|default:'' edit=$object.isEditable.hasNsfwMaterial|default:array() current=$object.hasNsfwMaterial|default:0:SM-->
+                    <!--SM:include file="Elements/Boolean.tpl" field='isLocked' label=$object.labels.isLocked|default:'' edit=$object.isEditable.isLocked|default:array() current=$object.isLocked|default:0:SM-->
+                    <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intRoomID' label=$object.labels.intRoomID|default:'' edit=$object.isEditable.intRoomID|default:array() current=$object.arrRoom.current|default:array():SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intSlotID' label=$object.labels.intSlotID|default:'' edit=$object.isEditable.intSlotID|default:array() current=$object.arrSlot.current|default:array():SM-->
+                    <!--SM:include file="Elements/SingleElementDropDown.tpl" field='intLength' label=$object.labels.intLength|default:'' edit=$object.isEditable.intLength|default:array() current=$object.intLength.current|default:array():SM-->
+                    <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' label=$object.labels.jsonLinks|default:'' edit=$object.isEditable.jsonLinks|default:array() list=$object.arrLinks|default:array():SM-->
+                    <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intUserID' label=$object.labels.intUserID|default:'' edit=$object.isEditable.intUserID|default:array() current=$object.arrUser.current|default:array():SM-->
+                    <!--SM:include file="Elements/MultiElementFromArray.tpl" field='jsonOtherPresenters' label=$object.labels.jsonOtherPresenters|default:'' edit=$object.isEditable.jsonOtherPresenters|default:array() list=$object.arrPresenters|default:array() exclude=$object.intUserID|default:'':SM-->
+                    <!--SM:include file="Elements/AssociatedRecords.tpl" field="arrAttendee" label=$object.labels.arrAttendee|default:'' list=$object.arrAttendee|default:array():SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Create"/></div>
