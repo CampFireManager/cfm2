@@ -18,7 +18,7 @@
             <label for="select_<!--SM:$field:SM-->">
                 <span class="progressive_basic">Read only: </span><!--SM:$label:SM-->:
                 <data id="select_<!--SM:$field:SM-->">
-                    <!--SM:if isset($current.element):SM--><a href="<!--SM:$SiteConfig.baseurl:SM--><!--SM:$current.element:SM-->/<!--SM:$current.key:SM-->"><!--SM:/if:SM--><!--SM:$current.value:SM--><!--SM:if isset($current.element):SM--></a><!--SM:/if:SM-->
+                    <!--SM:if isset($current.element):SM--><a href="<!--SM:$SiteConfig.baseurl:SM--><!--SM:$current.element:SM-->/<!--SM:$current.key:SM-->"><!--SM:/if:SM--><!--SM:$current.value|default:'':SM--><!--SM:if isset($current.element):SM--></a><!--SM:/if:SM-->
                 </data>
             </label>
         </div>

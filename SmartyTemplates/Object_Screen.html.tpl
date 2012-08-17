@@ -44,7 +44,7 @@
                         </div>
                     </div>
                                 
-                    <!--SM:include file="Elements/TextBox.tpl" field='strScreen' label=$object.labels.strScreen edit=$object.isEditable.strScreen current=$object.strScreen:SM-->
+                    <!--SM:include file="Elements/TextBox.tpl" field='strScreen' label=$object.labels.strScreen|default:'' edit=$object.isEditable.strScreen|default:array() current=$object.strScreen|default:'':SM-->
 
                     <!--SM:if isset($object.isEditable) && count($object.isEditable) > 0:SM-->
                         <div class="readwrite"><input type="submit" value="Update"/></div>
