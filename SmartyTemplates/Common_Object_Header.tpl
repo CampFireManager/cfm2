@@ -19,7 +19,7 @@
         <!--SM:$localStorage_open:SM--><!--SM:$SiteConfig.baseurl:SM--><!--SM:$localStorage_close:SM-->
 <!--SM:/if:SM-->
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="media/JQM/jquery.mobile-1.1.1.min.css">
+        <link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.css">
         <style type="text/css">
             .ui-icon-star-grey {
                 background-image: url("media/images/star-grey.png"); background-size: 18px 18px;
@@ -31,11 +31,11 @@
                 background-image: url("media/images/star-blue.png"); background-size: 18px 18px;
             }
         </style>
-        <script src="media/JQM/jquery-1.7.1.min.js"></script>
-        <script src="media/JQM/jquery.mobile-1.1.1.min.js"></script>
+        <script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
+        <script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.js"></script>
         <!-- <script src="media/CampFireManager.js"></script> -->
         <!--SM:if isset($timeout):SM-->
-        <script src="media/refresh.js"></script>
+        <script src="<!--SM:$SiteConfig.baseurl:SM-->media/refresh.js"></script>
         <script type="text/Javascript">
             window.onload = setRefresh(<!--SM:$timeout:SM-->);
         </script>
