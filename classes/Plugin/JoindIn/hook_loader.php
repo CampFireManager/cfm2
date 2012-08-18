@@ -34,7 +34,7 @@ class Plugin_JoindIn
             if ($objTalk->getKey('intSlotID') <= $intNow 
                 && $objTalk->getKey('isLocked') == "1" 
                 && $objTalk->getKey('intRoomID') != '-1'
-                && ! strpos($objTalk->getKey('jsonLinks'), 'http://joind.in')
+                && ! strpos($objTalk->getKey('jsonLinks'), 'joind.in')
             ) {
                 $this->hook_fixTalk($objTalk);
             }
@@ -100,7 +100,6 @@ class Plugin_JoindIn
 
             $data = json_decode($curl, true);
  
-            var_dump($data);
             if ($data != false && isset($data['talks'])) {
                 foreach ($data['talks'] as $talk) {
                     if (isset($talk['website_uri'])) {
