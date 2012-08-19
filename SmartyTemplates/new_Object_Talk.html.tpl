@@ -27,7 +27,7 @@
                     </div>
 
                     <!--SM:include file="Elements/TextBox.tpl" field='strTalk' label=$object.labels.strTalk|default:'' edit=$object.isEditable.strTalk|default:array() current=$object.strTalk|default:'':SM-->
-                    <!--SM:include file="Elements/TextBox.tpl" field='strTalkSummary' label=$object.labels.strTalkSummary|default:'' edit=$object.isEditable.strTalkSummary|default:array() current=$object.strTalkSummary|default:'':SM-->
+                    <!--SM:include file="Elements/TextArea.tpl" field='strTalkSummary' label=$object.labels.strTalkSummary|default:'' edit=$object.isEditable.strTalkSummary|default:array() current=$object.strTalkSummary|default:'':SM-->
                     <!--SM:include file="Elements/Boolean.tpl" field='hasNsfwMaterial' label=$object.labels.hasNsfwMaterial|default:'' edit=$object.isEditable.hasNsfwMaterial|default:array() current=$object.hasNsfwMaterial|default:0:SM-->
                     <!--SM:include file="Elements/Boolean.tpl" field='isLocked' label=$object.labels.isLocked|default:'' edit=$object.isEditable.isLocked|default:array() current=$object.isLocked|default:0:SM-->
                     <!--SM:include file="Elements/SingleElementDropDownWithHiddenUserData.tpl" field='intRoomID' label=$object.labels.intRoomID|default:'' edit=$object.isEditable.intRoomID|default:array() current=$object.arrRoom.current|default:array():SM-->
