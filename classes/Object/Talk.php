@@ -378,16 +378,18 @@ class Object_Talk extends Abstract_GenericObject
         $arrTalks = Object_Talk::brokerAll();
         foreach ($arrTalks as $objTalk) {
             // Clear the spot on the grid for locked talks
-            if ($objTalk->getKey('isLocked') == 1) {
+            if ($objTalk->getKey('isLocked') == "1") {
                 for ($intSlotID = $objTalk->getKey('intSlotID'); $intSlotID < $objTalk->getKey('intSlotID') + $objTalk->getKey('intLength'); $intSlotID++) {
                     if ($objTalk->getKey('intRoomID') > 0) {
                         $arrGrid[$intSlotID][$arrRoomsByID[$objTalk->getKey('intRoomID')]]['isLocked'] = true;
                     }
                 }
-            } elseif ($objTalk->getKey('intRoomID') != '-1') {
+            } elseif ($objTalk->getKey('intRoomID')) {
                 $objTalk->setFull(true);
                 $arrTalk = $objTalk->getSelf();
-                if ($objTalk->getKey('intRequestedSlotID') < $intNowSlot) {
+                if ($objTalk->getKey('intRequestedSlotID') == '') {
+                    $intUseSlot = $objTalk->getKey('intSlotID');
+                } elseif ($objTalk->getKey('intRequestedSlotID') < $intNowSlot) {
                     // If the talk was requested for before now but wasn't given
                     // a chance to be presented, put it in the "reschedule" group.
                     $intUseSlot = 0;

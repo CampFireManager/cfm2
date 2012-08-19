@@ -25,6 +25,22 @@
 
 class Plugin_JoindIn
 {
+    function hook_cronTick()
+    {
+        $arrTalks = Object_Talk::brokerAll();
+        $arrNowNext = Object_Slot::getNowAndNext();
+        $intNow = $arrNowNext[0];
+        foreach ($arrTalks as $objTalk) {
+            if ($objTalk->getKey('intSlotID') <= $intNow 
+                && $objTalk->getKey('isLocked') == "1" 
+                && $objTalk->getKey('intRoomID') != '-1'
+                && ! strpos($objTalk->getKey('jsonLinks'), 'joind.in')
+            ) {
+                $this->hook_fixTalk($objTalk);
+            }
+        }
+    }
+    
     /**
      * This function sends a broadcast when the talk is fixed.
      * 
@@ -32,7 +48,7 @@ class Plugin_JoindIn
      * 
      * @return void
      */
-    function hook_talkFixed($object)
+    function hook_fixTalk($object)
     {
         $system_state = Object_User::isSystem();
         try {
@@ -62,6 +78,9 @@ class Plugin_JoindIn
             foreach ($arrTalk['arrPresenters'] as $arrPresenter) {
                 $presenters[] = $arrPresenter['strUser'];
             }
+            if ($arrTalk['strTalkSummary'] == '') {
+                $arrTalk['strTalkSummary'] = 'A talk.';
+            }
             $talk_data = array(
                 'talk_title' => $arrTalk['strTalk'], 
                 'talk_description' => $arrTalk['strTalkSummary'],
@@ -81,7 +100,6 @@ class Plugin_JoindIn
 
             $data = json_decode($curl, true);
  
-            var_dump($data);
             if ($data != false && isset($data['talks'])) {
                 foreach ($data['talks'] as $talk) {
                     if (isset($talk['website_uri'])) {
