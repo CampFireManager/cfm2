@@ -40,13 +40,11 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data['intUserID'] == null);
         $this->assertTrue($data['intRequestedRoomID'] == null);
         $this->assertTrue($data['intRequestedSlotID'] == null);
-        $this->assertTrue($data['intRoomID'] == null);
+        $this->assertTrue($data['intRoomID'] == "-1");
         $this->assertTrue($data['intSlotID'] == null);
-        $this->assertTrue($data['intTrackID'] == null);
-        $this->assertTrue($data['intLength'] == null);
+        $this->assertTrue($data['intLength'] == "1");
         $this->assertTrue($data['jsonLinks'] == null);
         $this->assertTrue($data['isLocked'] == false);
-        $this->assertTrue($data['jsonResources'] == null);
         $this->assertTrue($data['jsonOtherPresenters'] == null);
         $this->assertTrue($objTalk->getKey('intTalkID') == null);
     }
@@ -65,13 +63,10 @@ class Object_TalkTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($data['intRequestedSlotID'] == 1);
         $this->assertTrue($data['intRoomID'] == 1);
         $this->assertTrue($data['intSlotID'] == 1);
-        $this->assertTrue($data['intTrackID'] == null);
         $this->assertTrue($data['intLength'] == 1);
         $json_data = json_decode($data['jsonLinks'], true);
         $this->assertTrue(count($json_data) == 2);
         $this->assertTrue($data['isLocked'] == 1);
-        $json_data = json_decode($data['jsonResources'], true);
-        $this->assertTrue(count($json_data) == 1);
         $json_data = json_decode($data['jsonOtherPresenters'], true);
         $this->assertTrue(count($json_data) == 0);
     }
