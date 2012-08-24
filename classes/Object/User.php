@@ -233,7 +233,7 @@ class Object_User extends Abstract_GenericObject
             $objUserAuth = new Object_Userauth(true, $strCodeOnly);
             $objRequest = Container_Request::getRequest();
             $arrSession = $objRequest->get_arrSession();
-            if ($objRequest->get_strUsername != '') {
+            if ($objRequest->get_strUsername() != '') {
                 $this->setKey('strUser', $objRequest->get_strUsername());
             } elseif (isset($arrSession['OPENID_AUTH']['fullname']) && $arrSession['OPENID_AUTH']['fullname'] != '') {
                 $this->setKey('strUser', $arrSession['OPENID_AUTH']['fullname']);
