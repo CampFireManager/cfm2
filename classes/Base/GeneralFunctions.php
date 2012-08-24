@@ -474,7 +474,8 @@ class Base_GeneralFunctions
      */
     public static function startSession()
     {
-        if (session_id() === '') {
+        $objRequest = Container_Request::getRequest();
+        if ($objRequest->get_strRequestMethod() != 'file' && session_id() === '') {
             // 604800 is 7 Days in seconds
             $currentCookieParams = session_get_cookie_params();
             session_set_cookie_params(

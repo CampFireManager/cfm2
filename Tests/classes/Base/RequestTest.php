@@ -675,8 +675,8 @@ class Base_RequestTest extends PHPUnit_Framework_TestCase
         $request = new Base_Request();
         $this->parseFile($request);
         $this->assertTrue($request->get_strRequestMethod() == 'file');
-        $this->assertTrue($request->get_requestUrlFull() == "file:///var/www/cfm2/Tests/classes/Base/RequestTest.php");
-        $this->assertTrue($request->get_requestUrlExParams() == "file:///var/www/cfm2/Tests/classes/Base/RequestTest.php");
+        $this->assertTrue(strpos($request->get_requestUrlFull(), "/Tests/classes/Base/RequestTest.php") > 0);
+        $this->assertTrue(strpos($request->get_requestUrlExParams(), "/Tests/classes/Base/RequestTest.php") > 0);
         $this->assertTrue($request->get_strUsername() == null);
         $this->assertTrue($request->get_strPassword() == null);
         $this->assertTrue($request->get_strUserAgent() == null);
@@ -696,6 +696,6 @@ class Base_RequestTest extends PHPUnit_Framework_TestCase
         $request = new Base_Request();
         $this->FarrGlobals['argv'][0] = 'bootstrap.php';
         $this->parseFile($request);
-        $this->assertTrue($request->get_requestUrlFull() == "file:///var/www/cfm2/Tests/bootstrap.php");
+        $this->assertTrue(strpos($request->get_requestUrlFull(), "/Tests/bootstrap.php") > 0);
     }
 }
