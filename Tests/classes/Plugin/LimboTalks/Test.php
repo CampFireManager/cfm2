@@ -24,8 +24,6 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $objSlot->initializeDemo();
         $objTalk = new Object_Talk_Demo();
         $objTalk->initializeDemo();
-        $objTrack = new Object_Track_Demo();
-        $objTrack->initializeDemo();
         $objUser = new Object_User_Demo();
         $objUser->initializeDemo();
         $objUserauth = new Object_Userauth_Demo();
