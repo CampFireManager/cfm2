@@ -1,0 +1,7 @@
+language: php
+php:
+  - 5.3
+  - 5.4
+script: phpunit -c Tests/configuration.xml Tests
+before_install:
+  - git submodule update --init --recursive
