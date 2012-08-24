@@ -185,7 +185,7 @@ class Object_Slot extends Abstract_GenericObject
      * 
      * @return string
      */
-    public function getKey($key)
+    public function getKey($key = null)
     {
         if ($key == 'isNow') {
             return $this->isNow;

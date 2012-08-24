@@ -262,7 +262,7 @@ class Object_Talk extends Abstract_GenericObject
      * 
      * @return mixed 
      */
-    public function setKey($key, $value)
+    public function setKey($key = '', $value = '')
     {
         switch ($key) {
         case 'isRoomLocked':

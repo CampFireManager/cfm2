@@ -473,7 +473,7 @@ class Container_Config implements Interface_Object
      *
      * @return string
      */
-    public function getSecureByID($key = null, $mixedDefaultValue = null)
+    public static function getSecureByID($key = null, $mixedDefaultValue = null)
     {
         $self = self::GetHandler();
         if (! isset($self->arrSecureConfig[$key])) {

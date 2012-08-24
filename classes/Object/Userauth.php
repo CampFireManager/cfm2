@@ -129,7 +129,7 @@ class Object_Userauth extends Abstract_GenericObject
      * 
      * @return Object_Userauth
      */
-    function brokerCurrent()
+    public static function brokerCurrent()
     {
         $objCache = Base_Cache::getHandler();
         $thisClassName = get_called_class();
