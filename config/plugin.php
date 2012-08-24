@@ -19,3 +19,4 @@ Base_Hook::addHooks(new Plugin_LimboTalks());
 Base_Hook::addHooks(new Plugin_ResetCleartexts());
 Base_Hook::addHooks(new Plugin_InputParser());
 Base_Hook::addHooks(new Plugin_GlueBroadcaster());
+Base_Hook::addHooks(new Plugin_JoindIn());
