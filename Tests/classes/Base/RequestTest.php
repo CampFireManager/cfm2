@@ -696,6 +696,6 @@ class Base_RequestTest extends PHPUnit_Framework_TestCase
         $request = new Base_Request();
         $this->FarrGlobals['argv'][0] = 'bootstrap.php';
         $this->parseFile($request);
-        $this->assertTrue(strpos($request->get_requestUrlFull(), "/Tests/bootstrap.php") > 0);
+        $this->assertTrue(strpos($request->get_requestUrlFull(), "/bootstrap.php") > 0);
     }
 }

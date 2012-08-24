@@ -78,7 +78,7 @@ class Base_ExternalLibraryLoader
      *
      * @return string Library version to load
      */
-    function loadLibrary($library = '')
+    public static function loadLibrary($library = '')
     {
         $self = self::getHandler();
         if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
