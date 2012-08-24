@@ -64,7 +64,7 @@ class Plugin_GlueBroadcaster
      * 
      * @return void
      */
-    function hook_talkFixed($object)
+    function hook_fixTalk($object)
     {
         $system_state = Object_User::isSystem();
         try {
