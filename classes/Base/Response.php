@@ -10,7 +10,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 /**
  * This class provides all the functions which are needed by code in the site
@@ -20,7 +20,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 
 class Base_Response

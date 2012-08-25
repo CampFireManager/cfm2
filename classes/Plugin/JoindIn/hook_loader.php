@@ -10,7 +10,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 /**
  * This plugin is used to publish the talks to Joind.in on fixing
@@ -20,7 +20,7 @@
  * @author   Jon Spriggs <jon@sprig.gs>
  * @author   Lorna Mitchell <her@lornajane.net>
  * @license  about:blank?tbc tbc
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 
 class Plugin_JoindIn

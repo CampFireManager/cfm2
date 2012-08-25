@@ -10,7 +10,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 /**
  * This glue is used to broker all inter-Twitter conversations. It is mostly
@@ -22,7 +22,7 @@
  * you want to see what Jack wrote. There's nothing wrong with it, it just 
  * doesn't match how I need things to fit together.
  * 
- * https://github.com/JonTheNiceGuy/cfm2/blob/3c7710ba8a7913cd8d4754ceedabfc41bca51365/classes/Plugin/Twitter/ExternalLibraries/TwitterManager.php
+ * https://github.com/CampFireManager/cfm2/blob/3c7710ba8a7913cd8d4754ceedabfc41bca51365/classes/Plugin/Twitter/ExternalLibraries/TwitterManager.php
  *
  * @category Glue_Twitter
  * @package  CampFireManager2
@@ -30,7 +30,7 @@
  * @author   Jack Wearden <jack.weirdy@googlemail.com>
  * @author   themattharris <https://twitter.com/intent/follow?screen_name=themattharris>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 
 class Glue_TwitterAPI implements Interface_Glue
