@@ -10,7 +10,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 /**
  * This class defines the object for PDO to use when retrives data about a room.
@@ -19,7 +19,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 
 class Object_Room extends Abstract_GenericObject
@@ -114,7 +114,7 @@ class Object_Room extends Abstract_GenericObject
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 class Object_Room_Demo extends Object_Room
 {
