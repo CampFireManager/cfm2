@@ -11,7 +11,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 /**
  * This class obtains manipulates all the configuration data for the service. It
@@ -22,7 +22,7 @@
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
- * @link     https://github.com/JonTheNiceGuy/cfm2 Version Control Service
+ * @link     https://github.com/CampFireManager/cfm2 Version Control Service
  */
 
 class Container_Hook
