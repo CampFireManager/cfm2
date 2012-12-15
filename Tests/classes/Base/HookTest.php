@@ -102,7 +102,7 @@ class Testable_HookWithNoTriggers
 
 class Testable_HookWithTrigger
 {
-    public function hook_cronTick($object) {
+    public function hook_cronTick() {
         throw new LogicException("Actually, there's no easy way to pass back that this blighter should work!");
     }
 }

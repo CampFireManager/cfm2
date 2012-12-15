@@ -24,7 +24,7 @@
 
 class Glue_Gammu implements Interface_Glue
 {
-    protected $sms = null;
+    protected $objDbGammu = null;
     protected $strInterface = null;
     protected $objDaemon = null;
     
@@ -73,32 +73,50 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBType'])) {
             $DBType = $arrConfigValues['DBType'];
         } else {
-            $DBType = Object_SecureConfig::brokerByID($GluePrefix . '_DBType', 'mysql')->getKey('value');
+            $DBType = Object_SecureConfig::brokerByID($GluePrefix . '_DBType', 'mysql');
+            if (is_object($DBType)) {
+                $DBType = $DBType->getKey('value');
+            }
         }
         if (isset($arrConfigValues['DBHost'])) {
             $DBHost = $arrConfigValues['DBHost'];
         } else {
-            $DBHost = Object_SecureConfig::brokerByID($GluePrefix . '_DBHost', false)->getKey('value');
+            $DBHost = Object_SecureConfig::brokerByID($GluePrefix . '_DBHost', false);
+            if (is_object($DBHost)) {
+                $DBHost = $DBHost->getKey('value');
+            }
         }
         if (isset($arrConfigValues['DBPort'])) {
             $DBPort = $arrConfigValues['DBPort'];
         } else {
-            $DBPort = Object_SecureConfig::brokerByID($GluePrefix . '_DBPort', false)->getKey('value');
+            $DBPort = Object_SecureConfig::brokerByID($GluePrefix . '_DBPort', false);
+            if (is_object($DBPort)) {
+                $DBPort = $DBPort->getKey('value');
+            }
         }
         if (isset($arrConfigValues['DBUser'])) {
             $DBUser = $arrConfigValues['DBUser'];
         } else {
-            $DBUser = Object_SecureConfig::brokerByID($GluePrefix . '_DBUser', false)->getKey('value');
+            $DBUser = Object_SecureConfig::brokerByID($GluePrefix . '_DBUser', false);
+            if (is_object($DBUser)) {
+                $DBUser = $DBUser->getKey('value');
+            }
         }
         if (isset($arrConfigValues['DBPass'])) {
             $DBPass = $arrConfigValues['DBPass'];
         } else {
-            $DBPass = Object_SecureConfig::brokerByID($GluePrefix . '_DBPass', false)->getKey('value');
+            $DBPass = Object_SecureConfig::brokerByID($GluePrefix . '_DBPass', false);
+            if (is_object($DBPass)) {
+                $DBPass = $DBPass->getKey('value');
+            }
         }
         if (isset($arrConfigValues['DBBase'])) {
             $DBBase = $arrConfigValues['DBBase'];
         } else {
-            $DBBase = Object_SecureConfig::brokerByID($GluePrefix . '_DBBase', false)->getKey('value');
+            $DBBase = Object_SecureConfig::brokerByID($GluePrefix . '_DBBase', false);
+            if (is_object($DBBase)) {
+                $DBBase = $DBBase->getKey('value');
+            }
         }
         if ($DBType == false 
             || $DBHost == false 
@@ -113,18 +131,17 @@ class Glue_Gammu implements Interface_Glue
         $this->strInterface = $GluePrefix;
         
         if ($DBType != 'sqlite') {
-            $this->sms = new PDO($DBType . ':host=' . $DBHost . ';port=' . $DBPort .';dbname=' . $DBBase, $DBUser, $DBPass);
+            $this->objDbGammu = new PDO($DBType . ':host=' . $DBHost . ';port=' . $DBPort .';dbname=' . $DBBase, $DBUser, $DBPass);
         } else {
-            $this->sms = new PDO($DBType . ':' . $DBHost);
+            $this->objDbGammu = new PDO($DBType . ':' . $DBHost);
         }
-        if ($this->sms->errorCode() > 0) {
-            die($this->sms->errorInfo());
+        if ($this->objDbGammu->errorCode() > 0) {
+            throw new UnexpectedValueException($this->objDbGammu->errorInfo());
         }
-        $this->sms->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->objDbGammu->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         $this->objDaemon = Object_Daemon::brokerByColumnSearch('strDaemon', $this->strInterface);
         if ($this->objDaemon == false) {
-            
             $this->objDaemon = new Object_Daemon();
             $this->objDaemon->setKey('strDaemon', $this->strInterface);
             $this->objDaemon->setKey('intInboundCounter', 0);
@@ -146,16 +163,16 @@ class Glue_Gammu implements Interface_Glue
      */
     public function read_private()
     {
-        $sql = "SELECT `ID`, `TimeOut`, `Signal` FROM phones";
-        $query = $this->sms->prepare($sql);
-        $query->execute(array());
-        $result = $query->fetch(PDO::FETCH_ASSOC);
-        $this->objDaemon->setKey('lastUsedSuccessfully', $result['TimeOut']);
-        $this->objDaemon->setKey('intScope', $result['Signal']);
+        $sql1 = "SELECT `ID`, `TimeOut`, `Signal` FROM phones";
+        $query1 = $this->objDbGammu->prepare($sql1);
+        $query1->execute(array());
+        $result1 = $query1->fetch(PDO::FETCH_ASSOC);
+        $this->objDaemon->setKey('lastUsedSuccessfully', $result1['TimeOut']);
+        $this->objDaemon->setKey('intScope', $result1['Signal']);
         $this->objDaemon->write();
 
         $sql = "SELECT ID, SenderNumber, UDH, TextDecoded, RecipientID FROM inbox WHERE processed = 'false'";
-        $query = $this->sms->prepare($sql);
+        $query = $this->objDbGammu->prepare($sql);
         $query->execute(array());
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         if ($result == false) {
@@ -198,7 +215,7 @@ class Glue_Gammu implements Interface_Glue
                         $intNativeID = $message['ID'];
                         Object_Input::import($strSender, $strInterface, $textMessage, $intNativeID);
                         $sqlUpdateInbox = "UPDATE inbox SET processed = 'true' WHERE UDH = ?";
-                        $qryUpdateInbox = $this->sms->prepare($sqlUpdateInbox);
+                        $qryUpdateInbox = $this->objDbGammu->prepare($sqlUpdateInbox);
                         $qryUpdateInbox->execute(array('050003' . $uniq . '%'));
                         unset($UDH[$uniq]);
 
@@ -216,7 +233,7 @@ class Glue_Gammu implements Interface_Glue
                     $intNativeID = $message['ID'];
                     Object_Input::import($strSender, $strInterface, $textMessage, $intNativeID);
                     $sqlUpdateInbox = "UPDATE inbox SET processed = 'true' WHERE ID = ?";
-                    $qryUpdateInbox = $this->sms->prepare($sqlUpdateInbox);
+                    $qryUpdateInbox = $this->objDbGammu->prepare($sqlUpdateInbox);
                     $qryUpdateInbox->execute(array($message['ID']));
 
                     $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
@@ -262,12 +279,12 @@ class Glue_Gammu implements Interface_Glue
             . '(CreatorID, MultiPart, DestinationNumber, UDH, TextDecoded, Coding, SenderID)'
             . ' VALUES '
             . '(:CreatorID, :MultiPart, :DestinationNumber, :UDH, :TextDecoded, :Coding, :SenderID);';
-        $qryInsert = $this->sms->prepare($sqlInsert);
+        $qryInsert = $this->objDbGammu->prepare($sqlInsert);
         $sqlInsertLarge = 'INSERT INTO outbox_multipart '
             . '(SequencePosition, UDH, TextDecoded, ID, Coding)'
             . ' VALUES '
             . '(:SequencePosition, :UDH, :TextDecoded, :ID, :Coding);';
-        $qryInsertLarge = $this->sms->prepare($sqlInsertLarge);
+        $qryInsertLarge = $this->objDbGammu->prepare($sqlInsertLarge);
 
         $messages = Object_Output::brokerByColumnSearch('isActioned', 0);
         foreach ($messages as $message) {
@@ -325,7 +342,7 @@ class Glue_Gammu implements Interface_Glue
                         $data['TextDecoded'] = $strChunk;
                         if ($intChunkID == 1) {
                             $qryInsert->execute($data);
-                            $data['ID'] = $this->sms->lastInsertId();
+                            $data['ID'] = $this->objDbGammu->lastInsertId();
                         } else {
                             $data['SequencePosition'] = $intChunkID;
                             $qryInsertLarge->execute($data);

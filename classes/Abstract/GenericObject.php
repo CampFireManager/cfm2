@@ -960,6 +960,7 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     function initializeDemo()
     {
+        $sql = '';
         if ($this->doNotInitialize == true) {
             return false;
         }

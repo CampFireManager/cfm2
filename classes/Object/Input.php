@@ -106,7 +106,7 @@ class Object_Input extends Abstract_GenericObject
     public function __construct()
     {
         if (! Object_User::isSystem()) {
-            throw new Exception('It is not permitted to directly create input actions');
+            throw new BadMethodCallException('It is not permitted to directly create input actions');
         } else {
             parent::__construct();
         }
