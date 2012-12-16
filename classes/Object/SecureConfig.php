@@ -42,7 +42,8 @@ class Object_SecureConfig extends Abstract_GenericObject
     
     public static function brokerByID($key)
     {
-        return end(self::brokerByColumnSearch('key', $key));
+        $data = end(self::brokerByColumnSearch('key', $key));
+        return $data;
     }
     
     /**
