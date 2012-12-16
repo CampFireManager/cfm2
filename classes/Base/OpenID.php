@@ -48,7 +48,7 @@ class Base_OpenID
     protected $attributeAx = array();
     protected $attributeSReg = array();
 
-    protected static $consumer = null;
+    protected $consumer = null;
 
     /**
      * An internal function to make this a singleton
