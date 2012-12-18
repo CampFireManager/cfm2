@@ -73,7 +73,7 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBType'])) {
             $DBType = $arrConfigValues['DBType'];
         } else {
-            $DBType = Object_SecureConfig::brokerByID($GluePrefix . '_DBType', 'mysql');
+            $DBType = Object_SecureConfig::brokerByID($GluePrefix . '_DBType');
             if (is_object($DBType)) {
                 $DBType = $DBType->getKey('value');
             }
@@ -81,7 +81,7 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBHost'])) {
             $DBHost = $arrConfigValues['DBHost'];
         } else {
-            $DBHost = Object_SecureConfig::brokerByID($GluePrefix . '_DBHost', false);
+            $DBHost = Object_SecureConfig::brokerByID($GluePrefix . '_DBHost');
             if (is_object($DBHost)) {
                 $DBHost = $DBHost->getKey('value');
             }
@@ -89,7 +89,7 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBPort'])) {
             $DBPort = $arrConfigValues['DBPort'];
         } else {
-            $DBPort = Object_SecureConfig::brokerByID($GluePrefix . '_DBPort', false);
+            $DBPort = Object_SecureConfig::brokerByID($GluePrefix . '_DBPort');
             if (is_object($DBPort)) {
                 $DBPort = $DBPort->getKey('value');
             }
@@ -97,7 +97,7 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBUser'])) {
             $DBUser = $arrConfigValues['DBUser'];
         } else {
-            $DBUser = Object_SecureConfig::brokerByID($GluePrefix . '_DBUser', false);
+            $DBUser = Object_SecureConfig::brokerByID($GluePrefix . '_DBUser');
             if (is_object($DBUser)) {
                 $DBUser = $DBUser->getKey('value');
             }
@@ -105,7 +105,7 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBPass'])) {
             $DBPass = $arrConfigValues['DBPass'];
         } else {
-            $DBPass = Object_SecureConfig::brokerByID($GluePrefix . '_DBPass', false);
+            $DBPass = Object_SecureConfig::brokerByID($GluePrefix . '_DBPass');
             if (is_object($DBPass)) {
                 $DBPass = $DBPass->getKey('value');
             }
@@ -113,17 +113,17 @@ class Glue_Gammu implements Interface_Glue
         if (isset($arrConfigValues['DBBase'])) {
             $DBBase = $arrConfigValues['DBBase'];
         } else {
-            $DBBase = Object_SecureConfig::brokerByID($GluePrefix . '_DBBase', false);
+            $DBBase = Object_SecureConfig::brokerByID($GluePrefix . '_DBBase');
             if (is_object($DBBase)) {
                 $DBBase = $DBBase->getKey('value');
             }
         }
-        if ($DBType == false 
-            || $DBHost == false 
-            || ($DBType != 'sqlite' && $DBPort == false)
-            || ($DBType != 'sqlite' && $DBUser == false)
-            || ($DBType != 'sqlite' && $DBPass == false)
-            || ($DBType != 'sqlite' && $DBBase == false)
+        if ($DBType == null 
+            || $DBHost == null 
+            || ($DBType != 'sqlite' && $DBPort == null)
+            || ($DBType != 'sqlite' && $DBUser == null)
+            || ($DBType != 'sqlite' && $DBPass == null)
+            || ($DBType != 'sqlite' && $DBBase == null)
         ) {
             throw new InvalidArgumentException("Insufficient detail to connect to Gammu Database");
         }
