@@ -34,7 +34,9 @@ $media = false;
 
 if (is_array($objRequest->get_arrPathItems()) && count($objRequest->get_arrPathItems()) > 0) {
     $arrPathItems = $objRequest->get_arrPathItems();
-    if ($arrPathItems[0] == 'media') {
+    if ($arrPathItems[0] == 'SETUP' && $arrPathItems[1] == 'install') {
+        Base_Response::sendHttpResponse(200, 'Done', $objRequest->get_strPrefAcceptType());
+    } elseif ($arrPathItems[0] == 'media') {
         unset($arrPathItems[0]);
         $tmpPathItems = array();
         foreach ($arrPathItems as $data) {
