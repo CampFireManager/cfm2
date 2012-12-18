@@ -36,23 +36,30 @@ echo "Done\r\n";
 
 echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
 chdir(dirname(__FILE__) . '/../Media');
-exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
-exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
-unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
-rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
-echo "Done\r\n";
+if (!file_exists(dirname(__FILE__) . '/../Media/JQM')) {
+    exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
+    exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
+    unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
+    rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
+    echo "Done\r\n";
+} else {
+    echo "Skipped\r\n";
+}
 
 echo " * jQuery {$Libraries['jQuery']['ver']}: ";
 exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
 echo "Done\r\n";
 
 echo " * Sketchdoc Icon Library {$Libraries['sketchdocicons']['ver']}: ";
-exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}", $return);
-exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .", $return);
-unlink("icons-{$Libraries['sketchdocicons']['ver']}.zip");
-rename('sketchdock-ecommerce-icons', 'images');
-echo "Done\r\n";
-
+if (!file_exists(dirname(__FILE__) . '/../Media/images')) {
+    exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}", $return);
+    exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .", $return);
+    unlink("icons-{$Libraries['sketchdocicons']['ver']}.zip");
+    rename('sketchdock-ecommerce-icons', 'images');
+    echo "Done\r\n";
+} else {
+    echo "Skipped\r\n";
+}
 chdir(dirname(__FILE__));
 
 echo "(2/9) Parsing config options\r\n";
@@ -96,7 +103,9 @@ $arrConfig = array(
     'twitterconsumerkey' => '',
     'twitterconsumersecret' => '',
     'twitterusertoken' => '',
-    'twitterusersecret' => ''
+    'twitterusersecret' => '',
+    'webhost' => 'localhost',
+    'forceyes' => 0
 );
 
 $arrOptions = array(
@@ -209,7 +218,14 @@ $arrOptions = array(
         '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr][Ee][Nn][Aa][Bb][Ll][Ee]',
         '--[Tt][Ww][Ii][Tt][Tt][Ee][Rr]',
         '-[Tt][Ee]'
-    )
+    ),
+    'webhost' => array(
+        '--[Ww][Ee][Bb][Hh][Oo][Ss][Tt][Nn][Aa][Mm][Ee]',
+        '--[Ww][Ee][Bb][Hh][Oo][Ss][Tt]',
+        '--[Ww][Ee][Bb]',
+        '-[Ww]',
+    ),
+    'forceyes' => array('-y'),
 );
 
 foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
@@ -281,11 +297,11 @@ echo "(3/9) Accessing and configuring core database: ";
 $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], $arrConfig['rootpass']);
 $coredb = mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
 if (! $coredb && $coredb != false) {
-    switch(substr(readine("\r\nThe non-root core user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
+    switch(substr(force_readline("\r\nThe non-root core user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
     case 'Y':
     case 'y':
         if ($arrConfig['corepass'] == '') {
-            switch(readline("\r\nThe non-root core user account has a blank password. Would you like me to set that to a random string? (Y/N): ")) {
+            switch(force_readline("\r\nThe non-root core user account has a blank password. Would you like me to set that to a random string? (Y/N): ")) {
             case 'Y':
             case 'y':
                 $chars = str_split(sha1(rand()),2);
@@ -313,7 +329,7 @@ if (! $coredb && $coredb != false) {
 }
 
 while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
-    switch (readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
+    switch (force_readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
     case 'Y':
     case 'y':
         if ($rootdb) {
@@ -376,7 +392,7 @@ echo "Done\r\n";
 
 echo "(5/9) Running Core Database Configuration: ";
 while ($run_init == 0) {
-    switch (readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
+    switch (force_readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
     case 'Y':
     case 'y':
         $run_init = 1;
@@ -398,11 +414,11 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
     $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
     while ($arrConfig['gammuenable'] == '1' && ! $gammudb) {
         if ($coredb != false) {
-            switch(substr(readine("\r\nThe gammu database user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
+            switch(substr(force_readline("\r\nThe gammu database user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
             case 'Y':
             case 'y':
                 if ($arrConfig['gammupass'] == '') {
-                    switch(readline("\r\nThe gammu database user account has a blank password. Would you like me to set that to a random string? (Y/N): ")) {
+                    switch(force_readline("\r\nThe gammu database user account has a blank password. Would you like me to set that to a random string? (Y/N): ")) {
                     case 'Y':
                     case 'y':
                         $chars = str_split(sha1(rand()),2);
@@ -436,7 +452,7 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
 } elseif ($arrConfig['gammuenable'] == '1') {
     $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
     while ($arrConfig['gammuenable'] == '1' && ! $gammudb) {
-        switch(substr(readline("The gammu database credentials do not work, but are not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
+        switch(substr(force_readline_reverse("The gammu database credentials do not work, but are not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
         case 'Y':
         case 'y':
             echo "\r\nDisabling the Gammu account - invalid credentials";
@@ -454,7 +470,7 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
 
 while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammudatabase'], $gammudb)) {
     if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport'] && $rootdb) {
-        switch (readline("\r\nThe Gammu detabase does not exist. Would you like to set it up? (Y/N)")) {
+        switch (force_readline("\r\nThe Gammu detabase does not exist. Would you like to set it up? (Y/N)")) {
         case 'Y':
         case 'y':
             try {
@@ -475,7 +491,7 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammuda
             break;
         }
     } elseif($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] != $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
-        switch(substr(readline("The gammu database does not exist, but it is not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
+        switch(substr(force_readline_reverse("The gammu database does not exist, but it is not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
         case 'Y':
         case 'y':
             echo "\r\nDisabling the Gammu account - invalid credentials";
@@ -492,7 +508,7 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammuda
 
 while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM gammu', $gammudb)) {
     if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport'] && $rootdb) {
-        switch (readline("\r\nThe Gammu tables have not been created. Would you like to set it up? (Y/N)")) {
+        switch (force_readline("\r\nThe Gammu tables have not been created. Would you like to set it up? (Y/N)")) {
         case 'Y':
         case 'y':
             $file = explode(';', `gunzip -c "{$arrConfig['gammufile']}"`);
@@ -509,7 +525,7 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
             break;
         }
     } elseif($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] != $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
-        switch(substr(readline("The gammu tables do not exist, but it is not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
+        switch(substr(force_readline_reverse("The gammu tables do not exist, but it is not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
         case 'Y':
         case 'y':
             echo "\r\nDisabling the Gammu account - no tables.";
@@ -527,7 +543,7 @@ echo "Done\r\n";
 
 echo "\r\n(7/9) Building Gammu SMSD config file: ";
 if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../config/gammu.php')) {
-    switch(readline("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
+    switch(force_readline_reverse("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
     case 'Y':
     case 'y':
         $contents = array(
@@ -583,14 +599,76 @@ if ($arrConfig['twitterenable'] == 1
 echo "Done\r\n";
 
 echo "\r\n(9/9) Linking _htaccess to .htaccess: ";
-link(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess');
-echo "Done\r\n";
+if (!file_exists(dirname(__FILE__) . '/../.htaccess')) {
+    link(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess');
+} else {
+    echo "Skipped\r\n";
+}
+
+echo "\r\nChecking your web server: ";
+if (function_exists('curl_init')) {
+    sleep(5);
+    $ch = curl_init("http://" . $arrConfig['webhost'] . "/SETUP/install.php");
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+    curl_setopt($ch, CURLOPT_HEADER, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $curl = curl_exec($ch);
+    if (strstr($curl, "Must only be run from the command line.")) {
+        echo "\r\nYou need to either enable .htaccess files, or ensure your rewrite rules\r\nre-map everything to /index.php.\r\n"
+           . "To do this, check out your files in (somewhere like)\r\n"
+           . "/etc/apache2/sites-enabled/000-default\r\n"
+           . "and ensure that for your Document Root, the line:\r\n"
+           . "Allow Override All\r\n"
+           . "is set.\r\n";
+    } elseif (strstr($curl, "500 Internal Server Error")) {
+        echo "\r\nWhile it looks like your rewrite files are setup, there might be an issue\r\n"
+           . "with them. The server is returning an HTTP status of 500.\r\n";
+    } elseif (strstr($curl, "200 OK") && strstr($curl, "Done")) {
+        echo "Done\r\n";
+    } else {
+        echo "There is an error this script has not anticipated.\r\n";
+    }
+} else {
+    echo "Unable to detect whether your web server configuration is correct.\r\n";
+}
 
 echo "\nInstall complete. Run the following commands to start the daemons:\n\n";
 echo "touch nohup.out\n";
-echo "nohup gammu-smsd -c {$_SERVER['HOME']}/phone{$id}.gammu & \n";
+if (isset($id)) {
+    echo "nohup gammu-smsd -c {$_SERVER['HOME']}/phone{$id}.gammu & \n";
+}
 echo "nohup php -q " . dirname(__FILE__) . "/../cron.php &";
 echo "\n";
+
+function force_readline_reverse($string) {
+    global $arrConfig;
+    if ($arrConfig['forceyes'] == 1) {
+        $arrConfig['forceyes'] = -1;
+        $return = force_readline($string);
+        $arrConfig['forceyes'] = 1;
+    } elseif($arrConfig['forceyes'] == -1) {
+        $arrConfig['forceyes'] = 1;
+        $return = force_readline($string);
+        $arrConfig['forceyes'] = -1;
+    }
+    return $return;
+}
+
+function force_readline($string) {
+    global $arrConfig;
+    switch ($arrConfig['forceyes']) {
+        case '1':
+            echo "$string FORCE: y\r\n";
+            return "y";
+            break;
+        case '-1':
+            echo "$string FORCE: n\r\n";
+            return "n";
+            break;
+        default:
+            return readline($string);
+    }
+}
 
 function help()
 {
@@ -618,6 +696,7 @@ are case specific. If left blank, all values should self-populate.
 -cu  | --coreuser | --coreusername           = Default: <default username>
 -cpw | --corepass | --corepassword           = Default: <default password>
 -cd  | --corebase | --coredatabase           = Default: cfm2
+-w   | --web      | --webhost                = Default: localhost
 
  ============================== Gammu  Defaults ==============================
 
