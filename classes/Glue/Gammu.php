@@ -125,7 +125,44 @@ class Glue_Gammu implements Interface_Glue
             || ($DBType != 'sqlite' && $DBPass == null)
             || ($DBType != 'sqlite' && $DBBase == null)
         ) {
-            throw new InvalidArgumentException("Insufficient detail to connect to Gammu Database");
+            $value = "\r\nDBType: $DBType (";
+            if ($DBType == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBHost: $DBHost (";
+            if ($DBHost == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBPort: $DBPort (";
+            if ($DBPort == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBUser: $DBUser (";
+            if ($DBUser == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBPass: $DBPass (";
+            if ($DBPass == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBBase: $DBBase (";
+            if ($DBBase == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")";
+            throw new InvalidArgumentException("Insufficient detail to connect to Gammu Database : $value");
         }
         
         $this->strInterface = $GluePrefix;
