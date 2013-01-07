@@ -15,7 +15,7 @@
 /**
  * This plugin is used to broadcast to twitter when talks are about to start.
  *
- * @category Plugin_Twitter
+ * @category Plugin_GlueBroadcaster
  * @package  CampFireManager2
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3

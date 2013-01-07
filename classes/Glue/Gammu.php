@@ -125,7 +125,44 @@ class Glue_Gammu implements Interface_Glue
             || ($DBType != 'sqlite' && $DBPass == null)
             || ($DBType != 'sqlite' && $DBBase == null)
         ) {
-            throw new InvalidArgumentException("Insufficient detail to connect to Gammu Database");
+            $value = "\r\nDBType: $DBType (";
+            if ($DBType == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBHost: $DBHost (";
+            if ($DBHost == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBPort: $DBPort (";
+            if ($DBPort == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBUser: $DBUser (";
+            if ($DBUser == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBPass: $DBPass (";
+            if ($DBPass == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")\r\nDBBase: $DBBase (";
+            if ($DBBase == null) {
+                $value .= "False";
+            } else {
+                $value .= "True";
+            }
+            $value .= ")";
+            throw new InvalidArgumentException("Insufficient detail to connect to Gammu Database : $value");
         }
         
         $this->strInterface = $GluePrefix;
@@ -209,11 +246,10 @@ class Glue_Gammu implements Interface_Glue
                         foreach($UDH[$uniq] as $textPart) {
                             $text .= $textPart;
                         }
-                        $strInterface = $this->strInterface . '-private_' . $message['RecipientID'];
                         $strSender = $message['SenderNumber'];
                         $textMessage = $text;
                         $intNativeID = $message['ID'];
-                        Object_Input::import($strSender, $strInterface, $textMessage, $intNativeID);
+                        Object_Input::import($strSender, $this->strInterface, $textMessage, $intNativeID);
                         $sqlUpdateInbox = "UPDATE inbox SET processed = 'true' WHERE UDH = ?";
                         $qryUpdateInbox = $this->objDbGammu->prepare($sqlUpdateInbox);
                         $qryUpdateInbox->execute(array('050003' . $uniq . '%'));
@@ -227,11 +263,10 @@ class Glue_Gammu implements Interface_Glue
                         $this->objDaemon->setKey('intUniqueCounter', $this->objDaemon->getKey('intUniqueCounter') + 1);
                     }
 
-                    $strInterface = $this->strInterface . '-private_' . $message['RecipientID'];
                     $strSender = $message['SenderNumber'];
                     $textMessage = $message['TextDecoded'];
                     $intNativeID = $message['ID'];
-                    Object_Input::import($strSender, $strInterface, $textMessage, $intNativeID);
+                    Object_Input::import($strSender, $this->strInterface, $textMessage, $intNativeID);
                     $sqlUpdateInbox = "UPDATE inbox SET processed = 'true' WHERE ID = ?";
                     $qryUpdateInbox = $this->objDbGammu->prepare($sqlUpdateInbox);
                     $qryUpdateInbox->execute(array($message['ID']));
@@ -286,12 +321,10 @@ class Glue_Gammu implements Interface_Glue
             . '(:SequencePosition, :UDH, :TextDecoded, :ID, :Coding);';
         $qryInsertLarge = $this->objDbGammu->prepare($sqlInsertLarge);
 
-        $messages = Object_Output::brokerByColumnSearch('isActioned', 0);
+        $messages = Object_Output::brokerByColumnSearch('isActioned', false);
         foreach ($messages as $message) {
-            if (preg_match('/^([^-]+)/', $message->getKey('strInterface'), $matches) == 1) {
-                if ($matches[1] != $this->strInterface) {
-                    continue;
-                }
+            if ($message->getKey('strInterface') != $this->strInterface) {
+                continue;
             }
             if ($message->getKey('strReceiver') == null || $message->getKey('strReceiver') == '') {
                 $message->setKey('strError', 'No recipient');
@@ -303,10 +336,10 @@ class Glue_Gammu implements Interface_Glue
                 // Reset the insert data
                 $data = array(
                     'CreatorID' => 'CFM2',
-                    'MultiPart' => null,
+                    'MultiPart' => false,
                     'DestinationNumber' => $message->getKey('strReceiver'),
                     'UDH' => null,
-                    'TextDecoded' => null,
+                    'TextDecoded' => '',
                     'Coding' => 'Default_No_Compression',
                     'SenderID' => null
                 );
@@ -319,11 +352,12 @@ class Glue_Gammu implements Interface_Glue
                 // know which is which... which is where the SenderID comes into
                 // play.
 
-                if (preg_match('/^([^-]+)-([^_]+)_(.*)$/', $message->getKey('strInterface'), $matches) == 1) {
+                if (preg_match('/^Glue_Gammu-([^_]+)$/', $message->getKey('strInterface'), $matches) == 1) {
                     $data['CreatorID'] .= '_' . $matches[1];
-                    $data['SenderID'] = $matches[3];
-                } elseif (preg_match('/^([^-]+)$/', $message->getKey('strInterface'), $matches) == 1) {
+                    $data['SenderID'] = 'Glue_Gammu-' . $matches[1];
+                } elseif (preg_match('/^Glue_Gammu-([^_]+)_(.*)$/', $message->getKey('strInterface'), $matches) == 1) {
                     $data['CreatorID'] .= '_' . $matches[1];
+                    $data['SenderID'] = 'Glue_Gammu-' . $matches[1];
                 }
 
                 // So, now we've got our defaults set up - let's check whether this
@@ -333,19 +367,23 @@ class Glue_Gammu implements Interface_Glue
                     $data['TextDecoded'] = $message->getKey('textMessage');
                     $qryInsert->execute($data);
                 } else {
+                    $uniq = str_pad(dechex(rand(0, 255)), 2, "0");
+                    $size = str_pad(dechex(count($arrMessageChunks)), 2, "0");
                     foreach ($arrMessageChunks as $intChunkID => $strChunk) {
                         $intChunkID++;
-                        $uniq = str_pad(dechex(rand(0, 255)), 2, "0");
-                        $size = str_pad(dechex(count($arrMessageChunks)), 2, "0");
                         $mNum = str_pad(dechex($intChunkID), 2, "0");
                         $data['UDH'] = '050003' . $uniq . $size . $mNum;
-                        $data['TextDecoded'] = $strChunk;
                         if ($intChunkID == 1) {
+                            $data['TextDecoded'] = $strChunk;
                             $qryInsert->execute($data);
-                            $data['ID'] = $this->objDbGammu->lastInsertId();
+                            $LargeData['ID'] = $this->objDbGammu->lastInsertId();
                         } else {
-                            $data['SequencePosition'] = $intChunkID;
-                            $qryInsertLarge->execute($data);
+                            //(:SequencePosition, :UDH, :TextDecoded, :ID, :Coding)
+                            $LargeData['UDH'] = $data['UDH'];
+                            $LargeData['SequencePosition'] = $intChunkID;
+                            $LargeData['TextDecoded'] = $strChunk;
+                            $LargeData['Coding'] = $data['Coding'];
+                            $qryInsertLarge->execute($LargeData);
                         }
                     }
                 }
@@ -355,7 +393,7 @@ class Glue_Gammu implements Interface_Glue
                 $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                 $this->objDaemon->write();
             } catch (Exception $e) {
-                error_log('Error moving data from CFM2 Outbox to Gammu Outbox: ' . $e->getMessage());
+                error_log('Error moving data from CFM2 Outbox to Gammu Outbox at ' . $e->getLine() . ': ' . $e->getMessage());
             }
         }
     }

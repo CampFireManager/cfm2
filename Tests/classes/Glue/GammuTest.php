@@ -49,7 +49,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == 1);
         $this->assertTrue($result[0]['SenderNumber'] == "+447777777777");
         $this->assertTrue($result[0]['TextDecoded'] == "testing");
-        $this->assertTrue($result[0]['RecipientID'] == "Glue-Gammu-Provider");
+        $this->assertTrue($result[0]['RecipientID'] == "Glue_Gammu-SMSD");
         $this->assertTrue($result[0]['Processed'] == "false");
         Glue_GammuTestable::injectInboxItem($this->objGlueGammu, '+447777777777', 'testing 2');
         $qry2 = $this->objDbGammu->prepare("SELECT * FROM inbox");
@@ -76,8 +76,105 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_object($arrInput[1]));
         $this->assertTrue($arrInput[1]->getKey('textMessage') == 'testing');
         $this->assertTrue($arrInput[1]->getKey('strSender') == '+447777777777');
-        $this->assertTrue($arrInput[1]->getKey('strInterface') == 'Gammu-private_Glue-Gammu-Provider');
+        $this->assertTrue($arrInput[1]->getKey('strInterface') == 'Glue_Gammu-SMSD');
     }
+
+    public function testReplyToInbox()
+    {
+        $arrOutbox = Glue_GammuTestable::checkOutboxItem($this->objGlueGammu);
+        $this->assertTrue(count($arrOutbox) == 0);
+        Glue_GammuTestable::injectInboxItem($this->objGlueGammu, '+447777777777', 'testing');
+        $this->objGlueGammu->read_private();
+        $arrInput = Object_Input::brokerAll();
+        $this->assertTrue(count($arrInput) == 1);
+        $this->assertTrue(is_object($arrInput[1]));
+        Object_Output::replyToInput($arrInput[1], "Test Succeeded");
+        $system_state = Object_User::isSystem();
+        Object_User::isSystem(true);
+        $arrGlue = Glue_GammuTestable::brokerAllGlues();
+        foreach ($arrGlue as $objGlue) {
+            $objGlue->send();
+        }
+        Object_User::isSystem($system_state);
+        $arrOutbox2 = Glue_GammuTestable::checkOutboxItem($this->objGlueGammu);
+        $this->assertTrue(count($arrOutbox2) == 1);
+        $this->assertTrue($arrOutbox2[0]['DestinationNumber'] == "+447777777777"); 
+        $this->assertTrue($arrOutbox2[0]['TextDecoded'] == "Test Succeeded");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Glue_Gammu-SMSD");
+    }
+
+    
+    public function testSendMessage()
+    {
+        $arrOutbox = Glue_GammuTestable::checkOutboxItem($this->objGlueGammu);
+        $this->assertTrue(count($arrOutbox) == 0);
+        $system_state = Object_User::isSystem();
+        Object_User::isSystem(true);
+        $arrGlue = Glue_GammuTestable::brokerAllGlues();
+        foreach ($arrGlue as $objGlue) {
+            $this->assertTrue($objGlue->getGlue() == "Glue_Gammu-SMSD");
+            $strInterface = $objGlue->canSendPrivateMessage();
+            if ($strInterface != false) {
+                $output = new Object_Output();
+                $output->setKey('textMessage', "Testing 123");
+                $output->setKey('strInterface', $strInterface);
+                $output->setKey('strReceiver', '+447777777777');
+                $output->create();
+                $objGlue->send();
+            }
+        }
+        Object_User::isSystem($system_state);
+        $arrOutbox2 = Glue_GammuTestable::checkOutboxItem($this->objGlueGammu);
+        $this->assertTrue(count($arrOutbox2) == 1);
+        $this->assertTrue($arrOutbox2[0]['DestinationNumber'] == "+447777777777"); 
+        $this->assertTrue($arrOutbox2[0]['TextDecoded'] == "Testing 123");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Glue_Gammu-SMSD");
+    }
+
+    public function testSendLongerMessage()
+    {
+        $arrOutbox = Glue_GammuTestable::checkOutboxItem($this->objGlueGammu);
+        $this->assertTrue(count($arrOutbox) == 0);
+        $system_state = Object_User::isSystem();
+        Object_User::isSystem(true);
+        $arrGlue = Glue_GammuTestable::brokerAllGlues();
+        foreach ($arrGlue as $objGlue) {
+            $this->assertTrue($objGlue->getGlue() == "Glue_Gammu-SMSD");
+            $strInterface = $objGlue->canSendPrivateMessage();
+            if ($strInterface != false) {
+                $output = new Object_Output();
+                $output->setKey('textMessage', "123456789012345678901234567890"
+                                              ."123456789012345678901234567890"
+                                              ."123456789012345678901234567890"
+                                              ."123456789012345678901234567890"
+                                              ."123456789012345678901234567890"
+                                              ."123456789012345678901234567890");
+                $output->setKey('strInterface', $strInterface);
+                $output->setKey('strReceiver', '+447777777777');
+                $output->create();
+                $objGlue->send();
+            }
+        }
+        Object_User::isSystem($system_state);
+        
+        $arrOutbox2 = Glue_GammuTestable::checkOutboxItem($this->objGlueGammu);
+        $arrOutbox3 = Glue_GammuTestable::checkOutboxMultipart($this->objGlueGammu);
+        $this->assertTrue(count($arrOutbox2) == 1);
+        $this->assertTrue($arrOutbox2[0]['DestinationNumber'] == "+447777777777"); 
+        $this->assertTrue($arrOutbox2[0]['TextDecoded'] == "123456789012345678901234567890"
+                                                          ."123456789012345678901234567890"
+                                                          ."123456789012345678901234567890"
+                                                          ."123456789012345678901234567890"
+                                                          ."123456789012345678901234567890"
+                                                          ."1234567890");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Glue_Gammu-SMSD");
+        $this->assertTrue(substr($arrOutbox2[0]['UDH'], -4) === '2010');
+        $this->assertTrue(substr($arrOutbox2[0]['UDH'], 0, 10) === substr($arrOutbox3[0]['UDH'], 0, 10));
+        $this->assertTrue(substr($arrOutbox3[0]['UDH'], -4) === '2020');
+        $this->assertTrue($arrOutbox3[0]['TextDecoded'] == "12345678901234567890");
+        $this->assertTrue(substr($arrOutbox2[0]['UDH'], 0, 10) === substr($arrOutbox3[0]['UDH'], 0, 10));
+    }
+
 }
 
 class Glue_GammuTestable extends Glue_Gammu
@@ -109,9 +206,39 @@ class Glue_GammuTestable extends Glue_Gammu
         }
         $inject = $self->objDbGammu->prepare("INSERT INTO `inbox` (`UpdatedInDB`, `ReceivingDateTime`, `Text`, `SenderNumber`, `Coding`, `UDH`, `SMSCNumber`, `Class`, `TextDecoded`, `ID`, `RecipientID`, `Processed`) VALUES 
             (:datereceived, :dateinserted, '', :number, 'Default_No_Compression', '', 
-            '+447771234567', -1, :message, NULL, 'Glue-Gammu-Provider', :actioned)");
+            '+447771234567', -1, :message, NULL, 'Glue_Gammu-SMSD', :actioned)");
         $inject->execute(array('datereceived' => $datereceived, 'dateinserted' => $dateinserted, 'number' => $number, 'message' => $message, 'actioned' => $actioned));
         return $self;
+    }
+
+    /**
+     * Gets a collection of data from the Outbox storage
+     * 
+     * @param Glue_Gammu $self
+     * 
+     * @return array
+     */
+    public static function checkOutboxItem($self)
+    {
+        $read = $self->objDbGammu->prepare("SELECT * FROM `outbox`");
+        $read->execute();
+        $result = $read->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * Gets a collection of data from the Outbox storage
+     * 
+     * @param Glue_Gammu $self
+     * 
+     * @return array
+     */
+    public static function checkOutboxMultipart($self)
+    {
+        $read = $self->objDbGammu->prepare("SELECT * FROM `outbox_multipart`");
+        $read->execute();
+        $result = $read->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
     
     /**
@@ -139,7 +266,7 @@ class Glue_GammuTestable extends Glue_Gammu
             $path = dirname(__FILE__) . '/../../../config/unittest_gammu.sqlite';
         }
         $arrConfigValues = array();
-        $arrConfigValues['GluePrefix'] = "Gammu";
+        $arrConfigValues['GluePrefix'] = "Glue_Gammu-SMSD";
         $arrConfigValues['DBType'] = "sqlite";
         $arrConfigValues['DBHost'] = $path;
         if (file_exists($path)) {
@@ -214,7 +341,18 @@ class Glue_GammuTestable extends Glue_Gammu
               Received INTEGER NOT NULL DEFAULT 0
             );
         ");
-        $self->objDbGammu->exec("INSERT INTO `phones` (`ID`, `UpdatedInDB`, `InsertIntoDB`, `TimeOut`, `Send`, `Receive`, `IMEI`, `Client`, `Battery`, `Signal`, `Sent`, `Received`) VALUES ('Glue-Gammu-Provider', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', 'yes', 'yes', '123456789012345', 'Dummy Client String', 0, 100, 0, 5);");
+        $self->objDbGammu->exec("INSERT INTO `phones` (`ID`, `UpdatedInDB`, `InsertIntoDB`, `TimeOut`, `Send`, `Receive`, `IMEI`, `Client`, `Battery`, `Signal`, `Sent`, `Received`) VALUES ('Glue_Gammu-SMSD', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "', 'yes', 'yes', '123456789012345', 'Dummy Client String', 0, 100, 0, 5);");
         return $self;
+    }
+    
+    public static function brokerAllGlues($path = '') {
+        if ($path == '') {
+            $path = dirname(__FILE__) . '/../../../config/unittest_gammu.sqlite';
+        }
+        $arrConfigValues = array();
+        $arrConfigValues['GluePrefix'] = "Glue_Gammu-SMSD";
+        $arrConfigValues['DBType'] = "sqlite";
+        $arrConfigValues['DBHost'] = $path;
+        return array(new Glue_Gammu($arrConfigValues));
     }
 }
