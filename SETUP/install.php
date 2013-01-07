@@ -98,7 +98,7 @@ $arrConfig = array(
     'gammuport' => '',
     'gammudatabase' => 'gammu',
     'gammudevice' => '/dev/ttyUSB0',
-    'gammuservice' => 'Generic',
+    'gammuservice' => 'SMSD',
     'twitterenable' => '1',
     'twitterconsumerkey' => '',
     'twitterconsumersecret' => '',
@@ -553,7 +553,7 @@ if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../confi
             'Connection = at',
             '',
             '[smsd]',
-            'PhoneID = phone' . $arrConfig['gammuservice'],
+            'PhoneID = Glue_Gammu-' . $arrConfig['gammuservice'],
             'CommTimeout = 30',
             'DeliveryReport = sms',
             '',
@@ -568,7 +568,9 @@ if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../confi
             'debuglevel = 3',
             ';";'
         );
-        file_put_contents($_SERVER['HOME'].'/phone'.$id.'.gammu', implode("\n", $contents));
+        if(file_put_contents(dirname(__FILE__) . '/../config/gammu.php', implode("\n", $contents)) === false) {
+            echo "Unable to write the config file to the file system. Please create the following file:\r\n\r\n" . implode("\n", $contents);
+        }
         $sql = 'INSERT INTO secureconfig (`key`, `value`) VALUES '
         . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBType', '{$arrConfig['gammutype']}'), "
         . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBHost', '{$arrConfig['gammuhost']}'), "
@@ -578,8 +580,10 @@ if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../confi
         . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBBase', '{$arrConfig['gammudatabase']}')";
         mysql_query($sql, $coredb);
     }
+    echo "Done (to: " . dirname(__FILE__).'/../config/gammu.php' . ")\r\n";
+} else {
+    echo "Skipped";
 }
-echo "Done\r\n";
 
 echo "\r\n(8/9) Configuring Twitter API access: ";
 if ($arrConfig['twitterenable'] == 1
@@ -650,6 +654,8 @@ function force_readline_reverse($string) {
         $arrConfig['forceyes'] = 1;
         $return = force_readline($string);
         $arrConfig['forceyes'] = -1;
+    } else {
+        $return = force_readline($string);
     }
     return $return;
 }
