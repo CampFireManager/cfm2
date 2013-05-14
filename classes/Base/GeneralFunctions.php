@@ -379,9 +379,44 @@ class Base_GeneralFunctions
      */
     public static function utf8html($array = array())
     {
-        return Base_GeneralFunctions::html_encode(
-            Base_GeneralFunctions::utf8element($array)
-        );
+	// This code from http://jsfiddle.net/KJQ9K/
+	return "<html><head><title>REST API Response</title><style>" . "\r\n" .
+"pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }" . "\r\n" .
+".string { color: green; }" . "\r\n" .
+".number { color: darkorange; }" . "\r\n" .
+".boolean { color: blue; }" . "\r\n" .
+".null { color: magenta; }" . "\r\n" .
+".key { color: red; }" . "\r\n" .
+"</style>" . "\r\n" .
+"</head>" . "\r\n" .
+"<body><h1>REST API Response</h1>" . "\r\n" .
+'<script type="text/javascript">' . "\r\n" .
+"function output(inp) {" . "\r\n" .
+"    document.body.appendChild(document.createElement('pre')).innerHTML = inp;" . "\r\n" .
+"}" . "\r\n" .
+"function syntaxHighlight(json) {" . "\r\n" .
+"    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');" . "\r\n" .
+'    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {' . "\r\n" .
+"        var cls = 'number';" . "\r\n" .
+'        if (/^"/.test(match)) {' . "\r\n" .
+"            if (/:$/.test(match)) {" . "\r\n" .
+"                cls = 'key';" . "\r\n" .
+"            } else {" . "\r\n" .
+"                cls = 'string';" . "\r\n" .
+"            }" . "\r\n" .
+"        } else if (/true|false/.test(match)) {" . "\r\n" .
+"            cls = 'boolean';". "\r\n" .
+"        } else if (/null/.test(match)) {" . "\r\n" .
+"            cls = 'null';". "\r\n" .
+"        }". "\r\n" .
+"        return '<span class=\"' + cls + '\">' + match + '</span>';" . "\r\n" .
+"    });" . "\r\n" .
+"}" . "\r\n" .
+"var obj = " . json_encode($array) . ";" . "\r\n" .
+"var str = JSON.stringify(obj, undefined, 4);" . "\r\n" .
+"output(syntaxHighlight(str));" . "\r\n" .
+"</script>" . "\r\n" .
+"</body></html>";
     }
 
     /**
