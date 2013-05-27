@@ -11,7 +11,7 @@
  * @author   Jon Spriggs <jon@sprig.gs>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3
  * @link     https://github.com/CampFireManager/cfm2 Version Control Service
- */
+ */     
 /**
  * This singleton class handles all the loading of external libraries.
  *
@@ -88,7 +88,7 @@ class Base_ExternalLibraryLoader
                 unlink($self->externalsDir . '/libraries.json');
             }
             $self->libs = array();
-            $self->_construct();
+            $self->__construct();
             if (isset($self->libs[$library]) and file_exists($self->externalsDir . '/' . $library . '/' . $self->libs[$library])) {
                 return $self->externalsDir . '/' . $library . '/' . $self->libs[$library];
             } else {
