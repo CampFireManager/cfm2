@@ -13,7 +13,7 @@ echo "(1/9) Ensuring your external libraries are installed\r\n";
 $Libraries = array(
     'php-openid' => array('ver' => 'current', 'source' => 'git'),
     'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
-    'Smarty' => array('ver' => '3.1.11', 'source' => 'http://www.smarty.net/files/Smarty-3.1.11.tar.gz'),
+    'Smarty' => array('ver' => '3.1.14', 'source' => 'http://www.smarty.net/files/Smarty-3.1.14.tar.gz'),
     'jQueryMobile' => array('ver' => '1.1.1', 'source' => 'http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.zip'),
     'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js'),
     'jQueryClock' => array('ver' => 'current', 'source' => 'git'),
