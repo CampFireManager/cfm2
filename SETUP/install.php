@@ -14,7 +14,7 @@ $Libraries = array(
     'php-openid' => array('ver' => 'current', 'source' => 'git'),
     'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
     'Smarty' => array('ver' => '3.1.14', 'source' => 'http://www.smarty.net/files/Smarty-3.1.14.tar.gz'),
-    'jQueryMobile' => array('ver' => '1.1.1', 'source' => 'http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.zip'),
+    'jQueryMobile' => array('ver' => '1.3.1', 'source' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.zip'),
     'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js'),
     'jQueryClock' => array('ver' => 'current', 'source' => 'git'),
     'sketchdocicons' => array('ver' => 'current', 'source' => 'http://github.com/downloads/sketchdock/111-Free-Ecommerce-Icons/111-free-ecommerce-icons-by-sketchdock.zip', 'license' => 'CC By V3 Unported')
