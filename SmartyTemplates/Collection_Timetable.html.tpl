@@ -11,6 +11,13 @@
                     <!--SM:include file="Default_Timetable.tpl":SM-->
                 </ul>
             </div>
+            <script type="text/javascript">
+                /* Nasty, but only way to do it due to known race condition */
+                setTimeout(function () {
+                    var x = $(".now").offset().top;
+                    $.mobile.silentScroll(x);
+                }, 50);
+            </script>
         </div>
         <div data-role="page" id="object">
             <div data-role="header" data-theme="e">
