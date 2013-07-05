@@ -13,8 +13,8 @@ echo "(1/9) Ensuring your external libraries are installed\r\n";
 $Libraries = array(
     'php-openid' => array('ver' => 'current', 'source' => 'git'),
     'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
-    'Smarty' => array('ver' => '3.1.11', 'source' => 'http://www.smarty.net/files/Smarty-3.1.11.tar.gz'),
-    'jQueryMobile' => array('ver' => '1.1.1', 'source' => 'http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.zip'),
+    'Smarty' => array('ver' => '3.1.14', 'source' => 'http://www.smarty.net/files/Smarty-3.1.14.tar.gz'),
+    'jQueryMobile' => array('ver' => '1.3.1', 'source' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.zip'),
     'jQuery' => array('ver' => '1.7.1', 'source' => 'http://code.jquery.com/jquery-1.7.1.min.js'),
     'jQueryClock' => array('ver' => 'current', 'source' => 'git'),
     'sketchdocicons' => array('ver' => 'current', 'source' => 'http://github.com/downloads/sketchdock/111-Free-Ecommerce-Icons/111-free-ecommerce-icons-by-sketchdock.zip', 'license' => 'CC By V3 Unported')
@@ -37,15 +37,17 @@ echo "Done\r\n";
 echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
 chdir(dirname(__FILE__) . '/../Media');
 if (!file_exists(dirname(__FILE__) . '/../Media/JQM')) {
+    mkdir(dirname(__FILE__) . '/../Media/JQM');
+    chdir(dirname(__FILE__) . '/../Media/JQM');
     exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
     exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
     unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
-    rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
     echo "Done\r\n";
 } else {
     echo "Skipped\r\n";
 }
 
+chdir(dirname(__FILE__) . '/../Media');
 echo " * jQuery {$Libraries['jQuery']['ver']}: ";
 exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
 echo "Done\r\n";
