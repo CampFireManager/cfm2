@@ -7,7 +7,7 @@
                         $(function() {
                             $('#ScreenDirection_<!--SM:$object.intScreenDirectionID:SM--> .progressive_basic').hide();
                             $('#ScreenDirection_<!--SM:$object.intScreenDirectionID:SM--> .readwrite').hide();
-                            $('#editmode_<!--SM:$object.intScreenDirectionID:SM-->').change(function(){
+                            $('#editmode_<!--SM:$object.intScreenDirectionID:SM-->').live("change", function(){
                                 if ($(this).val() === '1') {
                                     $('#ScreenDirection_<!--SM:$object.intScreenDirectionID:SM--> .haseditable').hide();
                                     $('#ScreenDirection_<!--SM:$object.intScreenDirectionID:SM--> .readwrite').show();

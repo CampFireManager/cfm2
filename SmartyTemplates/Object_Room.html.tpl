@@ -7,7 +7,7 @@
                         $(function() {
                             $('#Room_<!--SM:$object.intRoomID:SM--> .progressive_basic').hide();
                             $('#Room_<!--SM:$object.intRoomID:SM--> .readwrite').hide();
-                            $('#editmode_<!--SM:$object.intRoomID:SM-->').change(function(){
+                            $('#editmode_<!--SM:$object.intRoomID:SM-->').live("change", function(){
                                 if ($(this).val() === '1') {
                                     $('#Room_<!--SM:$object.intRoomID:SM--> .haseditable').hide();
                                     $('#Room_<!--SM:$object.intRoomID:SM--> .readwrite').show();

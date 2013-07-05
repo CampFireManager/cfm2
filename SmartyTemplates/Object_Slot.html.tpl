@@ -7,7 +7,7 @@
                         $(function() {
                             $('#Slot_<!--SM:$object.intSlotID:SM--> .progressive_basic').hide();
                             $('#Slot_<!--SM:$object.intSlotID:SM--> .readwrite').hide();
-                            $('#editmode_<!--SM:$object.intSlotID:SM-->').change(function(){
+                            $('#editmode_<!--SM:$object.intSlotID:SM-->').live("change", function(){
                                 if ($(this).val() === '1') {
                                     $('#Slot_<!--SM:$object.intSlotID:SM--> .haseditable').hide();
                                     $('#Slot_<!--SM:$object.intSlotID:SM--> .readwrite').show();
