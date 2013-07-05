@@ -43,7 +43,7 @@
     </head>
     <body>
         <div data-role="page" id="theobject">
-            <div data-role="header">
+            <div data-role="header" data-position="fixed">
                 <a href="<!--SM:$SiteConfig.baseurl:SM-->" data-ajax="false" data-icon="grid">Schedule</a>
 <!-- This block replaces the generic title with the Smarty Assigned Site_Name value -->
 <!--SM:if isset($SiteConfig.Site_Name):SM-->
