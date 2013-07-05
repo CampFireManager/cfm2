@@ -37,15 +37,17 @@ echo "Done\r\n";
 echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
 chdir(dirname(__FILE__) . '/../Media');
 if (!file_exists(dirname(__FILE__) . '/../Media/JQM')) {
+    mkdir(dirname(__FILE__) . '/../Media/JQM');
+    chdir(dirname(__FILE__) . '/../Media/JQM');
     exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
     exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
     unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
-    rename('jquery.mobile-' . $Libraries['jQueryMobile']['ver'], 'JQM');
     echo "Done\r\n";
 } else {
     echo "Skipped\r\n";
 }
 
+chdir(dirname(__FILE__) . '/../Media');
 echo " * jQuery {$Libraries['jQuery']['ver']}: ";
 exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
 echo "Done\r\n";
