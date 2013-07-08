@@ -44,7 +44,7 @@ th.blank {
     font-size: small;
 }
 </style>
-<script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.7.1.min.js"></script>
+<script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.10.2.min.js"></script>
 <script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.js"></script>
 <script src="<!--SM:$SiteConfig.baseurl:SM-->media/refresh.js"></script>
 <script type="text/Javascript">
