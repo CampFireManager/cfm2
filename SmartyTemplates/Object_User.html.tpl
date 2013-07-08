@@ -90,7 +90,7 @@
                             </label>
                             <script type="text/javascript">
                             $(function() {
-                                $('#toggleScroll').val((localStorage.autoscroll || "0")).trigger("change");
+                                $('#toggleScroll').val(localStorage.autoscroll || "0").trigger("change");
                                 $('#toggleScroll').on("change", function() {
                                     localStorage.autoscroll = $('#toggleScroll').val();
                                 });
