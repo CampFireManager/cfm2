@@ -1,3 +1,4 @@
+<!doctype html>
 <!--SM:foreach $renderPage as $DirectionScreen:SM-->
 <!--SM:/foreach:SM-->
 <html>
