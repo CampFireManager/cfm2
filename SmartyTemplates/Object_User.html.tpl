@@ -81,6 +81,22 @@
                         </div>
                     <!--SM:/if:SM-->
                     <!--SM:if isset($Object_User.current) && $Object_User.current.intUserID == $object.intUserID:SM-->
+                        <div data-role="collapsible"><h3>Settings</h3>
+                            <label for="toggleScroll">Timetable Autoscroll:
+                                <select id="toggleScroll" data-role="slider">
+                                    <option value="0">off</option>
+                                    <option value="1">on</option>
+                                </select>
+                            </label>
+                            <script type="text/javascript">
+                            $(function() {
+                                $('#toggleScroll').val(localStorage.autoscroll || "0").slider("refresh")
+                                $('#toggleScroll').on("change", function() {
+                                    localStorage.autoscroll = $('#toggleScroll').val();
+                                });
+                            });
+                            </script>
+                        </div>
                         <div data-role="collapsible"><h3>Log Out</h3>
                             <a href="<!--SM:$SiteConfig.baseurl:SM-->?logout=1" data-role="button">Log Out</a>
                         </div>
