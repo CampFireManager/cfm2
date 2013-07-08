@@ -7,7 +7,7 @@
                         $(function() {
                             $('#Screen_<!--SM:$object.intScreenID:SM--> .progressive_basic').hide();
                             $('#Screen_<!--SM:$object.intScreenID:SM--> .readwrite').hide();
-                            $('#editmode_<!--SM:$object.intScreenID:SM-->').live("change", function(){
+                            $('#editmode_<!--SM:$object.intScreenID:SM-->').on("change", function(){
                                 if ($(this).val() === '1') {
                                     $('#Screen_<!--SM:$object.intScreenID:SM--> .haseditable').hide();
                                     $('#Screen_<!--SM:$object.intScreenID:SM--> .readwrite').show();

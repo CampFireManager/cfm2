@@ -7,7 +7,7 @@
                         $(function() {
                             $('#DefaultSlotType_<!--SM:$object.intDefaultSlotTypeID:SM--> .progressive_basic').hide();
                             $('#DefaultSlotType_<!--SM:$object.intDefaultSlotTypeID:SM--> .readwrite').hide();
-                            $('#editmode_<!--SM:$object.intDefaultSlotTypeID:SM-->').live("change", function(){
+                            $('#editmode_<!--SM:$object.intDefaultSlotTypeID:SM-->').on("change", function(){
                                 if ($(this).val() === '1') {
                                     $('#DefaultSlotType_<!--SM:$object.intDefaultSlotTypeID:SM--> .haseditable').hide();
                                     $('#DefaultSlotType_<!--SM:$object.intDefaultSlotTypeID:SM--> .readwrite').show();
