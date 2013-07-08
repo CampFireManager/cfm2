@@ -37,7 +37,7 @@
         <!--SM:if isset($timeout):SM-->
         <script src="<!--SM:$SiteConfig.baseurl:SM-->media/refresh.js"></script>
         <script type="text/Javascript">
-            window.onload = setRefresh(<!--SM:$timeout:SM-->);
+            window.onload = function() { setRefresh(<!--SM:$timeout:SM-->) };
         </script>
         <!--SM:/if:SM-->
     </head>
