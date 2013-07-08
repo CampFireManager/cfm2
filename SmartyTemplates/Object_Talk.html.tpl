@@ -7,7 +7,7 @@
                         $(function() {
                             $('#Talk_<!--SM:$object.intTalkID:SM--> .progressive_basic').hide();
                             $('#Talk_<!--SM:$object.intTalkID:SM--> .readwrite').hide();
-                            $('#editmode_<!--SM:$object.intTalkID:SM-->').live("change", function(){
+                            $('#editmode_<!--SM:$object.intTalkID:SM-->').on("change", function(){
                                 if ($(this).val() === '1') {
                                     $('#Talk_<!--SM:$object.intTalkID:SM--> .haseditable').hide();
                                     $('#Talk_<!--SM:$object.intTalkID:SM--> .readwrite').show();
