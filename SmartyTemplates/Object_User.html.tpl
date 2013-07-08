@@ -9,7 +9,7 @@
                             $(function() {
                                 $('#User_<!--SM:$object.intUserID:SM--> .progressive_basic').hide();
                                 $('#User_<!--SM:$object.intUserID:SM--> .readwrite').hide();
-                                $('#editmode_<!--SM:$object.intUserID:SM-->').live("change", function(){
+                                $('#editmode_<!--SM:$object.intUserID:SM-->').on("change", function(){
                                     if ($(this).val() === '1') {
                                         $('#User_<!--SM:$object.intUserID:SM--> .haseditable').hide();
                                         $('#User_<!--SM:$object.intUserID:SM--> .readwrite').show();
