@@ -1,12 +1,10 @@
 <!--SM:include file="Common_Object_Header.tpl":SM-->
     <div data-role="content">
-        <ul data-role="listview" id="theobject" data-theme="d" data-divider-theme="d">
+        <div data-role="collapsible-set" id="theobject" data-theme="c" data-content-theme="d">
             <!--SM:foreach $renderPage as $object:SM-->
                 <!--SM:if ($object@key != 'current'):SM-->
-                    <!--SM:if isset($Object_User.current) && $Object_User.current.intUserID == $object.intUserID:SM-->
-                        <a href="<!--SM:$SiteConfig.baseurl:SM-->?logout=1" data-role="button">Logout</a>
-                    <!--SM:/if:SM-->
-                    <div id="User_<!--SM:$object.intUserID:SM-->">
+                    <div id="User_<!--SM:$object.intUserID:SM-->" data-role="collapsible" data-collapsed="false">
+                        <h3>Profile</h3>
                         <script type="text/Javascript">
                             $(function() {
                                 $('#User_<!--SM:$object.intUserID:SM--> .progressive_basic').hide();
@@ -68,23 +66,43 @@
                         <!--SM:/if:SM-->
                     </div>
                     <!--SM:if isset($object.arrTalksPresenting) && count($object.arrTalksPresenting) > 0:SM-->
-                        <div class="Presenting">Presenting:
+                        <div class="Presenting" data-role="collapsible"><h3>Presenting</h3>
                             <!--SM:foreach $object.arrTalksPresenting as $arrPresenting:SM-->
                                 <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$arrPresenting.intTalkID:SM-->"><!--SM:$arrPresenting.strTalk:SM--></a><!--SM:if !$arrPresenting@last:SM-->, <!--SM:/if:SM-->
                             <!--SM:/foreach:SM-->
                         </div>
                     <!--SM:/if:SM-->
                     <!--SM:if isset($object.arrTalksAttending) && count($object.arrTalksAttending) > 0:SM-->
-                        <div class="Attending">Attending:
+                        <div class="Attending" data-role="collapsible"><h3>Attending:</h3>
                             
                             <!--SM:foreach $object.arrTalksAttending as $arrAttending:SM-->
                                 <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$arrAttending.arrTalk.intTalkID:SM-->"><!--SM:$arrAttending.arrTalk.strTalk:SM--></a><!--SM:if !$arrAttending@last:SM-->, <!--SM:/if:SM-->
                             <!--SM:/foreach:SM-->
                         </div>
                     <!--SM:/if:SM-->
-                    <!--SM:if !$object@last:SM--><hr /><!--SM:/if:SM-->
+                    <!--SM:if isset($Object_User.current) && $Object_User.current.intUserID == $object.intUserID:SM-->
+                        <div data-role="collapsible"><h3>Settings</h3>
+                            <label for="toggleScroll">Timetable Autoscroll:
+                                <select id="toggleScroll" data-role="slider">
+                                    <option value="0">off</option>
+                                    <option value="1">on</option>
+                                </select>
+                            </label>
+                            <script type="text/javascript">
+                            $(function() {
+                                $('#toggleScroll').val(localStorage.autoscroll || "0").slider("refresh")
+                                $('#toggleScroll').on("change", function() {
+                                    localStorage.autoscroll = $('#toggleScroll').val();
+                                });
+                            });
+                            </script>
+                        </div>
+                        <div data-role="collapsible"><h3>Log Out</h3>
+                            <a href="<!--SM:$SiteConfig.baseurl:SM-->?logout=1" data-role="button">Log Out</a>
+                        </div>
+                    <!--SM:/if:SM-->
                 <!--SM:/if:SM-->
             <!--SM:/foreach:SM-->
-        </ul>
+        </div>
     </div>
 <!--SM:include file="Common_Object_Footer.tpl":SM-->
