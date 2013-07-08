@@ -16,10 +16,8 @@
                     localStorage.autoscroll = "1";
                 }
                 if (localStorage.autoscroll === "1") {
-                    console.log("set");
                     /* Nasty, but only way to do it due to known race condition */
                     setTimeout(function () {
-                        console.log("run");
                         var x = $(".now").offset().top;
                         $.mobile.silentScroll(x);
                     }, 100);
