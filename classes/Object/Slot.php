@@ -87,7 +87,7 @@ class Object_Slot extends Abstract_GenericObject
         $self['datetimeDuration'] = $self['datetimeStart'] . '/' . $self['datetimeEnd'];
         $self['isNow'] = $this->isNow;
         $self['isNext'] = $this->isNext;
-        $self['isStillToCome'] = $this->isStillToCome;
+        $self['isStillToCome'] = (strtotime($self['datetimeStart']) > strtotime("+0 minutes"));
 
         if ($this->isFull() == true) {
             if ($this->intDefaultSlotTypeID != null && $this->intDefaultSlotTypeID > 0) {
