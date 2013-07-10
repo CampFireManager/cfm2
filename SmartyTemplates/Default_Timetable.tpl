@@ -41,17 +41,15 @@
             <!--SM:else:SM-->
                 <!--SM:if !$showroom:SM-->
                 <!--SM:assign var=showroom value=true:SM-->
-                    <!--SM:if $talk.arrSlot.isStillToCome != null:SM-->
-                        <!--SM:if $talk.isLocked == 'hardlock':SM-->
-                        <li data-theme="a"><h3>All other rooms in this slot unavailable due to: <!--SM:$talk.strTalk:SM--></h3></li>
-                        <!--SM:else:SM-->
-                            <!--SM:assign var=emptyCount value=$emptyCount+1:SM-->
-                        <!--SM:/if:SM-->
+                    <!--SM:if $talk.isLocked == 'hardlock':SM-->
+                    <li data-theme="a"><h3>All other rooms in this slot unavailable due to: <!--SM:$talk.strTalk:SM--></h3></li>
+                    <!--SM:else:SM-->
+                        <!--SM:assign var=emptyCount value=$emptyCount+1:SM-->
                     <!--SM:/if:SM-->
                 <!--SM:/if:SM-->
             <!--SM:/if:SM-->
         <!--SM:/foreach:SM-->
-        <!--SM:if $emptyCount > 0 && $talk.arrSlot.isStillToCome:SM-->
+        <!--SM:if $emptyCount > 0 && $talk.arrSlot.isStillToCome || $talk.isLocked == 'softlock':SM-->
                         <li data-theme="a">
                             <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
                             <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?intSlotID=<!--SM:$slot.intSlotID:SM-->">
