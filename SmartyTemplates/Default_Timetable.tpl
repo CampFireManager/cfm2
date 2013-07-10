@@ -51,7 +51,7 @@
                 <!--SM:/if:SM-->
             <!--SM:/if:SM-->
         <!--SM:/foreach:SM-->
-        <!--SM:if $emptyCount > 0:SM-->
+        <!--SM:if $emptyCount > 0 && $talk.arrSlot.isStillToCome:SM-->
                         <li data-theme="a">
                             <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
                             <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?intSlotID=<!--SM:$slot.intSlotID:SM-->">
