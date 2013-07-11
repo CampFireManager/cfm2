@@ -1,0 +1,13 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "VagrantUp-precise32"
+  config.vm.hostname = "cfm2.local"
+  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.ssh.timeout = 300
+  config.ssh.max_tries = 300
+  config.vm.synced_folder "../", "/var/www"
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "manifests"
+    puppet.manifest_file  = "init.pp"
+  end
+end
