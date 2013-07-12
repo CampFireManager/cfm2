@@ -74,6 +74,7 @@ node default {
         "php5-gmp",
         "php5-curl",
         "php5-imagick",
+        "php5-xdebug",
         "git",
         "unzip"
     ]
@@ -91,6 +92,17 @@ node default {
     package { 'phpmyadmin':
 	ensure => "installed",
 	require => Exec['bypass phpmyadmin webserver']
+    }
+
+    exec { "XDebug Remote Enable":
+        unless => "sudo grep -v xdebug.remote_enable /etc/php5/conf.d/xdebug.ini",
+        command => 'echo "xdebug.remote_enable=1" | sudo tee -a /etc/php5/conf.d/xdebug.ini',
+        require => Package['php5-xdebug']
+    }
+    exec { "XDebug Remote Host":
+        unless => "sudo grep -v xdebug.remote_host /etc/php5/conf.d/xdebug.ini",
+        command => 'echo "xdebug.remote_host=10.0.2.2" | sudo tee -a /etc/php5/conf.d/xdebug.ini',
+        require => Exec['XDebug Remote Enable']
     }
 
     file { "/var/www/index.html":
@@ -115,12 +127,12 @@ node default {
 
     exec { "restart apache":
         command => "sudo service apache2 reload",
-        require => Exec["enable rewrite", "install cfm2", "start cfm2 daemons", "Apache Allow Override"]
+        require => Exec["enable rewrite", "install cfm2", "start cfm2 daemons", "Apache Allow Override", "XDebug Remote Host"]
     }
 
     exec { "install cfm2":
         unless => "/usr/bin/mysql -ucfm2 -p\"cfm2\" cfm2",
-        command => "php /var/www/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=0 -te=0 -y=1",
+        command => "php /var/www/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=0 -te=0 -y=1 -l=1",
         require => Package["mysql-server", "php5-cli"]
     }
 
