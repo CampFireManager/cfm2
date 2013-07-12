@@ -9,6 +9,7 @@
                         <li data-role="list-divider">
                         <!--SM:if $slot.dateStart != date('Y-m-d'):SM--><!--SM:$slot.dateStart:SM--> <!--SM:/if:SM--><!--SM:$slot.timeStart:SM--> - <!--SM:$slot.timeEnd:SM--></li>
                     <!--SM:/if:SM-->
+        <!--SM:assign var=emptyCount value=0:SM-->
         <!--SM:foreach $Timetable.arrTimetable[$slot@key] as $talk:SM-->
             <!--SM:if isset($talk.intUserID):SM-->
                     <li>
@@ -40,29 +41,29 @@
             <!--SM:else:SM-->
                 <!--SM:if !$showroom:SM-->
                 <!--SM:assign var=showroom value=true:SM-->
-                    <!--SM:if $talk.arrSlot.isStillToCome != null:SM-->
-                    <li data-theme="a">
-                        <!--SM:if $talk.isLocked == 'hardlock':SM-->
-                        <h3>All other rooms in this slot unavailable due to: <!--SM:$talk.strTalk:SM--></h3>
-                        <!--SM:else:SM-->
-                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
-                        <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?intSlotID=<!--SM:$slot.intSlotID:SM-->">
-                            <!--SM:/if:SM-->
-                            <h3>Empty<!--SM:if $talk.isLocked == 'softlock':SM--> during: <!--SM:$talk.strTalk:SM--><!--SM:/if:SM--></h3>
-                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
-                            <p><strong>Click to arrange a talk here!</strong></p>
-                            <!--SM:else:SM-->
-                                <p>If you were logged in, you could arrange a talk by clicking here.</p>
-                            <!--SM:/if:SM-->
-                            <p class="ui-li-aside"></p>
-                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
-                        </a>
-                            <!--SM:/if:SM-->
-                        <!--SM:/if:SM-->
-                    </li>
+                    <!--SM:if $talk.isLocked == 'hardlock':SM-->
+                    <li data-theme="a"><h3>All other rooms in this slot unavailable due to: <!--SM:$talk.strTalk:SM--></h3></li>
+                    <!--SM:else:SM-->
+                        <!--SM:assign var=emptyCount value=$emptyCount+1:SM-->
                     <!--SM:/if:SM-->
                 <!--SM:/if:SM-->
             <!--SM:/if:SM-->
         <!--SM:/foreach:SM-->
+        <!--SM:if $emptyCount > 0 && $talk.arrSlot.isStillToCome || $talk.isLocked == 'softlock':SM-->
+                        <li data-theme="a">
+                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
+                            <a href="<!--SM:$SiteConfig.baseurl:SM-->talk/new?intSlotID=<!--SM:$slot.intSlotID:SM-->">
+                            <!--SM:/if:SM-->
+                            <h3>Empty<!--SM:if $talk.isLocked == 'softlock':SM--> during: <!--SM:$talk.strTalk:SM--><!--SM:/if:SM--></h3>
+                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
+                                <p><strong>Click to arrange a talk here!</strong></p>
+                            <!--SM:else:SM-->
+                                <p>If you were logged in, you could arrange a talk by clicking here.</p>
+                            <!--SM:/if:SM-->
+                            <!--SM:if $Object_User.current != null && $Object_User.current != false:SM-->
+                            </a>
+                            <!--SM:/if:SM-->
+                        </li>
+        <!--SM:/if:SM-->
     <!--SM:/foreach:SM-->
 <!--SM:/foreach:SM-->

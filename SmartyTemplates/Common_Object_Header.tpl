@@ -64,4 +64,42 @@
 <!--SM:else:SM-->
                 <a href="#login" data-role="button" data-rel="dialog" data-transition="pop" data-icon="gear">Login</a>
 <!--SM:/if:SM-->
+    <!--SM:if isset($Object_User.Failure):SM-->
+            <div id="navbar" data-role="navbar"><ul><li><a data-theme="e">
+            <!--SM:$Object_User.Failure:SM-->
+            <div><small>click to close</small></div>
+            </a></li></ul></div>
+            <script type="text/javascript">
+            $('#navbar').click(function() {
+              $(this).slideUp(function() {
+                $('#theobject').css('padding-top', String($('.ui-header').height()) + "px");
+              });
+            });
+            </script>
+    <!--SM:elseif isset($Object_User.Success) && $Object_User.Success == 'first':SM-->
+            <div id="navbar" data-role="navbar"><ul><li><a data-theme="e">
+            Welcome to <!--SM:$SiteConfig.Site_Name:SM-->, <!--SM:$Object_User.current.strUser:SM-->. Please check your profile on this system by clicking on "My Profile"
+            <div><small>click to close</small></div>
+            </a></li></ul></div>
+            <script type="text/javascript">
+            $('#navbar').click(function() {
+              $(this).slideUp(function() {
+                $('#theobject').css('padding-top', String($('.ui-header').height()) + "px");
+              });
+            });
+            </script>
+    <!--SM:elseif isset($Object_User.Success) && $Object_User.Success == 'return':SM-->
+            <div id="navbar" data-role="navbar"><ul><li><a data-theme="e">
+            Welcome back, <!--SM:$Object_User.current.strUser:SM-->
+            <div><small>click to close</small></div>
+            </a></li></ul></div>
+            <script type="text/javascript">
+            $('#navbar').click(function() {
+              $(this).slideUp(function() {
+                $('#theobject').css('padding-top', String($('.ui-header').height()) + "px");
+              });
+            });
+            </script>
+    <!--SM:/if:SM-->
+
             </div>

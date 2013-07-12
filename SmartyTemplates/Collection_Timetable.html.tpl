@@ -1,13 +1,6 @@
 <!--SM:include file="Common_Object_Header.tpl" timeout="300000":SM-->
             <div data-role="content">
                 <ul data-role="listview" id="thegrid" data-theme="d" data-divider-theme="d">
-                    <!--SM:if isset($Object_User.Failure):SM-->
-                        <li data-theme="e"><!--SM:$Object_User.Failure:SM--></li>
-                    <!--SM:elseif isset($Object_User.Success) && $Object_User.Success == 'first':SM-->
-                        <li data-theme="e">Welcome to <!--SM:$SiteConfig.Site_Name:SM-->, <!--SM:$Object_User.current.strUser:SM-->. Please check your profile on this system by clicking on "My Profile"</li>
-                    <!--SM:elseif isset($Object_User.Success) && $Object_User.Success == 'return':SM-->
-                        <li data-theme="e">Welcome back, <!--SM:$Object_User.current.strUser:SM-->.</li>
-                    <!--SM:/if:SM-->
                     <!--SM:include file="Default_Timetable.tpl":SM-->
                 </ul>
             </div>
@@ -16,10 +9,8 @@
                     localStorage.autoscroll = "1";
                 }
                 if (localStorage.autoscroll === "1") {
-                    console.log("set");
                     /* Nasty, but only way to do it due to known race condition */
                     setTimeout(function () {
-                        console.log("run");
                         var x = $(".now").offset().top;
                         $.mobile.silentScroll(x);
                     }, 100);
