@@ -23,7 +23,8 @@ node default {
 
     exec { "use apt-mirrors":
         unless => "grep 'mirror://' /etc/apt/sources.list",
-        command => "sudo sed -i -e 's/http:\\/\\/us.archive.ubuntu.com\\/ubuntu\\//mirror:\\/\\/mirrors.ubuntu.com\\/mirrors.txt/g' /etc/apt/sources.list",
+        # command => "sudo sed -i -e 's/http:\\/\\/us.archive.ubuntu.com\\/ubuntu\\//mirror:\\/\\/mirrors.ubuntu.com\\/mirrors.txt/g' /etc/apt/sources.list",
+        command => "sudo sed -i -e 's/http:\\/\\/us.archive.ubuntu.com\\/ubuntu\\//http:\\/\\/ubuntu.virginmedia.com\\/archive\\//g' /etc/apt/sources.list",
         require => Exec['timezonesetup']
     }
 
@@ -105,18 +106,9 @@ node default {
         require => Exec['XDebug Remote Enable']
     }
 
-    file { "/var/www/index.html":
-	ensure => absent
-    }
-
     exec { "enable rewrite":
         command => "sudo a2enmod rewrite",
-        require => Package["apache2"]
-    }
-
-    exec { "Apache Allow Override":
-        command => 'sudo cat /etc/apache2/sites-available/default | awk \'/<Directory \/var\/www\/>/,/AllowOverride None/{sub("None", "All", $0)}{print}\' | sudo tee /etc/apache2/sites-available/default',
-        require => Package["apache2"]
+        require => File['/etc/apache2/conf.d/cfm2.conf']
     }
 
     exec { "PHPMyAdmin Allow Passwordless Login":
@@ -125,20 +117,36 @@ node default {
         require => Package["phpmyadmin"]
     }
 
+    file { "/etc/apache2/conf.d/cfm2.conf":
+	ensure => link,
+	target => "/etc/cfm2/cfm2.conf",
+	require => Package['apache2']
+    }
+
     exec { "restart apache":
         command => "sudo service apache2 reload",
-        require => Exec["enable rewrite", "install cfm2", "start cfm2 daemons", "Apache Allow Override", "XDebug Remote Host"]
+        require => Exec["enable rewrite", "install cfm2", "start cfm2 daemons", "XDebug Remote Host"]
     }
 
     exec { "install cfm2":
         unless => "/usr/bin/mysql -ucfm2 -p\"cfm2\" cfm2",
-        command => "php /var/www/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=0 -te=0 -y=1 -l=1",
+        command => "php /var/www/cfm2/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=0 -te=0 -y=1 -l=1",
         require => Package["mysql-server", "php5-cli"]
     }
 
     exec { "start cfm2 daemons":
         onlyif => "/usr/bin/mysql -ucfm2 -p\"cfm2\" cfm2",
-        command => "nohup php -q /var/www/cron.php &",
+        command => "nohup php -q /var/www/cfm2/cron.php &",
         require => Package["mysql-server", "php5-cli"]
+    }
+
+    file { "/var/www/index.html":
+	ensure => absent,
+        require => Exec['install cfm2']
+    }
+
+    file { "/var/www/index.php":
+        content => "<?php header('Location: /cfm2');"
+        require => Exec['install cfm2']
     }
 }
