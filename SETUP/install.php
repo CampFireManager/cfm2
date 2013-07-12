@@ -3,87 +3,30 @@
 require_once dirname(__FILE__) . '/../classes/autoloader.php';
 $objRequest = Container_Request::getRequest();
 if ($objRequest->get_strRequestMethod() != 'file') {
-    die("Must only be run from the command line.");
+    do_die("Must only be run from the command line.", 100);
 }
-
 echo "Welcome to CampFireManager2 Installation!\r\n\r\n";
 
-echo "(1/9) Ensuring your external libraries are installed\r\n";
-
-$Libraries = array(
-    'php-openid' => array('ver' => 'current', 'source' => 'git'),
-    'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
-    'Smarty' => array('ver' => '3.1.14', 'source' => 'http://www.smarty.net/files/Smarty-3.1.14.tar.gz'),
-    'jQueryMobile' => array('ver' => '1.3.1', 'source' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.zip'),
-    'jQuery' => array('ver' => '1.10.2', 'source' => 'http://code.jquery.com/jquery-1.10.2.min.js'),
-    'jQueryClock' => array('ver' => 'current', 'source' => 'git'),
-    'sketchdocicons' => array('ver' => 'current', 'source' => 'http://github.com/downloads/sketchdock/111-Free-Ecommerce-Icons/111-free-ecommerce-icons-by-sketchdock.zip', 'license' => 'CC By V3 Unported')
-);
-
-echo " * Git Submodules (php-openid, TwitterHelper and jQueryClock): ";
-chdir(dirname(__FILE__) . '/..');
-exec('git submodule update --init', $return);
-echo "Done\r\n";
-
-echo " * Smarty {$Libraries['Smarty']['ver']}: ";
-if (!file_exists(dirname(__FILE__) . '/../ExternalLibraries/Smarty')) {
-    mkdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
-}
-chdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
-exec("wget -O Smarty-{$Libraries['Smarty']['ver']}.tar.gz {$Libraries['Smarty']['source']}", $return);
-exec("tar xfz Smarty-{$Libraries['Smarty']['ver']}.tar.gz", $return);
-echo "Done\r\n";
-
-echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
-chdir(dirname(__FILE__) . '/../Media');
-if (!file_exists(dirname(__FILE__) . '/../Media/JQM')) {
-    mkdir(dirname(__FILE__) . '/../Media/JQM');
-    chdir(dirname(__FILE__) . '/../Media/JQM');
-    exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
-    exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
-    unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
-    echo "Done\r\n";
-} else {
-    echo "Skipped\r\n";
-}
-
-chdir(dirname(__FILE__) . '/../Media');
-echo " * jQuery {$Libraries['jQuery']['ver']}: ";
-exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
-echo "Done\r\n";
-
-echo " * Sketchdoc Icon Library {$Libraries['sketchdocicons']['ver']}: ";
-if (!file_exists(dirname(__FILE__) . '/../Media/images')) {
-    exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}", $return);
-    exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .", $return);
-    unlink("icons-{$Libraries['sketchdocicons']['ver']}.zip");
-    rename('sketchdock-ecommerce-icons', 'images');
-    echo "Done\r\n";
-} else {
-    echo "Skipped\r\n";
-}
-chdir(dirname(__FILE__));
-
-echo "(2/9) Parsing config options\r\n";
+echo "(1/9) Parsing config options\r\n";
 
 $run_init = 0;
 $config_file = dirname(__FILE__) . '/../config/local.php';
 
 if ( ! file_exists($config_file)) {
-    $fh = fopen($config_file, 'w') or die("\n/config/local.php is not creatable. Please make sure you have permission to create and edit this file.\nYou may need root to run this script with root privileges\n");
+    $fh = fopen($config_file, 'w') or do_die("\n/config/local.php is not creatable. Please make sure you have permission to create and edit this file.\nYou may need root to run this script with root privileges\n", 99);
     fwrite($fh, '');
     fclose($fh);
 }
 
 if ( ! is_writable($config_file)) {
-    die("\n/config/local.php is not writable. Please make sure you have permission to create and edit this file.\nYou may need to run this script with root privileges\n");
+    do_die("\n/config/local.php is not writable. Please make sure you have permission to create and edit this file.\nYou may need to run this script with root privileges\n", 98);
 }
 
 $arrConfig = array(
     'roottype' => 'mysql',
     'roothost' => 'localhost',
     'rootuser' => 'root',
-    'rootpass' => '',
+    'rootpass' => null,
     'rootport' => '3306',
     'coretype' => '',
     'corehost' => '',
@@ -107,7 +50,8 @@ $arrConfig = array(
     'twitterusertoken' => '',
     'twitterusersecret' => '',
     'webhost' => 'localhost',
-    'forceyes' => 0
+    'forceyes' => 0,
+    'loaddemo' => 0
 );
 
 $arrOptions = array(
@@ -227,7 +171,16 @@ $arrOptions = array(
         '--[Ww][Ee][Bb]',
         '-[Ww]',
     ),
-    'forceyes' => array('-y'),
+    'forceyes' => array(
+        '--[Ff][Oo][Rr][Cc][Ee][Yy][Ee][Ss]',
+        '--[Yy][Ee][Ss]',
+        '-[Yy]'
+    ),
+    'loaddemo' => array(
+        '--[Ll][Oo][Aa][Dd][Dd][Ee][Mm][Oo]',
+        '--[Ll][Oo][Aa][Dd]',
+        '-[Ll]'
+    )
 );
 
 foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
@@ -238,6 +191,9 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
             case preg_match('/^' . $strOption . '=(.*)$/', $parameter, $match):
             case preg_match('/^' . $strOption . '=(.*)$/', $key, $match):
                 $oldkey = $arrConfig[$strKey];
+                if (strlen($match[1]) == 0) {
+                    $match[1] = null;
+                }
 		$arrConfig[$strKey] = $match[1];
 		$matchfound = true;
                 break 3;
@@ -261,7 +217,7 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
         echo "\r\n * $strKey: Done";
     } else {
         help();
-        die("Option $key | $parameter not found");	
+        do_die("Option $key | $parameter not found", 96);	
     }	
 }
 
@@ -280,6 +236,12 @@ foreach (array('rootuser', 'coreuser', 'coredatabase') as $part) {
     }
 }
 
+foreach (array('rootpass', 'corepass', 'gammupass') as $part) {
+    if ($arrConfig[$part] == '') {
+        $arrConfig[$part] = null;
+    }
+}
+
 if ($arrConfig['gammuenable'] == 1) {
     foreach (array('gammuuser', 'gammudatabase') as $part) {
         while ($arrConfig[$part] == '') {
@@ -289,17 +251,28 @@ if ($arrConfig['gammuenable'] == 1) {
 }
 
 if ($arrConfig['coretype'] != 'mysql' || ($arrConfig['gammutype'] != 'mysql' && $arrConfig['gammuenable'] == 1)) {
-    die("\r\nSorry, right now, we only support mysql based databases.\r\n");
+    do_die("\r\nSorry, right now, we only support mysql based databases.\r\n",95);
 }
 
 echo "Done\r\n";
 
-echo "(3/9) Accessing and configuring core database: ";
+echo "(2/9) Accessing and configuring core database: ";
 
-$rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], $arrConfig['rootpass']);
-$coredb = mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
-if (! $coredb && $coredb != false) {
-    switch(substr(force_readline("\r\nThe non-root core user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
+if ($arrConfig['rootpass'] == null || $arrConfig['rootpass'] == '') {
+    $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], '');
+} else {
+    $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], $arrConfig['rootpass']);
+}
+if ($arrConfig['corepass'] == null || $arrConfig['corepass'] == '') {
+    $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], '');
+} else {
+    $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
+}
+
+var_dump($arrConfig);
+
+if (! $coredb && $rootdb != false) {
+    switch(substr(force_readline("\r\nThe non-root core user account does not exist, or the password is not correct.\r\nWould you like me to set this up for you? (Y/N):"), 0, 1)) {
     case 'Y':
     case 'y':
         if ($arrConfig['corepass'] == '') {
@@ -316,20 +289,29 @@ if (! $coredb && $coredb != false) {
                 $arrConfig['corepass'] = implode($chars);
             }
         }
-        if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}'", $rootdb)) {
-            help();
-            die("\r\nCouldn't create the core database user - are you sure you've provided the root credentials?\r\n");
+        if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'localhost' IDENTIFIED BY '{$arrConfig['corepass']}';", $rootdb)) {
+            do_die("\r\nCouldn't create the core database user - are you sure you've provided the root credentials?\r\n");
+        } else {
+            mysql_query("GRANT USAGE ON *.* TO '{$arrConfig['coreuser']}'@'localhost' IDENTIFIED BY '{$arrConfig['corepass']}' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;");
+            mysql_query("FLUSH PRIVILEGES;", $rootdb);
+            if ($arrConfig['corepass'] == null || $arrConfig['corepass'] == '') {
+                $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], '');
+            } else {
+                $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
+            }
+            if (! $coredb) {
+                do_die("\r\nThere was an error creating the core database user.");
+            }
         }
         break;
     case 'N':
     case 'n':
         help();
-        die("\r\nNot prepared to configure CFM2 with an invalid username or password\r\n");
+        do_die("\r\nNot prepared to configure CFM2 with an invalid username or password\r\n");
     }
 } elseif (! $coredb) {
-    die("\r\nCouldn't proceed - the non-core user account did not exist, and the root credentials were not supplied.\r\n");
+    do_die("\r\nCouldn't proceed - the non-core user account did not exist, and the root credentials were not supplied.\r\n");
 }
-
 while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
     switch (force_readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
     case 'Y':
@@ -344,23 +326,75 @@ while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
                 }
             } catch (Exception $e) {
                 help();
-                die("\r\n".$e->getMessage()."\r\n");
+                do_die("\r\n".$e->getMessage()."\r\n");
             }
         } else {
-            die("\r\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\r\n");
+            do_die("\r\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\r\n");
         }
         $run_init = 1;
         break;
     case 'N':
     case 'n':
-        die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
+        do_die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
         break;
     }
 }
 
 echo "Done\r\n";
 
-echo "\r\n(4/9) Building config file: ";
+echo "(3/9) Ensuring your external libraries are installed\r\n";
+
+$Libraries = array(
+    'php-openid' => array('ver' => 'current', 'source' => 'git'),
+    'TwitterHelper' => array('ver' => 'current', 'source' => 'git'),
+    'Smarty' => array('ver' => '3.1.14', 'source' => 'http://www.smarty.net/files/Smarty-3.1.14.tar.gz'),
+    'jQueryMobile' => array('ver' => '1.3.1', 'source' => 'http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.zip'),
+    'jQuery' => array('ver' => '1.10.2', 'source' => 'http://code.jquery.com/jquery-1.10.2.min.js'),
+    'jQueryClock' => array('ver' => 'current', 'source' => 'git'),
+    'sketchdocicons' => array('ver' => 'current', 'source' => 'http://github.com/downloads/sketchdock/111-Free-Ecommerce-Icons/111-free-ecommerce-icons-by-sketchdock.zip', 'license' => 'CC By V3 Unported')
+);
+
+echo " * Git Submodules (php-openid, TwitterHelper and jQueryClock): ";
+chdir(dirname(__FILE__) . '/..');
+exec('git submodule update --init', $return);
+echo "Done\r\n";
+
+echo " * Smarty {$Libraries['Smarty']['ver']}: ";
+if (!file_exists(dirname(__FILE__) . '/../ExternalLibraries/Smarty')) {
+    mkdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
+}
+chdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
+exec("wget -O Smarty-{$Libraries['Smarty']['ver']}.tar.gz {$Libraries['Smarty']['source']}", $return);
+exec("tar xfz Smarty-{$Libraries['Smarty']['ver']}.tar.gz", $return);
+echo "Done\r\n";
+
+echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
+chdir(dirname(__FILE__) . '/../Media');
+mkdir(dirname(__FILE__) . '/../Media/JQM');
+chdir(dirname(__FILE__) . '/../Media/JQM');
+exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
+exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
+unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
+echo "Done\r\n";
+
+chdir(dirname(__FILE__) . '/../Media');
+echo " * jQuery {$Libraries['jQuery']['ver']}: ";
+exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
+echo "Done\r\n";
+
+echo " * Sketchdoc Icon Library {$Libraries['sketchdocicons']['ver']}: ";
+if (!file_exists(dirname(__FILE__) . '/../Media/images')) {
+    exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}", $return);
+    exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .", $return);
+    unlink("icons-{$Libraries['sketchdocicons']['ver']}.zip");
+    rename('sketchdock-ecommerce-icons', 'images');
+    echo "Done\r\n";
+} else {
+    echo "Skipped\r\n";
+}
+chdir(dirname(__FILE__));
+
+echo "(4/9) Building config file: ";
 
 $oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
 $newfile = array();
@@ -406,7 +440,11 @@ while ($run_init == 0) {
     }
 }
 if ($run_init == 1) {
-    include_once dirname(__FILE__) . '/initialize.php';
+    if ($arrConfig['loaddemo'] == 1) {
+        include_once dirname(__FILE__) . '/initialize_with_demo_data.php';
+    } else {
+        include_once dirname(__FILE__) . '/initialize.php';
+    }
 }
 echo "\r\nDone\r\n";
 
@@ -435,7 +473,7 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
                 }
                 if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}'", $rootdb)) {
                     help();
-                    die("\r\nCouldn't create the gammu database user - are you sure you've provided the root credentials?\r\n");
+                    do_die("\r\nCouldn't create the gammu database user - are you sure you've provided the root credentials?\r\n");
                 }
                 break;
             case 'N':
@@ -448,7 +486,7 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
                 $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
             }
         } else {
-            die("\r\nCouldn't proceed - the gammu database user account did not exist, and the root credentials were not supplied.\r\n");
+            do_die("\r\nCouldn't proceed - the gammu database user account did not exist, and the root credentials were not supplied.\r\n");
         }
     }
 } elseif ($arrConfig['gammuenable'] == '1') {
@@ -462,7 +500,7 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
             break;
         case 'N':
         case 'n':
-            die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
+            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
         }
         if ($arrConfig['gammuenable'] == '1') {
             $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
@@ -484,12 +522,12 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammuda
                 }
             } catch (Exception $e) {
                 help();
-                die("\n".$e->getMessage()."\n");
+                do_die("\n".$e->getMessage()."\n");
             }
             break;
         case 'N':
         case 'n':
-            die("\r\nCould not connect to the gammu database. Please ensure this exists before proceeding.\r\n");
+            do_die("\r\nCould not connect to the gammu database. Please ensure this exists before proceeding.\r\n");
             break;
         }
     } elseif($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] != $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
@@ -501,10 +539,10 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammuda
             break;
         case 'N':
         case 'n':
-            die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
+            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
         }
     } else {
-        die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
+        do_die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
     }
 }
 
@@ -517,13 +555,13 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
             foreach ($file as $sql) {
                 mysql_select_db($arrConfig['gammudatabase'], $rootdb);
                 if (! mysql_query($sql, $rootdb) && mysql_errno() != 1065) {
-                    die("\r\nUnable to import Gammu file: " . mysql_error());
+                    do_die("\r\nUnable to import Gammu file: " . mysql_error());
                 }
             }
             break;
         case 'N':
         case 'n':
-            die("\r\nCould not see the tables in the Gammu Database. Please ensure this exists before proceeding.\r\n");
+            do_die("\r\nCould not see the tables in the Gammu Database. Please ensure this exists before proceeding.\r\n");
             break;
         }
     } elseif($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] != $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
@@ -535,10 +573,10 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
             break;
         case 'N':
         case 'n':
-            die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database tables.\r\n");
+            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database tables.\r\n");
         }
     } else {
-        die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
+        do_die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
     }
 }
 echo "Done\r\n";
@@ -606,7 +644,7 @@ echo "Done\r\n";
 
 echo "\r\n(9/9) Linking _htaccess to .htaccess: ";
 if (!file_exists(dirname(__FILE__) . '/../.htaccess')) {
-    link(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess');
+    @link(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess') || copy(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess');
 } else {
     echo "Skipped\r\n";
 }
@@ -730,6 +768,20 @@ are case specific. If left blank, all values should self-populate.
 -tus | --twitterus | --twitterusersecret     = Default: <empty>
 -te  | --twitter   | --twitterenable         = Default: <empty>
 
- =============================================================================
+============================ Other Settings =========== For Automation Only =
+
+-y   | --yes       | --forceyes              = Default: 0 (1 to answer Yes
+                                               ...cont: to everything)
+-l   | --load      | --loaddemo              = Default: 0 (1 to load demo
+                                               ...cont: data on top of the
+                                               ...cont: predefined tables)
+
+=============================================================================
+ 
 ";
+}
+
+function do_die($string, $value = 1) {
+    echo $string;
+    exit($value);
 }
