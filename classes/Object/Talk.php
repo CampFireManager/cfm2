@@ -44,8 +44,11 @@ class Object_Talk extends Abstract_GenericObject
     );
     protected $arrTranslations = array(
         'label_strTalk' => array('en' => 'Talk Title'),
+        'label_strTalk_Placeholder' => array('en' => 'My Amazing Talk'),
         'label_strTalkSummary' => array('en' => 'Talk Summary'),
+        'label_strTalkSummary_Placeholder' => array('en' => 'Please include the subject area, intended audience and technical understanding, if required.'),
         'label_new_strTalkSummary' => array('en' => 'A short paragraph describing your talk'),
+        'label_new_strTalkSummary_Placeholder' => array('en' => 'Please include the subject area, intended audience and technical understanding, if required.'),
         'label_new_hasNsfwMaterial' => array('en' => 'Does this talk contain content which may be unsuitable for minors'),
         'label_hasNsfwMaterial' => array('en' => 'Contains content which may be unsuitable for minors'),
         'label_new_intUserID' => array('en' => 'Proposing User'),
@@ -54,7 +57,9 @@ class Object_Talk extends Abstract_GenericObject
         'label_intSlotID' => array('en' => 'Slot Allocated'),
         'label_intLength' => array('en' => 'Talk Length in slots'),
         'label_jsonLinks' => array('en' => 'Associated Links'),
-        'label_new_jsonLinks' => array('en' => 'Associated Links (in the format: Twitter:http://twitter.com/yourusername or Blog:http://my.blog.com)'),
+        'label_jsonLinks_Placeholder' => array('en' => 'e.g. http://slideshare.net/you/presentation or http://twitter.com/you'),
+        'label_new_jsonLinks' => array('en' => 'Associated Links'),
+        'label_new_jsonLinks_Placeholder' => array('en' => 'e.g. http://slideshare.net/you/presentation or http://twitter.com/you'),
         'label_new_isLocked' => array('en' => 'Lock this talk to this Room and Slot'),
         'label_isLocked' => array('en' => 'Talk fixed'),
         'label_jsonOtherPresenters' => array('en' => 'Other Presenters'),
