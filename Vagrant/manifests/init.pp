@@ -146,7 +146,7 @@ node default {
     }
 
     file { "/var/www/index.php":
-        content => "<?php header('Location: /cfm2');"
+        content => "<?php header('Location: /cfm2');",
         require => Exec['install cfm2']
     }
 }
