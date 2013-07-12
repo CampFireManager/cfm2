@@ -103,7 +103,7 @@ node default {
     }
 
     exec { "Apache Allow Override":
-        command => "cat /etc/apache2/sites-available/default | awk '/<Directory \\/var\\/www\\/>/,/AllowOverride None/{sub(\"None\", \"All\", $0)}{print}' | sudo tee /etc/apache2/sites-available/default",
+        command => 'sudo cat /etc/apache2/sites-available/default | awk \'/<Directory \/var\/www\/>/,/AllowOverride None/{sub("None", "All", $0)}{print}\' | sudo tee /etc/apache2/sites-available/default',
         require => Package["apache2"]
     }
 
