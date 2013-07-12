@@ -35,6 +35,7 @@ class Object_User extends Abstract_GenericObject
         'label_strUser' => array('en' => 'Attendee'),
         'label_new_strUser' => array('en' => 'Your name'),
         'label_jsonLinks' => array('en' => 'Links for this person'),
+        'label_jsonLinks_Placeholder' => array('en' => 'e.g. http://twitter.com/CampFireManager'),
         'label_isWorker' => array('en' => 'This person can act on behalf of other attendees'),
         'label_new_isAdmin' => array('en' => 'This person can manage the event'),
     );
