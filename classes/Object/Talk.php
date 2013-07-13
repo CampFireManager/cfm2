@@ -216,6 +216,25 @@ class Object_Talk extends Abstract_GenericObject
         }
         Base_Response::setLastModifiedTime($self['epochLastChange']);
         $self['lastChange'] = date('Y-m-d H:i:s', $self['epochLastChange']);
+        $allTalks = Object_Talk::brokerAll();
+        $self['hasOverlap'] = false;
+        $arrSlotID = array();
+        for ($intSlotID = $this->intSlotID; $intSlotID < $this->intSlotID + $this->intLength; $intSlotID++) {
+            $arrSlotID[$intSlotID] = $intSlotID;
+        }
+        $intRoomID = $this->intRoomID;
+        if ($intSlotID > 0 && $intRoomID > 0) {
+            foreach ($allTalks as $objTalk) {
+                if ($objTalk->getKey('intTalkID') != $this->intTalkID) {
+                    foreach ($arrSlotID as $intSlotID) {
+                        if ($objTalk->getKey('intSlotID') == $intSlotID && $objTalk->getKey('intRoomID') == $intRoomID) {
+                            $self['hasOverlap'] = true;
+                            $self['intOverlapID'] = $objTalk->getKey('intTalkID');
+                        }
+                    }
+                }
+            }            
+        }
         return $self;
     }
     

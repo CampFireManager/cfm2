@@ -41,6 +41,8 @@
                                     <!--SM:$object.intTalkID:SM-->
                                 </data>
                             </label>
+                            <!--SM:if isset($object.hasOverlap) && $object.hasOverlap && (isset($Object_User.current) && isset($Object_User.current.isWorker) && ($Object_User.current.isWorker || $Object_User.current.isAdmin)):SM-->
+                            <p><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-grey.png" /> <strong><a href="<!--SM:$SiteConfig.baseurl:SM-->talk/<!--SM:$object.intOverlapID:SM-->">Double Booked with <!--SM:$object.intOverlapID:SM-->!</a></strong></p><!--SM:/if:SM-->
                         </div>
                     </div>
 
