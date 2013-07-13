@@ -4,10 +4,10 @@
 <html>
     <head>
         <title>Direction Screen</title>
-        <link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.css">
+        <link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.3.1.min.css">
         <link rel="stylesheet" type="text/css" href="<!--SM:$SiteConfig.baseurl:SM-->media/directions.css" />
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.10.2.min.js"></script>
-        <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.js"></script>
+        <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.3.1.min.js"></script>
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/jQueryClock/jquery.jclock.js"></script>
         <script type="text/javascript" src="<!--SM:$SiteConfig.baseurl:SM-->media/refresh.js"></script>
         <script type="text/javascript">

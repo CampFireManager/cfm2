@@ -3,7 +3,7 @@
 <head>
 <title></title>
 <link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/css.css" type="text/css">
-<link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.css">
+<link rel="stylesheet" href="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.3.1.min.css">
 <style type="text/css">
 body {
 margin: 0;
@@ -46,7 +46,7 @@ th.blank {
 }
 </style>
 <script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery-1.10.2.min.js"></script>
-<script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.1.1.min.js"></script>
+<script src="<!--SM:$SiteConfig.baseurl:SM-->media/JQM/jquery.mobile-1.3.1.min.js"></script>
 <script src="<!--SM:$SiteConfig.baseurl:SM-->media/refresh.js"></script>
 <script type="text/Javascript">
     window.onload = setRefresh(60000);
