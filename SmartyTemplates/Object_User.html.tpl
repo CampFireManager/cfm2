@@ -47,7 +47,7 @@
                         </div>
 
                         <!--SM:include file="Elements/TextBox.tpl" field='strUser' label=$object.labels.strUser|default:'' edit=$object.isEditable.strUser|default:array() current=$object.strUser|default:'':SM-->
-                        <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' label=$object.labels.jsonLinks|default:'' edit=$object.isEditable.jsonLinks|default:array() list=$object.arrLinks|default:array():SM-->
+                        <!--SM:include file="Elements/MultiElementFromTextBox.tpl" field='jsonLinks' placeholder=$object.labels.jsonLinks_Placeholder|default:'' label=$object.labels.jsonLinks|default:'' edit=$object.isEditable.jsonLinks|default:array() list=$object.arrLinks|default:array():SM-->
                         <!--SM:include file="Elements/Boolean.tpl" field='isWorker' label=$object.labels.isWorker|default:'' edit=$object.isEditable.isWorker|default:array() current=$object.isWorker|default:0:SM-->
                         <!--SM:include file="Elements/Boolean.tpl" field='isAdmin' label=$object.labels.isAdmin|default:'' edit=$object.isEditable.isAdmin|default:array() current=$object.isAdmin|default:0:SM-->
 

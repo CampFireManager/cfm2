@@ -1,4 +1,5 @@
 <!--SM:if isset($dodebug) && $dodebug == "true":SM--><pre><!--SM:var_dump("edit", $edit, "label", $label, "field", $field, "list", $list, "current", $current):SM--></pre><!--SM:/if:SM-->
+<!--SM:if !isset($placeholder):SM--><!--SM:$placehlder = "":SM--><!--SM:/if:SM-->
 <div id="<!--SM:$field:SM-->">
     <!--SM:if isset($edit.label):SM-->
         <div class="readwrite">
@@ -15,7 +16,7 @@
                 <!--SM:/foreach:SM-->
                 <div>
                     <label for='<!--SM:$field:SM-->_new'>Add: 
-                        <input type="text" name="<!--SM:$field:SM-->[]" id="<!--SM:$field:SM-->_new" />
+                        <input type="text" name="<!--SM:$field:SM-->[]"  placeholder="<!--SM:$placeholder:SM-->" id="<!--SM:$field:SM-->_new" />
                     </label>
                 </div>
             </label>
