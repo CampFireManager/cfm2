@@ -27,6 +27,8 @@
                             <p><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-red.png" /> <strong>NSFW/18+ Content!</strong></p><!--SM:/if:SM-->
                             <!--SM:if isset($talk.hasExcessAttendees) && $talk.hasExcessAttendees:SM-->
                             <p><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-blue.png" /> <strong>Room Over Capacity!</strong></p><!--SM:/if:SM-->
+                            <!--SM:if isset($talk.hasOverlap) && $talk.hasOverlap && (isset($Object_User.current) && isset($Object_User.current.isWorker) && ($Object_User.current.isWorker || $Object_User.current.isAdmin)):SM-->
+                            <p><img src="<!--SM:$SiteConfig.baseurl:SM-->media/images/alert-triangle-grey.png" /> <strong>Double Booked!</strong></p><!--SM:/if:SM-->
                             <h3>(ID: <!--SM:$talk.intTalkID:SM-->) <!--SM:$talk.strTalk:SM--></h3>
                             <p>by
                 <!--SM:foreach $talk.arrPresenters as $presenter:SM-->
