@@ -369,6 +369,31 @@ class Object_Userauth extends Abstract_GenericObject
         }
         return $this->tmpCleartext;
     }
+    
+    public function writeChangeLog() {
+        if ($this->change['strAuthValue']['old'] != '') {
+            $this->change['strAuthValue']['old'] = 'A Non Null Value';
+        } else {
+            $this->change['strAuthValue']['old'] = 'A Null Value';
+        }
+        if ($this->change['strAuthValue']['new'] != '') {
+            $this->change['strAuthValue']['new'] = 'A Non Null Value';
+        } else {
+            $this->change['strAuthValue']['new'] = 'A Null Value';
+        }
+
+        if ($this->change['tmpCleartext']['old'] != '') {
+            $this->change['tmpCleartext']['old'] = 'A Non Null Value';
+        } else {
+            $this->change['tmpCleartext']['old'] = 'A Null Value';
+        }
+        if ($this->change['tmpCleartext']['new'] != '') {
+            $this->change['tmpCleartext']['new'] = 'A Non Null Value';
+        } else {
+            $this->change['tmpCleartext']['new'] = 'A Null Value';
+        }
+        parent::writeChangeLog();
+    }
 }
 
 /**

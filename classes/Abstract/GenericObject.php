@@ -77,6 +77,20 @@ abstract class Abstract_GenericObject implements Interface_Object
      */
     protected $old = array();
     /**
+     * Whenever a Create, Update or Delete operation is performed, track what
+     * has changed in this object, and log it. This variable tracks those 
+     * changes.
+     * 
+     * @var array
+     */
+    protected $change = array();
+    /**
+     * This stores the type of operation to be performed for the changelog.
+     *
+     * @var string
+     */
+    protected $changeType = '';
+    /**
      * This variable, if set to true, will require the user making the chage to
      * be considered to be an administator to configure them. This relates to
      * key concerns around concrete values - such as the available rooms, slots
@@ -731,6 +745,11 @@ abstract class Abstract_GenericObject implements Interface_Object
                         $values[$change_key] = $this->$change_key;
                     }
                 }
+                $this->change = array();
+                $this->changetype = 'Update';
+                foreach ($values as $value_key => $value) {
+                    $this->change[$value_key] = array('old' => $this->old[$value_key], 'new' => $value);
+                }
                 $full_sql = Container_Database::getSqlString(
                     array(
                         'sql' => "UPDATE {$this->strDBTable} SET $sql WHERE $where"
@@ -781,6 +800,11 @@ abstract class Abstract_GenericObject implements Interface_Object
             $key_place .= ":$field_name";
             $values[$field_name] = $this->$field_name;
         }
+        $this->change = array();
+        $this->changetype = 'Create';
+        foreach ($values as $value_key => $value) {
+            $this->change[$value_key] = array('old' => '', 'new' => $value);
+        }
         try {
             $objDatabase = Container_Database::getConnection(true);
             $full_sql = Container_Database::getSqlString(
@@ -827,6 +851,11 @@ abstract class Abstract_GenericObject implements Interface_Object
             $query = $objDatabase->prepare($sql);
             $key = $this->strDBKeyCol;
             $query->execute(array($this->$key));
+            $this->change = array();
+            $this->changetype = 'Delete';
+            foreach ($this->old as $value_key => $value) {
+                $this->change[$value_key] = array('old' => $value, 'new' => '');
+            }
             $this->sql = $sql;
             $this->sql_value = $this->$key;
             Container_Hook::Load()->triggerHook('deleteRecord', $this);
@@ -1244,5 +1273,21 @@ abstract class Abstract_GenericObject implements Interface_Object
         }
         $self->setFull(true);
         return $self->getCurrent($self->getLabels($self->getData()));
+    }
+    
+    public function writeChangeLog() {
+        $system_state = Object_User::isSystem();
+        Object_User::isSystem(true);
+        $changeLog = new Object_ChangeLog();
+        $changeLog->setKey('enumChangeType', $this->changeType);
+        $changeLog->setKey('objectType', $this->strDBTable);
+        $changeLog->setKey('objectID', $this->getPrimaryKeyValue());
+        $thisUser = Object_User::brokerCurrent();
+        if ($thisUser != false) {
+            $changeLog->setKey('intActorID', $thisUser->getKey('intUserID'));
+        }
+        $changeLog->setKey('jsonChanges', json_encode($this->change));
+        $changeLog->create();
+        Object_User::isSystem($system_state);
     }
 }
