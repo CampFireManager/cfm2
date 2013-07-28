@@ -62,7 +62,7 @@ class Object_Talk extends Abstract_GenericObject
         'label_new_jsonLinks_Placeholder' => array('en' => 'e.g. http://slideshare.net/you/presentation or http://twitter.com/you'),
         'label_new_isLocked' => array('en' => 'Lock this talk to this Room and Slot'),
         'label_isLocked' => array('en' => 'Talk fixed'),
-        'label_jsonOtherPresenters' => array('en' => 'Other Presenters'),
+        'label_jsonOtherPresenters' => array('en' => 'Presenters'),
         'label_new_jsonOtherPresenters' => array('en' => 'Other Presenters'),
         'label_arrAttendee' => array('en' => '(Potentially) Attending people')
     );
