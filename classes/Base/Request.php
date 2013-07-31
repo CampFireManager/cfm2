@@ -274,6 +274,9 @@ class Base_Request
             $this->strRequestMethod = 'file';
         } else {
             $url = "http";
+            if (isset($arrServer['HTTPS']) && $arrServer['HTTPS'] == '') {
+                unset($arrServer['HTTPS']);
+            }
             if (isset($arrServer['HTTPS'])) {
                 $url .= 's';
             }
