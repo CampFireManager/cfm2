@@ -105,6 +105,20 @@ class Object_SecureConfig extends Abstract_GenericObject
     {
         return array();
     }
+
+    public function writeChangeLog() {
+        if ($this->change['value']['old'] != '') {
+            $this->change['value']['old'] = 'A Non Null Value';
+        } else {
+            $this->change['value']['old'] = 'A Null Value';
+        }
+        if ($this->change['value']['new'] != '') {
+            $this->change['value']['new'] = 'A Non Null Value';
+        } else {
+            $this->change['value']['new'] = 'A Null Value';
+        }
+        parent::writeChangeLog();
+    }
 }
 
 /**
