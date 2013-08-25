@@ -520,8 +520,8 @@ class Base_GeneralFunctions
                 $currentCookieParams["secure"], 
                 $currentCookieParams["httponly"]
             );
-            session_start();
-            setcookie(
+            @session_start();
+            @setcookie(
                 session_name(), 
                 session_id(), 
                 time() + 604800, 

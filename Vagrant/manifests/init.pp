@@ -77,7 +77,9 @@ node default {
         "php5-imagick",
         "php5-xdebug",
         "git",
-        "unzip"
+        "unzip",
+	"gammu-smsd",
+	"gammu-doc"
     ]
 
     package { $packages:
@@ -130,7 +132,7 @@ node default {
 
     exec { "install cfm2":
         unless => "/usr/bin/mysql -ucfm2 -p\"cfm2\" cfm2",
-        command => "php /var/www/cfm2/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=0 -te=0 -y=1 -l=1",
+        command => "php /var/www/cfm2/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=1 -te=0 -y=1 -l=1 -gf=/usr/share/doc/gammu-smsd/examples/mysql.sql.gz",
         require => Package["mysql-server", "php5-cli"]
     }
 
