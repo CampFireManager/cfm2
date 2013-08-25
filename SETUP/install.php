@@ -373,7 +373,7 @@ chdir(dirname(__FILE__) . '/../Media');
 mkdir(dirname(__FILE__) . '/../Media/JQM');
 chdir(dirname(__FILE__) . '/../Media/JQM');
 exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
-exec("unzip jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
+exec("unzip -u jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
 unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
 echo "Done\r\n";
 

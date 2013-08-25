@@ -1,4 +1,4 @@
-<?php
+c<?php
 /**
  * CampFire Manager is a scheduling tool predominently used at BarCamps to 
  * schedule talks based, mainly, on the number of people attending each talk
@@ -748,7 +748,11 @@ abstract class Abstract_GenericObject implements Interface_Object
                 $this->change = array();
                 $this->changetype = 'Update';
                 foreach ($values as $value_key => $value) {
-                    $this->change[$value_key] = array('old' => $this->old[$value_key], 'new' => $value);
+                    if (isset($this->old[$value_key])) {
+                        $this->change[$value_key] = array('old' => $this->old[$value_key], 'new' => $value);
+                    } else {
+                        $this->change[$value_key] = array('old' => "", 'new' => $value);
+                    }
                 }
                 $full_sql = Container_Database::getSqlString(
                     array(
@@ -813,6 +817,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                 )
             );
             $query = $objDatabase->prepare($full_sql);
+            $query->closeCursor();
             $query->execute($values);
             if ($this->strDBKeyCol != '') {
                 $key = $this->strDBKeyCol;
@@ -1007,6 +1012,21 @@ abstract class Abstract_GenericObject implements Interface_Object
                 return false;
             }
             $className = get_called_class();
+            if ($className != "Object_ChangeLog") {
+                try {
+                    $sql = Container_Database::getSqlString(
+                        array(
+                            'sql' => "SELECT * FROM changelog LIMIT 1,0;"
+                        )
+                    );
+                    $stmt = $objDatabase->prepare($sql);
+                    $stmt->execute();
+                    while($stmt->nextRowset()) {}
+                } catch (Exception $e) {
+                    $changelog = new Object_ChangeLog();
+                    $changelog->initialize();
+                }
+            }
             foreach ($this->arrDemoData as $entry) {
                 $object = new $className();
                 $object->reqAdminToMod = false;

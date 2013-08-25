@@ -371,26 +371,36 @@ class Object_Userauth extends Abstract_GenericObject
     }
     
     public function writeChangeLog() {
-        if ($this->change['strAuthValue']['old'] != '') {
-            $this->change['strAuthValue']['old'] = 'A Non Null Value';
+        if (isset($this->chage['strAuthValue'])) {
+            if ($this->change['strAuthValue']['old'] != '') {
+                $this->change['strAuthValue']['old'] = 'A Non Null Value';
+            } else {
+                $this->change['strAuthValue']['old'] = 'A Null Value';
+            }
+            if ($this->change['strAuthValue']['new'] != '') {
+                $this->change['strAuthValue']['new'] = 'A Non Null Value';
+            } else {
+                $this->change['strAuthValue']['new'] = 'A Null Value';
+            }
         } else {
-            $this->change['strAuthValue']['old'] = 'A Null Value';
-        }
-        if ($this->change['strAuthValue']['new'] != '') {
-            $this->change['strAuthValue']['new'] = 'A Non Null Value';
-        } else {
-            $this->change['strAuthValue']['new'] = 'A Null Value';
+            $this->change['strAuthValue']['old'] = "Unset";
+            $this->change['strAuthValue']['new'] = "Unset";
         }
 
-        if ($this->change['tmpCleartext']['old'] != '') {
-            $this->change['tmpCleartext']['old'] = 'A Non Null Value';
+        if (isset($this->change['tmpCleartext'])) {
+            if ($this->change['tmpCleartext']['old'] != '') {
+                $this->change['tmpCleartext']['old'] = 'A Non Null Value';
+            } else {
+                $this->change['tmpCleartext']['old'] = 'A Null Value';
+            }
+            if ($this->change['tmpCleartext']['new'] != '') {
+                $this->change['tmpCleartext']['new'] = 'A Non Null Value';
+            } else {
+                $this->change['tmpCleartext']['new'] = 'A Null Value';
+            }
         } else {
-            $this->change['tmpCleartext']['old'] = 'A Null Value';
-        }
-        if ($this->change['tmpCleartext']['new'] != '') {
-            $this->change['tmpCleartext']['new'] = 'A Non Null Value';
-        } else {
-            $this->change['tmpCleartext']['new'] = 'A Null Value';
+            $this->change['tmpCleartext']['old'] = 'Unset';
+            $this->change['tmpCleartext']['new'] = 'Unset';
         }
         parent::writeChangeLog();
     }
