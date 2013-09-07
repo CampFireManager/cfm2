@@ -132,7 +132,7 @@ node default {
 
     exec { "install cfm2":
         unless => "/usr/bin/mysql -ucfm2 -p\"cfm2\" cfm2",
-        command => "php /var/www/cfm2/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=1 -te=0 -y=1 -l=1 -gf=/usr/share/doc/gammu-smsd/examples/mysql.sql.gz",
+        command => "php /var/www/cfm2/SETUP/install.php -u=root -pw= -cu=cfm2 -cpw=cfm2 -cd=cfm2 -ge=1 -te=0 -y=1 -l=1 -gf=/usr/share/doc/gammu-smsd/examples/mysql.sql.gz -gt=mysql -gh=localhost -gp=3306 -gu=gammu -gpw=gammu -w=localhost/cfm2",
         require => Package["mysql-server", "php5-cli"]
     }
 
