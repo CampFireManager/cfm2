@@ -133,7 +133,6 @@ class Object_SecureConfig extends Abstract_GenericObject
 class Object_SecureConfig_Demo extends Object_SecureConfig
 {
     protected $arrDemoData = array(
-        array('key' => 'Twitter API Key', 'value' => 'Not Yet Set'),
-        array('key' => 'Twitter API Secret', 'value' => 'Not Yet Set'),
+        array('key' => 'Dummy Key', 'value' => 'Set')
     );
 }
