@@ -147,7 +147,7 @@ class Plugin_InputParser
                     foreach ($arrNextTalks as $objTalk) {
                         $objTalk->setFull(true);
                         $arrTalk = $objTalk->getSelf();
-                        if ($arrTalk['isNext'] == true) {
+                        if (isset($arrTalk['isNext']) && $arrTalk['isNext'] == true) {
                             if ($return != '') {
                                 $return .= ', ';
                             }
