@@ -36,7 +36,7 @@
 class Glue_TwitterAPI implements Interface_Glue
 {
     protected $oAuth = null;
-    protected $strInterface = null;
+    protected $strInterface = 'Twitter';
     protected $objDaemon = null;
 
     public function getGlue()
@@ -75,59 +75,13 @@ class Glue_TwitterAPI implements Interface_Glue
      */
     public function __construct($arrConfigValues = array())
     {
-        if (isset($arrConfigValues['GluePrefix'])) {
-            $GluePrefix = $arrConfigValues['GluePrefix'];
-        } else {
-            $GluePrefix = 'Twitter';
-        }
-        if (isset($arrConfigValues['ConsumerPrefix'])
-            && Object_SecureConfig::brokerByID($arrConfigValues['ConsumerPrefix'] . '_ConsumerKey', false)->getKey('value') != false
-            && Object_SecureConfig::brokerByID($arrConfigValues['ConsumerPrefix'] . '_ConsumerSecret', false)->getKey('value') != false
+        if (!isset($arrConfigValues['ConsumerKey']) ||
+            !isset($arrConfigValues['ConsumerSecret']) ||
+            !isset($arrConfigValues['UserToken']) ||
+            !isset($arrConfigValues['UserSecret'])
         ) {
-            $ConsumerPrefix = $arrConfigValues['ConsumerPrefix'];
-        } elseif (Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value') != false
-            && Object_SecureConfig::brokerByID(Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value') . '_ConsumerKey', false)->getKey('value') != false
-            && Object_SecureConfig::brokerByID(Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value') . '_ConsumerSecret', false)->getKey('value') != false
-        ) {
-            $ConsumerPrefix = Object_SecureConfig::brokerByID($GluePrefix . '_ConsumerPrefix', false)->getKey('value');
-        } else {
-            $ConsumerPrefix = $GluePrefix;
+            throw new InvalidArgumentException('Missing Twitter configuration value');
         }
-        
-        if (isset($arrConfigValues['ConsumerKey'])) {
-            $cfgCK = $arrConfigValues['ConsumerKey'];
-        } else {
-            $cfgCK = Object_SecureConfig::brokerByID($ConsumerPrefix . '_ConsumerKey', false)->getKey('value');
-        }
-        if (isset($arrConfigValues['ConsumerSecret'])) {
-            $cfgCS = $arrConfigValues['ConsumerSecret'];
-        } else {
-            $cfgCS = Object_SecureConfig::brokerByID($ConsumerPrefix . '_ConsumerSecret', false)->getKey('value');
-        }
-        if (isset($arrConfigValues['UserToken'])) {
-            $cfgUK = $arrConfigValues['UserToken'];
-        } else {
-            $cfgUK = Object_SecureConfig::brokerByID($GluePrefix . '_UserToken', false)->getKey('value');
-        }
-        if (isset($arrConfigValues['UserSecret'])) {
-            $cfgUS = $arrConfigValues['UserSecret'];
-        } else {
-            $cfgUS = Object_SecureConfig::brokerByID($GluePrefix . '_UserSecret', false)->getKey('value');
-        }
-        if ($cfgCK == false) {
-            throw new InvalidArgumentException("No Consumer Key");
-        }
-        if ($cfgCS == false) {
-            throw new InvalidArgumentException("No Consumer Secret");
-        }
-        if ($cfgUK == false) {
-            throw new InvalidArgumentException("No User Token");
-        }
-        if ($cfgUS == false) {
-            throw new InvalidArgumentException("No User Secret");
-        }
-
-        $this->strInterface = $GluePrefix;
         
         $libTwitterHelper = Base_ExternalLibraryLoader::loadLibrary("TwitterHelper");
         if ($libTwitterHelper == false) {
@@ -139,10 +93,10 @@ class Glue_TwitterAPI implements Interface_Glue
 
         $this->oAuth = new tmhOAuth(
             array(
-                'consumer_key'    => $cfgCK,
-                'consumer_secret' => $cfgCS,
-                'user_token'      => $cfgUK,
-                'user_secret'     => $cfgUS,
+                'consumer_key'    => $arrConfigValues['ConsumerKey'],
+                'consumer_secret' => $arrConfigValues['ConsumerSecret'],
+                'user_token'      => $arrConfigValues['UserToken'],
+                'user_secret'     => $arrConfigValues['UserSecret']
             )
         );
         
@@ -305,23 +259,24 @@ class Glue_TwitterAPI implements Interface_Glue
     public static function brokerAllGlues()
     {
         $arrConfig = Object_SecureConfig::brokerAll();
-        $return = array();
-        foreach ($arrConfig as $key => $objConfig) {
-            if (preg_match('/^Glue_TwitterAPI-[^_]+$/', $key)) {
-                $key = $objConfig->getKey('value');
-                if (((isset($arrConfig[$key . '_ConsumerPrefix'])
-                    && isset($arrConfig[$arrConfig[$key . '_ConsumerPrefix']->getKey('value') . '_ConsumerKey']) 
-                    && isset($arrConfig[$arrConfig[$key . '_ConsumerPrefix']->getKey('value') . '_ConsumerSecret']))
-                    || (isset($arrConfig[$key . '_ConsumerKey']) 
-                    && isset($arrConfig[$key . '_ConsumerSecret'])))
-                    && isset($arrConfig[$key . '_UserToken']) 
-                    && isset($arrConfig[$key . '_UserSecret'])
-                ) {
-                    $return[] = new Glue_TwitterAPI(array('GluePrefix' => $key));
-                }
-            }
+        $config = array();
+        if (isset($arrConfig['Twitter_ConsumerKey'])) {
+            $config['ConsumerKey'] = $arrConfig['Twitter_ConsumerKey'];
         }
-        return $return;
+        if (isset($arrConfig['Twitter_ConsumerSecret'])) {
+            $config['ConsumerSecret'] = $arrConfig['Twitter_ConsumerSecret'];
+        }
+        if (isset($arrConfig['Twitter_UserToken'])) {
+            $config['UserToken'] = $arrConfig['Twitter_UserToken'];
+        }
+        if (isset($arrConfig['Twitter_UserSecret'])) {
+            $config['UserSecret'] = $arrConfig['Twitter_UserSecret'];
+        }
+        if (count($config) > 0) {
+            return array(new Glue_TwitterAPI($config));
+        } else {
+            return array();
+        }
     }
 
     /**
