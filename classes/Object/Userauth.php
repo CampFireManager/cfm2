@@ -260,7 +260,7 @@ class Object_Userauth extends Abstract_GenericObject
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(5, 9);
                 if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . sha1(Container_Config::getSecureByID('salt', 'Not Yet Set!!!')->getKey('value') . $authString))) > 0) {
-                    $authString == '';
+                    $authString = '';
                 }
             }
             $this->setKey('strAuthValue', array('password' => $authString, 'username' => $codeonly));
@@ -270,7 +270,7 @@ class Object_Userauth extends Abstract_GenericObject
             while ($authString == '') {
                 $authString = Base_GeneralFunctions::genRandStr(8, 12);
                 if (count(Object_Userauth::brokerByColumnSearch('strAuthValue', '%:' . $authString)) > 0) {
-                    $authString == '';
+                    $authString = '';
                 }
             }
             $this->setKey('strAuthValue', array('password' => $authString, 'username' => 'onetime'));
