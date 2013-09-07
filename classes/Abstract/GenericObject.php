@@ -1,4 +1,4 @@
-c<?php
+<?php
 /**
  * CampFire Manager is a scheduling tool predominently used at BarCamps to 
  * schedule talks based, mainly, on the number of people attending each talk
