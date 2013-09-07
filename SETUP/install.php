@@ -7,7 +7,7 @@ if ($objRequest->get_strRequestMethod() != 'file') {
 }
 echo "Welcome to CampFireManager2 Installation!\r\n\r\n";
 
-echo "(1/9) Parsing config options\r\n";
+echo "(1/10) Parsing config options\r\n";
 
 $run_init = 0;
 $config_file = dirname(__FILE__) . '/../config/local.php';
@@ -51,7 +51,8 @@ $arrConfig = array(
     'twitterusersecret' => '',
     'webhost' => 'localhost',
     'forceyes' => 0,
-    'loaddemo' => 0
+    'loaddemo' => 0,
+    'help' => 0
 );
 
 $arrOptions = array(
@@ -180,6 +181,10 @@ $arrOptions = array(
         '--[Ll][Oo][Aa][Dd][Dd][Ee][Mm][Oo]',
         '--[Ll][Oo][Aa][Dd]',
         '-[Ll]'
+    ),
+    'help' => array(
+        '--[Hh][Ee][Ll][Pp]',
+        '\/\?'
     )
 );
 
@@ -187,7 +192,7 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
     $matchfound = false;
     foreach ($arrOptions as $strKey => $arrOption) {
         foreach ($arrOption as $strOption) {
-            switch(1) { 
+            switch(1) {
             case preg_match('/^' . $strOption . '=(.*)$/', $parameter, $match):
             case preg_match('/^' . $strOption . '=(.*)$/', $key, $match):
                 $oldkey = $arrConfig[$strKey];
@@ -208,9 +213,6 @@ foreach ($objRequest->get_arrRqstParameters() as $key => $parameter) {
 		$matchfound = true;
 		break 3;
 	    }
-            if ($strKey == 'gammufile' && ! file_exists($arrConfig['gammufile'])) {
-                $arrConfig['gammufile'] = $oldkey;
-            }
         }	
     }
     if ($matchfound) {
@@ -254,9 +256,13 @@ if ($arrConfig['coretype'] != 'mysql' || ($arrConfig['gammutype'] != 'mysql' && 
     do_die("\r\nSorry, right now, we only support mysql based databases.\r\n",95);
 }
 
-echo "Done\r\n";
+echo "\r\n\r\nDone\r\n\r\n";
+if ($arrConfig['help'] === "") {
+    help();
+    die();
+}
 
-echo "(2/9) Accessing and configuring core database: ";
+echo "(2/10) Accessing and configuring core database: ";
 
 if ($arrConfig['rootpass'] == null || $arrConfig['rootpass'] == '') {
     $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], '');
@@ -268,8 +274,6 @@ if ($arrConfig['corepass'] == null || $arrConfig['corepass'] == '') {
 } else {
     $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
 }
-
-var_dump($arrConfig);
 
 if (! $coredb && $rootdb != false) {
     switch(substr(force_readline("\r\nThe non-root core user account does not exist, or the password is not correct.\r\nWould you like me to set this up for you? (Y/N):"), 0, 1)) {
@@ -289,10 +293,10 @@ if (! $coredb && $rootdb != false) {
                 $arrConfig['corepass'] = implode($chars);
             }
         }
-        if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'localhost' IDENTIFIED BY '{$arrConfig['corepass']}';", $rootdb)) {
+        if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}';", $rootdb)) {
             do_die("\r\nCouldn't create the core database user - are you sure you've provided the root credentials?\r\n");
         } else {
-            mysql_query("GRANT USAGE ON *.* TO '{$arrConfig['coreuser']}'@'localhost' IDENTIFIED BY '{$arrConfig['corepass']}' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;");
+            mysql_query("GRANT USAGE ON *.* TO '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;");
             mysql_query("FLUSH PRIVILEGES;", $rootdb);
             if ($arrConfig['corepass'] == null || $arrConfig['corepass'] == '') {
                 $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], '');
@@ -312,37 +316,117 @@ if (! $coredb && $rootdb != false) {
 } elseif (! $coredb) {
     do_die("\r\nCouldn't proceed - the non-core user account did not exist, and the root credentials were not supplied.\r\n");
 }
-while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
-    switch (force_readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
-    case 'Y':
-    case 'y':
-        if ($rootdb) {
-            try {
-                if(!mysql_query("CREATE DATABASE IF NOT EXISTS `{$arrConfig['coredatabase']}`;", $rootdb)) {
-                    throw new Exception("Couldn't create database. Are you sure you provided the correct root credentials?");
+
+echo "Done\r\n";
+
+echo "(3/10) Accessing and configuring gammu database: ";
+
+if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
+    if ($arrConfig['gammupass'] == null || $arrConfig['gammupass'] == '') {
+        $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], '');
+    } else {
+        $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
+    }
+
+    while ($arrConfig['gammuenable'] == '1' && ! $gammudb) {
+        if ($coredb != false) {
+            switch(substr(force_readline("\r\nThe gammu database user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
+            case 'Y':
+            case 'y':
+                if ($arrConfig['gammupass'] == '') {
+                    switch(force_readline("\r\nThe gammu database user account has a blank password. Would you like me to set that to a random string? (Y/N): ")) {
+                    case 'Y':
+                    case 'y':
+                        $chars = str_split(sha1(rand()),2);
+                        foreach ($chars as $k => $char) {
+                            $c = chr((hexdec($char)/255*95)+31);
+                            if ($c != "'") {
+                                $chars[$k] = $c;
+                            }
+                        }
+                        $arrConfig['gammupass'] = implode($chars);
+                    }
                 }
-                if(!mysql_query("GRANT ALL PRIVILEGES ON `{$arrConfig['coredatabase']}` . * TO '{$arrConfig['coreuser']}'@'%';", $rootdb)) {
-                    throw new Exception("Couldn't grant database privileges. Are you sure you provided the correct root credentials?");
+                $sql = "CREATE USER '{$arrConfig['gammuuser']}'@'%' IDENTIFIED BY '{$arrConfig['gammupass']}';";
+                $qry = mysql_query($sql, $rootdb);
+                if (mysql_errno($rootdb) > 0) {
+                    do_die("\r\nCouldn't create the gammu database user - are you sure you've provided the root credentials?\r\n");
                 }
-            } catch (Exception $e) {
-                help();
-                do_die("\r\n".$e->getMessage()."\r\n");
+                if ($arrConfig['gammupass'] == null || $arrConfig['gammupass'] == '') {
+                    $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], '');
+                } else {
+                    $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
+                }
+                break;
+            case 'N':
+            case 'n':
+                echo "\r\nDisabling the Gammu account - invalid credentials";
+                $arrConfig['gammuenable'] = 0;
+                break;
             }
         } else {
-            do_die("\r\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\r\n");
+            do_die("\r\nCouldn't proceed - the gammu database user account did not exist, and the root credentials were not supplied.\r\n");
         }
-        $run_init = 1;
-        break;
-    case 'N':
-    case 'n':
-        do_die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
-        break;
+    }
+} elseif ($arrConfig['gammuenable'] == '1') {
+    $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
+    while ($arrConfig['gammuenable'] == '1' && ! $gammudb) {
+        switch(substr(force_readline_reverse("The gammu database credentials do not work, but are not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
+        case 'Y':
+        case 'y':
+            echo "\r\nDisabling the Gammu account - invalid credentials";
+            $arrConfig['gammuenable'] = 0;
+            break;
+        case 'N':
+        case 'n':
+            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
+        }
+        if ($arrConfig['gammuenable'] == '1') {
+            $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
+        }
+    }
+}
+
+while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammudatabase'], $gammudb)) {
+    if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport'] && $rootdb) {
+        switch (force_readline("\r\nThe Gammu detabase does not exist. Would you like to set it up? (Y/N)")) {
+        case 'Y':
+        case 'y':
+            $sql = "CREATE DATABASE IF NOT EXISTS `{$arrConfig['gammudatabase']}`;";
+            $qry = mysql_query($sql, $rootdb);
+            if(mysql_errno($rootdb) > 0) {
+                do_die("Couldn't create database. Are you sure you provided the correct root credentials?");
+            }
+            $sql = "GRANT ALL PRIVILEGES ON `{$arrConfig['gammudatabase']}` . * TO '{$arrConfig['gammuuser']}'@'%';";
+            $qry = mysql_query($sql, $rootdb);
+            if(mysql_errno($rootdb) > 0) {
+                do_die("Couldn't grant database privileges. Are you sure you provided the correct root credentials?");
+            }
+            break;
+        case 'N':
+        case 'n':
+            do_die("\r\nCould not connect to the gammu database. Please ensure this exists before proceeding.\r\n");
+            break;
+        }
+    } elseif($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] != $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
+        switch(substr(force_readline_reverse("The gammu database does not exist, but it is not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
+        case 'Y':
+        case 'y':
+            echo "\r\nDisabling the Gammu account - invalid credentials";
+            $arrConfig['gammuenable'] = 0;
+            break;
+        case 'N':
+        case 'n':
+            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
+        }
+    } else {
+        do_die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
     }
 }
 
 echo "Done\r\n";
 
-echo "(3/9) Ensuring your external libraries are installed\r\n";
+echo "(4/10) Ensuring your external libraries are installed\r\n";
 
 $Libraries = array(
     'php-openid' => array('ver' => 'current', 'source' => 'git'),
@@ -356,7 +440,7 @@ $Libraries = array(
 
 echo " * Git Submodules (php-openid, TwitterHelper and jQueryClock): ";
 chdir(dirname(__FILE__) . '/..');
-exec('git submodule update --init', $return);
+do_exec('git submodule update --init');
 echo "Done\r\n";
 
 echo " * Smarty {$Libraries['Smarty']['ver']}: ";
@@ -364,28 +448,29 @@ if (!file_exists(dirname(__FILE__) . '/../ExternalLibraries/Smarty')) {
     mkdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
 }
 chdir(dirname(__FILE__) . '/../ExternalLibraries/Smarty');
-exec("wget -O Smarty-{$Libraries['Smarty']['ver']}.tar.gz {$Libraries['Smarty']['source']}", $return);
-exec("tar xfz Smarty-{$Libraries['Smarty']['ver']}.tar.gz", $return);
+do_exec("wget -O Smarty-{$Libraries['Smarty']['ver']}.tar.gz {$Libraries['Smarty']['source']}");
+do_exec("tar xfz Smarty-{$Libraries['Smarty']['ver']}.tar.gz");
 echo "Done\r\n";
 
 echo " * jQueryMobile {$Libraries['jQueryMobile']['ver']}: ";
-chdir(dirname(__FILE__) . '/../Media');
-mkdir(dirname(__FILE__) . '/../Media/JQM');
+if (!file_exists(dirname(__FILE__) . '/../Media/JQM')) {
+    mkdir(dirname(__FILE__) . '/../Media/JQM');
+}
 chdir(dirname(__FILE__) . '/../Media/JQM');
-exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}", $return);
-exec("unzip -u jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .", $return);
+do_exec("wget -O jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip {$Libraries['jQueryMobile']['source']}");
+do_exec("unzip -u jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip -d .");
 unlink("jQueryMobile-{$Libraries['jQueryMobile']['ver']}.zip");
 echo "Done\r\n";
 
 chdir(dirname(__FILE__) . '/../Media');
 echo " * jQuery {$Libraries['jQuery']['ver']}: ";
-exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}", $return);
+do_exec("wget -O JQM/jquery-{$Libraries['jQuery']['ver']}.min.js {$Libraries['jQuery']['source']}");
 echo "Done\r\n";
 
 echo " * Sketchdoc Icon Library {$Libraries['sketchdocicons']['ver']}: ";
 if (!file_exists(dirname(__FILE__) . '/../Media/images')) {
-    exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}", $return);
-    exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .", $return);
+    do_exec("wget -O icons-{$Libraries['sketchdocicons']['ver']}.zip {$Libraries['sketchdocicons']['source']}");
+    do_exec("unzip icons-{$Libraries['sketchdocicons']['ver']}.zip -d .");
     unlink("icons-{$Libraries['sketchdocicons']['ver']}.zip");
     rename('sketchdock-ecommerce-icons', 'images');
     echo "Done\r\n";
@@ -394,7 +479,7 @@ if (!file_exists(dirname(__FILE__) . '/../Media/images')) {
 }
 chdir(dirname(__FILE__));
 
-echo "(4/9) Building config file: ";
+echo "(5/10) Building config file: ";
 
 $oldfile = explode("\n", file_get_contents(dirname(__FILE__) . '/../config/local.dist.php'));
 $newfile = array();
@@ -426,7 +511,35 @@ foreach ($oldfile as $oldline) {
 file_put_contents($config_file, implode("\n", $newfile));
 echo "Done\r\n";
 
-echo "(5/9) Running Core Database Configuration: ";
+echo "(6/10) Running Core Database Configuration: ";
+while (! mysql_select_db($arrConfig['coredatabase'], $coredb)) {
+    switch (force_readline("\r\nThe core detabase does not exist. Would you like to set it up? (Y/N)")) {
+    case 'Y':
+    case 'y':
+        if ($rootdb) {
+            try {
+                if(!mysql_query("CREATE DATABASE IF NOT EXISTS `{$arrConfig['coredatabase']}`;", $rootdb)) {
+                    throw new Exception("Couldn't create database. Are you sure you provided the correct root credentials?");
+                }
+                if(!mysql_query("GRANT ALL PRIVILEGES ON `{$arrConfig['coredatabase']}` . * TO '{$arrConfig['coreuser']}'@'%';", $rootdb)) {
+                    throw new Exception("Couldn't grant database privileges. Are you sure you provided the correct root credentials?");
+                }
+            } catch (Exception $e) {
+                help();
+                do_die("\r\n".$e->getMessage()."\r\n");
+            }
+        } else {
+            do_die("\r\nCould not connect to the databse as the root user. Are you sure you provided the right credentials?\r\n");
+        }
+        $run_init = 1;
+        break;
+    case 'N':
+    case 'n':
+        do_die("\r\nCould not connect to the core database. Please ensure this exists before proceeding.");
+        break;
+    }
+}
+
 while ($run_init == 0) {
     switch (force_readline("\r\nWould you like to drop and initialize the database tables? (Y/N)")) {
     case 'Y':
@@ -448,114 +561,19 @@ if ($run_init == 1) {
 }
 echo "\r\nDone\r\n";
 
-echo "(6/9) Accessing and configuring Gammu Databases: ";
+echo "(7/10) Accessing and configuring Gammu Databases: ";
 
-if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
-    $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
-    while ($arrConfig['gammuenable'] == '1' && ! $gammudb) {
-        if ($coredb != false) {
-            switch(substr(force_readline("\r\nThe gammu database user account does not exist, or the password is not correct. Would you like me to set this up for you? (Y/N): "), 0, 1)) {
-            case 'Y':
-            case 'y':
-                if ($arrConfig['gammupass'] == '') {
-                    switch(force_readline("\r\nThe gammu database user account has a blank password. Would you like me to set that to a random string? (Y/N): ")) {
-                    case 'Y':
-                    case 'y':
-                        $chars = str_split(sha1(rand()),2);
-                        foreach ($chars as $k => $char) {
-                            $c = chr((hexdec($char)/255*95)+31);
-                            if ($c != "'") {
-                                $chars[$k] = $c;
-                            }
-                        }
-                        $arrConfig['gammupass'] = implode($chars);
-                    }
-                }
-                if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}'", $rootdb)) {
-                    help();
-                    do_die("\r\nCouldn't create the gammu database user - are you sure you've provided the root credentials?\r\n");
-                }
-                break;
-            case 'N':
-            case 'n':
-                echo "\r\nDisabling the Gammu account - invalid credentials";
-                $arrConfig['gammuenable'] = 0;
-                break;
-            }
-            if ($arrConfig['gammuenable'] == '1') {
-                $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
-            }
-        } else {
-            do_die("\r\nCouldn't proceed - the gammu database user account did not exist, and the root credentials were not supplied.\r\n");
-        }
-    }
-} elseif ($arrConfig['gammuenable'] == '1') {
-    $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
-    while ($arrConfig['gammuenable'] == '1' && ! $gammudb) {
-        switch(substr(force_readline_reverse("The gammu database credentials do not work, but are not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
-        case 'Y':
-        case 'y':
-            echo "\r\nDisabling the Gammu account - invalid credentials";
-            $arrConfig['gammuenable'] = 0;
-            break;
-        case 'N':
-        case 'n':
-            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
-        }
-        if ($arrConfig['gammuenable'] == '1') {
-            $gammudb = mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
-        }
-    }    
-}
-
-while ($arrConfig['gammuenable'] == '1' && ! mysql_select_db($arrConfig['gammudatabase'], $gammudb)) {
-    if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport'] && $rootdb) {
-        switch (force_readline("\r\nThe Gammu detabase does not exist. Would you like to set it up? (Y/N)")) {
-        case 'Y':
-        case 'y':
-            try {
-                if(!mysql_query("CREATE DATABASE IF NOT EXISTS `{$arrConfig['gammudatabase']}`;", $rootdb)) {
-                    throw new Exception("Couldn't create database. Are you sure you provided the correct root credentials?");
-                }
-                if(!mysql_query("GRANT ALL PRIVILEGES ON `{$arrConfig['gammudatabase']}` . * TO '{$arrConfig['gammuuser']}'@'%';", $rootdb)) {
-                    throw new Exception("Couldn't grant database privileges. Are you sure you provided the correct root credentials?");
-                }
-            } catch (Exception $e) {
-                help();
-                do_die("\n".$e->getMessage()."\n");
-            }
-            break;
-        case 'N':
-        case 'n':
-            do_die("\r\nCould not connect to the gammu database. Please ensure this exists before proceeding.\r\n");
-            break;
-        }
-    } elseif($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] != $arrConfig['roothost'] . ':' . $arrConfig['rootport']) {
-        switch(substr(force_readline_reverse("The gammu database does not exist, but it is not on this server. Do you want to proceed without configuring Gammu? If you say No, I will terminate this script to start again. You can press return to retry. (Y/N/other): "), 0, 1)) {
-        case 'Y':
-        case 'y':
-            echo "\r\nDisabling the Gammu account - invalid credentials";
-            $arrConfig['gammuenable'] = 0;
-            break;
-        case 'N':
-        case 'n':
-            do_die("\r\nYou requested we stop this script so you can identify what is wrong with your Gammu database credentials.\r\n");
-        }
-    } else {
-        do_die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
-    }
-}
-
-while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM gammu', $gammudb)) {
+mysql_query('SELECT Version FROM gammu', $gammudb);
+while ($arrConfig['gammuenable'] == '1' && mysql_errno($gammudb) > 0) {
     if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['roothost'] . ':' . $arrConfig['rootport'] && $rootdb) {
         switch (force_readline("\r\nThe Gammu tables have not been created. Would you like to set it up? (Y/N)")) {
         case 'Y':
         case 'y':
             $file = explode(';', `gunzip -c "{$arrConfig['gammufile']}"`);
+            mysql_select_db($arrConfig['gammudatabase'], $rootdb);
             foreach ($file as $sql) {
-                mysql_select_db($arrConfig['gammudatabase'], $rootdb);
-                if (! mysql_query($sql, $rootdb) && mysql_errno() != 1065) {
-                    do_die("\r\nUnable to import Gammu file: " . mysql_error());
+                if (mysql_query($sql, $rootdb) && mysql_errno($rootdb) > 0) {
+                    do_die("\r\nUnable to import Gammu file: " . mysql_errno($rootdb) . " " . mysql_error($rootdb));
                 }
             }
             break;
@@ -578,78 +596,83 @@ while ($arrConfig['gammuenable'] == '1' && ! mysql_query('SELECT Version FROM ga
     } else {
         do_die("\r\nThe gammu database does not exist, and we can't proceed as root access has not been provided.\r\n");
     }
+    mysql_query('SELECT Version FROM gammu', $gammudb);
 }
-echo "Done\r\n";
+echo "Done";
 
-echo "\r\n(7/9) Building Gammu SMSD config file: ";
-if ($arrConfig['gammuenable'] == 1 && is_writable(dirname(__FILE__) . '/../config/gammu.php')) {
-    switch(force_readline_reverse("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
+echo "\r\n(8/10) Building Gammu SMSD config file: ";
+if ($arrConfig['gammuenable'] == 1) {
+    switch(force_readline("\nWould you like to configure Gammu to enable the SMS interface? (Y/N)")) {
     case 'Y':
     case 'y':
-        $contents = array(
-            ';<?php $hold = "//This line is here to prevent casual evesdroppers from getting to the SMS SQL credentials',
-            '[gammu]',
-            'port = ' . $arrConfig['gammudevice'],
-            'Connection = at',
-            '',
-            '[smsd]',
-            'PhoneID = Glue_Gammu-' . $arrConfig['gammuservice'],
-            'CommTimeout = 30',
-            'DeliveryReport = sms',
-            '',
-            'service = mysql',
-            'user = ' . $arrConfig['gammuuser'],
-            'password = ' . $arrConfig['gammupass'],
-            'host = ' . $arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'],
-            'database = '.$arrConfig['gammudatabase'].
-            '',
-            'LogFormat = textall',
-            'logfile = stdout',
-            'debuglevel = 3',
-            ';";'
-        );
-        if(file_put_contents(dirname(__FILE__) . '/../config/gammu.php', implode("\n", $contents)) === false) {
+        $sql = 'INSERT INTO ' . $arrConfig['coredatabase'] . '.secureconfig (`key`, `value`, `lastChange`) VALUES '
+        . "('Gammu_DBType', '{$arrConfig['gammutype']}', now()), "
+        . "('Gammu_DBHost', '{$arrConfig['gammuhost']}', now()), "
+        . "('Gammu_DBPort', '{$arrConfig['gammuport']}', now()), "
+        . "('Gammu_DBUser', '{$arrConfig['gammuuser']}', now()), "
+        . "('Gammu_DBPass', '{$arrConfig['gammupass']}', now()), "
+        . "('Gammu_DBBase', '{$arrConfig['gammudatabase']}', now())";
+        mysql_query($sql, $coredb);
+        if (mysql_errno($coredb) > 0) {
+            echo "Error setting Gammu Credentials: " . mysql_error($coredb) . "\r\n";
+        }
+        $contents = ';<?php $hold = "//This line is here to prevent casual evesdroppers from getting to the SMS SQL credentials
+[gammu]
+port = ' . $arrConfig['gammudevice'] . '
+Connection = at
+
+[smsd]
+PhoneID = cfm2
+CommTimeout = 30
+DeliveryReport = sms
+
+service = mysql
+user = ' . $arrConfig['gammuuser'] . '
+password = ' . $arrConfig['gammupass'] . '
+host = ' . $arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] . '
+database = '.$arrConfig['gammudatabase'] . '
+
+LogFormat = textall
+logfile = stdout
+debuglevel = 3
+;";';
+        if(file_put_contents(dirname(__FILE__) . '/../config/gammu.php', $contents) === false || !file_exists(dirname(__FILE__) . '/../config/gammu.php')) {
             echo "Unable to write the config file to the file system. Please create the following file:\r\n\r\n" . implode("\n", $contents);
         }
-        $sql = 'INSERT INTO secureconfig (`key`, `value`) VALUES '
-        . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBType', '{$arrConfig['gammutype']}'), "
-        . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBHost', '{$arrConfig['gammuhost']}'), "
-        . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBPort', '{$arrConfig['gammuport']}'), "
-        . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBUser', '{$arrConfig['gammuuser']}'), "
-        . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBPass', '{$arrConfig['gammupass']}'), "
-        . "('Glue_Gammu-{$arrConfig['gammuservice']}_DBBase', '{$arrConfig['gammudatabase']}')";
-        mysql_query($sql, $coredb);
     }
-    echo "Done (to: " . dirname(__FILE__).'/../config/gammu.php' . ")\r\n";
+    echo "Done (to: " . dirname(__FILE__).'/../config/gammu.php' . ")";
 } else {
     echo "Skipped";
 }
 
-echo "\r\n(8/9) Configuring Twitter API access: ";
+echo "\r\n(9/10) Configuring Twitter API access: ";
 if ($arrConfig['twitterenable'] == 1
     && $arrConfig['twitterconsumerkey'] != ''
     && $arrConfig['twitterconsumersecret'] != ''
     && $arrConfig['twitterusertoken'] != ''
     && $arrConfig['twitterusersecret'] != ''
 ) {
-    $sql = 'INSERT INTO secureconfig (`key`, `value`) VALUES ' 
-    . "('Glue_TwitterAPI-Broadcast_ConsumerPrefix', 'Twitter'), "
-    . "('Twitter_ConsumerKey', '{$arrConfig['twitterconsumerkey']}'), "
-    . "('Twitter_ConsumerSecret', '{$arrConfig['twitterconsumersecret']}'), "
-    . "('Glue_TwitterAPI-Broadcast_UserToken', '{$arrConfig['twitterusertoken']}'), "
-    . "('Glue_TwitterAPI-Broadcast_UserSecret', '{$arrConfig['twitterusersecret']}')";
+    $sql = 'INSERT INTO ' . $arrConfig['coredatabase'] . '.secureconfig (`key`, `value`, `lastChange`) VALUES ' 
+    . "('Twitter_ConsumerKey', '{$arrConfig['twitterconsumerkey']}', now()), "
+    . "('Twitter_ConsumerSecret', '{$arrConfig['twitterconsumersecret']}', now()), "
+    . "('Twitter_UserToken', '{$arrConfig['twitterusertoken']}', now()), "
+    . "('Twitter_UserSecret', '{$arrConfig['twitterusersecret']}', now())";
     mysql_query($sql, $coredb);
+    if (mysql_errno($coredb) > 0) {
+        echo "Error setting Twitter Credentials: " . mysql_error($coredb) . "\r\n";
+    }
 }
 echo "Done\r\n";
 
-echo "\r\n(9/9) Linking _htaccess to .htaccess: ";
+echo "(10/10) Linking _htaccess to .htaccess: ";
 if (!file_exists(dirname(__FILE__) . '/../.htaccess')) {
     @link(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess') || copy(dirname(__FILE__) . '/../_htaccess', dirname(__FILE__) . '/../.htaccess');
+    echo "Done\r\n";
 } else {
     echo "Skipped\r\n";
 }
 
-echo "\r\nChecking your web server: ";
+echo "Checking your web server: ";
 if (function_exists('curl_init')) {
     sleep(5);
     $ch = curl_init("http://" . $arrConfig['webhost'] . "/SETUP/install.php");
@@ -678,8 +701,8 @@ if (function_exists('curl_init')) {
 
 echo "\nInstall complete. Run the following commands to start the daemons:\n\n";
 echo "touch nohup.out\n";
-if (isset($id)) {
-    echo "nohup gammu-smsd -c {$_SERVER['HOME']}/phone{$id}.gammu & \n";
+if ($arrConfig['gammuenable'] == '1') {
+    echo "nohup gammu-smsd -c " . dirname(__FILE__) . '/../config/gammu.php' . " & \n";
 }
 echo "nohup php -q " . dirname(__FILE__) . "/../cron.php &";
 echo "\n";
@@ -784,4 +807,8 @@ are case specific. If left blank, all values should self-populate.
 function do_die($string, $value = 1) {
     echo $string;
     exit($value);
+}
+
+function do_exec($command) {
+    exec($command);
 }
