@@ -105,26 +105,34 @@ class Plugin_GlueBroadcaster
             if (count($arrGlues) > 0) {
                 echo "\r\n";
             }
-            foreach ($arrGlues as $objGlue) {
-                echo "       - Glue: " .$objGlue->getGlue() . "\r\n";
-                echo "         * Following followers: ";
-                $objGlue->follow_followers();
-                echo "Done\r\n";
-                echo "         * Reading private messages: ";
-                $objGlue->read_private();
-                echo "Done\r\n";
-                echo "         * Reading public messages: ";
-                $objGlue->read_public();
-                echo "Done\r\n";
-                echo "         * Sending messages: ";
-                $objGlue->send();
-                echo "Done\r\n";
-            }
-            if (count($arrGlues) > 0) {
-                echo "     + " . get_class($this) . ": ";
-            }
         } catch (Exception $e) {
             error_log($e->getMessage());
+            return false;
+        }
+        foreach ($arrGlues as $objGlue) {
+            try {
+                echo "       - Glue: " .$objGlue->getGlue() . "\r\n";
+                echo "         * Following followers: ";
+                $counter = $objGlue->follow_followers();
+                echo "Done ($counter)\r\n";
+                echo "         * Reading private messages: ";
+                $counter = $objGlue->read_private();
+                if ($counter == '') {
+                    $counter = 0;
+                }
+                echo "Done ($counter)\r\n";
+                echo "         * Reading public messages: ";
+                $counter = $objGlue->read_public();
+                echo "Done ($counter)\r\n";
+                echo "         * Sending messages: ";
+                $counter = $objGlue->send();
+                echo "Done ($counter)\r\n";
+            } catch(Exception $e) {
+                echo "Failed: " . $e->getMessage() . "\r\n";
+            }
+        }
+        if (count($arrGlues) > 0) {
+            echo "     + " . get_class($this) . ": ";
         }
     }
 }

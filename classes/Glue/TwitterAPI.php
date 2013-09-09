@@ -135,6 +135,7 @@ class Glue_TwitterAPI implements Interface_Glue
         }
         
         $this->oAuth->request('GET', 'https://api.twitter.com/1/direct_messages.json', $args, true);
+        $return = 0;
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
             if (is_array($data)) {
@@ -153,12 +154,14 @@ class Glue_TwitterAPI implements Interface_Glue
                 }
             }
             $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
+            $return++;
             $this->objDaemon->write();                
         } else {
             $data = htmlentities($this->oAuth->response['response']);
             error_log('There was an error in the OAuth library fetching direct messages. ' . print_r($data, true));
             throw new HttpResponseException('Error fetching OAuth Direct Messages');
         }
+        return $return;
     }
 
     /**
@@ -183,6 +186,8 @@ class Glue_TwitterAPI implements Interface_Glue
             $args['since_id'] = $lastmessage->getKey('intNativeID');
         }
         
+        $return = 0;
+        
         $this->oAuth->request('GET', 'https://api.twitter.com/1/statuses/mentions.json', $args, true);
         if ($this->oAuth->response['code'] == 200) {
             $data = json_decode($this->oAuth->response['response'], true);
@@ -199,6 +204,7 @@ class Glue_TwitterAPI implements Interface_Glue
                     $return->setKey('isActioned', 0);
                     $return->create();
                     $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+                    $return++;
                 }                
             }
             $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
@@ -208,6 +214,7 @@ class Glue_TwitterAPI implements Interface_Glue
             error_log('There was an error in the OAuth library fetching mentions. ' . print_r($data, true));
             throw new HttpResponseException('Error fetching OAuth Mentions');
         }
+        return $return;
     }
 
     /**
@@ -225,6 +232,7 @@ class Glue_TwitterAPI implements Interface_Glue
         }
 
         $messages = Object_Output::brokerByColumnSearch('isActioned', 0);
+        $return = 0;
         foreach ($messages as $message) {
             if ($message->getKey('strInterface') == $this->strInterface) {
                 // Skip on!
@@ -242,6 +250,7 @@ class Glue_TwitterAPI implements Interface_Glue
                 $message->setKey('isActioned', 1);
                 $message->write();
                 $this->objDaemon->setKey('intOutboundCounter', $this->objDaemon->getKey('intOutboundCounter') + 1);
+                $return++;
                 $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                 $this->objDaemon->write();
             } else {
@@ -249,6 +258,7 @@ class Glue_TwitterAPI implements Interface_Glue
                 $message->write();
             }
         }
+        return $return;
     }
 
     /**
@@ -318,6 +328,7 @@ class Glue_TwitterAPI implements Interface_Glue
         $previous_cursor = -2;
         $cursor = -1;
         $followers = array();
+        $return = 0;
         while($cursor > $previous_cursor) {
             $this->oAuth->request('GET', 'https://api.twitter.com/1/followers/ids.json', array('user_id' => $user_id, 'cursor' => $cursor), true);
             if ($this->oAuth->response['code'] == 200) {
@@ -334,6 +345,7 @@ class Glue_TwitterAPI implements Interface_Glue
             $dummy = null;
             if (!isset($friends[$follower_id])) {
                 $this->oAuth->request('POST', 'https://api.twitter.com/1/friendships/create.json', array('user_id' => $follower_id), true);
+                $return++;
             }
         }
         
@@ -343,5 +355,6 @@ class Glue_TwitterAPI implements Interface_Glue
             $this->objDaemon->setKey('intScope', $data['remaining_hits']);
             $this->objDaemon->write();
         }
+        return $return;
     }
 }

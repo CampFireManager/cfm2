@@ -191,8 +191,8 @@ class Object_User extends Abstract_GenericObject
     public static function brokerByCodeOnly($objInput = null)
     {
         if (is_object($objInput) && get_class($objInput) == 'Object_Input') {
-            $strCodeOnly = $objInput->getKey('strInterface') . '++' . $objInput->getKey('strSender');
-            $arrUserAuth = Object_Userauth::brokerByColumnSearch('strAuthValue', $strCodeOnly . ':%');
+            $strCodeOnly = $objInput->getKey('strInterface') . '$$' . $objInput->getKey('strSender');
+            $arrUserAuth = Object_Userauth::brokerByColumnSearch('strAuthValue', $strCodeOnly  . ':%', false, false, null, 'ASC', true);
             $intUserID = null;
             foreach ($arrUserAuth as $objUserAuth) {
                 if ($intUserID == null 

@@ -70,7 +70,7 @@ class Plugin_InputParser
                 case preg_match('/^([Aa])\s+(\d+)$/', $objInput->getKey('textMessage'), $match):
                     $objTalk = Object_Talk::brokerByID($match[2]);
                     if ($objTalk != false) {
-                        $strTalk = substr($objTalk->getKey('strTalk'), 0, 20);
+                        $strTalk = substr($objTalk->getKey('strTalk'), 0, 60);
                         if ($strTalk != $objTalk->getKey('strTalk')) {
                             $strTalk .= '...';
                         }

@@ -133,6 +133,7 @@ class Glue_Gammu implements Interface_Glue
             return null;
         }
         $UDH = array();
+        $return = 0;
         foreach ($result as $message) {
             try {
                 // UDH is the SMS standard handler for longer text messages.
@@ -173,6 +174,7 @@ class Glue_Gammu implements Interface_Glue
                         unset($UDH[$uniq]);
 
                         $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+                        $return++;
                         $this->objDaemon->write();
                     }
                 } else {
@@ -189,6 +191,7 @@ class Glue_Gammu implements Interface_Glue
                     $qryUpdateInbox->execute(array($message['ID']));
 
                     $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+                    $return++;
                     $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                     $this->objDaemon->write();
                 }
@@ -196,6 +199,7 @@ class Glue_Gammu implements Interface_Glue
                 error_log('Error moving data from Gammu Inbox to CFM2 Inbox: ' . $e->getMessage());
             }
         }
+        return $return;
     }
     
     /**
@@ -206,7 +210,7 @@ class Glue_Gammu implements Interface_Glue
      */
     public function read_public()
     {
-        
+        return 0;
     }
         
     /**
@@ -217,7 +221,7 @@ class Glue_Gammu implements Interface_Glue
      */
     public function follow_followers()
     {
-        
+        return 0;
     }
     
     /**
@@ -239,6 +243,7 @@ class Glue_Gammu implements Interface_Glue
         $qryInsertLarge = $this->objDbGammu->prepare($sqlInsertLarge);
 
         $messages = Object_Output::brokerByColumnSearch('isActioned', false);
+        $return = 0;
         foreach ($messages as $message) {
             if ($message->getKey('strInterface') != $this->strInterface) {
                 continue;
@@ -291,12 +296,14 @@ class Glue_Gammu implements Interface_Glue
                 $message->setKey('isActioned', 1);
                 $message->write();
                 $this->objDaemon->setKey('intOutboundCounter', $this->objDaemon->getKey('intOutboundCounter') + 1);
+                $return++;
                 $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                 $this->objDaemon->write();
             } catch (Exception $e) {
                 error_log('Error moving data from CFM2 Outbox to Gammu Outbox at ' . $e->getLine() . ': ' . $e->getMessage());
             }
         }
+        return $return;
     }
 
     /**
