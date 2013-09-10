@@ -266,13 +266,23 @@ echo "(2/10) Accessing and configuring core database: ";
 
 if ($arrConfig['rootpass'] == null || $arrConfig['rootpass'] == '') {
     $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], '');
+    if (!$rootdb) {
+        die("Root credentials not set\r\n");
+    }
 } else {
     $rootdb = mysql_connect($arrConfig['roothost'] . ':' . $arrConfig['rootport'], $arrConfig['rootuser'], $arrConfig['rootpass']);
+    if (!$rootdb) {
+        die("Root credentials not set\r\n");
+    }
 }
 if ($arrConfig['corepass'] == null || $arrConfig['corepass'] == '') {
     $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], '');
+    if (!$coredb) {
+        echo "Core account needs creating.\r\n";
+    }
 } else {
     $coredb = @mysql_connect($arrConfig['corehost'] . ':' . $arrConfig['coreport'], $arrConfig['coreuser'], $arrConfig['corepass']);
+        echo "Core account needs creating.\r\n";
 }
 
 if (! $coredb && $rootdb != false) {
@@ -293,8 +303,22 @@ if (! $coredb && $rootdb != false) {
                 $arrConfig['corepass'] = implode($chars);
             }
         }
-        if (! mysql_query("CREATE USER '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}';", $rootdb)) {
-            do_die("\r\nCouldn't create the core database user - are you sure you've provided the root credentials?\r\n");
+        $sql = "CREATE USER '{$arrConfig['coreuser']}'@'localhost' IDENTIFIED BY '{$arrConfig['corepass']}';";
+        echo "Running create user query\r\n";
+        mysql_query($sql, $rootdb);
+        if (mysql_errno($rootdb) > 0) {
+            echo "\r\nCouldn't create the core database user. Trying dropping the user.\r\n$sql\r\n" . mysql_errno($rootdb) . " - " . mysql_error($rootdb) . "\r\n";
+            mysql_query("DELETE FROM mysql.user WHERE user = '' OR (user='{$arrConfig['coreuser']} AND host='localhost');", $rootdb);
+            if (mysql_affected_rows($rootdb) > 0) {
+                echo "Dropped anonymous and core user\r\n";
+            }
+            mysql_query("FLUSH PRIVILEGES;", $rootdb);
+            echo "Flushing privileges\r\nRunning create user query\r\n";
+            sleep(3);
+            mysql_query($sql, $rootdb);
+        }
+        if (mysql_errno($rootdb) > 0) {
+            do_die("\r\nCouldn't create the core database user - are you sure you've provided the root credentials?\r\n$sql\r\n" . mysql_errno($rootdb) . " - " . mysql_error($rootdb) . "\r\n");
         } else {
             mysql_query("GRANT USAGE ON *.* TO '{$arrConfig['coreuser']}'@'%' IDENTIFIED BY '{$arrConfig['corepass']}' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;");
             mysql_query("FLUSH PRIVILEGES;", $rootdb);
@@ -347,15 +371,33 @@ if ($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'] == $arrConfig['rooth
                         $arrConfig['gammupass'] = implode($chars);
                     }
                 }
-                $sql = "CREATE USER '{$arrConfig['gammuuser']}'@'%' IDENTIFIED BY '{$arrConfig['gammupass']}';";
-                $qry = mysql_query($sql, $rootdb);
+                $sql = "CREATE USER '{$arrConfig['gammuuser']}'@'localhost' IDENTIFIED BY '{$arrConfig['gammupass']}';";
+                echo "Running create user query\r\n";
+                mysql_query($sql, $rootdb);
                 if (mysql_errno($rootdb) > 0) {
-                    do_die("\r\nCouldn't create the gammu database user - are you sure you've provided the root credentials?\r\n");
+                    echo "\r\nCouldn't create the core database user. Trying dropping the user.\r\n$sql\r\n" . mysql_errno($rootdb) . " - " . mysql_error($rootdb) . "\r\n";
+                    mysql_query("DELETE FROM mysql.user WHERE user = '' OR (user='{$arrConfig['gammupass']} AND host='localhost');", $rootdb);
+                    if (mysql_affected_rows($rootdb) > 0) {
+                        echo "Dropped anonymous and core user\r\n";
+                    }
+                    mysql_query("FLUSH PRIVILEGES;", $rootdb);
+                    echo "Flushing privileges\r\nRunning create user query\r\n";
+                    sleep(3);
+                    mysql_query($sql, $rootdb);
                 }
-                if ($arrConfig['gammupass'] == null || $arrConfig['gammupass'] == '') {
-                    $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], '');
+                if (mysql_errno($rootdb) > 0) {
+                    do_die("\r\nCouldn't create the core database user - are you sure you've provided the root credentials?\r\n$sql\r\n" . mysql_errno($rootdb) . " - " . mysql_error($rootdb) . "\r\n");
                 } else {
-                    $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
+                    mysql_query("GRANT USAGE ON *.* TO '{$arrConfig['gammuuser']}'@'%' IDENTIFIED BY '{$arrConfig['gammupass']}' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;");
+                    mysql_query("FLUSH PRIVILEGES;", $rootdb);
+                    if ($arrConfig['gammupass'] == null || $arrConfig['gammupass'] == '') {
+                        $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], '');
+                    } else {
+                        $gammudb = @mysql_connect($arrConfig['gammuhost'] . ':' . $arrConfig['gammuport'], $arrConfig['gammuuser'], $arrConfig['gammupass']);
+                    }
+                    if (! $gammudb) {
+                        do_die("\r\nThere was an error creating the core database user.");
+                    }
                 }
                 break;
             case 'N':
