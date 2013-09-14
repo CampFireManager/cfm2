@@ -37,13 +37,14 @@ git
 amend this file. Key lines to set are $RW_TYPE, $RW_BASE. If you're using MySQL
 then you should also set $RW_USER and $RW_PASS.
 * Copy or symlink /path/to/cfm2/_htaccess to /path/to/cfm2/.htaccess
+  NOTE: Using .htaccess requires you to use Apache or any web server that supports .htaccess syntax, *and* to configure your VirtualHost to AllowOverride All.
 * Now run
 
-php /path/to/cfm2/initialize.php 
+php /path/to/cfm2/SETUP/initialize.php 
 
 OR if you need demo data (for example you plan on running the unit tests or just
 want some sample data to work with), you should run instead 
 
-php /path/to/cfm2/initialize_with_demo_data.php 
+php /path/to/cfm2/SETUP/initialize_with_demo_data.php 
 
 You should be good to go now!
