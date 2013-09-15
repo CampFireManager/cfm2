@@ -135,4 +135,14 @@ class Object_SecureConfig_Demo extends Object_SecureConfig
     protected $arrDemoData = array(
         array('key' => 'Dummy Key', 'value' => 'Set')
     );
+    
+    /**
+     * This overriden function does nothing - a ChangeLog can't be changed - 
+     * only read, and even then only at the Database Level.
+     * 
+     * @return void
+     */
+    public function writeChangeLog() {
+        // Do Nothing!
+    }
 }

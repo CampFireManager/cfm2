@@ -12,6 +12,12 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $objSecureConfig = new Object_SecureConfig_Demo();
         $objSecureConfig->initializeDemo();
         $config->LoadDatabaseConfig();
+        $objUser = new Object_User_Demo();
+        $objUser->initialize();
+        $objUserauth = new Object_Userauth_Demo();
+        $objUserauth->initialize();
+        $objUser->initializeDemo();
+        $objUserauth->initializeDemo();
         $objAttendee = new Object_Attendee_Demo();
         $objAttendee->initializeDemo();
         $objDefaultSlotType = new Object_DefaultSlotType_Demo();
@@ -24,10 +30,6 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $objSlot->initializeDemo();
         $objTalk = new Object_Talk_Demo();
         $objTalk->initializeDemo();
-        $objUser = new Object_User_Demo();
-        $objUser->initializeDemo();
-        $objUserauth = new Object_Userauth_Demo();
-        $objUserauth->initializeDemo();
     }
     
     public function testHookCronTick()
@@ -56,7 +58,7 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[1]->getKey('intSlotID') == 1);
         $this->assertTrue($arrTalks[1]->getKey('isLocked') == 1);
         $this->assertTrue($arrTalks[2]->getKey('intRoomID') == -1);
-        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == 2);
+        $this->assertTrue($arrTalks[2]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[2]->getKey('isLocked') == 0);
         // After sorting, room 1 can't be used (locked) and room 3 is larger
         // than room 2.
@@ -64,7 +66,7 @@ class Plugin_LimboTalksTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($arrTalks[3]->getKey('intSlotID') >= 2);
         $this->assertTrue($arrTalks[3]->getKey('isLocked') == 0);
         $this->assertTrue($arrTalks[4]->getKey('intRoomID') == -1);
-        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == 3);
+        $this->assertTrue($arrTalks[4]->getKey('intSlotID') == -1);
         $this->assertTrue($arrTalks[4]->getKey('isLocked') == 0);
     }
 }
