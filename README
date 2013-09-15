@@ -13,37 +13,40 @@ mailto:jon@sprig.gs?subject=CFM2
 ==================
 
 Install:
-Apache (recommended - other HTTPd's not tested)
-PHP >= 5.3
-PHP5-gmp (Required for OpenID Logins)
-PHP5-mysql or PHP5-sqlite (either will work, mysql is faster)
-MySQL-Server (if you're using the MySQL plugin)
-git
+* Apache (recommended - other HTTPd's not tested)
+* PHP >= 5.3
+* PHP5-curl, PHP5-gmp and PHP5-mcrypt (Required for OpenID Logins)
+* PHP5-mysql or PHP5-sqlite (either will work, mysql is faster)
+* PHP5-imagick
+* MySQL-Server (if you're using the MySQL plugin)
+* git
+
+If you want to use or test the SMS integration, ensure you have the following:
+* gammu-smsd
+* gammu-doc
 
 == ACTIONS ==
 =============
 
+== Running the demo ==
+======================
+
+* Ensure you have a recent version of Vagrant (2.0 or later)
+* Clone the git repository into a known directory (e.g. /home/user/cfm2)
+* Change directory into the "Vagrant" directory and run:
+        vagrant up
+* You can then access http://localhost:8080/cfm2 or http://localhost:8080/cfm2/main_screen.php or http://localhost:8080/cfm2/direction_screen
+
+== Using the installer ==
+=========================
+
 * Clone the git repository into a known directory (e.g. /var/www/)
-* From the root of your git clone, do this command:
-        git submodule update --recursive
-* Get the latest stable version of smarty from here: http://www.smarty.net/download
-* Unpack that to /path/to/cfm2/ExternalLibraries/Smarty/Smarty-v.e.r/  
-    * note; v.e.r should be the version number you've downloaded, and should be 
-    a minimum of the version number listed in 
-    /path/to/cfm2/ExternalLibraries/libraries.json. It will have the directories 
-    libs and demo in that path.
-* If you're using MySQL, create the database, user and password.
-* Copy /path/to/cfm2/config/local.dist.php to /path/to/cfm2/config/local.php and
-amend this file. Key lines to set are $RW_TYPE, $RW_BASE. If you're using MySQL
-then you should also set $RW_USER and $RW_PASS.
-* Copy or symlink /path/to/cfm2/_htaccess to /path/to/cfm2/.htaccess
-* Now run
+* Ensure you have the following packages installed in addition to the above requirements:
+        curl
+        unzip
+* Run the following command (changing the upper-case-text for switches -pw, -cpw, -gpw, and -w):
+        php /var/www/cfm2/SETUP/install.php -u=root -pw=ROOT_DATABASE_PASSWORD -cu=cfm2 -cpw=CFM2_DATABASE_PASSWORD -gu=gammu -gpw=GAMMU_DATABASE_PASSWORD -w=YOUR_SITE_NAME -cd=cfm2 -ge=1 -te=0 -y=1 -gf=/usr/share/doc/gammu-smsd/examples/mysql.sql.gz -gt=mysql -gh=localhost -gp=3306
+* The installer assumes apache2 with .htaccess files enabled. If this is not the case (and you've not implemented a workaround in your web server of choice), the installer will complain.
 
-php /path/to/cfm2/initialize.php 
-
-OR if you need demo data (for example you plan on running the unit tests or just
-want some sample data to work with), you should run instead 
-
-php /path/to/cfm2/initialize_with_demo_data.php 
-
-You should be good to go now!
+Please note that the switches for the install command can be obtained by running:
+        php /var/www/cfm2/SETUP/install.php --help
