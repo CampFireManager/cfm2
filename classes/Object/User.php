@@ -163,9 +163,9 @@ class Object_User extends Abstract_GenericObject
         if (!is_object($objUserAuth)) {
             return false;
         }
+        $sql = "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1";
         try {
             $objDatabase = Container_Database::getConnection();
-            $sql = "SELECT * FROM {$thisClass->strDBTable} WHERE {$thisClass->strDBKeyCol} = ? LIMIT 1";
             $query = $objDatabase->prepare($sql);
             $values = array($objUserAuth->getKey('intUserID'));
             $query->execute($values);
@@ -176,6 +176,9 @@ class Object_User extends Abstract_GenericObject
             }
             return $result;
         } catch(PDOException $e) {
+            if (!isset($values)) {
+                $values = array();
+            }
             error_log("SQL Error: " . $e->getMessage() . " in SQL: $sql with values " . print_r($values, true));
             return false;
         }
@@ -230,6 +233,7 @@ class Object_User extends Abstract_GenericObject
         if (! $isCreationAction) {
             return $this;
         }
+        $system_state = Object_User::isSystem();
         try {
             $objUserAuth = new Object_Userauth(true, $strCodeOnly);
             $objRequest = Container_Request::getRequest();
@@ -269,6 +273,7 @@ class Object_User extends Abstract_GenericObject
             }
             Object_User::isSystem($system_state);
         } catch (Exception $e) {
+            
             Object_User::isSystem($system_state);
             throw $e;
         }
