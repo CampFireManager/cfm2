@@ -6,11 +6,11 @@ and ask me any questions.
 
 mailto:jon@sprig.gs?subject=CFM2
 
-= INSTALLATION GUIDE =
-======================
-
-== REQUIREMENTS ==
+Installation Guide
 ==================
+
+Requirements
+------------
 
 Install:
 * Apache (recommended - other HTTPd's not tested)
@@ -25,11 +25,11 @@ If you want to use or test the SMS integration, ensure you have the following:
 * gammu-smsd
 * gammu-doc
 
-== ACTIONS ==
-=============
+Actions
+-------
 
-== Running the demo ==
-======================
+Running the demo
+----------------
 
 * Ensure you have a recent version of Vagrant (2.0 or later)
 * Clone the git repository into a known directory (e.g. /home/user/cfm2)
@@ -37,8 +37,8 @@ If you want to use or test the SMS integration, ensure you have the following:
         vagrant up
 * You can then access http://localhost:8080/cfm2 or http://localhost:8080/cfm2/main_screen.php or http://localhost:8080/cfm2/direction_screen
 
-== Using the installer ==
-=========================
+Using the installer
+-------------------
 
 * Clone the git repository into a known directory (e.g. /var/www/)
 * Ensure you have the following packages installed in addition to the above requirements:
