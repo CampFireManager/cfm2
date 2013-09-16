@@ -93,6 +93,7 @@ class Object_Config extends Abstract_GenericObject
             parent::__construct();
         }
     }
+    
 }
 
 /**
@@ -110,4 +111,14 @@ class Object_Config_Demo extends Object_Config
         array('key' => 'Site_Name', 'value' => 'A Demo Site'),
         array('key' => 'Public_Url', 'value' => 'http://jontheniceguy.pagekite.me/cfm2/')
     );
+
+    /**
+     * This overriden function does nothing - a ChangeLog can't be changed - 
+     * only read, and even then only at the Database Level.
+     * 
+     * @return void
+     */
+    public function writeChangeLog() {
+        // Do Nothing!
+    }
 }
