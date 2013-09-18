@@ -76,7 +76,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_object($arrInput[1]));
         $this->assertTrue($arrInput[1]->getKey('textMessage') == 'testing');
         $this->assertTrue($arrInput[1]->getKey('strSender') == '+447777777777');
-        $this->assertTrue($arrInput[1]->getKey('strInterface') == 'Glue_Gammu-SMSD');
+        $this->assertTrue($arrInput[1]->getKey('strInterface') == 'Gammu');
     }
 
     public function testReplyToInbox()
@@ -100,7 +100,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($arrOutbox2) == 1);
         $this->assertTrue($arrOutbox2[0]['DestinationNumber'] == "+447777777777"); 
         $this->assertTrue($arrOutbox2[0]['TextDecoded'] == "Test Succeeded");
-        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Glue_Gammu-SMSD");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Gammu");
     }
 
     
@@ -112,7 +112,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         Object_User::isSystem(true);
         $arrGlue = Glue_GammuTestable::brokerAllGlues();
         foreach ($arrGlue as $objGlue) {
-            $this->assertTrue($objGlue->getGlue() == "Glue_Gammu-SMSD");
+            $this->assertTrue($objGlue->getGlue() == "Gammu");
             $strInterface = $objGlue->canSendPrivateMessage();
             if ($strInterface != false) {
                 $output = new Object_Output();
@@ -139,7 +139,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         Object_User::isSystem(true);
         $arrGlue = Glue_GammuTestable::brokerAllGlues();
         foreach ($arrGlue as $objGlue) {
-            $this->assertTrue($objGlue->getGlue() == "Glue_Gammu-SMSD");
+            $this->assertTrue($objGlue->getGlue() == "Gammu");
             $strInterface = $objGlue->canSendPrivateMessage();
             if ($strInterface != false) {
                 $output = new Object_Output();
