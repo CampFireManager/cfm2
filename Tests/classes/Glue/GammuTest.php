@@ -100,7 +100,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($arrOutbox2) == 1);
         $this->assertTrue($arrOutbox2[0]['DestinationNumber'] == "+447777777777"); 
         $this->assertTrue($arrOutbox2[0]['TextDecoded'] == "Test Succeeded");
-        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Gammu");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "cfm2");
     }
 
     
@@ -128,7 +128,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($arrOutbox2) == 1);
         $this->assertTrue($arrOutbox2[0]['DestinationNumber'] == "+447777777777"); 
         $this->assertTrue($arrOutbox2[0]['TextDecoded'] == "Testing 123");
-        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Glue_Gammu-SMSD");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "cfm2");
     }
 
     public function testSendLongerMessage()
@@ -167,7 +167,7 @@ class Glue_GammuTest extends PHPUnit_Framework_TestCase
                                                           ."123456789012345678901234567890"
                                                           ."123456789012345678901234567890"
                                                           ."1234567890");
-        $this->assertTrue($arrOutbox2[0]['SenderID'] == "Glue_Gammu-SMSD");
+        $this->assertTrue($arrOutbox2[0]['SenderID'] == "cfm2");
         $this->assertTrue(substr($arrOutbox2[0]['UDH'], -4) === '2010');
         $this->assertTrue(substr($arrOutbox2[0]['UDH'], 0, 10) === substr($arrOutbox3[0]['UDH'], 0, 10));
         $this->assertTrue(substr($arrOutbox3[0]['UDH'], -4) === '2020');
