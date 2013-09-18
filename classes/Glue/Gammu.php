@@ -25,7 +25,7 @@
 class Glue_Gammu implements Interface_Glue
 {
     protected $objDbGammu = null;
-    protected $strInterface = null;
+    protected $strInterface = 'Gammu';
     protected $objDaemon = null;
     
     public function getGlue()
@@ -64,113 +64,30 @@ class Glue_Gammu implements Interface_Glue
      */
     public function __construct($arrConfigValues = array())
     {
-        if (isset($arrConfigValues['GluePrefix'])) {
-            $GluePrefix = $arrConfigValues['GluePrefix'];
-        } else {
-            $GluePrefix = 'Gammu';
+        if (!isset($arrConfigValues['DBType']) || $arrConfigValues['DBType'] == null) {
+            throw new InvalidArgumentException('Missing Gammu configuration value (DBType): ' . print_r($arrConfigValues, true));
+        } elseif (!isset($arrConfigValues['DBHost']) || $arrConfigValues['DBHost'] == null) {
+            throw new InvalidArgumentException('Missing Gammu configuration value (DBHost): ' . print_r($arrConfigValues, true));
+        } elseif (($arrConfigValues['DBType'] != 'sqlite' && (!isset($arrConfigValues['DBPort']) || $arrConfigValues['DBPort'] == null))) {
+            throw new InvalidArgumentException('Missing Gammu configuration value (DBPort): ' . print_r($arrConfigValues, true));
+        } elseif (($arrConfigValues['DBType'] != 'sqlite' && (!isset($arrConfigValues['DBUser']) || $arrConfigValues['DBUser'] == null))) {
+            throw new InvalidArgumentException('Missing Gammu configuration value (DBUser): ' . print_r($arrConfigValues, true));
+        } elseif (($arrConfigValues['DBType'] != 'sqlite' && (!isset($arrConfigValues['DBPass']) || $arrConfigValues['DBPass'] == null))) {
+            throw new InvalidArgumentException('Missing Gammu configuration value (DBPass): ' . print_r($arrConfigValues, true));
+        } elseif (($arrConfigValues['DBType'] != 'sqlite' && (!isset($arrConfigValues['DBBase']) || $arrConfigValues['DBBase'] == null))) {
+            throw new InvalidArgumentException('Missing Gammu configuration value (DBBase): ' . print_r($arrConfigValues, true));
         }
-        
-        if (isset($arrConfigValues['DBType'])) {
-            $DBType = $arrConfigValues['DBType'];
+
+        if ($arrConfigValues['DBType'] != 'sqlite') {
+            $this->objDbGammu = new PDO(
+                    $arrConfigValues['DBType'] . 
+                    ':host=' . $arrConfigValues['DBHost'] . 
+                    ';port=' . $arrConfigValues['DBPort'] .
+                    ';dbname=' . $arrConfigValues['DBBase'],
+                    $arrConfigValues['DBUser'], 
+                    $arrConfigValues['DBPass']);
         } else {
-            $DBType = Object_SecureConfig::brokerByID($GluePrefix . '_DBType');
-            if (is_object($DBType)) {
-                $DBType = $DBType->getKey('value');
-            }
-        }
-        if (isset($arrConfigValues['DBHost'])) {
-            $DBHost = $arrConfigValues['DBHost'];
-        } else {
-            $DBHost = Object_SecureConfig::brokerByID($GluePrefix . '_DBHost');
-            if (is_object($DBHost)) {
-                $DBHost = $DBHost->getKey('value');
-            }
-        }
-        if (isset($arrConfigValues['DBPort'])) {
-            $DBPort = $arrConfigValues['DBPort'];
-        } else {
-            $DBPort = Object_SecureConfig::brokerByID($GluePrefix . '_DBPort');
-            if (is_object($DBPort)) {
-                $DBPort = $DBPort->getKey('value');
-            }
-        }
-        if (isset($arrConfigValues['DBUser'])) {
-            $DBUser = $arrConfigValues['DBUser'];
-        } else {
-            $DBUser = Object_SecureConfig::brokerByID($GluePrefix . '_DBUser');
-            if (is_object($DBUser)) {
-                $DBUser = $DBUser->getKey('value');
-            }
-        }
-        if (isset($arrConfigValues['DBPass'])) {
-            $DBPass = $arrConfigValues['DBPass'];
-        } else {
-            $DBPass = Object_SecureConfig::brokerByID($GluePrefix . '_DBPass');
-            if (is_object($DBPass)) {
-                $DBPass = $DBPass->getKey('value');
-            }
-        }
-        if (isset($arrConfigValues['DBBase'])) {
-            $DBBase = $arrConfigValues['DBBase'];
-        } else {
-            $DBBase = Object_SecureConfig::brokerByID($GluePrefix . '_DBBase');
-            if (is_object($DBBase)) {
-                $DBBase = $DBBase->getKey('value');
-            }
-        }
-        if ($DBType == null 
-            || $DBHost == null 
-            || ($DBType != 'sqlite' && $DBPort == null)
-            || ($DBType != 'sqlite' && $DBUser == null)
-            || ($DBType != 'sqlite' && $DBPass == null)
-            || ($DBType != 'sqlite' && $DBBase == null)
-        ) {
-            $value = "\r\nDBType: $DBType (";
-            if ($DBType == null) {
-                $value .= "False";
-            } else {
-                $value .= "True";
-            }
-            $value .= ")\r\nDBHost: $DBHost (";
-            if ($DBHost == null) {
-                $value .= "False";
-            } else {
-                $value .= "True";
-            }
-            $value .= ")\r\nDBPort: $DBPort (";
-            if ($DBPort == null) {
-                $value .= "False";
-            } else {
-                $value .= "True";
-            }
-            $value .= ")\r\nDBUser: $DBUser (";
-            if ($DBUser == null) {
-                $value .= "False";
-            } else {
-                $value .= "True";
-            }
-            $value .= ")\r\nDBPass: $DBPass (";
-            if ($DBPass == null) {
-                $value .= "False";
-            } else {
-                $value .= "True";
-            }
-            $value .= ")\r\nDBBase: $DBBase (";
-            if ($DBBase == null) {
-                $value .= "False";
-            } else {
-                $value .= "True";
-            }
-            $value .= ")";
-            throw new InvalidArgumentException("Insufficient detail to connect to Gammu Database : $value");
-        }
-        
-        $this->strInterface = $GluePrefix;
-        
-        if ($DBType != 'sqlite') {
-            $this->objDbGammu = new PDO($DBType . ':host=' . $DBHost . ';port=' . $DBPort .';dbname=' . $DBBase, $DBUser, $DBPass);
-        } else {
-            $this->objDbGammu = new PDO($DBType . ':' . $DBHost);
+            $this->objDbGammu = new PDO($arrConfigValues['DBType'] . ':' . $arrConfigValues['DBHost']);
         }
         if ($this->objDbGammu->errorCode() > 0) {
             throw new UnexpectedValueException($this->objDbGammu->errorInfo());
@@ -216,6 +133,7 @@ class Glue_Gammu implements Interface_Glue
             return null;
         }
         $UDH = array();
+        $return = 0;
         foreach ($result as $message) {
             try {
                 // UDH is the SMS standard handler for longer text messages.
@@ -256,6 +174,7 @@ class Glue_Gammu implements Interface_Glue
                         unset($UDH[$uniq]);
 
                         $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+                        $return++;
                         $this->objDaemon->write();
                     }
                 } else {
@@ -272,6 +191,7 @@ class Glue_Gammu implements Interface_Glue
                     $qryUpdateInbox->execute(array($message['ID']));
 
                     $this->objDaemon->setKey('intInboundCounter', $this->objDaemon->getKey('intInboundCounter') + 1);
+                    $return++;
                     $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                     $this->objDaemon->write();
                 }
@@ -279,6 +199,7 @@ class Glue_Gammu implements Interface_Glue
                 error_log('Error moving data from Gammu Inbox to CFM2 Inbox: ' . $e->getMessage());
             }
         }
+        return $return;
     }
     
     /**
@@ -289,7 +210,7 @@ class Glue_Gammu implements Interface_Glue
      */
     public function read_public()
     {
-        
+        return 0;
     }
         
     /**
@@ -300,7 +221,7 @@ class Glue_Gammu implements Interface_Glue
      */
     public function follow_followers()
     {
-        
+        return 0;
     }
     
     /**
@@ -322,6 +243,7 @@ class Glue_Gammu implements Interface_Glue
         $qryInsertLarge = $this->objDbGammu->prepare($sqlInsertLarge);
 
         $messages = Object_Output::brokerByColumnSearch('isActioned', false);
+        $return = 0;
         foreach ($messages as $message) {
             if ($message->getKey('strInterface') != $this->strInterface) {
                 continue;
@@ -341,24 +263,8 @@ class Glue_Gammu implements Interface_Glue
                     'UDH' => null,
                     'TextDecoded' => '',
                     'Coding' => 'Default_No_Compression',
-                    'SenderID' => null
+                    'SenderID' => 'cfm2'
                 );
-
-                // Adding the CreatorID means we can track which Glue sent which
-                // message. Mostly, I'd expect to only see one Gammu Glue per 
-                // event, but who knows! :)
-                //
-                // If we've got multiple sticks (modems), we also will need to 
-                // know which is which... which is where the SenderID comes into
-                // play.
-
-                if (preg_match('/^Glue_Gammu-([^_]+)$/', $message->getKey('strInterface'), $matches) == 1) {
-                    $data['CreatorID'] .= '_' . $matches[1];
-                    $data['SenderID'] = 'Glue_Gammu-' . $matches[1];
-                } elseif (preg_match('/^Glue_Gammu-([^_]+)_(.*)$/', $message->getKey('strInterface'), $matches) == 1) {
-                    $data['CreatorID'] .= '_' . $matches[1];
-                    $data['SenderID'] = 'Glue_Gammu-' . $matches[1];
-                }
 
                 // So, now we've got our defaults set up - let's check whether this
                 // is actually more than 1 message long.
@@ -390,12 +296,14 @@ class Glue_Gammu implements Interface_Glue
                 $message->setKey('isActioned', 1);
                 $message->write();
                 $this->objDaemon->setKey('intOutboundCounter', $this->objDaemon->getKey('intOutboundCounter') + 1);
+                $return++;
                 $this->objDaemon->setKey('lastUsedSuccessfully', date('Y-m-d H:i:s'));
                 $this->objDaemon->write();
             } catch (Exception $e) {
                 error_log('Error moving data from CFM2 Outbox to Gammu Outbox at ' . $e->getLine() . ': ' . $e->getMessage());
             }
         }
+        return $return;
     }
 
     /**
@@ -406,21 +314,29 @@ class Glue_Gammu implements Interface_Glue
     public static function brokerAllGlues()
     {
         $arrConfig = Object_SecureConfig::brokerAll();
-        $return = array();
-        foreach ($arrConfig as $key => $objConfig) {
-            if (preg_match('/^Glue_Gammu-[^_]+$/', $objConfig->getKey('key'))) {
-                $key = $objConfig->getKey('value');
-                if (isset($arrConfig[$key . '_DBType']) 
-                    && isset($arrConfig[$key . '_DBHost']) 
-                    && isset($arrConfig[$key . '_DBPort']) 
-                    && isset($arrConfig[$key . '_DBUser']) 
-                    && isset($arrConfig[$key . '_DBPass']) 
-                    && isset($arrConfig[$key . '_DBBase'])
-                ) {
-                    $return[] = new Glue_Gammu(array('GluePrefix' => $key));
-                }
-            }
+        $config = array();
+        if (isset($arrConfig['Gammu_DBType'])) {
+            $config['DBType'] = $arrConfig['Gammu_DBType']->getKey('value');
         }
-        return $return;
+        if (isset($arrConfig['Gammu_DBHost'])) {
+            $config['DBHost'] = $arrConfig['Gammu_DBHost']->getKey('value');
+        }
+        if (isset($arrConfig['Gammu_DBPort'])) {
+            $config['DBPort'] = $arrConfig['Gammu_DBPort']->getKey('value');
+        }
+        if (isset($arrConfig['Gammu_DBUser'])) {
+            $config['DBUser'] = $arrConfig['Gammu_DBUser']->getKey('value');
+        }
+        if (isset($arrConfig['Gammu_DBPass'])) {
+            $config['DBPass'] = $arrConfig['Gammu_DBPass']->getKey('value');
+        }
+        if (isset($arrConfig['Gammu_DBBase'])) {
+            $config['DBBase'] = $arrConfig['Gammu_DBBase']->getKey('value');
+        }
+        if (count($config) > 0) {
+            return array(new Glue_Gammu($config));
+        } else {
+            return array();
+        }
     }
 }
