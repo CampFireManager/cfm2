@@ -208,10 +208,11 @@ abstract class Abstract_GenericObject implements Interface_Object
      * @param boolean $json      Look for a JSON encoded string
      * @param integer $count     The number of records to return
      * @param string  $direction The SQL direction to process
+     * @param boolean $like      Replace "=" with "like" in searches
      * 
      * @return array The array of objects matching this search
      */
-    static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false, $count = null, $direction = 'ASC')
+    static function brokerByColumnSearch($column = null, $value = null, $inverse = false, $json = false, $count = null, $direction = 'ASC', $like = false)
     {
         if ($column == null) {
             throw new OutOfBoundsException('No column name');
@@ -276,50 +277,98 @@ abstract class Abstract_GenericObject implements Interface_Object
             } elseif ($inverse == false) {
                 if ($json == true) {
                     if ($count != null) {
-                        $sql = Container_Database::getSqlString(
-                            array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
-                            )
-                        );
+                        if ($like == false) {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
+                                )
+                            );
+                        } else {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` LIKE ? OR `{$column}` LIKE ? OR `{$column}` LIKE ? OR `{$column}` LIKE ? OR `{$column}` LIKE ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
+                                )
+                            );
+                        }
                     } else {
-                        $sql = Container_Database::getSqlString(
-                            array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
-                            )
-                        );
+                        if ($like == false) {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? OR `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
+                                )
+                            );
+                        } else {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` LIKE ? OR `{$column}` LIKE ? OR `{$column}` LIKE ? OR `{$column}` LIKE ? OR `{$column}` LIKE ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
+                                )
+                            );
+                        }
                     }
                     $query = $objDatabase->prepare($sql);
                     $query->execute(array("[$value]", "%\"$value\"%", "[$value,%", "%,$value,%", "%,$value]"));
                 } else {
                     if ($count != null) {
-                        $sql = Container_Database::getSqlString(
-                            array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
-                            )
-                        );
+                        if ($like == false) {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
+                                )
+                            );
+                        } else {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` LIKE ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
+                                )
+                            );
+                        }
                     } else {
-                        $sql = Container_Database::getSqlString(
-                            array(
-                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
-                            )
-                        );
+                        if ($like == false) {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` = ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
+                                )
+                            );
+                        } else {
+                            $sql = Container_Database::getSqlString(
+                                array(
+                                    'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` LIKE ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
+                                )
+                            );
+                        }
                     }
                     $query = $objDatabase->prepare($sql);
                     $query->execute(array($value));
                 }
             } else {
                 if ($count != null) {
-                    $sql = Container_Database::getSqlString(
-                        array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` != ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
-                        )
-                    );
+                    if ($like == false) {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` != ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
+                            )
+                        );
+                    } else {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` NOT LIKE ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction} LIMIT 0, {$count}"
+                            )
+                        );
+                    }
                 } else {
-                    $sql = Container_Database::getSqlString(
-                        array(
-                            'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` != ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
-                        )
-                    );                    
+                    if ($like == false) {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` != ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
+                            )
+                        );
+                    } else {
+                        $sql = Container_Database::getSqlString(
+                            array(
+                                'sql' => "SELECT * FROM {$thisClass->strDBTable} WHERE `{$column}` NOT LIKE ? ORDER BY `{$thisClass->strDBKeyCol}` {$direction}"
+                            )
+                        );
+                    }
                 }
                 $query = $objDatabase->prepare($sql);
                 $query->execute(array($value));
