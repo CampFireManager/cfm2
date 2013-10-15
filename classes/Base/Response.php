@@ -492,40 +492,50 @@ class Base_Response
      * 
      * @return string
      */
-    public static function translate($arrStrings, $strLanguage = null)
+    public static function translate($arrStrings, $key, $strLanguage = null)
     {
-        $objRequest = Container_Request::getRequest();
-        $arrLanguages = $objRequest->get_arrAcceptLangs();
-        if (! is_array($arrLanguages)) {
-            $arrLanguages = array();
-        }
-        if ($strLanguage != null) {
-            $arrLanguages[$strLanguage] = 2;
-        }
-        sort($arrLanguages, SORT_NUMERIC);
-        
-        if (! is_array($arrStrings)) {
-            throw new InvalidArgumentException('Not a valid array of strings');
-        } elseif (count($arrStrings) == 0) {
-            throw new InvalidArgumentException('No translation strings provided');
-        }
-        
-        // Try to use the preferred languages in order (dialect then base)
-        foreach ($arrLanguages as $strLanguage => $intLanguageValue) {
-            $intLanguageValue = null;
-            if (isset($arrStrings[$strLanguage])) {
-                return $arrStrings[$strLanguage];
-            } elseif (isset($arrStrings[substr($strLanguage, 0, 2)])) {
-                return $arrStrings[substr($strLanguage, 0, 2)];
-            }            
-        }
-        
-        // If none of the preferred strings exist, use the english base as
-        // default. If that also doesn't exist, thrown an exception.
-        if (isset($arrStrings['en'])) {
-            return $arrStrings['en'];
+        $objCache = Base_Cache::getHandler();
+        if (isset($objCache->arrCache[$key])) {
+            return $objCache->arrCache[$key];
         } else {
-            throw new InvalidArgumentException('No valid strings found');
+            $objRequest = Container_Request::getRequest();
+            $arrLanguages = $objRequest->get_arrAcceptLangs();
+            if (! is_array($arrLanguages)) {
+                $arrLanguages = array();
+            }
+            if ($strLanguage != null) {
+                $arrLanguages[$strLanguage] = 2;
+            }
+            sort($arrLanguages, SORT_NUMERIC);
+        
+            if (! is_array($arrStrings) || ! isset($arrStrings[$key])) {
+                throw new InvalidArgumentException('Not a valid array of strings');
+            } elseif (count($arrStrings[$key]) == 0) {
+                throw new InvalidArgumentException('No translation strings provided');
+            }
+        
+            // Try to use the preferred languages in order (dialect then base)
+            foreach ($arrLanguages as $strLanguage => $intLanguageValue) {
+                $intLanguageValue = null;
+                if (isset($arrStrings[$strLanguage])) {
+                    $objCache->arrCache[$key] = $arrStrings[$key][$strLanguage];
+                    return $arrStrings[$key][$strLanguage];
+                } elseif (isset($arrStrings[$key][substr($strLanguage, 0, 2)])) {
+                    $objCache->arrCache[$key] = $arrStrings[$key][substr($strLanguage, 0, 2)];
+                    return $arrStrings[$key][substr($strLanguage, 0, 2)];
+                }
+            }
+        
+            // If none of the preferred strings exist, use the english base as
+            // default. If that also doesn't exist, thrown an exception.
+            if (isset($arrStrings[$key]['en'])) {
+                $objCache->arrCache[$key] = $arrStrings[$key]['en'];
+                return $arrStrings[$key]['en'];
+            } else {
+                throw new InvalidArgumentException('No valid strings found');
+            }
+            // Derive string
+            return $string;
         }
     }
 }
