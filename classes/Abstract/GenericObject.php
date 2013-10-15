@@ -1103,10 +1103,10 @@ abstract class Abstract_GenericObject implements Interface_Object
         foreach ($return as $key => $data) {
             $data = null;
             if (isset($this->arrTranslations['label_' . $key])) {
-                $return['labels'][$key] = Base_Response::translate($this->arrTranslations['label_' . $key]);
+                $return['labels'][$key] = Base_Response::translate($this->arrTranslations, 'label_' . $key);
             }
             if (isset($this->arrTranslations['label_' . $key . '_Placeholder'])) {
-                $return['labels'][$key . '_Placeholder'] = Base_Response::translate($this->arrTranslations['label_' . $key . '_Placeholder']);
+                $return['labels'][$key . '_Placeholder'] = Base_Response::translate($this->arrTranslations, 'label_' . $key . '_Placeholder');
             }
             if (isset($this->arrDBItems[$key]['array'])) {
                 $return['pointers'][$key]['data'] = $this->arrDBItems[$key]['array'];
@@ -1145,7 +1145,7 @@ abstract class Abstract_GenericObject implements Interface_Object
             }
         }
         if ($return['current']['key'] == '-1') {
-            $return['current']['value'] = Base_Response::translate(array('en' => 'Any'));
+            $return['current']['value'] = 'Any';
         }
         return $return;
     }
@@ -1256,10 +1256,10 @@ abstract class Abstract_GenericObject implements Interface_Object
                     || isset($return[$strDBItem]['optional'])
                 ) {
                     if (isset($self->arrTranslations['label_' . $strDBItem])) {
-                        $return[$strDBItem]['label'] = Base_Response::translate($self->arrTranslations['label_' . $strDBItem]);
+                        $return[$strDBItem]['label'] = Base_Response::translate($self->arrTranslations, 'label_' . $strDBItem);
                     }
                     if (isset($self->arrTranslations['label_new_' . $strDBItem])) {
-                        $return[$strDBItem]['label'] = Base_Response::translate($self->arrTranslations['label_new_' . $strDBItem]);
+                        $return[$strDBItem]['label'] = Base_Response::translate($self->arrTranslations, 'label_new_' . $strDBItem);
                     }
                     if (isset($arrDBItem['type']) && $arrDBItem['type'] == 'tinyint' && isset($arrDBItem['length']) && $arrDBItem['length'] == 1) {
                         $return[$strDBItem]['list']["1"] = "Yes";
@@ -1272,7 +1272,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                     }
                     if (isset($arrDBItem['source'])) {
                         if (isset($arrDBItem['value_for_any'])) {
-                            $return[$strDBItem]['list'][(string) $arrDBItem['value_for_any']] = Base_Response::translate(array('en' => 'Any'));
+                            $return[$strDBItem]['list'][(string) $arrDBItem['value_for_any']] = 'Any';
                         }
                         $data_object = 'Object_' . $arrDBItem['source'];
                         $data_key = 'int' . $arrDBItem['source'] . 'ID';
@@ -1286,7 +1286,7 @@ abstract class Abstract_GenericObject implements Interface_Object
                                 ) {
                                     $return[$strDBItem]['list'][$objData->getKey($data_key)] = $objData->getKey($data_value);
                                 } elseif ($objData->getKey($data_key) == $self->getKey($strDBItem)) {
-                                    $return[$strDBItem]['list'][$objData->getKey($data_key)] = $objData->getKey($data_value) . ' ('. Base_Response::translate(array('en' => 'current value')) . ')';                                    
+                                    $return[$strDBItem]['list'][$objData->getKey($data_key)] = $objData->getKey($data_value) . ' (current value)';
                                 }
                             }
                         }
