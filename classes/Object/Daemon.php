@@ -62,6 +62,16 @@ class Object_Daemon extends Abstract_GenericObject
             parent::__construct();
         }
     }
+
+    /**
+     * This overriden function does nothing - a ChangeLog can't be changed -
+     * only read, and even then only at the Database Level.
+     *
+     * @return void
+     */
+    public function writeChangeLog() {
+        // Do Nothing!
+    }
 }
 
 /**
