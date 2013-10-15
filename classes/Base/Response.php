@@ -284,6 +284,23 @@ class Base_Response
         $size = filesize($file);
         $fileinfo = pathinfo($file);
 
+        if ($size < 4*1024*1024) { // 4Mb
+            $content = file_get_contents($file);
+            $objRequest = Container_Request::getRequest();
+            $thisetag = sha1($objRequest->get_requestUrlExParams() . $content);
+            header("Last-Modified: " . gmdate("D, d M Y H:i:s", filemtime($file)) . " GMT");
+            header("ETag: \"$thisetag\"");
+            $arrETag = $objRequest->get_hasIfNoneMatch();
+            if (is_array($arrETag)) {
+                foreach ($arrETag as $etag) {
+                    if ($thisetag == $etag || 'W/ ' . $thisetag == $etag) {
+                        header('HTTP/1.1 304 ' . static::$httpStatusCodes[304]);
+                        exit(0);
+                    }
+                }
+            }
+        }
+
         //workaround for IE filename bug with multiple periods / multiple dots in filename
         //that adds square brackets to filename - eg. setup.abc.exe becomes setup[1].abc.exe
         $filename = (strstr(Base_GeneralFunctions::getValue($_SERVER, 'HTTP_USER_AGENT', ''), 'MSIE')) ?
