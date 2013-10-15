@@ -98,7 +98,7 @@ class Object_Talk extends Abstract_GenericObject
     {
         $return = parent::getLabels($return);
         if (isset($this->arrTranslations['label_arrAttendee'])) {
-            $return['labels']['arrAttendee'] = Base_Response::translate($this->arrTranslations['label_arrAttendee']);
+            $return['labels']['arrAttendee'] = Base_Response::translate($this->arrTranslations, 'label_arrAttendee');
         }
         return $return;
     }
