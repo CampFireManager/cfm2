@@ -53,6 +53,7 @@ class Object_Talk extends Abstract_GenericObject
         'label_hasNsfwMaterial' => array('en' => 'Contains content which may be unsuitable for minors'),
         'label_new_intUserID' => array('en' => 'Proposing User'),
         'label_new_intRoomID' => array('en' => 'Room Requested'),
+        'label_intRoomID' => array('en' => 'Room Allocated'),
         'label_new_intSlotID' => array('en' => 'Slot Requested'),
         'label_intSlotID' => array('en' => 'Slot Allocated'),
         'label_intLength' => array('en' => 'Talk Length in slots'),
