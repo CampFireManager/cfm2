@@ -6,7 +6,7 @@
         <div class="readwrite">
             <label for="edit_textarea_<!--SM:$field:SM-->">
                 <span class="progressive_basic">Read write: </span><!--SM:$edit.label:SM-->:
-                <textarea name="<!--SM:$field:SM-->" placeholder="<!--SM:$placeholder:SM-->" id="edit_textarea_<!--SM:$field:SM-->" value="<!--SM:$current:SM-->"></textarea>
+                <textarea name="<!--SM:$field:SM-->" placeholder="<!--SM:$placeholder:SM-->" id="edit_textarea_<!--SM:$field:SM-->"><!--SM:$current:SM--></textarea>
             </label>
         </div>
     <!--SM:/if:SM-->
