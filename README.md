@@ -35,7 +35,7 @@ Running the demo
 * Clone the git repository into a known directory (e.g. /home/user/cfm2)
 * Change directory into the "Vagrant" directory and run:
         `vagrant up`
-* You can then access http://localhost:8080/cfm2 or http://localhost:8080/cfm2/main\_screen.php or http://localhost:8080/cfm2/direction\_screen
+* You can then access http://localhost:8080/cfm2 or http://localhost:8080/cfm2/mainscreen or http://localhost:8080/cfm2/directionscreen
 
 Using the installer
 -------------------
