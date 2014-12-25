@@ -169,12 +169,12 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
             case 'head':
             case 'get':
                 if ($item == null) {
-                    $arrObjects[$object] = $object::brokerAll();
+                    $arrObjects['renderPage'] = $object::brokerAll();
                 } elseif ($item == 'me') {
                     if ($arrObjects['Object_User']['current'] != false
                         && $arrObjects['Object_User']['current'] != null
                     ) {
-                        $arrObjects[$object] = $object::brokerByColumnSearch('intUserID', $arrObjects['Object_User']['current']->getKey('intUserID'));
+                        $arrObjects['renderPage'] = $object::brokerByColumnSearch('intUserID', $arrObjects['Object_User']['current']->getKey('intUserID'));
                         if ($object == 'Object_User') {
                             $arrObjects['Object_User']['current'] = Object_User::brokerCurrent();
                         }
@@ -268,7 +268,7 @@ if (is_array($arrPathItems) && count($arrPathItems) > 0 && $arrPathItems[0] != '
             switch ($objRequest->get_strRequestMethod()) {
             case 'head':
             case 'get':
-                $arrObjects[$object][$item] = $requestedobject;
+                $arrObjects['renderPage'][$item] = $requestedobject;
                 break;
             case 'post':
             case 'put':
